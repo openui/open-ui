@@ -15,6 +15,17 @@ We will take existing legacy controls and based on user feedback and testing we'
 addressing them with new modern variants that address the needs of web developers. As the pattern to bringing a new control
 to the platform becomes more clear, I'll continue to update these steps.
 
+# Key pillars for a solid control that web developers will use
+In discussions, customer & partner discussions, and surveys there are a few key aspects that we must deliver in order
+for the native components and controls that the platform delivers to be heavily utilized.
+
+* They need to be customizable
+* Extensibility needs to be possible
+* Behavior hook or adjustments needs to be possible
+* State management across component, even in a composite component, is possible
+* Expectation from developers that it "just works" (<-- we need to bring the magic back, even if built on primitives)
+* Accessibilty, focus and other foundational items work as expected
+
 # Controls to standardize (initial thinking)
 * `<dropdown>` (modern replacement for select)
 * `<file>` (modern replacement for input type="file")
