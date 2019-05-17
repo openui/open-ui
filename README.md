@@ -15,6 +15,8 @@ We will take existing legacy controls and based on user feedback and testing we'
 addressing them with new modern variants that address the needs of web developers. As the pattern to bringing a new control
 to the platform becomes more clear, I'll continue to update these steps.
 
+Build each component with React, Vue, Angular, Lightning and web components. Detail what is missing. It would also be good to create an idealized version of what you would want the web components version to look like.
+
 # Key pillars for a solid control that web developers will use
 In discussions, customer & partner discussions, and surveys there are a few key aspects that we must deliver in order
 for the native components and controls that the platform delivers to be heavily utilized.
