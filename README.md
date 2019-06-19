@@ -27,8 +27,10 @@ for the native components and controls that the platform delivers to be heavily 
 # Controls to standardize (initial thinking)
 * `<dropdown>` (modern replacement for select)
 * `<file>` (modern replacement for input type="file")
-* `<toggle>` (proposal from Google is [here](https://github.com/tkent-google/std-switch)
+* `<std-switch>` (proposal from Google is [here](https://github.com/tkent-google/std-switch))
 
 # Moving this to a standards body
 Once I get buy in (actively working on this now) from other browser vendors, web developers, frameworks, design systems I'll
-move this repo to the location that makes the most sense. (I plan to open a WICG thread for this, this week).
+move this repo to the location that makes the most sense.  
+
+WICG Discourse: https://discourse.wicg.io/t/standardize-form-controls-components/3646
