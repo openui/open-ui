@@ -28,9 +28,3 @@ for the native components and controls that the platform delivers to be heavily 
 * `<dropdown>` (modern replacement for select)
 * `<file>` (modern replacement for input type="file")
 * `<std-switch>` (proposal from Google is [here](https://github.com/tkent-google/std-switch))
-
-# Moving this to a standards body
-Once I get buy in (actively working on this now) from other browser vendors, web developers, frameworks, design systems I'll
-move this repo to the location that makes the most sense.  
-
-WICG Discourse: https://discourse.wicg.io/t/standardize-form-controls-components/3646
