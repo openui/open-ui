@@ -13,7 +13,7 @@ We will take existing legacy controls and based on user feedback and testing we'
 addressing them with standardized solutions. As the pattern to bringing a new control
 to the platform becomes more clear, I'll continue to update these steps.
 
-# Key pillars for a solid control that web developers will use
+# <a name="pillars"></a> Key pillars for a solid control that web developers will use
 In discussions, customer & partner discussions, and surveys there are a few key aspects that we must deliver in order
 for the native components and controls that the platform delivers to be heavily utilized. All of these don't have to land at once, but need to be considered so we don't back ourselves into a corner and create yet another control/component that is unusable.
 
@@ -28,3 +28,6 @@ for the native components and controls that the platform delivers to be heavily 
 * `<dropdown>` (modern replacement for select)
 * `<file>` (modern replacement for input type="file")
 * `<std-switch>` (proposal from Google is [here](https://github.com/tkent-google/std-switch))
+
+# Resources
+* [Initial thoughts on standardizing form controls](https://www.gwhitworth.com/blog/2019/07/form-controls-components/)
