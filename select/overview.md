@@ -3,6 +3,10 @@ This document will outline the various investigation items
 utilized to identify a manner in which to achieve a `<select>`
 control that adheres to the core [pillars](https://github.com/WICG/form-controls-components#-key-pillars-for-a-solid-control-that-web-developers-will-use).
 
+# Current State
+
+* Styleability: [Mason Freed's exploration](https://docs.google.com/document/d/1Xa_k_MKfw4QnqHjjOKUW0HWGvgHmZeo7YWWCxTjKWBI/edit)
+
 # Use cases
 Below are the usecases that web developers utilize a drop down
 for and potential variations upon them.
