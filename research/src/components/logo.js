@@ -10,7 +10,7 @@ const Logo = ({ siteTitle }) => (
       style={{ height: '2.75em', marginRight: '0.25rem' }}
       alt={siteTitle}
     />
-    <span style={{ verticalAlign: 'middle' }}>{siteTitle}</span>
+    <strong style={{ verticalAlign: 'middle' }}>{siteTitle}</strong>
   </Link>
 )
 

@@ -23,9 +23,9 @@ const Header = ({ siteTitle, githubURL }) => (
         alignItems: 'center',
       }}
     >
-      <h1 style={{ flex: 1, margin: 0, fontSize: '1rem' }}>
+      <span style={{ flex: 1 }}>
         <Logo siteTitle={siteTitle} />
-      </h1>
+      </span>
 
       <a href={githubURL} target="_blank" rel="noreferrer noopener">
         <FontAwesomeIcon style={{ marginRight: '0.2em' }} icon={faGithub} /> GitHub
