@@ -28,12 +28,35 @@ const typography = new Typography({
   bodyGray: 0.2,
   bodyGrayHue: 'warm',
 
-  overrideThemeStyles: ({ rhythm }, options, styles) => ({
-    a: {
-      color: 'inherit',
-      textDecoration: 'none',
-    },
-  }),
+  overrideThemeStyles: ({ rhythm }, options, styles) => {
+    return {
+      a: {
+        color: 'inherit',
+        textDecoration: 'none',
+      },
+
+      blockquote: {
+        padding: '1em',
+        margin: `0 0 ${rhythm()} 0`,
+        color: '#555',
+        background: '#f6f6f6',
+        borderLeft: '4px solid #ccc',
+      },
+
+      code: {
+        background: 'rgba(0, 0, 0, 0.05)',
+        padding: '0 0.25em',
+        borderRadius: '3px',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+      },
+
+      h1: {
+        paddingBottom: rhythm(0.25),
+        marginBottom: rhythm(1.5),
+        borderBottom: '1px solid rgba(0, 0, 0, 0.2)',
+      },
+    }
+  },
 })
 
 export default typography

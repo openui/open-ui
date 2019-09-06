@@ -1,29 +1,31 @@
-import React from 'react'
 import _ from 'lodash'
+import PropTypes from 'prop-types'
+import React from 'react'
+
 import { anatomiesByComponent } from '../sources'
 
-const Anatomy = props => {
+const Anatomy = ({ component }) => {
+  const anatomy = anatomiesByComponent[component]
+
+  if (_.isEmpty(anatomy)) {
+    return (
+      <div style={{ padding: '1em', marginBottom: '1em', color: '#555', background: '#f2f2f2' }}>
+        None of the {component} JSON <code>/resources</code> define an anatomy.
+      </div>
+    )
+  }
+
   return (
     <ul>
-      {_.map(anatomiesByComponent[props.component], ({ name }) => (
+      {_.map(anatomy, ({ name }) => (
         <li key={name}>{name}</li>
       ))}
     </ul>
   )
 }
 
-// const AnatomyArea = ({ name }) => {
-//   return (
-//     <div
-//       style={{
-//         padding: '8px',
-//         background: 'rgba(255,255,255,0.5)',
-//         gridArea: name,
-//       }}
-//     >
-//       {name}
-//     </div>
-//   )
-// }
+Anatomy.propTypes = {
+  component: PropTypes.string,
+}
 
 export default Anatomy
