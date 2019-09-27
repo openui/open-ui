@@ -14,6 +14,7 @@ const Navigation = ({ style }) => (
                 menu
                 name
                 path
+                researchFor
               }
             }
           }
@@ -23,7 +24,9 @@ const Navigation = ({ style }) => (
     render={data => {
       // get all frontmatter objects with a menu defined
       const [menuNodes, topLevelNodes] = _.partition(
-        _.map(data.allMdx.edges, 'node.frontmatter').filter(({ name }) => !!name),
+        _.map(data.allMdx.edges, 'node.frontmatter').filter(
+          ({ name, researchFor }) => !!name && !researchFor,
+        ),
         'menu',
       )
 
