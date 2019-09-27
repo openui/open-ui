@@ -90,14 +90,15 @@
       "category": "Component Blueprints",
       "description:": "A carousel allows multiple pieces of featured content to occupy an allocated amount of space.",
       "anatomy": [
-        { "name": "root", "implicit": true },
-        { "name": "autoplay" },
-        { "name": "indicators" },
-        { "name": "previous panel button" },
-        { "name": "next panel button" },
+        { "name": "root", "implicit": true, "openUIName": "root" },
+        { "name": "autoplay", "openUIName": "rotation control" },
+        { "name": "indicators", "openUIName": "slide picker controls" },
+        { "name": "previous panel button", "openUIName": "previous slide control" },
+        { "name": "next panel button", "openUIName": "next slide control" },
         {
           "name": "stage",
-          "description": "Each stage can have image and content. The content can have title and description."
+          "description": "Each stage can have image and content. The content can have title and description.",
+          "openUIName": "slide"
         }
       ],
       "concepts": [
@@ -117,11 +118,13 @@
         },
         {
           "name": "hasAutoplay",
+          "openUIName": "Show/Hide autoplay controls [Name needed]",
           "description": "Boolean showing whether the autoplay button is available or not",
           "image": "lighting-carousel-hasAutoplay.png"
         },
         {
           "name": "hasPreviousNextPanelNavigation",
+          "openUIName": "Show/Hide navigation [Name needed]",
           "description": "Boolean for displaying the navigation indicators (left/right arrows) of the carousel",
           "image": "lighting-carousel-hasPreviousNextPanelNavigation.png"
         },
