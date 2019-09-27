@@ -6,10 +6,10 @@ path: /components/carousel-marija
 
 import _ from 'lodash'
 import Anatomy from '../components/anatomy'
+import AnatomyGrid from '../components/anatomy-grid'
 import Concepts from '../components/concepts'
 import ComponentCoverage from '../components/component-coverage'
 import ConceptCoverage from '../components/concept-coverage'
-import CarouselAnatomy from '../components/carousel-anatomy'
 import Image from '../components/image'
 import { conceptsByComponent, getImagesForComponent } from '../sources'
 
@@ -19,7 +19,15 @@ import { conceptsByComponent, getImagesForComponent } from '../sources'
 
 ## Anatomy
 
-<CarouselAnatomy />
+<AnatomyGrid
+  gridTemplate={`
+    ".    slide    slide  slide  slide  .   " 80px
+    "prev slide    slide  slide  slide  next" 60px
+    ".    slide    slide  slide  slide  .   " 80px
+    ".    rotation picker picker picker .   " 60px /
+     60px 60px     1fr    1fr    80px   60px
+  `}
+/>
 
 - slide - <small style={{ opacity: 0.75 }}>A single content container within a set of content containers that hold the content to be presented by the carousel.</small>
 - rotation control - <small style={{ opacity: 0.75 }}>An interactive element that stops and starts automatic slide rotation.</small>
