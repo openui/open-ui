@@ -65,7 +65,7 @@ Part.propTypes = {
   children: PropTypes.string.isRequired,
 }
 
-const Anatomy = ({ gridTemplate }) => {
+const Anatomy = ({ gridTemplate, areasDescriptions }) => {
   const gridAreas = getOrderedGridAreas(gridTemplate)
 
   return (
@@ -91,9 +91,17 @@ const Anatomy = ({ gridTemplate }) => {
       </div>
 
       {gridAreas.length > 0 && (
-        <ol style={{ width: '500px' }}>
+        <ol>
           {gridAreas.map(name => (
-            <li key={name}>{name}</li>
+            <li key={name}>
+              {name}
+              {areasDescriptions && areasDescriptions[name] && (
+                <>
+                  {' - '}
+                  <small style={{ opacity: 0.75 }}>{areasDescriptions[name]}</small>
+                </>
+              )}
+            </li>
           ))}
         </ol>
       )}
