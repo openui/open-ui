@@ -16,6 +16,19 @@ import ComponentCoverage from '../components/component-coverage'
 
 <Anatomy component="Button" />
 
+## Accessibility
+
+- Use a touch target area of `44px` by `44px`
+- For multiple buttons provided on the page that perform the same function, one of the targets should be `44px` by `44px`.
+- Buttons should get activated using `Enter` key as well as `SPACE` key.
+- For custom buttons made using `<div>`, `<span>`, `<svg>`or `<img>`,
+  - `role="button"` must be applied.
+  - Tabindex property should be set to "0", so that it could get tab focus.
+  - When secondary action is present, use the `aria-describedby` property.
+  - Provide tooltips for button icons that don’t have a visible label or hint text about the event it triggers.
+  - Provide an accessible label using `aria-label`, and make sure the accessible label string starts with the visible label string
+- Con
+
 ## Concepts
 
 <Concepts component="Button" />
