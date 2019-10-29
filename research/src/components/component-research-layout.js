@@ -13,7 +13,8 @@ const ComponentResearchLayout = ({ children, frontmatter }) => {
           marginBottom: '8px',
         }}
       >
-        <h1 style={{ margin: 0, borderBottom: 'unset' }}>{frontmatter.name}</h1>
+        <h1 style={{ margin: 0, borderBottom: 'unset' }}>{frontmatter.name} </h1>
+        <span>📚 Research</span>
         <Link to={frontmatter.researchFor} style={{ color: 'blue' }}>
           Curated Page
         </Link>
