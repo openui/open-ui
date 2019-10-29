@@ -27,7 +27,7 @@ const Header = ({ siteTitle, githubURL }) => (
         <Logo siteTitle={siteTitle} />
       </span>
 
-      <a href={githubURL} target="_blank" rel="noreferrer noopener">
+      <a href={githubURL} target="_blank" rel="noreferrer noopener" style={{ color: 'inherit' }}>
         <FontAwesomeIcon style={{ marginRight: '0.2em' }} icon={faGithub} /> GitHub
       </a>
     </div>

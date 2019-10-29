@@ -47,6 +47,7 @@ const Navigation = ({ style }) => (
               display: 'block',
               padding: '0.25em 1em 0.25em 0.5em',
               margin: 0,
+              color: 'inherit',
               borderLeft: '2px solid transparent',
               borderRadius: '2px',
               whiteSpace: 'nowrap',

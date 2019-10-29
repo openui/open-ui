@@ -31,7 +31,7 @@ const typography = new Typography({
   overrideThemeStyles: ({ rhythm }, options, styles) => {
     return {
       a: {
-        color: 'inherit',
+        color: '#007a3d',
         textDecoration: 'none',
       },
 
