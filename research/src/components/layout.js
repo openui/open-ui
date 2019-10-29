@@ -4,17 +4,17 @@ import { StaticQuery, graphql } from 'gatsby'
 
 import Header from './header'
 import Navigation from './navigation'
-import ResearchCuratedLayout from './researchCuratedLayout'
-import ResearchSourceLayout from './researchSourceLayout'
+import ComponentCuratedLayout from './component-curated-layout'
+import ComponentResearchLayout from './component-research-layout'
 
 const Layout = ({ children, pageContext }) => {
   const { frontmatter } = pageContext || {}
 
   const ContentWrapper =
     frontmatter && frontmatter.research
-      ? ResearchCuratedLayout
+      ? ComponentCuratedLayout
       : frontmatter && frontmatter.researchFor
-      ? ResearchSourceLayout
+      ? ComponentResearchLayout
       : ({ children }) => <>{children}</>
 
   return (

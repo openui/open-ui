@@ -16,7 +16,7 @@ const ResearchCuratedLayout = ({ children, frontmatter }) => {
         <h1 style={{ margin: 0, borderBottom: 'unset' }}>{frontmatter.name}</h1>
         {process.env.NODE_ENV !== `production` && (
           <Link to={frontmatter.research} style={{ color: 'blue' }}>
-            Research data
+            Research Page
           </Link>
         )}
       </div>

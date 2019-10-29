@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'gatsby'
 
-const ResearchSourceLayout = ({ children, frontmatter }) => {
+const ComponentResearchLayout = ({ children, frontmatter }) => {
   return (
     <>
       <div
@@ -15,7 +15,7 @@ const ResearchSourceLayout = ({ children, frontmatter }) => {
       >
         <h1 style={{ margin: 0, borderBottom: 'unset' }}>{frontmatter.name}</h1>
         <Link to={frontmatter.researchFor} style={{ color: 'blue' }}>
-          Curated data
+          Curated Page
         </Link>
       </div>
       {children}
@@ -23,4 +23,4 @@ const ResearchSourceLayout = ({ children, frontmatter }) => {
   )
 }
 
-export default ResearchSourceLayout
+export default ComponentResearchLayout
