@@ -12,7 +12,6 @@ import ComponentResearchLayout from './component-research-layout'
 
 const components = {
   pre: props => {
-    console.log(props)
     // get the code content from the compiled `pre > code`
     const code = props.children
     const exampleCode = code.props.children
