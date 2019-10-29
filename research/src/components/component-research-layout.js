@@ -4,21 +4,13 @@ import { Link } from 'gatsby'
 const ComponentResearchLayout = ({ children, frontmatter }) => {
   return (
     <>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid rgba(0, 0, 0, .2)',
-          marginBottom: '8px',
-        }}
-      >
-        <h1 style={{ margin: 0, borderBottom: 'unset' }}>{frontmatter.name} </h1>
-        <span>📚 Research</span>
-        <Link to={frontmatter.researchFor} style={{ color: 'blue' }}>
+      <h1 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {frontmatter.name}
+        <span style={{ fontSize: '1rem' }}>📚 Research</span>
+        <Link style={{ fontSize: '1rem' }} to={frontmatter.researchFor}>
           Curated Page
         </Link>
-      </div>
+      </h1>
       {children}
     </>
   )

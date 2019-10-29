@@ -4,22 +4,14 @@ import { Link } from 'gatsby'
 const ResearchCuratedLayout = ({ children, frontmatter }) => {
   return (
     <>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid rgba(0, 0, 0, .2)',
-          marginBottom: '8px',
-        }}
-      >
-        <h1 style={{ margin: 0, borderBottom: 'unset' }}>{frontmatter.name}</h1>
+      <h1 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {frontmatter.name}
         {process.env.NODE_ENV !== `production` && (
-          <Link to={frontmatter.research} style={{ color: 'blue' }}>
+          <Link style={{ fontSize: '1rem', float: 'right ' }} to={frontmatter.research}>
             Research Page
           </Link>
         )}
-      </div>
+      </h1>
       {children}
     </>
   )
