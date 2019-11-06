@@ -8,37 +8,35 @@ research: /components/select.research
 import Image from '../components/image'
 import SelectAnatomy from '../components/select-anatomy'
 
-## Context
-
-Per a [recent survey of over 1000 developers](http://gwhitworth.com/surveys/controls-components/),
-`<select>` is the most re-created form control on the web today. While there are
-[many reasons](https://github.com/WICG/open-ui/blob/master/platform/select/investigations/use-cases.md) one might
-re-create a dropdown menu, the fact that `<select>` cannot be consistently styled cross-browser is the most prominent.
-Quoting [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) (emphasis added):
-
-> **The `<select>` element is notoriously difficult to style productively with CSS**. You can affect certain aspects
-> like any element — for example, manipulating the box model, the displayed font, etc., and you can use the appearance
-> property to remove the default system appearance.
->
-> However, **these properties don't produce a consistent result across browsers**, and it is hard to do things like
-> line different types of form element up with one another in a column. **The `<select>` element's internal structure
-> is complex, and hard to control**. **If you want to get full control, you should consider using a library** with good
-> facilities for styling form widgets (such as jQuery UI), **or try rolling your own dropdown menu** using non-semantic
-> elements, JavaScript, and WAI-ARIA to provide semantics.
-
-Consequently, the web is now rife with custom dropdowns, many of which are not accessible (i.e. lacking support for
-AT, keyboard input, and high contrast), and that often provide a poor user experience. It must be emphasized that the
-limitations of `<select>` are not just a problem for developers—they are just as much a problem for users.
-
-To address these issues, we must standardize on a new `<select>`—one that developers can style and customize to their
-needs, with accessibility and compatibility built in. A specification for such a control is proposed below.
-Whether it's wanting to add an image to an option, wanting to allow the user to search the list of options, or even
-something as seemingly trivial as wanting to change the selected option's background color—never again should a developer have
-to rebuild the entire `<select>` from scratch for a basic UI or UX change.
+The `<select>` element is a control that allows the user to select from a menu of potential options.
 
 ## Anatomy
 
+### Diagram
+
 <SelectAnatomy />
+
+### Part Definitions
+
+### Events
+
+- `::host` Listening for `toggle-pop-up` event to hide/show `::part-pop-up`
+
+- `::part-button` Listens to `click` event and dispatches `toggle-pop-up` event
+
+- `::part-button` Listening for `option-change` event to updateselected value shown
+
+- `::part-pop-up` Listening for `option-change` event to dispatch `toggle-pop-up` event
+
+- `::part-button` Dispatches custom event `split-button-clicked`
+
+## Accessibility
+
+### Keyboard
+
+### Assistive Technology
+
+### Forced Colors
 
 ## States / Properties
 
@@ -90,3 +88,9 @@ to rebuild the entire `<select>` from scratch for a basic UI or UX change.
 - **disabled** (_bool_): Prevents the user from selecting any options in this option group. Defaults to false.
 
 - **label** (_slot_): The HTML content of the option group.
+
+## Resources
+
+[Investigation of Custom Select Control Patterns](https://github.com/WICG/open-ui/blob/master/platform/select/investigations/use-cases.md)
+
+[Blog Post on Built-in Form Controls With Survey Data](http://www.gwhitworth.com/blog/2019/07/form-controls-components/)
