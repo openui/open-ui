@@ -8,7 +8,7 @@ research: /components/select.research
 import Image from '../components/image'
 import SelectAnatomy from '../components/select-anatomy'
 
-The `<select>` element is a control that allows the user to select from a menu of potential options.
+The `<select>` element is a control that allows the user to select from a set of potential options.
 
 ## Anatomy
 
@@ -17,6 +17,12 @@ The `<select>` element is a control that allows the user to select from a menu o
 <SelectAnatomy />
 
 ### Part Definitions
+
+`::host` — Root element that contains the button and the pop-up.
+
+`::part-button` — An interactive element that toggles the appearance of the pop-up. This element has a tab stop.
+
+`::part-pop-up` — An interactive element containing the set of options the user can select from.
 
 ### Events
 
@@ -34,9 +40,28 @@ The `<select>` element is a control that allows the user to select from a menu o
 
 ### Keyboard
 
+Keyboard users can operate the `<select>` as follows:
+
+- Focus on the `<select>` element using the `Tab` key (there is a tab stop on the button). The control can be
+  focused by default by setting the `autofocus` attribute.
+- Having focus, but with the pop-up still closed, users can:
+  - Change the selection to the next option using the `Down` arrow
+  - Change the selection to the previous option using the `Up` arrow
+  - Change the selection to the first option starting with a certain sequence by typing that sequence
+  - Cycle the selection through options starting with a certain letter by continually typing that letter
+- Having focus, the user can open the popup using the `Enter` key or the `Space` key. The popup can be dismissed using
+  the `Enter` key or the `Esc` key.
+- Having focus and with the pop-up open, the user can select options in the same manner as above. As the user traverses
+  the options, the currently-selected option is always visible and highlighted, with the menu scrolling as necessary.
+
 ### Assistive Technology
 
+Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
+[HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
+
 ### Forced Colors
+
+Placeholder for now, dependent on standardization on parts definitions.
 
 ## States / Properties
 
@@ -66,11 +91,18 @@ The `<select>` element is a control that allows the user to select from a menu o
 
 - **autofocus** (_bool_): Get focus by default.
 
+- **autocomplete** (_string_): Provides a hint for the user agent's autocomplete feature.
+
 - **disabled** (_bool_): Prevents the user from interacting with the control. Defaults to false.
 
-- **name** (_string_): Specify the name of the control.
+- **form** (_string_): Associates the element with a form in the document whose `id` is this value.
 
-- **required** (_bool_): Indicates that an option must be selected.
+- **name** (_string_): Specify the name of the control for purposes of form submission.
+
+- **required** (_bool_): Indicates that an option with a non-empty string value must be selected.
+
+- **size** (_number_): If the control is displayed inset (e.g. in `multiple` mode), specify the number of options
+  that should be visible.
 
 ### &ltoption&gt
 
@@ -79,7 +111,7 @@ The `<select>` element is a control that allows the user to select from a menu o
 - **selected** (_bool_): Indicates that this option is initially selected (overrides the default of the
   first option being initially selected).
 
-- **label** (_slot_): The HTML content of the option.
+- **label** (_string_): Label indicating the meaning of the option.
 
 - **value** (_string_): The option's associated value (e.g. to be submitted with a form).
 
@@ -87,10 +119,14 @@ The `<select>` element is a control that allows the user to select from a menu o
 
 - **disabled** (_bool_): Prevents the user from selecting any options in this option group. Defaults to false.
 
-- **label** (_slot_): The HTML content of the option group.
+- **label** (_string_): Label for the group of options.
 
 ## Resources
 
 [Investigation of Custom Select Control Patterns](https://github.com/WICG/open-ui/blob/master/platform/select/investigations/use-cases.md)
 
 [Blog Post on Built-in Form Controls With Survey Data](http://www.gwhitworth.com/blog/2019/07/form-controls-components/)
+
+[MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
+
+[WHATWG Living Standard on &ltSelect&gt](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)
