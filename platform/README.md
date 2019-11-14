@@ -25,7 +25,7 @@ for the native components and controls that the platform delivers to be heavily 
 * Accessibilty, focus and other foundational items work as expected
 
 # Controls to standardize (initial thinking)
-* `<select>` || `<dropdown>` ( [Investigation](/select/overview.md) )
+* `<select>` || `<dropdown>` ( [Investigation](/platform/select/overview.md) )
 * `<file>` (modern replacement for input type="file")
 * `<std-switch>` (proposal from Google is [here](https://github.com/tkent-google/std-switch))
 
