@@ -11,7 +11,33 @@
 
 ## Visual examples
 
-> Provide, if possible, visual examples of the component being built.
+> Provide, if possible, visual examples of the component being built, to provide an idea of implementations.
+
+## DOM hierarchy/structure
+
+> Define the recommended DOM shape to represent the component, and how important attributes (aria attributes especially) are applied to the various parts. In cases where a component nests other components, ideally, you expand the full dom structure to understand both the expectation and if there are shortcommings in the child components' customizability.
+>
+> Example:
+>
+> ```html
+> <div class="root">
+>   <div class="rail"></div>
+>
+>   <div class="mark">
+>     <label class="markLabel" />
+>   </div>
+>   <div class="track" />
+>   <div
+>     class="thumb"
+>     tabindex="0"
+>     role="slider"
+>     aria-valuenow="0"
+>     aria-valuemin="0"
+>     aria-valuemax="10"
+>   />
+>   <input name="{name}" type="hidden" value="0" />
+> </div>
+> ```
 
 ## Component anatomy
 
@@ -39,32 +65,6 @@
 > | `className`    | `string`                                     | Allows the author to add a class name to the root element.                                 |
 > | `defaultValue` | `number` \| `number[]`                       | Provides the uncontrolled default value of the component, mutually exclusive with `value`. |
 > | `disabled`     | `boolean`                                    | Specifies whether a component should be disabled.                                          |  |
-
-## DOM hierarchy/structure
-
-> Define the recommended DOM shape to represent the component, and how important attributes (aria attributes especially) are applied to the various parts. In cases where a component nests other components, ideally, you expand the full dom structure to understand both the expectation and if there are shortcommings in the child components' customizability.
->
-> Example:
->
-> ```html
-> <div class="root">
->   <div class="rail"></div>
->
->   <div class="mark">
->     <label class="markLabel" />
->   </div>
->   <div class="track" />
->   <div
->     class="thumb"
->     tabindex="0"
->     role="{ComponentName}"
->     aria-valuenow="0"
->     aria-valuemin="0"
->     aria-valuemax="10"
->   />
->   <input name="{name}" type="hidden" value="0" />
-> </div>
-> ```
 
 ## Behaviors
 
@@ -136,86 +136,6 @@
 > Consider which props, mapped to attribute values, must be provided for the user to make the component accessible. Often props which require localization or calculating a value must be provided by the user.
 >
 > For React props, consider using `ariaLabel` and `ariaLabelledBy`, rather than the natural kebab-cased variants (`aria-label`) so that they can be provided without destroying type safety.
-
-## Themability and customization
-
-> Components should be built to withstand multiple aesthetic looks. This ensures customizability and reuse in the long term.
->
-> At minimum, each component should consider the following theming requirements: light mode, dark mode, high contrast light and high contrast dark.
->
-> If applicable, include some screenshots of themed variants of the component to get an idea of what is to be achieved through customization.
-
-### Class names
-
-> Components should include a class name contract to achieve maximum reusability. The contract should include:
->
-> - A classname per anatomy (Examples: `root`, `rail`, `thumb`)
-> - A classname per state/variant attached to the root in applicable conditions (Examples: `rootDisabled`, `rootSelected`)
->
-> Example:
->
-> | Name           | Description                             |
-> | -------------- | --------------------------------------- |
-> | `root`         | Root slot class.                        |
-> | `rail`         | Rail slot class.                        |
-> | `thumb`        | Thumb slot class.                       |
-> | `rootDisabled` | Applied when the component is disabled. |
-> | `rootSelected` | Applied when the component is selected. |
-
-### Component design tokens
-
-> Assuming the Fluent UI styling system, a component's styling may reference design tokens.
->
-> Tokens represent the general look and feel of the various visual slots. Tokens feed values into the styling during applicable conditions. For example, `railBackgroundHovered` would apply to the `rail` background when the mouse cursor is hovered over the component.
->
-> Tokens use a camelCased name following this format:
-> `{slot (or none for root)}{property}{state (or none for default)}`. Example: `thumbSizeHovered`.
->
-> Common property names: `size`, `background`, `color`, `borderRadius`
->
-> Common states: `hovered`, `pressed`, `focused`, `checked`, `checkedHovered`, `disabled`
->
-> Example:
->
-> | Name                     | Considerations                                            |
-> | ------------------------ | --------------------------------------------------------- |
-> | `background`             | Background on the root element in the idle enabled state. |
-> | `railBorderColor`        | Border color of the rail.                                 |
-> | `railBorderRadius`       | Rail border radius.                                       |
-> | `railBorderWidth`        |                                                           |
-> | `railBackground`         | Rail background color.                                    |
-> | `railBackgroundDisabled` | Rail background color when disabled.                      |
-
-### Considerations for different screen sizes
-
-> Consider how the component will behave in the context of phone/tablet/desktop sizes. Would different sizes cause the component look or behave differently?
-
-## Use cases
-
-> If applicable, call out specific use cases for the component that are exceptional.
->
-> Example:
->
-> The `Slider` component may be used within a `Form` component by providing the `name` prop to indicate the name of the input element to be fed into the form action.
-
-## Migration policy
-
-> If there is a previous version (or multiple versions) of the component, list the plan of migration.
->
-> There are 4 approaches to API surface changes to consider. It is assumed that all changes will be listed for the component in release notes. Additionally, we can consider if these apply:
->
-> 1. Adjust the existing version in a non-breaking way to pull the legacy surface closer to the new one.
-> 2. Provide both old/new APIs in new version. (Not recommended, but may be necessary with high traffic scenarios.)
-> 3. Create a codemod to upgrade existing partner code to reflect the new API surface.
-> 4. Create a shim component to shim the legacy API in to the new one.
->
-> List each major change and suggest one or more approaches to adapt the new component. Example:
->
-> | Change                                         | Strategy |
-> | ---------------------------------------------- | -------- |
-> | Rename `onChanged(ev)` to `onChange(ev, data)` | Code mod |
-> | Replace `originFromZero` with `origin`         | Code mod |
-> | Remove `styles`                                | Shim     |
 
 ## Implementation research
 
