@@ -14,7 +14,26 @@ import ComponentCoverage from '../components/component-coverage'
 
 ## Anatomy
 
-<Anatomy component="Carousel" />
+<AnatomyGrid
+  gridTemplate={`
+    ".    slide    slide  slide  slide  .   " 80px
+    "prev slide    slide  slide  slide  next" 60px
+    ".    slide    slide  slide  slide  .   " 80px
+    ".    rotation picker picker picker .   " 60px /
+     60px 60px     1fr    1fr    80px   60px
+  `}
+  areasDescriptions={{
+    slide:
+      'A single content container within a set of content containers that hold the content to be presented by the carousel.',
+    prev:
+      'An interactive element, often styled as an arrow, that displays the previous slide in the rotation sequence.',
+    next:
+      'An interactive element, often styled as an arrow, that displays the next slide in the rotation sequence.',
+    rotation: 'An interactive element that stops and starts automatic slide rotation.',
+    picker:
+      'A group of elements, often styled as small dots, that enable the user to pick a specific slide in the rotation sequence to display.',
+  }}
+/>
 
 ## Concepts
 
