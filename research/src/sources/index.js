@@ -93,3 +93,13 @@ export const getImagesForComponentConcept = (componentOpenUIName, conceptOpenUIN
     _.map(_.get(conceptsByComponent, [componentOpenUIName, conceptOpenUIName]), 'image'),
   )
 }
+
+// Images for component
+export const getImagesForComponent = componentOpenUIName => {
+  const images = []
+  const arr = _.map(_.get(conceptsByComponent, componentOpenUIName), val =>
+    _.map(val, v => v.image),
+  )
+  arr.forEach(a => a.forEach(i => images.push(i)))
+  return images
+}

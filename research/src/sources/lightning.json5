@@ -87,7 +87,61 @@
     {
       "name": "Carousel",
       "url": "https://www.lightningdesignsystem.com/components/carousel",
-      "category": "Component Blueprints"
+      "category": "Component Blueprints",
+      "description:": "A carousel allows multiple pieces of featured content to occupy an allocated amount of space.",
+      "anatomy": [
+        { "name": "root", "implicit": true, "openUIName": "root" },
+        { "name": "autoplay", "openUIName": "rotation control" },
+        { "name": "indicators", "openUIName": "slide picker controls" },
+        { "name": "previous panel button", "openUIName": "previous slide control" },
+        { "name": "next panel button", "openUIName": "next slide control" },
+        {
+          "name": "stage",
+          "description": "Each stage can have image and content. The content can have title and description.",
+          "openUIName": "slide"
+        }
+      ],
+      "concepts": [
+        {
+          "name": "default",
+          "description": "",
+          "image": "lighting-carousel-basic.png"
+        },
+        {
+          "name": "autoplayInterval",
+          "description": "Interval for the autoplay iteration"
+        },
+        {
+          "name": "autoplayOn",
+          "openUIName": "autoplay",
+          "description": "Boolean that dictates whether autoplay is active or not."
+        },
+        {
+          "name": "hasAutoplay",
+          "openUIName": "Show/Hide autoplay controls [Name needed]",
+          "description": "Boolean showing whether the autoplay button is available or not",
+          "image": "lighting-carousel-hasAutoplay.png"
+        },
+        {
+          "name": "hasPreviousNextPanelNavigation",
+          "openUIName": "Show/Hide navigation [Name needed]",
+          "description": "Boolean for displaying the navigation indicators (left/right arrows) of the carousel",
+          "image": "lighting-carousel-hasPreviousNextPanelNavigation.png"
+        },
+        {
+          "name": "infinite",
+          "description": "Boolean for infinite loop navigation. Note: if not true autoplay will stop automatically at the last panel."
+        },
+        {
+          "name": "items",
+          "description": "Array of item objects used by the default carousel item renderer. Each object can contain: id: The id of the carousel item.; heading: Primary string that will be used as the heading; description: Secondary string that is used to describe the item; buttonLabel: If assigned a call to button action will be rendered with this text, if unassigned no button is rendered; imageAssistiveText: Image alt text, if not present heading will be used instead; href: Used for item link, if not provided 'javascript:void(0);' is used instead; src: Item image src value"
+        },
+        {
+          "name": "itemsPerPanel",
+          "description": "Number of items to be displayed at a time in the carousel",
+          "image": "lighting-carousel-itemsPerPanel.png"
+        }
+      ]
     },
     {
       "name": "Chat",
