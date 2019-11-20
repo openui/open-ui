@@ -5,10 +5,10 @@ const SelectAnatomy = () => {
   return (
     <host>
       <part name="button">
-        <slot>Default = Split Button Component</slot>
+        <slot>{'Default = <button>${value}<span part="icon-arrow"></span></button>'}</slot>
       </part>
       <part name="pop-up">
-        <slot>Default = &lt;option&gt;&lt;/option&gt;</slot>
+        <slot>{'Default = <option></option>'}</slot>
       </part>
     </host>
   )
