@@ -599,169 +599,103 @@
     },
     {
       "name": "Select",
-      "openUIName": "Dropdown",
       "url": "https://ant.design/components/select",
       "category": "Data Entry",
       "description": "Select component to select value from options. When To Use: A dropdown menu for displaying choices - an elegant alternative to the native <select> element. Utilizing Radio is recommended when there are fewer total options (less than 5).",
       "concepts": [
         {
-          "name": "allowClear",
-          "description": "Show clear button."
+          "name": "single",
+          "image": "antd-select-single.png"
         },
         {
-          "name": "autoClearSearchValue",
-          "description": "Whether the current search will be cleared on selecting an item. Only applies when mode is set to multiple or tags."
-        },
-        {
-          "name": "autoFocus",
-          "description": "Get focus by default"
-        },
-        {
-          "name": "defaultActiveFirstOption",
-          "description": "Whether active first option by default"
-        },
-        {
-          "name": "defaultValue",
-          "description": "Initial selected option."
-        },
-        {
-          "name": "number",
-          "description": ""
-        },
-        {
-          "name": "LabeledValue",
-          "description": ""
+          "name": "multiple",
+          "image": "antd-select-multiple.png"
         },
         {
           "name": "disabled",
-          "description": "Whether disabled select"
+          "image": "antd-select-disabled.png"
         },
         {
-          "name": "dropdownClassName",
-          "description": "className of dropdown menu"
-        },
-        {
-          "name": "dropdownMatchSelectWidth",
-          "description": "Whether dropdown's width is same with select."
-        },
-        {
-          "name": "dropdownRender",
-          "description": "Customize dropdown content"
-        },
-        {
-          "name": "dropdownStyle",
-          "description": "style of dropdown menu"
-        },
-        {
-          "name": "filterOption",
-          "description": "If true, filter options by input, if function, filter options against it. The function will receive two arguments, inputValue and option, if the function returns true, the option will be included in the filtered set; Otherwise, it will be excluded."
-        },
-        {
-          "name": "firstActiveValue",
-          "description": "Value of action option by default"
-        },
-        {
-          "name": "getPopupContainer",
-          "description": "Parent Node which the selector should be rendered to. Default to body. When position issues happen, try to modify it into scrollable content and position it relative."
-        },
-        {
-          "name": "labelInValue",
-          "description": "whether to embed label in value, turn the format of value from string to {key: string, label: ReactNode}"
-        },
-        {
-          "name": "maxTagCount",
-          "description": "Max tag count to show"
-        },
-        {
-          "name": "maxTagTextLength",
-          "description": "Max tag count to show"
-        },
-        {
-          "name": "maxTagPlaceholder",
-          "description": "Placeholder for not showing tags"
-        },
-        {
-          "name": "mode",
-          "description": "Set mode of Select 'default' | 'multiple' | 'tags'	'default'"
-        },
-        {
-          "name": "notFoundContent",
-          "description": "Specify content to show when no result matches."
-        },
-        {
-          "name": "optionFilterProp",
-          "description": "Which prop value of option will be used for filter if filterOption is true"
-        },
-        {
-          "name": "optionLabelProp",
-          "description": "Which prop value of option will render as content of select. Example	string	value for combobox, children for other modes"
-        },
-        {
-          "name": "placeholder",
-          "description": "Placeholder of select"
-        },
-        {
-          "name": "showArrow",
-          "description": "Whether to show the drop-down arrow"
+          "name": "loading",
+          "image": "antd-select-loading.gif"
         },
         {
           "name": "showSearch",
-          "description": "Whether show search input in single mode."
+          "openUIName": "searchable",
+          "image": "antd-select-searchable.png"
         },
         {
-          "name": "size",
-          "description": "Size of Select input."
+          "name": "small",
+          "category": "size",
+          "image": "antd-select-size-small.png"
         },
         {
-          "name": "suffixIcon",
-          "description": "The custom suffix icon"
+          "name": "default",
+          "category": "size",
+          "image": "antd-select-size-default.png"
         },
         {
-          "name": "removeIcon",
-          "description": "The custom remove icon"
+          "name": "large",
+          "category": "size",
+          "image": "antd-select-size-large.png"
         },
         {
-          "name": "clearIcon",
-          "description": "The custom clear icon"
+          "name": "allowClear",
+          "openUIName": "clearable",
+          "description": "Show clear button.",
+          "image": "antd-select-allowClear.png"
         },
         {
-          "name": "menuItemSelectedIcon",
-          "description": "The custom menuItemSelected icon with multiple options"
+          "name": "open",
+          "description": "Controlled open state of dropdown"
         },
         {
-          "name": "tokenSeparators",
-          "description": "Separator used to tokenize on tag/multiple mode"
+          "name": "defaultOpen",
+          "description": "Initial open state of dropdown"
         },
         {
           "name": "value",
           "description": "Current selected option."
         },
         {
-          "name": "number",
-          "description": ""
+          "name": "defaultValue",
+          "description": "Initial selected option."
         },
         {
-          "name": "LabeledValue",
-          "description": ""
+          "name": "placeholder",
+          "description": "Placeholder of select"
         },
         {
-          "name": "onBlur",
-          "description": "Called when blur"
+          "name": "autoFocus",
+          "description": "Get focus by default"
         },
         {
           "name": "onChange",
           "description": "Called when select an option or input value change, or value of input is changed in combobox mode"
         },
         {
+          "name": "onSelect",
+          "description": "Called when a option is selected, the params are option's value (or key) and option instance."
+        },
+        {
           "name": "onDeselect",
           "description": "Called when a option is deselected, param is the selected option's value. Only called for multiple or tags, effective in multiple or tags mode only."
+        },
+        {
+          "name": "onSearch",
+          "description": "Callback function that is fired when input changed."
         },
         {
           "name": "onFocus",
           "description": "Called when focus"
         },
         {
+          "name": "onBlur",
+          "description": "Called when focus"
+        },
+        {
           "name": "onInputKeyDown",
+          "openUIName": "onKeyDown",
           "description": "Called when key pressed"
         },
         {
@@ -777,28 +711,8 @@
           "description": "Called when dropdown scrolls"
         },
         {
-          "name": "onSearch",
-          "description": "Callback function that is fired when input changed."
-        },
-        {
-          "name": "onSelect",
-          "description": "Called when a option is selected, the params are option's value (or key) and option instance."
-        },
-        {
-          "name": "defaultOpen",
-          "description": "Initial open state of dropdown"
-        },
-        {
-          "name": "open",
-          "description": "Controlled open state of dropdown"
-        },
-        {
-          "name": "onDropdownVisibleChange",
-          "description": "Call when dropdown open"
-        },
-        {
-          "name": "loading",
-          "description": "indicate loading state"
+          "name": "dropdownMatchSelectWidth",
+          "description": "Whether dropdown's width is same with select."
         }
       ]
     },
