@@ -10,6 +10,7 @@ import fabric from './fabric.json5'
 import fast from './fast.json5'
 import lightning from './lightning.json5'
 import materialComponentsWeb from './materialComponentsWeb.json5'
+import primer from './primer.json5'
 import semantic from './semantic.json5'
 import stardust from './stardust.json5'
 import w3 from './w3.json5'
@@ -26,6 +27,7 @@ export const sources = [
   fast,
   lightning,
   materialComponentsWeb,
+  primer,
   semantic,
   stardust,
   w3,
@@ -92,4 +94,14 @@ export const getImagesForComponentConcept = (componentOpenUIName, conceptOpenUIN
   return _.compact(
     _.map(_.get(conceptsByComponent, [componentOpenUIName, conceptOpenUIName]), 'image'),
   )
+}
+
+// Images for component
+export const getImagesForComponent = componentOpenUIName => {
+  const images = []
+  const arr = _.map(_.get(conceptsByComponent, componentOpenUIName), val =>
+    _.map(val, v => v.image),
+  )
+  arr.forEach(a => a.forEach(i => images.push(i)))
+  return images
 }

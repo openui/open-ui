@@ -27,3 +27,9 @@ There are two pillars of focus here:
 
 These two will iterate in a cyclic collaboration to define and develop standardized UI.
 Refer to the resources in each effort for more information.
+
+## Contributing
+
+This repository is being used for work in the W3C Web Platform Incubator Community Group, governed by the [W3C Community License
+Agreement (CLA)](http://www.w3.org/community/about/agreements/cla/). To make substantive contributions,
+you must join the [WICG](https://www.w3.org/community/wicg/) prior to making a PR.
