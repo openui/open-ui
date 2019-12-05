@@ -1,0 +1,60 @@
+{
+  "$schema": "../schemas/design-system.schema.json5",
+  "lastUpdated": "2019-12-05",
+  "name": "Polaris",
+  "description": "Shopify’s design system",
+  "url": "https://polaris.shopify.com",
+  "by": "Shopify",
+  "components": [
+    {
+      "name": "Button",
+      "definition": "Buttons are used primarily for actions, such as “Add”, “Close”, “Cancel”, or “Save”. Plain buttons, which look similar to links, are used for less important or less commonly used actions, such as “view shipping settings”.",
+      "category": "Actions",
+      "url": "https://polaris.shopify.com/components/actions/button",
+      "concepts": [
+        {
+          "name": "basic",
+          "$comment": "Used most in the interface. Only use another style if a button requires more or less visual weight."
+        },
+        {
+          "name": "primary",
+          "$comment": "Use to highlight the most important actions in any experience. Don’t use more than one primary button in a section or screen to avoid overwhelming merchants."
+        },
+        {
+          "name": "destructive",
+          "$comment": "Use when the action will delete merchant data or be otherwise difficult to recover from. Destructive buttons should trigger a confirmation dialog before the action is completed. Be thoughtful about using destructive buttons because they can feel stressful for merchants."
+        },
+        {
+          "name": "outline",
+          "$comment": "Use against shaded or colorful backgrounds. An outline button will maintain the appropriate visual weight and won’t clash with the background color."
+        },
+        {
+          "name": "plain",
+          "$comment": "Use for less important or less commonly used actions since they’re less prominent. For example, plain buttons are used as actions in cards."
+        },
+        {
+          "name": "slim",
+          "type": "size",
+          "$comment": "Use when a table or list has a set of actions on each item to avoid making items taller than they need to be. Don’t use slim buttons for primary actions."
+        },
+        {
+          "name": "large",
+          "type": "size",
+          "$comment": "Use for the main call to action in empty states or for calls to action shown with large illustrations."
+        },
+        {
+          "name": "pressed",
+          "$comment": "Buttons are sometimes used as a toggle for other parts of the user interface."
+        },
+        {
+          "name": "disabled",
+          "$comment": "Use for actions that aren’t currently available. The surrounding interface should make it clear why the button is disabled and what needs to be done to enable it."
+        },
+        {
+          "name": "loading",
+          "$comment": "Use when a button has been pressed and the associated action is in progress."
+        }
+      ]
+    }
+  ]
+}

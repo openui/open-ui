@@ -10,6 +10,7 @@ import fabric from './fabric.json5'
 import fast from './fast.json5'
 import lightning from './lightning.json5'
 import materialComponentsWeb from './materialComponentsWeb.json5'
+import polaris from './polaris.json5'
 import primer from './primer.json5'
 import semantic from './semantic.json5'
 import stardust from './stardust.json5'
@@ -27,6 +28,7 @@ export const sources = [
   fast,
   lightning,
   materialComponentsWeb,
+  polaris,
   primer,
   semantic,
   stardust,
