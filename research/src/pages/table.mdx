@@ -1,21 +1,656 @@
 ---
-name: Table
 menu: Components
+name: Table
 path: /components/table
+research: /components/table.research
 ---
 
-import Anatomy from '../components/anatomy'
-import Concepts from '../components/concepts'
-import ComponentCoverage from '../components/component-coverage'
+import TableAnatomy from '../components/table-anatomy'
 
-# Table
+The Table component is a control that displays data to user in tabular form. Can be separated into two main types: static and dynamic tables or data grids.
 
-<ComponentCoverage component="Table" />
+Static -- tabular structure containing one or more rows that each contain one or more cells; it is not an interactive widget. Thus, its cells are not focusable or selectable. (per [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#table))
+
+Data grid -- tabular information that has column titles, row titles, or both and enables users to navigate interactive elements it contains using directional navigation keys. The grid pattern is particularly useful if the tabular information is editable or interactive (per [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#grid))
 
 ## Anatomy
 
-<Anatomy component="Table" />
+### Diagram
 
-## Concepts
+<TableAnatomy />
 
-<Concepts component="Table" />
+### Part Definitions
+
+`::table` — Root element that contains header (optional) and table rows
+
+`::tableHeader` — Container for table title
+
+`::tableTitle` — Text description of the table
+
+`::tableHeaderRow` — Container for table header elements
+
+`::tableRow` — Container for table cell elements
+
+`::tableHeaderCell` — Column header. May contain interactive elements and icons to represent sorting/filtering states
+
+`::tableCell` — Table cell data. May contain interactive elements
+
+`::tableFooter` — Container for table pagination element
+
+`::tablePagination` — Pagination control for multi-page data tables
+
+### Component attributes
+
+TBD
+
+## Accessibility
+
+### Keyboard
+
+Keybaord interactions are defined only for data grid type of Table component and can be used only after user has moved focus to the grid using `Tab` key.
+
+Keyboard users can operate the Table component as follows:
+
+- Navigate table cells using the following keys:
+  - `Right` arrow: Moves focus one cell to the right. If focus is on the right-most cell in the row, focus does not move.
+  - `Left` arrow: Moves focus one cell to the left. If focus is on the left-most cell in the row, focus does not move.
+  - `Down` arrow: Moves focus one cell down. If focus is on the bottom cell in the column, focus does not move.
+  - `Up` arrow: Moves focus one cell Up. If focus is on the top cell in the column, focus does not move.
+  - `Page Down` key: Moves focus down an author-determined number of rows, typically scrolling so the bottom row in the currently visible set of rows becomes one of the first visible rows. If focus is in the last row of the grid, focus does not move.
+  - `Page Up` key: Moves focus up an author-determined number of rows, typically scrolling so the top row in the currently visible set of rows becomes one of the last visible rows. If focus is in the first row of the grid, focus does not move.
+  - `Home` key: moves focus to the first cell in the row that contains focus.
+  - `End` key: moves focus to the last cell in the row that contains focus.
+  - `Control` + `Home` keys: moves focus to the first cell in the first row.
+  - `Control` + `End` keys: moves focus to the last cell in the last row.
+- Select table cells, rows or columns (if supported):
+- `Control` + `Space` keys: selects the column that contains the focus.
+- `Shift` + `Space` keys: Selects the row that contains the focus. If the grid includes a column with checkboxes for selecting rows, this key can serve as a shortcut for checking the box when focus is not on the checkbox.
+- `Control` + `A` keys: Selects all cells.
+- `Shift` key + `Right` arrow: Extends selection one cell to the right.
+- `Shift` key + `Left` arrow: Extends selection one cell to the left.
+- `Shift` key + `Down` arrow: Extends selection one cell down.
+- `Shift` key + `Up` arrow: Extends selection one cell up.
+
+### Assistive technology
+
+Static table implements the [table role](https://www.w3.org/TR/core-aam-1.1/#role-map-table) per the
+[HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
+
+Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-map-grid) per the
+[HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
+
+## States / Properties
+
+### &lttable&gt
+
+- **scrollable** (\_enum: none | vertical | horizontal | both): Controls whether the table content is scrollable and in what dimensions. Defaults to `none`
+
+- **stripped** (_bool_): Controls whether the table rows should be stripped. Defaults to false
+
+- **compact** (_bool_): Controls whether the table is displayed in compact mode. Defaults to false
+
+### &lttableRow&gt
+
+- **highlight** (_bool_): Controls whether the row should be highlighted (e.g. on hover). Defaults to false
+
+- **selected** (_bool_): Controls whether the row is selected. Defaults to false
+
+- **expanded** (_bool_): Controls whether the expandable row is opened. Defaults to false
+
+- **bordered** (_bool_): Controls whether the row is bordered. Defaults to true
+
+- **disabled** (_bool_): Controls whether can interact with a row and it's contents. Defaults to false
+
+### &lttableHeaderRow&gt
+
+- **fixed** (_bool_): Controls whether the header row is fixed, meaning that it always stays visible during scrolling. (`scrollable` must be set to `vertical` or `both` for the table). Defaults to false
+
+### &lttableHeaderCell&gt
+
+- **sorted** (_enum: auto | asc | desc_)): Controls whether the data is sorted by column in the selected order. Defaults to auto
+
+- **fixed** (_bool_): Controls whether the column is fixed, meaning that it always stays visible during horizontal scrolling. (`scrollable` must be set to `horizontal` or `both` for the table). Defaults to false
+
+- **resizable** (_bool_): Controls whether the column's width can be changed by users. Defaults to false
+
+- **onResize** (_function_): Callback function fired when the column is resized (`resizable` must be enabled).
+
+### &lttableCell&gt
+
+- **truncated** (_bool_): Controls whether the content of the cell is truncated
+
+- **bordered** (_bool_): Controls whether the the cell is bordered. Defaults to true
+
+- **colspan** (_number_): Specify if the cell should span across number of rows. Defaults to 1
+
+# Resources
+
+[WAI-ARIA `table` specification](https://www.w3.org/TR/wai-aria-practices/#table)
+
+[WAI-ARIA `grid` specification](https://www.w3.org/TR/wai-aria-practices/#grid)
+
+[WHATWG Living Standard on &lttable&gt](https://html.spec.whatwg.org/multipage/tables.html#the-table-element)
+
+# Implementation research
+
+| Framework   | Component                                                                                                                                             | Playground                                                                                           | HTML tag                      | Data ingestion                                                   |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------- |
+| Carbon      | [Data table](https://www.carbondesignsystem.com/components/data-table/code/)                                                                          | [Playground](https://codepen.io/team/carbon/full/jRWbZZ/)                                            | `<table>`                     | JSON object                                                      |
+| Bootstrap   | [Tables](https://getbootstrap.com/docs/4.0/content/tables/)                                                                                           | -                                                                                                    | `<table>`                     | -                                                                |
+| Salesforce  | [Data table](https://www.lightningdesignsystem.com/components/data-tables/), [tree-grid](https://www.lightningdesignsystem.com/components/tree-grid/) | [Playground](https://developer.salesforce.com/docs/component-library/tools/playground)               | `<table>`                     | -                                                                |
+| Material    | [Data table](https://material.io/develop/web/components/data-tables/)                                                                                 | [Demo](https://material-components.github.io/material-components-web-catalog/#/component/data-table) | `<table>`                     | -                                                                |
+| Fabric UI   | [Detail list](https://developer.microsoft.com/en-us/fabric#/controls/web/detailslist)                                                                 | [Playground](https://developer.microsoft.com/en-us/fabric#/controls/web/detailslist)                 | `<div role="grid">`           | -                                                                |
+| Atlaskit    | [Dynamic table](https://atlaskit.atlassian.com/packages/core/dynamic-table)                                                                           | [Playground](https://atlaskit.atlassian.com/packages/core/dynamic-table/example/stateful)            | `<table>`                     | -                                                                |
+| Ant         | [Table](https://ant.design/components/table/)                                                                                                         | [Playground](https://ant.design/components/table/)                                                   | `<table>`                     | JSON object, with custom render function defined at column level |
+| Auth0       | [Table](https://styleguide.auth0.com/components/tables)                                                                                               | -                                                                                                    | `<table>`                     | -                                                                |
+| Evergreen   | [Table](https://evergreen.segment.com/components/table/)                                                                                              | [Playground](https://codesandbox.io/s/evergreen-playground-component-fjbly)                          | `<div>`                       | -                                                                |
+| Semantic UI | [Table](https://semantic-ui.com/collections/table.html)                                                                                               | [Playground](https://jsfiddle.net/ca0rovs3/)                                                         | `<table>`                     | -                                                                |
+| Aria        | [Data grid](https://www.w3.org/TR/wai-aria-practices/examples/grid/dataGrids.html), [Table](https://www.w3.org/TR/wai-aria-practices/#table)          | -                                                                                                    | `<div role="grid">`,`<table>` | -                                                                |
+
+## Implementation examples
+
+### Carbon
+
+```typescript
+<DataTable
+  filterRows={function noRefCheck() {}}
+  headers={[
+    {
+      header: 'Name',
+      key: 'name',
+    },
+    {
+      header: 'Protocol',
+      key: 'protocol',
+    },
+    {
+      header: 'Port',
+      key: 'port',
+    },
+    {
+      header: 'Rule',
+      key: 'rule',
+    },
+    {
+      header: 'Attached Groups',
+      key: 'attached_groups',
+    },
+    {
+      header: 'Status',
+      key: 'status',
+    },
+  ]}
+  locale="en"
+  render={function noRefCheck() {}}
+  rows={[
+    {
+      attached_groups: 'Kevins VM Groups',
+      id: 'a',
+      name: 'Load Balancer 3',
+      port: 3000,
+      protocol: 'HTTP',
+      rule: 'Round robin',
+      status: 'Disabled',
+    },
+    {
+      attached_groups: 'Maureens VM Groups',
+      id: 'b',
+      name: 'Load Balancer 1',
+      port: 443,
+      protocol: 'HTTP',
+      rule: 'Round robin',
+      status: 'Starting',
+    },
+    {
+      attached_groups: 'Andrews VM Groups',
+      id: 'c',
+      name: 'Load Balancer 2',
+      port: 80,
+      protocol: 'HTTP',
+      rule: 'DNS delegation',
+      status: 'Active',
+    },
+    {
+      attached_groups: 'Marcs VM Groups',
+      id: 'd',
+      name: 'Load Balancer 6',
+      port: 3000,
+      protocol: 'HTTP',
+      rule: 'Round robin',
+      status: 'Disabled',
+    },
+    {
+      attached_groups: 'Mels VM Groups',
+      id: 'e',
+      name: 'Load Balancer 4',
+      port: 443,
+      protocol: 'HTTP',
+      rule: 'Round robin',
+      status: 'Starting',
+    },
+    {
+      attached_groups: 'Ronjas VM Groups',
+      id: 'f',
+      name: 'Load Balancer 5',
+      port: 80,
+      protocol: 'HTTP',
+      rule: 'DNS delegation',
+      status: 'Active',
+    },
+  ]}
+  size={null}
+  sortRow={function noRefCheck() {}}
+  translateWithId={function noRefCheck() {}}
+/>
+```
+
+### Fabric UI
+
+```typescript
+import * as React from 'react'
+import { TextField } from 'office-ui-fabric-react/lib/TextField'
+import {
+  DetailsList,
+  DetailsListLayoutMode,
+  Selection,
+  IColumn,
+} from 'office-ui-fabric-react/lib/DetailsList'
+import { MarqueeSelection } from 'office-ui-fabric-react/lib/MarqueeSelection'
+import { Fabric } from 'office-ui-fabric-react/lib/Fabric'
+import { mergeStyles } from 'office-ui-fabric-react/lib/Styling'
+
+const exampleChildClass = mergeStyles({
+  display: 'block',
+  marginBottom: '10px',
+})
+
+export interface IDetailsListBasicExampleItem {
+  key: number
+  name: string
+  value: number
+}
+
+export interface IDetailsListBasicExampleState {
+  items: IDetailsListBasicExampleItem[]
+  selectionDetails: {}
+}
+
+export class DetailsListBasicExample extends React.Component<{}, IDetailsListBasicExampleState> {
+  private _selection: Selection
+  private _allItems: IDetailsListBasicExampleItem[]
+  private _columns: IColumn[]
+
+  constructor(props: {}) {
+    super(props)
+
+    this._selection = new Selection({
+      onSelectionChanged: () => this.setState({ selectionDetails: this._getSelectionDetails() }),
+    })
+
+    // Populate with items for demos.
+    this._allItems = []
+    for (let i = 0; i < 200; i++) {
+      this._allItems.push({
+        key: i,
+        name: 'Item ' + i,
+        value: i,
+      })
+    }
+
+    this._columns = [
+      {
+        key: 'column1',
+        name: 'Name',
+        fieldName: 'name',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+      },
+      {
+        key: 'column2',
+        name: 'Value',
+        fieldName: 'value',
+        minWidth: 100,
+        maxWidth: 200,
+        isResizable: true,
+      },
+    ]
+
+    this.state = {
+      items: this._allItems,
+      selectionDetails: this._getSelectionDetails(),
+    }
+  }
+
+  public render(): JSX.Element {
+    const { items, selectionDetails } = this.state
+
+    return (
+      <Fabric>
+        <div className={exampleChildClass}>{selectionDetails}</div>
+        <TextField
+          className={exampleChildClass}
+          label="Filter by name:"
+          onChange={this._onFilter}
+          styles={{ root: { maxWidth: '300px' } }}
+        />
+        <MarqueeSelection selection={this._selection}>
+          <DetailsList
+            items={items}
+            columns={this._columns}
+            setKey="set"
+            layoutMode={DetailsListLayoutMode.justified}
+            selection={this._selection}
+            selectionPreservedOnEmptyClick={true}
+            ariaLabelForSelectionColumn="Toggle selection"
+            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+            checkButtonAriaLabel="Row checkbox"
+            onItemInvoked={this._onItemInvoked}
+          />
+        </MarqueeSelection>
+      </Fabric>
+    )
+  }
+
+  private _getSelectionDetails(): string {
+    const selectionCount = this._selection.getSelectedCount()
+
+    switch (selectionCount) {
+      case 0:
+        return 'No items selected'
+      case 1:
+        return (
+          '1 item selected: ' +
+          (this._selection.getSelection()[0] as IDetailsListBasicExampleItem).name
+        )
+      default:
+        return `${selectionCount} items selected`
+    }
+  }
+
+  private _onFilter = (
+    ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+    text: string,
+  ): void => {
+    this.setState({
+      items: text
+        ? this._allItems.filter(i => i.name.toLowerCase().indexOf(text) > -1)
+        : this._allItems,
+    })
+  }
+
+  private _onItemInvoked = (item: IDetailsListBasicExampleItem): void => {
+    alert(`Item invoked: ${item.name}`)
+  }
+}
+```
+
+### Atlaskit
+
+```typescript
+import React from 'react';
+import styled from 'styled-components';
+import DynamicTable from '@atlaskit/dynamic-table';
+import { caption, head, rows } from './content/sample-data';
+
+const Wrapper = styled.div`
+  min-width: 600px;
+`;
+
+export default class extends React.Component<{}, {}> {
+  render() {
+    return (
+      <Wrapper>
+        <DynamicTable
+          caption={caption}
+          head={head}
+          rows={rows}
+          rowsPerPage={10}
+          defaultPage={1}
+          loadingSpinnerSize="large"
+          isLoading={false}
+          isFixedSize
+          defaultSortKey="term"
+          defaultSortOrder="ASC"
+          onSort={() => console.log('onSort')}
+          onSetPage={() => console.log('onSetPage')}
+        />
+      </Wrapper>
+    );
+  }
+}
+
+where each rows element is
+{
+  "key": "row-0-George Washington",
+  "cells": [
+    {
+      "key": "GeorgeWashington",
+      "content": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "children": [
+            {
+              "key": null,
+              "ref": null,
+              "props": {
+                "children": {
+                  "type": {
+                    "displayName": "WithAnalyticsContext(WithAnalyticsEvents(mapProps(withPseudoState(Avatar))))"
+                  },
+                  "key": null,
+                  "ref": null,
+                  "props": {
+                    "name": "George Washington",
+                    "size": "medium",
+                    "src": "https://api.adorable.io/avatars/24/George%20Washington.png"
+                  },
+                  "_owner": null,
+                  "_store": {}
+                }
+              },
+              "_owner": null,
+              "_store": {}
+            },
+            {
+              "type": "a",
+              "key": null,
+              "ref": null,
+              "props": {
+                "href": "https://atlassian.design",
+                "children": "George Washington"
+              },
+              "_owner": null,
+              "_store": {}
+            }
+          ]
+        },
+        "_owner": null,
+        "_store": {}
+      }
+    },
+    { "key": "None,Federalist", "content": "None, Federalist" },
+    { "key": 1, "content": "1789-1797" },
+    { "content": 0 },
+    {
+      "content": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "trigger": "More",
+          "triggerType": "button",
+          "children": {
+            "key": null,
+            "ref": null,
+            "props": {
+              "children": {
+                "key": null,
+                "ref": null,
+                "props": { "children": "George Washington" },
+                "_owner": null,
+                "_store": {}
+              }
+            },
+            "_owner": null,
+            "_store": {}
+          },
+          "appearance": "default",
+          "boundariesElement": "viewport",
+          "defaultOpen": false,
+          "isLoading": false,
+          "isOpen": false,
+          "items": [],
+          "position": "bottom left",
+          "isMenuFixed": false,
+          "shouldAllowMultilineItems": false,
+          "shouldFitContainer": false,
+          "shouldFlip": true
+        },
+        "_owner": null,
+        "_store": {}
+      }
+    }
+  ]
+}
+
+```
+
+### Ant
+
+```typescript
+const dataSource = [
+  {
+    key: '1',
+    name: 'Mike',
+    age: 32,
+    address: '10 Downing Street',
+  },
+  {
+    key: '2',
+    name: 'John',
+    age: 42,
+    address: '10 Downing Street',
+  },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    key: 'age',
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+]
+;<Table dataSource={dataSource} columns={columns} />
+```
+
+```typescript
+const { Table, Divider, Tag } = antd
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    render: text => <a>{text}</a>,
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    key: 'age',
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+  {
+    title: 'Tags',
+    key: 'tags',
+    dataIndex: 'tags',
+    render: tags => (
+      <span>
+        {tags.map(tag => {
+          let color = tag.length > 5 ? 'geekblue' : 'green'
+          if (tag === 'loser') {
+            color = 'volcano'
+          }
+          return (
+            <Tag color={color} key={tag}>
+              {tag.toUpperCase()}
+            </Tag>
+          )
+        })}
+      </span>
+    ),
+  },
+  {
+    title: 'Action',
+    key: 'action',
+    render: (text, record) => (
+      <span>
+        <a>Invite {record.name}</a>
+        <Divider type="vertical" />
+        <a>Delete</a>
+      </span>
+    ),
+  },
+]
+
+const data = [
+  {
+    key: '1',
+    name: 'John Brown',
+    age: 32,
+    address: 'New York No. 1 Lake Park',
+    tags: ['nice', 'developer'],
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    age: 42,
+    address: 'London No. 1 Lake Park',
+    tags: ['loser'],
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    age: 32,
+    address: 'Sidney No. 1 Lake Park',
+    tags: ['cool', 'teacher'],
+  },
+]
+
+ReactDOM.render(<Table columns={columns} dataSource={data} />, mountNode)
+```
+
+## Evergreen
+
+```typescript
+<Table>
+  <Table.Head>
+    <Table.SearchHeaderCell />
+    <Table.TextHeaderCell>Last Activity</Table.TextHeaderCell>
+    <Table.TextHeaderCell>ltv</Table.TextHeaderCell>
+  </Table.Head>
+  <Table.Body height={240}>
+    {profiles.map(profile => (
+      <Table.Row key={profile.id} isSelectable onSelect={() => alert(profile.name)}>
+        <Table.TextCell>{profile.name}</Table.TextCell>
+        <Table.TextCell>{profile.lastActivity}</Table.TextCell>
+        <Table.TextCell isNumber>{profile.ltv}</Table.TextCell>
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table>
+```

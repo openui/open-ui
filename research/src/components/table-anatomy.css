@@ -1,0 +1,120 @@
+  /* Anatomy boxes */
+  
+  [anatomy="part"] {
+    min-height: 25px;
+    border: 2px solid ;
+    display: block;
+    margin: 1em;
+    padding: .5em;
+    position: relative;
+  }
+  
+  [anatomy="part"]::before {    
+    display: block;
+    position: absolute;
+    top: .1em;
+    font-size: .7em;
+    font-family: "Segoe UI", sans-serif;
+    padding: .25em .5em;
+    background: rgba(25, 25, 25, .6);
+    color: white;
+    left: 0;
+    top: 0;
+  }
+  
+  tableComponent::before {
+    content: "::table";    
+  }
+  
+  tableRow, tableHeaderRow {
+    background: rgba(253, 230, 34, 1);
+    text-align: center;
+  }
+  
+  tableRow::before {
+    content: "::tableRow-" attr(name);
+  }
+
+  tableHeaderRow::before {
+    content: "tableHeaderRow";
+  }
+
+tableCell {
+  background: rgba(19, 215, 81, .75);
+}
+
+tableHeaderCell {
+  background: rgba(200, 150, 81, .75);
+}
+
+tableCell::before {
+  content: "::tableCell-" attr(name);
+}
+
+tableHeaderCell::before {
+  content: "::tableHeaderCell-" attr(name);
+}
+
+tableHeader {
+  background: rgba(206, 186, 240, 0.75);
+}
+
+tableHeader::before {
+  content: "::tableHeader";
+}
+
+tableTitle {
+  background: rgba(247, 154, 255, 0.75);
+}
+
+tableTitle::before {
+  content: "::tableTitle";
+}
+
+tableFooter {
+  background: rgba(206, 186, 240, 0.75);
+}
+
+tableFooter::before {
+  content: "::tableFooter";
+}
+
+tablePagination {
+  background: rgba(247, 154, 255, 0.75);
+}
+
+tablePagination::before {
+  content: "::tablePagination";
+}
+
+pageItem {
+  background: rgba(255, 79, 240, 0.75);
+  text-align: center;
+}
+
+pageItem::before {
+  content: "::pageItem-" attr(name);
+}
+
+/* General */
+slot {
+  font-family: "Segoe UI", sans-serif;
+}
+
+li {
+  margin: 1em;
+}
+
+code {
+  background: #eee;
+  border: 1px solid #ccc;
+  padding: .2em;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex.grow > * {
+  flex: 1 1 auto;  
+}
