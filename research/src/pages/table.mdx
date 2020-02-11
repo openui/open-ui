@@ -1,6 +1,6 @@
 ---
 menu: Components
-name: Table
+name: Table (Working Draft)
 path: /components/table
 research: /components/table.research
 ---
@@ -47,7 +47,7 @@ TBD
 
 ### Keyboard
 
-Keybaord interactions are defined only for data grid type of Table component and can be used only after user has moved focus to the grid using `Tab` key.
+Keybord interactions are defined only for data grid type of Table component and can be used only after user has moved focus to the grid using `Tab` key.
 
 Keyboard users can operate the Table component as follows:
 
@@ -63,13 +63,13 @@ Keyboard users can operate the Table component as follows:
   - `Control` + `Home` keys: moves focus to the first cell in the first row.
   - `Control` + `End` keys: moves focus to the last cell in the last row.
 - Select table cells, rows or columns (if supported):
-- `Control` + `Space` keys: selects the column that contains the focus.
-- `Shift` + `Space` keys: Selects the row that contains the focus. If the grid includes a column with checkboxes for selecting rows, this key can serve as a shortcut for checking the box when focus is not on the checkbox.
-- `Control` + `A` keys: Selects all cells.
-- `Shift` key + `Right` arrow: Extends selection one cell to the right.
-- `Shift` key + `Left` arrow: Extends selection one cell to the left.
-- `Shift` key + `Down` arrow: Extends selection one cell down.
-- `Shift` key + `Up` arrow: Extends selection one cell up.
+  - `Control` + `Space` keys: selects the column that contains the focus.
+  - `Shift` + `Space` keys: Selects the row that contains the focus. If the grid includes a column with checkboxes for selecting rows, this key can serve as a shortcut for checking the box when focus is not on the checkbox.
+  - `Control` + `A` keys: Selects all cells.
+  - `Shift` key + `Right` arrow: Extends selection one cell to the right.
+  - `Shift` key + `Left` arrow: Extends selection one cell to the left.
+  - `Shift` key + `Down` arrow: Extends selection one cell down.
+  - `Shift` key + `Up` arrow: Extends selection one cell up.
 
 ### Assistive technology
 
@@ -89,7 +89,7 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 - **compact** (_bool_): Controls whether the table is displayed in compact mode. Defaults to false
 
-### &lttableRow&gt
+### &lttable-row&gt
 
 - **highlight** (_bool_): Controls whether the row should be highlighted (e.g. on hover). Defaults to false
 
@@ -101,11 +101,11 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 - **disabled** (_bool_): Controls whether can interact with a row and it's contents. Defaults to false
 
-### &lttableHeaderRow&gt
+### &lttable-header-row&gt
 
 - **fixed** (_bool_): Controls whether the header row is fixed, meaning that it always stays visible during scrolling. (`scrollable` must be set to `vertical` or `both` for the table). Defaults to false
 
-### &lttableHeaderCell&gt
+### &lttable-header-cell&gt
 
 - **sorted** (_enum: auto | asc | desc_)): Controls whether the data is sorted by column in the selected order. Defaults to auto
 
@@ -115,7 +115,7 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 - **onResize** (_function_): Callback function fired when the column is resized (`resizable` must be enabled).
 
-### &lttableCell&gt
+### &lttable-cell&gt
 
 - **truncated** (_bool_): Controls whether the content of the cell is truncated
 
