@@ -9,6 +9,7 @@ import Header from './header'
 import Navigation from './navigation'
 import ComponentCuratedLayout from './component-curated-layout'
 import ComponentResearchLayout from './component-research-layout'
+import css from './layout.css'
 
 const components = {
   pre: props => {
@@ -80,7 +81,7 @@ const Layout = ({ children, pageContext }) => {
             >
               <Navigation style={{ gridArea: 'nav' }} />
 
-              <div style={{ gridArea: 'view' }}>
+              <div style={{ gridArea: 'view', overflow: 'hidden' }}>
                 <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>
               </div>
             </div>

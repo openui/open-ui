@@ -1,0 +1,67 @@
+---
+name: Design Tokens
+menu: Theming
+path: /design-tokens
+---
+
+# Design Tokens
+
+A foundational aspect to user-interfaces is the visual design of experiences. This section aims to describe common design token names, uses, and values as they are used in visual design of user-interfaces, in a manner that can be used and shared across products and platforms.
+
+## Goals
+
+- to support accessible enterprise web applications
+- capture general design tokens for most common UI
+- cross-platform usage
+
+## Non-goals
+
+- enumerate an exhaustive set of design tokens
+- describe nuances of marketing, landing, and other highly unique webpages
+
+```json5
+{
+  $schema: 'http://json-schema.org/schema#',
+  title: 'Design tokens',
+  description: "A design system's schema definition.",
+  id: 'design-tokens',
+  type: 'object',
+  properties: {
+    'accent-color': {
+      title: 'Accent color',
+      description: 'Describes the default color used to accentuate an element',
+      type: 'string',
+      pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+    },
+    'corner-radius': {
+      title: 'Corner radius',
+      description: 'Describes the default or common corner-radius for elements',
+      type: 'number',
+      min: 0,
+    },
+    density: {
+      title: 'Density',
+      description: 'Describes relative spacial and dimensional aspects of UI. A lower number denotes a more compact UI.',
+      type: 'number',
+      enum: [-3, -2, -1, 0, 1, 2, 3],
+    },
+    'design-unit': {
+      title: 'Design unit',
+      description: 'Describes the foundational sizing unit for a UI. Spacial and dimensional properties will generally be a multiple of this unit.',
+      type: 'number',
+      min: 1,
+    },
+    'outline-width': {
+      title: 'Outline width',
+      description: 'Describes the default or common outline for elements with an outline',
+      type: 'number',
+      min: 0,
+    },
+  },
+}
+```
+
+## What we're looking at next
+
+- typography
+- focus treatment
