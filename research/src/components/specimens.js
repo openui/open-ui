@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import { kebabCaseToSentence, removeExtensionFromFilename } from '../utils/text'
 import { getImagesForComponentConcept } from '../sources'
 import Image from './image'
 
@@ -15,9 +16,11 @@ const Specimens = ({ component, concept }) => {
         border: '1px solid #ccc',
       }}
     >
-      {images.map((src, i) => (
-        <Image key={i} src={src} title={src} />
-      ))}
+      {images.map((src, i) => {
+        const srcNameAsSentence = kebabCaseToSentence(removeExtensionFromFilename(src))
+
+        return <Image key={i} alt={srcNameAsSentence} src={src} title={srcNameAsSentence} />
+      })}
     </div>
   )
 }
