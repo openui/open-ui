@@ -22,7 +22,7 @@ for the native components and controls that the platform delivers to be heavily 
 * Behavior hook or adjustments needs to be possible
 * State management across component, even in a composite component, is possible
 * Expectation from developers that it "just works" (<-- we need to bring the magic back, even if built on primitives)
-* Accessibilty, focus and other foundational items work as expected
+* Accessibility, focus and other foundational items work as expected
 
 # Controls to standardize (initial thinking)
 * `<select>` || `<dropdown>` ( [Investigation](/platform/select/overview.md) )
