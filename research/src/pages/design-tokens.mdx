@@ -20,47 +20,25 @@ A foundational aspect to user-interfaces is the visual design of experiences. Th
 - describe nuances of marketing, landing, and other highly unique webpages
 - define subjective style attributes / names
 
-```json5
-{
-  $schema: 'http://json-schema.org/schema#',
-  title: 'Design tokens',
-  description: "A design system's schema definition.",
-  id: 'design-tokens',
-  type: 'object',
-  properties: {
-    'accent-color': {
-      title: 'Accent color',
-      description: 'Describes the default color used to accentuate an element',
-      type: 'string',
-      pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
-    },
-    'corner-radius': {
-      title: 'Corner radius',
-      description: 'Describes the default or common corner-radius for elements',
-      type: 'number',
-      min: 0,
-    },
-    density: {
-      title: 'Density',
-      description: 'Describes relative spacial and dimensional aspects of UI. A lower number denotes a more compact UI.',
-      type: 'number',
-      enum: [-3, -2, -1, 0, 1, 2, 3],
-    },
-    'design-unit': {
-      title: 'Design unit',
-      description: 'Describes the foundational sizing unit for a UI. Spacial and dimensional properties will generally be a multiple of this unit.',
-      type: 'number',
-      min: 1,
-    },
-    'outline-width': {
-      title: 'Outline width',
-      description: 'Describes the default or common outline for elements with an outline',
-      type: 'number',
-      min: 0,
-    },
-  },
-}
-```
+### Stage 3
+
+| Name        | Description                                                                                                                    | Type   |
+| :---------- | :----------------------------------------------------------------------------------------------------------------------------- | :----- |
+| density     | Describes relative spacial and dimensional aspects of UI. A lower number denotes a more compact UI.                            | number |
+| design-unit | Describes the foundational sizing unit for a UI. Spacial and dimensional properties will generally be a multiple of this unit. | number |
+
+### Stage 2
+
+| Name          | Description                                                | Type   |
+| :------------ | :--------------------------------------------------------- | :----- |
+| corner-radius | Describes the default or common corner-radius for elements | number |
+| accent-color  | Describes the default color used to accentuate an element  | string |
+
+### Stage 1
+
+| Name          | Description                                                          | Type   |
+| :------------ | :------------------------------------------------------------------- | :----- |
+| outline-width | Describes the default or common outline for elements with an outline | number |
 
 ## What we're looking at next
 
