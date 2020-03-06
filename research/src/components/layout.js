@@ -5,6 +5,7 @@ import { MDXProvider } from '@mdx-js/react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import vsDark from 'prism-react-renderer/themes/vsDark'
 
+import 'global.css'
 import Header from './header'
 import Navigation from './navigation'
 import ComponentCuratedLayout from './component-curated-layout'
