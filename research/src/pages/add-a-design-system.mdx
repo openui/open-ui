@@ -94,42 +94,15 @@ The category `type` is not a concept but it should be noted that the design syst
 
 :bulb: Always use kebab-case for concept names.
 
-> TODO:<br/>
-> The below guidance has changed already. Carbon for example has no `size` concept, just `small`.
-> Latest thinking says it is useful to know how many sizes are applied to each component, opposed to just "size".
-> The guidance for what should be a concept could be whether or not the component can "be" that concept.
-> No one says a Button can be "size".
-> Example, Carbon says a Button can be "small", AntD says a Button can be "large", and Semantic says a Button can be "massive".
-> Put another way, we would record "is" relationships which denote _qualities_, like "that button is small".
-> We would ignore "has a" relationships which denote _properties_, like "that button has a size".
->
-> ---
->
-> ## Concepts vs Categories
->
-> Above we reasoned to flatten the `primary` concept from within its `type` grouping.
-> Do we do this for all enum values, such as flattening `small` from within the `size` grouping?
-> No, because `size` is already a concept with consensus as to its meaning and bounds.
->
-> We can find `size` in an [encyclopedia](https://en.wikipedia.org/wiki/Size) with a definition, "Size is the magnitude or dimensions of a thing."
-> It is a concept that exists on its own.
-> Contrast this with `type` which is abstract and ambiguous.
-> It leads to a [disambiguation page](https://en.wikipedia.org/wiki/Type) and does not stand on its own.
-> We can only talk about `type`s in the context of some other thing.
->
-> Another test is whether or not there is intuition and consensus about what this group contains.
-> If you asked a large diverse group of people to list items in this group, do you expect general consensus?
-> List off `size`s, did you think of "small", "medium", or "large"?
-> List off `type`s, can you think of anything that makes sense here?
->
-> This table can help you determine if a concept is in fact a concept itself or if it is a group of concepts whose items need to be flattened into many concepts:
->
-> | Might be a concept | Might be a group of concepts |
-> | ------------------ | ---------------------------- |
-> | Well-known         | Obscure                      |
-> | Concrete           | Abstract                     |
-> | Stands alone       | Requires specific context    |
-> | Has consensus      | Little to no consensus       |
+## Concepts Names & Categories
+
+Above we reasoned to flatten the `primary` concept from within its `type` grouping.
+Do this for all enum values, such as flattening `small` from within the `size` grouping.
+
+A term is considered a concept name if the component can "be" that concept.
+For example, no one says a Button can be "size" but it can be "small".
+Put another way, record "is" relationships which denote _qualities_, like "that button is small".
+Ignore "has a" relationships which denote _properties_, like "that button has a size".
 
 ## Images
 
