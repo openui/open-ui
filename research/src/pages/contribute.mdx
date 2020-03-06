@@ -128,26 +128,26 @@ Create your component pages like so:
 ```
 /src
   /components
-    your-component.mdx           # proposal page
-    your-component.research.mdx  # research page
+    your-component.proposal.mdx
+    your-component.research.mdx
 ```
+
+:bulb: These will be displayed as a single page on Open UI.
 
 ### Proposal Page
 
 The proposal page will summarize your findings, conclusions, and unresolved points.
 
-Define your research page front matter.
-The `research` key tells your proposal page where its research page is hosted.
+Define your proposal page front matter.
+The `pathToResearch` key tells your proposal page where its research page is hosted.
 
 ```
 ---
 menu: Components
 name: Your Component
 path: /components/your-component
-research: /components/your-component.research
+pathToResearch: /components/your-component.research
 ---
-
-...page content
 ```
 
 ### Research Page
@@ -155,19 +155,17 @@ research: /components/your-component.research
 The research page is a place to collect, analyse, and deeply understand the data available on the component.
 
 Define your research page front matter.
-The `researchFor` key tells your research page where its proposal page is hosted.
+The `pathToProposal` key tells your research page where its proposal page is hosted.
 
 ```
 ---
 name: Test
 path: /components/test.research
-researchFor: /components/test
+pathToProposal: /components/test
 ---
-
-...page content
 ```
 
-If you followed the steps in [Add a design system](/contribute/design-system) then there are some MDX components available in Open UI's docs to help analyze and understand the data collected.
+There are some MDX components available in Open UI's docs to help analyze and understand the data collected.
 You can reference some other component doc pages for usage examples.
 Otherwise, you can collect and analyze your data more manually.
 
