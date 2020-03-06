@@ -55,6 +55,11 @@ const typography = new Typography({
         marginBottom: rhythm(1.5),
         borderBottom: '1px solid rgba(0, 0, 0, 0.2)',
       },
+
+      h2: {
+        marginTop: rhythm(1),
+        marginBottom: rhythm(0.5),
+      },
     }
   },
 })
