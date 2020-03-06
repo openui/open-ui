@@ -16,9 +16,11 @@ const Anatomy = ({ component }) => {
   }
 
   return (
-    <ul>
+    <ul style={{ marginLeft: 0 }}>
       {_.map(anatomy, ({ name }) => (
-        <li key={name}>{name}</li>
+        <li key={name} style={{ listStyleType: 'none' }}>
+          {name}
+        </li>
       ))}
     </ul>
   )
