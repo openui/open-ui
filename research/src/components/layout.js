@@ -63,21 +63,15 @@ const Layout = ({ children, pageContext }) => {
             />
             <div
               style={{
-                display: 'grid',
-                gridGap: '2em',
-                gridTemplate: `
-                "nav  view" auto /
-                 auto 1fr
-              `,
+                display: 'flex',
                 padding: '0 1rem',
                 margin: '0 auto',
                 maxWidth: '1200px',
-                gridAutoFlow: 'rows',
               }}
             >
-              <Navigation style={{ gridArea: 'nav' }} />
+              <Navigation style={{ marginRight: '1em' }} />
 
-              <div style={{ gridArea: 'view' }}>
+              <div style={{ flex: '1' }}>
                 <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>
               </div>
             </div>
