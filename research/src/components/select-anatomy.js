@@ -1,5 +1,5 @@
 import React from 'react'
-import './select-anatomy.css'
+import './anatomy.css'
 
 const SelectAnatomy = () => {
   return (
