@@ -7,8 +7,7 @@ import vsDark from 'prism-react-renderer/themes/vsDark'
 
 import Header from './header'
 import Navigation from './navigation'
-import ComponentCuratedLayout from './component-curated-layout'
-import ComponentResearchLayout from './component-research-layout'
+import ComponentLayout from './component-layout'
 
 const components = {
   pre: props => {
@@ -39,10 +38,8 @@ const Layout = ({ children, pageContext }) => {
   const { frontmatter } = pageContext || {}
 
   const ContentWrapper =
-    frontmatter && frontmatter.research
-      ? ComponentCuratedLayout
-      : frontmatter && frontmatter.researchFor
-      ? ComponentResearchLayout
+    frontmatter && frontmatter.path && frontmatter.path.startsWith('/components/')
+      ? ComponentLayout
       : ({ children }) => <>{children}</>
 
   return (
@@ -66,21 +63,15 @@ const Layout = ({ children, pageContext }) => {
             />
             <div
               style={{
-                display: 'grid',
-                gridGap: '2em',
-                gridTemplate: `
-                "nav  view" auto /
-                 auto 1fr
-              `,
+                display: 'flex',
                 padding: '0 1rem',
                 margin: '0 auto',
                 maxWidth: '1200px',
-                gridAutoFlow: 'rows',
               }}
             >
-              <Navigation style={{ gridArea: 'nav' }} />
+              <Navigation style={{ marginRight: '1em' }} />
 
-              <div style={{ gridArea: 'view' }}>
+              <div style={{ flex: '1' }}>
                 <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>
               </div>
             </div>

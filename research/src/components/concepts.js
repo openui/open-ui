@@ -9,7 +9,7 @@ const Concepts = ({ component }) => {
     <div>
       {_.map(conceptsByComponent[component], (concept, conceptOpenUIName) => (
         <div key={conceptOpenUIName}>
-          <h3>
+          <h3 style={{ marginTop: '24px' }}>
             {conceptOpenUIName}{' '}
             <ConceptCoverage component={component} concept={conceptOpenUIName} />
           </h3>

@@ -43,6 +43,10 @@ const typography = new Typography({
         borderLeft: '4px solid #ccc',
       },
 
+      li: {
+        marginBottom: rhythm(0.25),
+      },
+
       code: {
         background: 'rgba(0, 0, 0, 0.05)',
         padding: '0 0.25em',
@@ -54,6 +58,11 @@ const typography = new Typography({
         paddingBottom: rhythm(0.25),
         marginBottom: rhythm(1.5),
         borderBottom: '1px solid rgba(0, 0, 0, 0.2)',
+      },
+
+      h2: {
+        marginTop: rhythm(1),
+        marginBottom: rhythm(0.5),
       },
     }
   },

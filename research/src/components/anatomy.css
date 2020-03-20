@@ -1,0 +1,72 @@
+/* General */
+.component-anatomy slot {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.component-anatomy li {
+  margin: 1em;
+}
+
+.component-anatomy code {
+  background: #eee;
+  border: 1px solid #ccc;
+  padding: 0.2em;
+}
+
+.component-anatomy .flex {
+  display: flex;
+}
+
+.component-anatomy .flex.grow > * {
+  flex: 1 1 auto;
+}
+
+/* Anatomy boxes */
+
+.component-anatomy host,
+.component-anatomy slot,
+.component-anatomy part {
+  background: rgba(61, 159, 160, 0.75);
+  min-height: 25px;
+  border: 2px solid;
+  display: block;
+  margin: 1em;
+  padding: 0.5em;
+  position: relative;
+}
+
+.component-anatomy host::before,
+.component-anatomy slot::before,
+.component-anatomy part::before {
+  display: block;
+  position: absolute;
+  top: 0.1em;
+  font-size: 0.7em;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 0.25em 0.5em;
+  background: rgba(25, 25, 25, 0.6);
+  color: white;
+  left: 0;
+  top: 0;
+}
+
+.component-anatomy host::before {
+  content: '::host';
+}
+
+.component-anatomy slot {
+  background: rgba(253, 230, 34, 1);
+  text-align: center;
+}
+
+.component-anatomy slot::before {
+  content: 'slot';
+}
+
+.component-anatomy part {
+  background: rgba(19, 215, 81, 0.75);
+}
+
+.component-anatomy part::before {
+  content: '::part-' attr(name);
+}

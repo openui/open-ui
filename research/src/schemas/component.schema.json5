@@ -4,6 +4,7 @@
   "title": "Component",
   "description": "A UI Component definition.",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "name": {
       "description": "The name of the component as defined in the design system.",
@@ -25,11 +26,6 @@
       "description": "This should be the formal definition of the component. It usually describes it's intended purpose."
     },
 
-    "category": {
-      "type": "string",
-      "description": "The heading under which the component is classified or cataloged in the design system."
-    },
-
     "anatomy": {
       "type": "array",
       "items": {
@@ -48,15 +44,18 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
           "openUIName": { "type": "string" },
           "image": { "type": "string" }
         },
-        "required": ["name"]
+        "required": ["name", "image"]
       }
     }
   },
 
-  "required": ["name", "category", "url"]
+  "required": ["name", "url"]
 }

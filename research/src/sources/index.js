@@ -91,9 +91,7 @@ export const getSourcesWithComponentConcept = (componentOpenUIName, conceptOpenU
 
 // Images
 export const getImagesForComponentConcept = (componentOpenUIName, conceptOpenUIName) => {
-  return _.compact(
-    _.map(_.get(conceptsByComponent, [componentOpenUIName, conceptOpenUIName]), 'image'),
-  )
+  return _.compact(_.map(_.get(conceptsByComponent, [componentOpenUIName, conceptOpenUIName])))
 }
 
 // Images for component
