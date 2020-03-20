@@ -39,6 +39,8 @@ Data grid -- tabular information that has column titles, row titles, or both and
 
 `::part-table-pagination` — Pagination control for multi-page data tables
 
+`::part-pagination-item` — Pagination control representing the pages.
+
 ### Component attributes
 
 TBD
@@ -47,29 +49,7 @@ TBD
 
 ### Keyboard
 
-Keyboard interactions are defined only for data grid type of Table component and can be used only after user has moved focus to the grid using `Tab` key.
-
-Keyboard users can operate the Table component as follows:
-
-- Navigate table cells using the following keys:
-  - `Right` arrow: Moves focus one cell to the right. If focus is on the right-most cell in the row, focus does not move.
-  - `Left` arrow: Moves focus one cell to the left. If focus is on the left-most cell in the row, focus does not move.
-  - `Down` arrow: Moves focus one cell down. If focus is on the bottom cell in the column, focus does not move.
-  - `Up` arrow: Moves focus one cell Up. If focus is on the top cell in the column, focus does not move.
-  - `Page Down` key: Moves focus down an author-determined number of rows, typically scrolling so the bottom row in the currently visible set of rows becomes one of the first visible rows. If focus is in the last row of the grid, focus does not move.
-  - `Page Up` key: Moves focus up an author-determined number of rows, typically scrolling so the top row in the currently visible set of rows becomes one of the last visible rows. If focus is in the first row of the grid, focus does not move.
-  - `Home` key: moves focus to the first cell in the row that contains focus.
-  - `End` key: moves focus to the last cell in the row that contains focus.
-  - `Control` + `Home` keys: moves focus to the first cell in the first row.
-  - `Control` + `End` keys: moves focus to the last cell in the last row.
-- Select table cells, rows or columns (if supported):
-  - `Control` + `Space` keys: selects the column that contains the focus.
-  - `Shift` + `Space` keys: Selects the row that contains the focus. If the grid includes a column with checkboxes for selecting rows, this key can serve as a shortcut for checking the box when focus is not on the checkbox.
-  - `Control` + `A` keys: Selects all cells.
-  - `Shift` key + `Right` arrow: Extends selection one cell to the right.
-  - `Shift` key + `Left` arrow: Extends selection one cell to the left.
-  - `Shift` key + `Down` arrow: Extends selection one cell down.
-  - `Shift` key + `Up` arrow: Extends selection one cell up.
+Data grid implements the [Aria's Keyboard Interaction For Data Grids](https://www.w3.org/TR/wai-aria-practices-1.1/#keyboard-interaction-for-data-grids).
 
 ### Assistive technology
 
