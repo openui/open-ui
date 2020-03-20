@@ -7,8 +7,7 @@ import vsDark from 'prism-react-renderer/themes/vsDark'
 
 import Header from './header'
 import Navigation from './navigation'
-import ComponentCuratedLayout from './component-curated-layout'
-import ComponentResearchLayout from './component-research-layout'
+import ComponentLayout from './component-layout'
 
 const components = {
   pre: props => {
@@ -39,10 +38,8 @@ const Layout = ({ children, pageContext }) => {
   const { frontmatter } = pageContext || {}
 
   const ContentWrapper =
-    frontmatter && frontmatter.research
-      ? ComponentCuratedLayout
-      : frontmatter && frontmatter.researchFor
-      ? ComponentResearchLayout
+    frontmatter && frontmatter.path && frontmatter.path.startsWith('/components/')
+      ? ComponentLayout
       : ({ children }) => <>{children}</>
 
   return (
