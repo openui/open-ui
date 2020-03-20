@@ -1,0 +1,136 @@
+---
+menu: Components
+name: Checkbox (Working Draft)
+path: /components/checkbox
+pathToResearch: /components/checkbox.research
+---
+
+import checkboxAnatomy from '../components/checkbox-anatomy'
+
+The `checkbox` element is a control that allows the user to select a binary state, either checked or unchecked.
+
+## Anatomy
+
+### Diagram
+
+<SelectAnatomy />
+
+### Part Definitions
+
+`::host` — Root element that contains the individual control and label.
+
+`::part-checkbox` — The checkbox control accepting and displaying the state of the checkbox.
+
+`::part-checked-indicator` — The element indicating the checked state of the checkbox.
+
+`::part-indeterminate-indicator` — element indicating the indeterminate state of the checkbox.
+
+`::part-label` — The text-based label of the checkbox.
+
+### Events
+
+- `::host` Listening for `toggle-pop-up` event to hide/show `::part-pop-up`
+
+- `::part-button` Listens to `click` event and dispatches `toggle-pop-up` event
+
+- `::part-button` Listening for `option-change` event to update selected value shown
+
+- `::part-pop-up` Listening for `option-change` event to dispatch `toggle-pop-up` event
+
+- `::part-button` Dispatches custom event `split-button-clicked`
+
+## Accessibility
+
+### Keyboard
+
+Keyboard users can operate the `<select>` as follows:
+
+- Focus on the `<select>` element using the `Tab` key (there is a tab stop on `part-button`). The control can be
+  focused by default by setting the `autofocus` attribute.
+- Having focus, but with the pop-up still closed, users can:
+  - Change the selection to the next option using the `Down` arrow
+  - Change the selection to the previous option using the `Up` arrow
+  - Change the selection to the first option starting with a certain sequence by typing that sequence
+  - Cycle the selection through options starting with a certain letter by continually typing that letter
+- Having focus, the user can open the popup using the `Enter` key or the `Space` key. The popup can be dismissed using
+  the `Enter` key or the `Esc` key.
+- Having focus and with the pop-up open, the user can select options in the same manner as above. As the user traverses
+  the options, the currently-selected option is always visible and highlighted, with the menu scrolling as necessary.
+- Upon selection, the select control's `value` field is updated to the respective option's `value` accordingly.
+
+### Assistive Technology
+
+Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
+[HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
+
+### Forced Colors
+
+Placeholder for now, dependent on standardization on parts definitions.
+
+## States / Properties
+
+### &ltselect&gt
+
+- **open** (_bool_): Controls whether the dropdown is open.
+
+- **defaultOpen** (_bool_): The initial value for `open`. Defaults to false.
+
+- **value** (_string_): The currently selected option.
+
+- **multiple** (_bool_): Controls whether the user should be able to select multiple items. Defaults to false.
+
+- **searchable** (_bool_): Controls whether the list of options can be searched. If true, a search field is added to
+  the element, and the list of options is filtered by value (matching on prefix, case insensitive) unless
+  overridden by onSearch. Defaults to false.
+
+- **onSearch** (_function_): Callback function fired when the search input changes (`searchable` must be enabled).
+
+- **onSelect** (_function_): Callback function fired when the selected option changes.
+
+- **popupDirection** (_enum: auto | above | below_): Specify the direction the options list should pop up towards.
+  "Auto" is the behavior of `<select>` today (pop up in the direction with the most screen real estate).
+
+- **repeatScroll** (_bool_): Specify whether, while using arrow keys, the menu should scroll back to the first option
+  after reaching the last option.
+
+- **autofocus** (_bool_): Get focus by default.
+
+- **autocomplete** (_string_): Provides a hint for the user agent's autocomplete feature.
+
+- **disabled** (_bool_): Prevents the user from interacting with the control. Defaults to false.
+
+- **form** (_string_): Associates the element with a form in the document whose `id` is this value.
+
+- **name** (_string_): Specify the name of the control for purposes of form submission.
+
+- **required** (_bool_): Indicates that an option with a non-empty string value must be selected.
+
+- **size** (_number_): If the control is displayed inset (e.g. in `multiple` mode), specify the number of options
+  that should be visible.
+
+### &ltoption&gt
+
+- **disabled** (_bool_): Prevents the user from selecting this option. Defaults to false.
+
+- **selected** (_bool_): Indicates that this option is initially selected (overrides the default of the
+  first option being initially selected).
+
+- **label** (_string_): Label indicating the meaning of the option.
+
+- **value** (_string_): The option's associated value (e.g. to be submitted with a form).
+
+### &ltoptgroup&gt
+
+- **disabled** (_bool_): Prevents the user from selecting any options in this option group. Defaults to false.
+
+- **label** (_string_): Label for the group of options.
+
+## Resources
+
+[Investigation of Custom Select Control Patterns](https://github.com/WICG/open-ui/blob/master/platform/select/investigations/use-cases.md)
+
+[Blog Post on Built-in Form Controls With Survey Data](http://www.gwhitworth.com/blog/2019/07/form-controls-components/)
+
+[MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
+
+[WHATWG Living Standard on &ltSelect&gt](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)
