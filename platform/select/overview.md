@@ -20,12 +20,7 @@ the control due to not being able to have it achieve what they need.
 ## ...Usecases will go here...
 
 # Missing platform APIs
-We will be investigating how the browser currently utililzes some magic
-to create the current `<select>` control and determine if:
-* **They are necessary:** Many of these controls were created in the early days of the
-  web. We should understand what these solutions are providing end users and then, with
-  data, make a determination if they should be added to the platform or removed.
 
-* **Propose a solution:** If we decide that they are necessary, we should then break down that
-  use case further to derive an explainer of the problem that will then be a launching off
-  point for a proposal to the necessary standards body for review/feedback.
+- **State**: Currently custom states for web components is in [proposal form](https://wicg.github.io/custom-state-pseudo-class/). Rather than jumping through too many hoops to replicate this I opted to 
+put the state classes on the root custom element and change necessary styles as though this state was 
+set.
