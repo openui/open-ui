@@ -23,7 +23,7 @@ Open UI is a open source collective effort to standardize names and anatomies fo
 
 There are two pillars of focus here:
   - `/research` documenting UI as it has naturally emerged
-  - `/platform` representing browser standards bodies
+  - `/platform` representing browser testing for component support against common use cases using standards based approaches
 
 These two will iterate in a cyclic collaboration to define and develop standardized UI.
 Refer to the resources in each effort for more information.
