@@ -50,11 +50,16 @@
     border-radius: .28571429rem;
     border: 1px solid rgba(34,36,38,.15);
     box-shadow: 0 2px 3px 0 rgba(34,36,38,.15);
-    transition: opacity .1s ease;
-    animation-iteration-count: 1;
-    animation-duration: .3s;
-    animation-timing-function: ease;
-    animation-fill-mode: both;
+    height: 0;
+    transition: all .1s linear;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  list-box.open::part(pop-up) {
+    opacity: 100%;
+    visibility: visible;
+    height: auto;
   }
 
   list-box-item {
