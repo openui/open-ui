@@ -29,9 +29,13 @@ class ListBox extends HTMLElement {
           return
         }
         else {
-          popup.classList.toggle('visible');
+          this.classList.toggle('open');
+          popup.classList.toggle('open');
         }
       })
+
+
+
     })
   }
 }

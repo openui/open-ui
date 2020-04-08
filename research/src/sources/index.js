@@ -14,6 +14,7 @@ import primer from './primer.json5'
 import semantic from './semantic.json5'
 import stardust from './stardust.json5'
 import w3 from './w3.json5'
+import web from './web.json5'
 
 // Sources
 export const sources = [
@@ -31,6 +32,7 @@ export const sources = [
   semantic,
   stardust,
   w3,
+  web,
 ].map(source => ({
   ...source,
   components: source.components.map(component => {
