@@ -1,132 +1,173 @@
 ---
 menu: Components
-name: Select (Editor's Draft)
+name: Select with Template (Editor's Draft)
 path: /components/select
 pathToResearch: /components/select.research
 ---
 
 import SelectAnatomy from '../components/select-anatomy'
 
-The `<select>` element is a control that allows the user to select from a set of potential options.
+## Overview
 
-## Anatomy
+The `<select>` is a control that provides a list of options for the user to select
+from.
 
-### Diagram
+## Use Cases
+
+The `<select>` control is primarily leveraged to select an option within a form. For example
+when your buying a shirt you may be provided with a `<select>` that has options for sizes that you
+then select the appropriate one for you.
+
+## Prior Art/Examples
+
+- [Ant Design](https://ant.design/components/select/)
+- [Carbon Design System](https://www.carbondesignsystem.com/components/select/code/)
+- [FAST DNA](https://explore.fast.design/components/select)
+- [Atlas Kit](https://atlaskit.atlassian.com/packages/core/select)
+
+## &lt;select&gt; Attributes
+
+| Attribute Name | Type     | Default Value                         | Description                                                                                    |
+| -------------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `autocomplete` | `string` | `off`                                 | Allows the developer to provide a hint on how to search the content within the `<option>`(s)   |
+| `autofocus`    | `bool`   | `false`                               | If set to `true` the `input` will have focus set on page load                                  |
+| `disabled`     | `bool`   | inherited from containing element     | If set to `true` the user will not be able to interact with the control                        |
+| `form`         | `string` | the form that contains the `<select>` | Represents the form owner, via the `form` attribute being the same as the `id` of the `<form>` |
+| `multiple`     | `bool`   | `false`                               | If set to true this will allow more than one `<option>`                                        |
+| `name`         | `string` | `null`                                | Represents the name of the control                                                             |
+| `required`     | `bool`   | `false`                               | A value must be provided for the control if set to `true`                                      |
+| `size`         | `int`    | `0`                                   | If the `<select>` is shown with a scrollbar, this represents how many `<option>`s are visible. |
+
+## &lt;select&gt; Methods
+
+| Name                                                                                                  | Description                                                                                                                                              |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [autofocus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/autofocus)             | If set to `true` the `input` will have focus set on page load                                                                                            |
+| [disabled](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/disabled)               | If set to `true` the user will not be able to interact with the control                                                                                  |
+| [form](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/form)                       | Represents the form owner, via the `form` attribute being the same as the `id` of the `<form>`                                                           |
+| [labels](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/labels)                   | A NodeList containing the `<label>` elements associated with the `<select>` element.                                                                     |
+| length                                                                                                | The number of `<option>` elements in the `<select>` element                                                                                              |
+| multiple                                                                                              | If set to true this will allow more than one `<option>`                                                                                                  |
+| name                                                                                                  | Represents the name of the control                                                                                                                       |
+| [options](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/options)                 | Returns a `HTMLOptionsCollection` of the `<option>` elements contained by the `<select>` element                                                         |
+| required                                                                                              | A value must be provided for the control if set to `true`                                                                                                |
+| [selectedIndex](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedIndex)     | The index of the first or last selected `<option>` element, depending on the value of `multiple`                                                         |
+| [selectedOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedOptions) | An `HTMLCollection` of the selected `<option>` elements                                                                                                  |
+| size                                                                                                  | If the `<select>` is shown with a scrollbar, this represents how many `<option>`s are visible.                                                           |
+| [type](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/type)                       | Returns either `"select-multiple"` or `"select-one"`                                                                                                     |
+| validationMessage                                                                                     | Represents the message that describes the validation constraints that the control does not satisfy                                                       |
+| validity                                                                                              | Represents the current validity state of the control                                                                                                     |
+| value                                                                                                 | Returns the `value` property of the first selected `<option>` if there is one, otherwise an empty string                                                 |
+| willValidate                                                                                          | A `boolean` that indicates whether the button is a candidate for constraint validation. It is false if any conditions bar it from constraint validation. |
+
+#### Events
+
+### Appearance
+
+### Anatomy
+
+#### Diagram
 
 <SelectAnatomy />
 
-### Part Definitions
+#### Structure
 
-`::host` — Root element that contains the button and the pop-up.
+- `<select>` - The root element that contains the button and popup **[required]**
+- `<optgroup>` - Groups `<options>` together with a label **[optional]**
+- `<option>` - Can have one or more and represents the potential values that can be chosen by the user **[required]**
 
-`::part-button` — An interactive element that toggles the appearance of the pop-up. This element has a tab stop.
+#### CSS Parts
 
-`::part-pop-up` — An interactive element containing the set of options the user can select from.
+## Behavior
 
-### Events
+### States
 
-- `::host` Listening for `toggle-pop-up` event to hide/show `::part-pop-up`
+#### open
 
-- `::part-button` Listens to `click` event and dispatches `toggle-pop-up` event
+This state is applied to the `<select>` when the popup is visible to the user.
 
-- `::part-button` Listening for `option-change` event to update selected value shown
+#### required
 
-- `::part-pop-up` Listening for `option-change` event to dispatch `toggle-pop-up` event
+Applies when the `required` attribute is set to `true`
 
-- `::part-button` Dispatches custom event `split-button-clicked`
+#### valid
 
-## Accessibility
+Set when the element meets all its validation constraints,
+and is therefore considered to be valid.
 
-### Keyboard
+#### invalid
 
-Keyboard users can operate the `<select>` as follows:
+Set when the element does not meet its validation constraints,
+and is therefore considered to be invalid.
 
-- Focus on the `<select>` element using the `Tab` key (there is a tab stop on `part-button`). The control can be
-  focused by default by setting the `autofocus` attribute.
-- Having focus, but with the pop-up still closed, users can:
-  - Change the selection to the next option using the `Down` arrow
-  - Change the selection to the previous option using the `Up` arrow
-  - Change the selection to the first option starting with a certain sequence by typing that sequence
-  - Cycle the selection through options starting with a certain letter by continually typing that letter
-- Having focus, the user can open the popup using the `Enter` key or the `Space` key. The popup can be dismissed using
-  the `Enter` key or the `Esc` key.
-- Having focus and with the pop-up open, the user can select options in the same manner as above. As the user traverses
-  the options, the currently-selected option is always visible and highlighted, with the menu scrolling as necessary.
-- Upon selection, the select control's `value` field is updated to the respective option's `value` accordingly.
+### Interaction &amp; transition of states
 
-### Assistive Technology
+**Default State**
+
+- Show the currently selected `<option>` or the first `<option>`
+- When the user invokes the `part-button` by:
+  - a [pointerup](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerup_event) or
+    [click](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) event is fired
+  - the user presses the `space` or `enter` key
+- The state of the `<select>` is set to `open`
+
+**Open State**
+
+- The currently selected `<option>`, or the first if one isn't selected, should be
+  visible within the popup. This may require moving the list to accomodate popup positioning
+  and available space.
+- The user can dismiss the popup and remove the state of `open` from the `<select>` in any of the
+  following manners:
+  - The user clicks outside of the popup
+  - Presses the escape key
+  - Selects one, or more (if `multiple` is true), by clicking or hitting `enter` or `space` key
+
+### Popup positioning
+
+When the `<select>` is in its `open` state the popup should
+
+- Open in the direction that has the most real estate
+
+[QUESTION - Needs research]: Some frameworks allow a forced directionality with the default being an auto
+positioning as described above.
+
+#### Use with Assistive Technology
 
 Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
 [HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
 
-### Forced Colors
+### Security
 
-Placeholder for now, dependent on standardization on parts definitions.
+#### Avoiding UI spoofing
 
-## States / Properties
+If a popup is rendered outside of the viewport, then it is highly recommended to limit control over the possible
+adjustments that an author can make. This is due to the developer being able to overlay their content with the
+application's UI, of which the user trusts and can result in [clickjacking](https://en.wikipedia.org/wiki/Clickjacking) due to UI spoofing.
+If the application enables the author to have complete control over its appearance,
+the implementor **MUST** render the popup within the viewport.
 
-### &ltselect&gt
+This also **MUST** apply to embedded content, such as an `<iframe>` as it may try to mimick the appearance of the
+site it is being embedded on.
 
-- **open** (_bool_): Controls whether the dropdown is open.
+### Open Questions
 
-- **defaultOpen** (_bool_): The initial value for `open`. Defaults to false.
+- Provide arbitrary HTML into `<option>` elements
+  - What is the value of an option with complex content? [[Issue 69](https://github.com/WICG/open-ui/issues/69)]
+  - How does focus work with focusable children within the control?
+  - How does form validation work?
 
-- **value** (_string_): The currently selected option.
-
-- **multiple** (_bool_): Controls whether the user should be able to select multiple items. Defaults to false.
-
-- **searchable** (_bool_): Controls whether the list of options can be searched. If true, a search field is added to
-  the element, and the list of options is filtered by value (matching on prefix, case insensitive) unless
-  overridden by onSearch. Defaults to false.
-
-- **onSearch** (_function_): Callback function fired when the search input changes (`searchable` must be enabled).
-
-- **onSelect** (_function_): Callback function fired when the selected option changes.
-
-- **popupDirection** (_enum: auto | above | below_): Specify the direction the options list should pop up towards.
-  "Auto" is the behavior of `<select>` today (pop up in the direction with the most screen real estate).
-
-- **repeatScroll** (_bool_): Specify whether, while using arrow keys, the menu should scroll back to the first option
-  after reaching the last option.
-
-- **autofocus** (_bool_): Get focus by default.
-
-- **autocomplete** (_string_): Provides a hint for the user agent's autocomplete feature.
-
-- **disabled** (_bool_): Prevents the user from interacting with the control. Defaults to false.
-
-- **form** (_string_): Associates the element with a form in the document whose `id` is this value.
-
-- **name** (_string_): Specify the name of the control for purposes of form submission.
-
-- **required** (_bool_): Indicates that an option with a non-empty string value must be selected.
-
-- **size** (_number_): If the control is displayed inset (e.g. in `multiple` mode), specify the number of options
-  that should be visible.
-
-### &ltoption&gt
-
-- **disabled** (_bool_): Prevents the user from selecting this option. Defaults to false.
-
-- **selected** (_bool_): Indicates that this option is initially selected (overrides the default of the
-  first option being initially selected).
-
-- **label** (_string_): Label indicating the meaning of the option.
-
-- **value** (_string_): The option's associated value (e.g. to be submitted with a form).
-
-### &ltoptgroup&gt
-
-- **disabled** (_bool_): Prevents the user from selecting any options in this option group. Defaults to false.
-
-- **label** (_string_): Label for the group of options.
+---
 
 ## Resources
 
-[Investigation of Custom Select Control Patterns](https://github.com/WICG/open-ui/blob/master/platform/select/investigations/use-cases.md)
+- [MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
+- [MDN Reference of HTMLSelectElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement)
+- [WHATWG Living Standard on &ltSelect&gt](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)
 
-[Blog Post on Built-in Form Controls With Survey Data](http://www.gwhitworth.com/blog/2019/07/form-controls-components/)
+---
 
-[MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
+<br />
 
-[WHATWG Living Standard on &ltSelect&gt](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)
+##### Acknowledgements
+
+Some method and attribute definitions were sourced from the [MDN definitions](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)

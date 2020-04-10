@@ -25,7 +25,8 @@
 
 .component-anatomy host,
 .component-anatomy slot,
-.component-anatomy part {
+.component-anatomy part,
+.component-anatomy .element {
   background: rgba(61, 159, 160, 0.75);
   min-height: 25px;
   border: 2px solid;
@@ -37,7 +38,8 @@
 
 .component-anatomy host::before,
 .component-anatomy slot::before,
-.component-anatomy part::before {
+.component-anatomy part::before,
+.anatomy-label {
   display: block;
   position: absolute;
   top: 0.1em;
@@ -52,6 +54,10 @@
 
 .component-anatomy host::before {
   content: '::host';
+}
+
+.component-anatomy host.select::before {
+  content: '<select>';
 }
 
 .component-anatomy slot {
