@@ -16,25 +16,26 @@ const Navigation = ({ style }) => (
                 path
                 pathToResearch
                 pathToProposal
+                showInMenu
               }
             }
           }
         }
       }
     `}
-    render={data => {
+    render={(data) => {
       const allFrontmatter = _.map(data.allMdx.edges, 'node.frontmatter')
 
-      const frontmatterForNav = allFrontmatter.filter(
-        ({ name, pathToProposal }) => !!name && !pathToProposal,
-      )
+      const frontmatterForNav = allFrontmatter
+        .filter(({ name, pathToProposal }) => !!name && !pathToProposal)
+        .filter(({ showInMenu }) => showInMenu !== false)
 
       const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
 
       // get all frontmatter objects with a menu defined
       const menu = _.sortBy(_.toPairs(_.groupBy(menuNodes, 'menu')), _.first)
 
-      let listItem = item => (
+      let listItem = (item) => (
         <li
           key={item.name}
           style={{
