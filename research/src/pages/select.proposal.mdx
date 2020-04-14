@@ -1,6 +1,6 @@
 ---
 menu: Components
-name: Select with Template (Editor's Draft)
+name: Select (Editor's Draft)
 path: /components/select
 pathToResearch: /components/select.research
 ---
@@ -115,7 +115,6 @@ This state is applied to the `<select>` when the popup is visible to the user.
 Applies when the `required` attribute is set to `true`
 
 #### valid <a class="link" id="states-valid"></a>
-=======
 
 The `<select>` control is primarily leveraged to select an option within a form. For example
 when your buying a shirt you may be provided with a `<select>` that has options for sizes that you
@@ -199,7 +198,6 @@ Set when the element meets all its validation constraints,
 and is therefore considered to be valid.
 
 #### invalid <a class="link" id="states-invalid"></a>
-=======
 
 Set when the element does not meet its validation constraints,
 and is therefore considered to be invalid.
@@ -207,7 +205,6 @@ and is therefore considered to be invalid.
 ### Interaction &amp; transition of states
 
 **Default State** <a class="link" id="default-state"></a>
-=======
 
 - Show the currently selected `<option>` or the first `<option>`
 - When the user invokes the `part-button` by:
@@ -217,7 +214,6 @@ and is therefore considered to be invalid.
 - The state of the `<select>` is set to `open`
 
 **Open State** <a class="link" id="open-state"></a>
-=======
 
 - The currently selected `<option>`, or the first if one isn't selected, should be
   visible within the popup. This may require moving the list to accomodate popup positioning
@@ -229,7 +225,6 @@ and is therefore considered to be invalid.
   - Selects one, or more (if `multiple` is true), by clicking or hitting `enter` or `space` key
 
 ### Popup positioning <a class="link" id="popup-positioning"></a>
-=======
 
 When the `<select>` is in its `open` state the popup should
 
@@ -239,13 +234,11 @@ When the `<select>` is in its `open` state the popup should
 positioning as described above.
 
 #### Use with Assistive Technology <a class="link" id="assistive-tech"></a>
-=======
 
 Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
 [HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
 
 ### Security <a class="link" id="security"></a>
-=======
 
 #### Avoiding UI spoofing
 
@@ -259,22 +252,17 @@ This also **MUST** apply to embedded content, such as an `<iframe>` as it may tr
 site it is being embedded on.
 
 ### Open Questions <a class="link" id="open-questions"></a>
-=======
 
 - Provide arbitrary HTML into `<option>` elements
   - What is the value of an option with complex content? [[Issue 69](https://github.com/WICG/open-ui/issues/69)]
   - How does focus work with focusable children within the control?
   - How does form validation work?
 
----
-
 ## Resources
 
 - [MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
 - [MDN Reference of HTMLSelectElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement)
 - [WHATWG Living Standard on &ltSelect&gt](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)
-
----
 
 <br />
 
