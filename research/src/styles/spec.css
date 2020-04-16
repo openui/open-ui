@@ -1,0 +1,25 @@
+.question {
+    background: #F7F781;
+    position: relative;
+    display: flex;
+    counter-increment: questions;
+}
+
+.question::before {
+    background: #FFDF3F;
+    content: "QUESTION " counter(questions);
+    width: max-content;
+    padding: 0 .5em;
+    margin-right: .5em;
+    font-weight: bold;
+}
+
+.link {
+    display: inline-block;
+    font-family: sans-serif;
+    color: #ccc;
+}
+
+.link::before {
+    content: "#";
+}
