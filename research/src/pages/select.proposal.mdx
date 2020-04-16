@@ -5,6 +5,7 @@ path: /components/select
 pathToResearch: /components/select.research
 ---
 
+import '../styles/spec.css'
 import SelectAnatomy from '../components/select-anatomy'
 
 ## Overview
@@ -18,14 +19,14 @@ The `<select>` control is primarily leveraged to select an option for within a f
 when your buying a shirt you may be provided with a `<select>` that has options for sizes that you
 then select the appropriate one for you.
 
-## Prior Art/Examples
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
 
 - [Ant Design](https://ant.design/components/select/)
 - [Carbon Design System](https://www.carbondesignsystem.com/components/select/code/)
 - [FAST DNA](https://explore.fast.design/components/select)
 - [Atlas Kit](https://atlaskit.atlassian.com/packages/core/select)
 
-## &lt;select&gt; Attributes
+## &lt;select&gt; Attributes <a href="#attributes" id="attributes"></a>
 
 | Attribute Name | Type     | Default Value                         | Description                                                                                    |
 | -------------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -38,7 +39,7 @@ then select the appropriate one for you.
 | `required`     | `bool`   | `false`                               | A value must be provided for the control if set to `true`                                      |
 | `size`         | `int`    | `0`                                   | If the `<select>` is shown with a scrollbar, this represents how many `<option>`s are visible. |
 
-## &lt;select&gt; Methods
+## &lt;select&gt; Methods <a href="#methods" id="methods"></a>
 
 | Name                                                                                                  | Description                                                                                                                                              |
 | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -88,19 +89,32 @@ then select the appropriate one for you.
 | `text`            | `string`                                                                            | Contains the text content of the element                                                                          |                                                                            |
 | `value`           | `string`                                                                            | `textContent` property                                                                                            | The value of the `value` attribute                                         |
 
-### Anatomy <a class="link" id="anatomy"></a>
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
 
-#### Diagram <a class="link" id="diagram"></a>
+#### Diagram <a class="link" href="#diagram" id="diagram"></a>
 
 <SelectAnatomy />
 
-#### Structure <a class="link" id="structure"></a>
+#### Structure <a class="link" href="#structure" id="structure"></a>
 
 - `<select>` - The root element that contains the button and popup **[required]**
 - `<optgroup>` - Groups `<options>` together with a label **[optional]**
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user **[required]**
 
-#### CSS Parts
+### Content allowed within anatomy
+
+The following interactive elements are **NOT** permitted within a `<select>` or its
+children:
+
+- button
+- datalist
+- input
+- meter
+- progress
+- select
+- textarea
+
+<p class="question">Should &lt;a&gt; and &lt;output&gt; be included?</p>
 
 ## Behavior
 
@@ -112,16 +126,16 @@ This state is applied to the `<select>` when the popup is visible to the user.
 
 #### required
 
-Applies when the `required` attribute is set to `true`
+An `<option>` from the `<select>` must be selected when the `required` attribute is set to `true`
 
 #### valid
 
-Set when the element meets all its validation constraints,
+The `<select>` meets all its validation constraints,
 and is therefore considered to be valid.
 
 #### invalid <a class="link" id="states-invalid"></a>
 
-Set when the element does not meet its validation constraints,
+The `<select>` does not meet its validation constraints,
 and is therefore considered to be invalid.
 
 ### Interaction &amp; transition of states
@@ -152,8 +166,10 @@ When the `<select>` is in its `open` state the popup should
 
 - Open in the direction that has the most real estate
 
-[QUESTION - Needs research]: Some frameworks allow a forced directionality with the default being an auto
-positioning as described above.
+<p class="question">
+  Some frameworks allow a forced directionality with the default being an auto positioning as
+  described above.
+</p>
 
 #### Use with Assistive Technology <a class="link" id="assistive-tech"></a>
 
