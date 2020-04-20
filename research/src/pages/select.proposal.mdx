@@ -97,34 +97,40 @@ then select the appropriate one for you.
 
 #### Structure <a class="link" href="#structure" id="structure"></a>
 
-- `<select>` - The root element that contains the button and popup **[required]**
-- `<button>` - The button element that contains the selected value and triggers the visibility of the popup **[required]**
+- `<select>` - The root element that contains the button and listbox **[required]**
+- `<button>` - The button element that contains the selected value and triggers the visibility of the listbox **[required]**
 - `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s) **[required]**
 - `<optgroup>` - Groups `<options>` together with a label **[optional]**
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user **[required]**
 
-### Content not allowed within anatomy
+### Content not allowed within the anatomy
 
 The following interactive elements are **NOT** permitted within a `<select>` or its
 children:
 
-- button
+- button (outside of the pre-defined one)
 - datalist
-- input
+- input (all [types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input))
 - meter
 - progress
 - select
 - textarea
+- anchor
+- iframe
+- object
 
 <p class="question">Should &lt;a&gt; and &lt;output&gt; be included?</p>
+<p class="question">
+  Should this apply to the entire anatomy or solely the &lt;option&gt; and &lt;optgroup&gt; element
+</p>
 
 ## Behavior
 
-### States
+### States <a class="link" href="#states" id="states"></a>
 
 #### open
 
-This state is applied to the `<select>` when the popup is visible to the user.
+This state is applied to the `<select>` when the listbox is visible to the user.
 
 #### required
 
@@ -135,38 +141,46 @@ An `<option>` from the `<select>` must be selected when the `required` attribute
 The `<select>` meets all its validation constraints,
 and is therefore considered to be valid.
 
-#### invalid <a class="link" id="states-invalid"></a>
+#### invalid
 
 The `<select>` does not meet its validation constraints,
 and is therefore considered to be invalid.
 
 ### Interaction &amp; transition of states
 
-**Default State** <a class="link" id="default-state"></a>
+**Default State**
 
 - Show the currently selected `<option>` or the first `<option>`
-- When the user invokes the `part-button` by:
+- When the user invokes the `button` by:
   - a [pointerup](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerup_event) or
     [click](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) event is fired
   - the user presses the `space` or `enter` key
 - The state of the `<select>` is set to `open`
 
-**Open State** <a class="link" id="open-state"></a>
+**Open State**
 
 - The currently selected `<option>`, or the first if one isn't selected, should be
-  visible within the popup. This may require moving the list to accomodate popup positioning
+  visible within the listbox. This may require moving the list to accomodate listbox positioning
   and available space.
-- The user can dismiss the popup and remove the state of `open` from the `<select>` in any of the
+- The user can dismiss the listbox and remove the state of `open` from the `<select>` in any of the
   following manners:
-  - The user clicks outside of the popup
+  - The user clicks outside of the listbox
   - Presses the escape key
   - Selects one, or more (if `multiple` is true), by clicking or hitting `enter` or `space` key
 
-### Popup positioning <a class="link" id="popup-positioning"></a>
+### Listbox positioning <a class="link" href="#listbox-positioning" id="listbox-positioning"></a>
 
-When the `<select>` is in its `open` state the popup should
+When the `<select>` is in its `open` state the `listbox` should
 
-- Open in the direction that has the most real estate
+- Be positioned allow for the greatest visibility of the `listbox` as possible.
+- Let currentBox equal the `button`'s `getBoundingClientRect`
+- Let viewportHeight equal document.innerWidth
+- Let availableTop equal `viewportHeight - currentBox.top`
+- Let availableBottom equal `viewportHeight - currentBox.bottom`
+- If availableTop is greater than availableBottom:
+  - Position the `listbox`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) bottom edge with the `button`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) top edge
+- else
+  - Position the `listbox`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) top edge with the `button`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) bottom edge
 
 <p class="question">
   Some frameworks allow a forced directionality with the default being an auto positioning as
@@ -177,28 +191,29 @@ When the `<select>` is in its `open` state the popup should
 
 Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
 [HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
+[WIA-ARIA Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox) and [WIA-ARIA Listbox](https://www.w3.org/TR/wai-aria-practices-1.1/#Listbox) states and keyboard interactions
 
-### Security <a class="link" id="security"></a>
+### Security <a class="link" href="#security" id="security"></a>
 
 #### Avoiding UI spoofing
 
-If a popup is rendered outside of the viewport, then it is highly recommended to limit control over the possible
+If a listbox is rendered outside of the viewport, then it is highly recommended to limit control over the possible
 adjustments that an author can make. This is due to the developer being able to overlay their content with the
 application's UI, of which the user trusts and can result in [clickjacking](https://en.wikipedia.org/wiki/Clickjacking) due to UI spoofing.
 If the application enables the author to have complete control over its appearance,
-the implementor **MUST** render the popup within the viewport.
+the implementor **MUST** render the listbox within the viewport.
 
 This also **MUST** apply to embedded content, such as an `<iframe>` as it may try to mimick the appearance of the
 site it is being embedded on.
 
-### Open Questions <a class="link" id="open-questions"></a>
+### Open Questions <a class="link" href="#open-questions" id="open-questions"></a>
 
 - Provide arbitrary HTML into `<option>` elements
   - What is the value of an option with complex content? [[Issue 69](https://github.com/WICG/open-ui/issues/69)]
   - How does focus work with focusable children within the control?
   - How does form validation work?
 
-## Resources
+## Resources <a class="link" href="#resources" id="resources"></a>
 
 - [MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
 - [MDN Reference of HTMLSelectElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement)
