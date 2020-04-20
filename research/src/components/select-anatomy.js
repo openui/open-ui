@@ -12,7 +12,7 @@ const SelectAnatomy = () => {
           <part name="listbox">
             <slot>
               <div class="element">
-                <div class="anatomy-label">&lt;optgroup&gt;</div>
+                <div class="anatomy-label">optgroup</div>
                 <slot>
                   <part name="option">
                     <slot>Content</slot>
