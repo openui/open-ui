@@ -7,16 +7,19 @@ const SelectAnatomy = () => {
       <host class="select">
         <slot>
           <part name="button">
-            <slot>
-              Default = &lt;button&gt;currently selected value &lt;span part="icon-arrow"&gt;
-              &lt;/span&gt;&lt;/button&gt;
-            </slot>
+            <slot>Currently selected option</slot>
           </part>
-          <part name="pop-up">
-            <div class="element">
-              <div class="anatomy-label">&lt;optgroup&gt;</div>
-              <slot>Required in this slot: one or more &lt;option&gt;&lt;/option&gt elements;</slot>
-            </div>
+          <part name="listbox">
+            <slot>
+              <div class="element">
+                <div class="anatomy-label">&lt;optgroup&gt;</div>
+                <slot>
+                  <part name="option">
+                    <slot>Content</slot>
+                  </part>
+                </slot>
+              </div>
+            </slot>
           </part>
         </slot>
       </host>
