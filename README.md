@@ -28,6 +28,10 @@ There are two pillars of focus here:
 These two will iterate in a cyclic collaboration to define and develop standardized UI.
 Refer to the resources in each effort for more information.
 
+## Meetings
+
+To view the latest information on meetings and their minutes, please visit our [meetings](meetings/telecon/meetings.md) page.
+
 ## Contributing
 
 This repository is being used for work in the W3C Web Platform Incubator Community Group, governed by the [W3C Community License
