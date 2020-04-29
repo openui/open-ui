@@ -9,21 +9,25 @@ const SelectAnatomy = () => {
       <div class="component-anatomy">
         <host name="select" data-slot>
           <slot>
-            <part name="button" data-slot>
-              <slot>Currently selected option</slot>
-            </part>
-            <part name="listbox" data-slot>
-              <slot>
-                <div class="element">
-                  <div class="anatomy-label" name="optgroup" data-slot></div>
-                  <slot>
-                    <part name="option" data-slot>
-                      <slot>Content</slot>
-                    </part>
-                  </slot>
-                </div>
-              </slot>
-            </part>
+            <slot data-slot>
+              <part name="button" data-slot>
+                <slot>Currently selected option</slot>
+              </part>
+            </slot>
+            <slot data-slot>
+              <part name="listbox" data-slot>
+                <slot>
+                  <div class="element">
+                    <div class="anatomy-label" name="optgroup" data-slot></div>
+                    <slot>
+                      <part name="option" data-slot>
+                        <slot>Content</slot>
+                      </part>
+                    </slot>
+                  </div>
+                </slot>
+              </part>
+            </slot>
           </slot>
         </host>
       </div>
