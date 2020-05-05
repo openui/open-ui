@@ -38,7 +38,7 @@ A design system does not need to meet all of these criteria but it should meet m
 The design systems we've launched with we believe are representative of these criteria.
 We may not accept PRs contributing design systems that are lacking by these criteria.
 
-## Create Source JSON
+## Adding a design system
 
 Create a JSON5 file in `/sources` for the design system, like `/antd.json5`.
 Add the `$schema` key pointing to our `design-system.schema.json5` schema and complete the required fields.
@@ -53,9 +53,13 @@ Add the `$schema` key pointing to our `design-system.schema.json5` schema and co
 }
 ```
 
-### Components
+### Adding your design system's component
 
-Every UI component in the design system should be added to the components array:
+After you create the base schema file, add in each component for your design system into a `components` array that
+resides in the schema document. This information will populate the [Component Name Matrix](https://open-ui.org/analysis/component-matrix).
+
+Note: Do not document utility components. Only document components which render a user interface that can be
+experienced either visually, by keyboard, or narration.
 
 ```json5
 {
@@ -67,9 +71,6 @@ Every UI component in the design system should be added to the components array:
   components: [{ name: 'Button' }],
 }
 ```
-
-Do not document utility components.
-Only document components which render a user interface that can be experienced either visually, by keyboard, or narration.
 
 ### Concepts
 
@@ -94,7 +95,7 @@ Ignore "has a" relationships which denote _properties_, like "that button has a 
 
 :bulb: Always use kebab-case for concept names.
 
-### Images
+### Adding images to a component
 
 An image of the concept should be included with each concept.
 This allows a visual aid to be shown when the concept might need to be clarified in the specifications.
@@ -119,11 +120,21 @@ If the image requires showing motion or interaction, considering using a gif too
 
 <Image src="sui-button-animated.gif" alt="Semantic UI Animated Button" />
 
-## Create Component Page
+## Document a component using research and proposal pages
 
 Adding a component to Open UI is a research process.
 Because of this, two pages are created for each component; a research page and a proposal page.
-Create your component pages like so:
+You'll want to create both at the same time as Open UI leverages the research page to document anything
+for
+
+- Anatomy
+- States
+- Behaviors
+
+Utilize the [Component Spec Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-spec-template.mdx)
+to begin to tease the component apart.
+
+### Create your component pages like so:
 
 ```
 /src
@@ -132,7 +143,37 @@ Create your component pages like so:
     your-component.research.mdx
 ```
 
-:bulb: These will be displayed as a single page on Open UI.
+Copy the content from the [Component Spec Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-spec-template.mdx)
+and paste it into your proposal document.
+
+:bulb: These pages will be displayed as a single page on Open UI.
+
+### Research Page
+
+The research page is a place to collect, analyse, and deeply understand the data available on the component.
+
+Copy in the content from the [Component Research Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-research-template.mdx)
+
+Define your research page front matter.
+The `pathToProposal` key tells your research page where its proposal page is hosted.
+
+```
+---
+name: Test
+path: /components/test.research
+pathToProposal: /components/test
+---
+```
+
+There are some MDX components available in Open UI's docs to help analyze and understand the data collected.
+You can reference some other component doc pages for usage examples.
+Otherwise, you can collect and analyze your data more manually.
+
+For any other research that you believe will make more sense on its own, create a seperate research documents
+following `<component-name.research.<research-topic>.mdx`.
+
+Link to these documents within your research page under a section title accordingly. For example, the `<select>`
+control has research pages for behaviors.
 
 ### Proposal Page
 
@@ -150,24 +191,42 @@ pathToResearch: /components/your-component.research
 ---
 ```
 
-### Research Page
+**Working through the proposal template**
 
-The research page is a place to collect, analyse, and deeply understand the data available on the component.
+Beginning to spec a control can feel daunting and it's hard to know where to start.
+The spec template headings should be used as a guide to ensure that all aspects of creating
+a high quality control that is inclusive for all users is covered.
 
-Define your research page front matter.
-The `pathToProposal` key tells your research page where its proposal page is hosted.
+**Gaining consensus on a change**
 
-```
----
-name: Test
-path: /components/test.research
-pathToProposal: /components/test
----
-```
+Of course, merely documenting what exists does not necessarily make something a good design.
+For each normative change that you make to your spec proposal, open an issue to outline the change
+that you're proposing. You should provide any research to support the change(s) that you're proposing.
 
-There are some MDX components available in Open UI's docs to help analyze and understand the data collected.
-You can reference some other component doc pages for usage examples.
-Otherwise, you can collect and analyze your data more manually.
+**Do NOT deviate from already standardized content**
+
+Open UI is trying to define an entire control in a single location. Currently, in order to
+build a complete control you'll need to refer to specifications in WHATWG, CSSWG, and WIA-ARIA.
+Open UI will enable an author to build a control referencing a single location.
+
+While this will be helpful, Open UI should not re-define aspects of other specifications.
+If you identity an aspect of a control that exists in the majority of design systems but is
+_not_ currently in a web platform specification, you **should** define it in the Open UI spec proposal.
+Upon getting resolution of this proposal a subsequent issue should be filed against the necessary specification
+to get its addition. To make it a bit more clear, let's take a concrete example:
+
+The Open UI `<select>` proposal has a definition for an `open` state. This is currently _not_ defined
+in a web platform specification. In order for this to make it into the web platform an issue will need
+to be filed again the WHATWG HTML specification.
+
+**Note:** In order to understand how Open UI achieves consensus, please review to our [charter](https://open-ui.org/charter)
+
+## Denoting Questions
+
+There is an expectation that your proposal will have open questions. Leverage the following HTML to
+denote them, they'll be incremented automatically and pre-pended with 'Question'.
+
+`<p class="question">QUESTION</p>`
 
 ## Try it out
 
