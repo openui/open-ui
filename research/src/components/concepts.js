@@ -11,7 +11,6 @@ const Concepts = ({ component }) => {
     _.toPairs(openUIConceptsByComponent[component]),
     ([openUIName, concepts]) => -concepts.length,
   )
-  console.log(conceptsForComponent)
 
   return (
     <>
@@ -25,7 +24,6 @@ const Concepts = ({ component }) => {
         Show descriptions
       </div>
       {_.map(conceptsForComponent, ([conceptOpenUIName, concepts]) => {
-        console.log(conceptOpenUIName, { conceptOpenUIName, concepts })
         const uniqueNames = _.uniq(_.map(concepts, 'name'))
         const hasOtherNames = uniqueNames.length > 1
 

@@ -9,7 +9,6 @@ exports.onRouteUpdate = (location, prevLocation) => {
 }
 
 exports.onClientEntry = (...args) => {
-  console.log('onClientEntry')
   // Add anchors on DOMContentLoaded
   document.addEventListener('DOMContentLoaded', () => {
     anchors.add()
