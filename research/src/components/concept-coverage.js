@@ -2,23 +2,24 @@ import React from 'react'
 import _ from 'lodash'
 import { sourceNames, getSourcesWithComponentConcept } from '../sources'
 
-const ConceptCoverage = ({ component, concept }) => {
-  const withConcept = getSourcesWithComponentConcept(component, concept)
+const indicatorStyle = {
+  display: 'inline-flex',
+  marginRight: '1px',
+  width: '4px',
+  height: '8px',
+  borderRadius: '2px',
+}
+
+const ConceptCoverage = ({ component, conceptName, openUIConceptName }) => {
+  const withConcept = getSourcesWithComponentConcept(component, conceptName, openUIConceptName)
   const withoutConcept = _.difference(sourceNames, withConcept)
+
   return (
     <div style={{ display: 'inline-flex', verticalAlign: 'middle' }}>
       {_.map(withConcept, sourceName => (
         <div
           key={sourceName}
-          style={{
-            display: 'inline-flex',
-            marginRight: '1px',
-            padding: '4px 2px',
-            color: 'white',
-            fontSize: 10,
-            textTransform: 'uppercase',
-            background: '#6C6',
-          }}
+          style={{ ...indicatorStyle, background: '#6C6' }}
           title={sourceName}
         />
       ))}
@@ -26,15 +27,7 @@ const ConceptCoverage = ({ component, concept }) => {
       {_.map(withoutConcept, sourceName => (
         <div
           key={sourceName}
-          style={{
-            display: 'inline-flex',
-            marginRight: '1px',
-            padding: '4px 2px',
-            color: 'white',
-            fontSize: 10,
-            textTransform: 'uppercase',
-            background: '#C66',
-          }}
+          style={{ ...indicatorStyle, background: '#ddd' }}
           title={sourceName}
         />
       ))}

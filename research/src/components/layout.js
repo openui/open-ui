@@ -5,6 +5,7 @@ import { MDXProvider } from '@mdx-js/react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import vsDark from 'prism-react-renderer/themes/vsDark'
 
+import './global.css'
 import Header from './header'
 import Navigation from './navigation'
 import ComponentLayout from './component-layout'
@@ -69,7 +70,7 @@ const Layout = ({ children, pageContext }) => {
                 maxWidth: '1200px',
               }}
             >
-              <Navigation style={{ marginRight: '1em' }} />
+              <Navigation style={{ marginRight: '2em' }} />
 
               <div style={{ flex: '1' }}>
                 <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>

@@ -3,54 +3,56 @@ import React from 'react'
 import { getImagesForComponentConcept } from '../sources'
 import Image from './image'
 
-const Specimens = ({ component, concept }) => {
-  const images = getImagesForComponentConcept(component, concept)
-  const hasImages = !_.isEmpty(images)
+const Specimens = ({ component, conceptName, showDescriptions }) => {
+  const images = getImagesForComponentConcept(component, conceptName)
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        marginBottom: '8px',
-        border: '1px solid #ccc',
-      }}
-    >
-      {images.map((image, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            flex: '0 0 auto',
-            flexDirection: 'column',
-            padding: hasImages ? '8px' : '16px',
-            textAlign: 'center',
-          }}
-        >
-          <div style={{ margin: 'auto', padding: '4px' }}>
-            <Image
-              src={image.image}
-              title={image.image}
-              alt={`An image of the ${concept} concept on a ${component} component in ${image.sourceName}.`}
-            />
-          </div>
+    <div style={{ display: 'flex', flexWrap: 'wrap', border: '1px solid #ccc' }}>
+      {images.map(image => {
+        const hasOverrideName = image.name !== image.openUIName
+
+        return (
           <div
+            key={image.image}
             style={{
-              position: 'relative',
-              padding: '4px 8px',
-              minWidth: '120px',
-              textTransform: 'uppercase',
-              fontSize: '11px',
-              lineHeight: 1,
-              whiteSpace: 'nowrap',
-              color: 'rgba(0, 0, 0, 0.6)',
-              borderTop: '1px solid #ccc',
+              display: 'flex',
+              flex: '0 0 auto',
+              maxWidth: '100%',
+              flexDirection: 'column',
+              padding: '16px',
+              textAlign: 'center',
             }}
           >
-            {image.sourceName}
+            <div style={{ margin: 'auto auto 0 auto', padding: '8px' }}>
+              <Image
+                src={image.image}
+                title={image.image}
+                alt={`An image of the ${conceptName} concept on a ${component} component in ${image.sourceName}.`}
+              />
+            </div>
+            <div
+              style={{
+                position: 'relative',
+                padding: '4px 8px',
+                minWidth: '120px',
+                fontSize: showDescriptions ? '14px' : '12px',
+                lineHeight: 1,
+                whiteSpace: 'nowrap',
+                color: 'rgba(0, 0, 0, 0.5)',
+                borderTop: '1px solid #ccc',
+              }}
+            >
+              <label>{image.sourceName}</label>
+              {hasOverrideName && ' '}
+              {hasOverrideName && <strong>{image.name}</strong>}
+              {showDescriptions && <br />}
+              {showDescriptions && (
+                <div style={{ fontSize: '12px' }}>{image.description || '...'}</div>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
