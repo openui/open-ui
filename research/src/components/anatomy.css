@@ -25,19 +25,26 @@
 
 .component-anatomy host,
 .component-anatomy slot,
-.component-anatomy part {
-  background: rgba(61, 159, 160, 0.75);
+.component-anatomy part,
+.component-anatomy .element {
+  background: rgba(12, 85, 87, 0.2);
   min-height: 25px;
-  border: 2px solid;
+  border: 1px solid black;
   display: block;
   margin: 1em;
   padding: 0.5em;
   position: relative;
 }
 
+.component-anatomy part,
+.component-anatomy .element {
+  border: 2px solid black;
+}
+
 .component-anatomy host::before,
 .component-anatomy slot::before,
-.component-anatomy part::before {
+.component-anatomy part::before,
+.anatomy-label::before {
   display: block;
   position: absolute;
   top: 0.1em;
@@ -48,25 +55,34 @@
   color: white;
   left: 0;
   top: 0;
-}
-
-.component-anatomy host::before {
-  content: '::host';
-}
-
-.component-anatomy slot {
-  background: rgba(253, 230, 34, 1);
-  text-align: center;
+  content: attr(name);
 }
 
 .component-anatomy slot::before {
-  content: 'slot';
+  content: "slot";
 }
 
-.component-anatomy part {
-  background: rgba(19, 215, 81, 0.75);
+.component-anatomy host {
+  border: 5px solid black;
 }
 
-.component-anatomy part::before {
-  content: '::part-' attr(name);
+.component-anatomy slot {
+  text-align: center;
+  border: 1px dashed black;
+  color: white;
+}
+
+#show-slots:not(:checked) ~ .component-anatomy [data-slot]::before {
+  content: attr(name) " [has slot]";
+}
+
+#show-slots:not(:checked) ~ .component-anatomy slot::before {
+  display: none;
+}
+
+#show-slots:not(:checked) ~ .component-anatomy slot {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
 }

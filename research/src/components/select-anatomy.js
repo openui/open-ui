@@ -3,15 +3,34 @@ import './anatomy.css'
 
 const SelectAnatomy = () => {
   return (
-    <div className="component-anatomy">
-      <host>
-        <part name="button">
-          <slot>{'Default = <button>${value}<span part="icon-arrow"></span></button>'}</slot>
-        </part>
-        <part name="pop-up">
-          <slot>{'Default = <option></option>'}</slot>
-        </part>
-      </host>
+    <div class="component-anatomy-wrapper">
+      <input type="checkbox" id="show-slots" />
+      <label for="show-slots"> Show slots</label>
+      <div class="component-anatomy">
+        <host name="select" data-slot>
+          <slot>
+            <slot data-slot>
+              <part name="button" data-slot>
+                <slot>Currently selected option</slot>
+              </part>
+            </slot>
+            <slot data-slot>
+              <part name="listbox" data-slot>
+                <slot>
+                  <div class="element">
+                    <div class="anatomy-label" name="optgroup" data-slot></div>
+                    <slot>
+                      <part name="option" data-slot>
+                        <slot>Content</slot>
+                      </part>
+                    </slot>
+                  </div>
+                </slot>
+              </part>
+            </slot>
+          </slot>
+        </host>
+      </div>
     </div>
   )
 }
