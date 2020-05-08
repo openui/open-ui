@@ -43,13 +43,13 @@ const Concepts = ({ component }) => {
                 <ConceptCoverage
                   component={component}
                   openUIConceptName={conceptOpenUIName}
-                  conceptName={conceptOpenUIName}
+                  conceptName={uniqueNames[0]}
                 />
               )}
             </h3>
             {hasOtherNames && (
               <div style={{ color: '#777', lineHeight: 1, marginBottom: '.5em' }}>
-                {uniqueNames.map(otherName => (
+                {uniqueNames.map((otherName) => (
                   <div key={otherName}>
                     <ConceptCoverage
                       component={component}
