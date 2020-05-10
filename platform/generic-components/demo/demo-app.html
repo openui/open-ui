@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="Description" content="Put your description here.">
+    <link rel="stylesheet" type="text/css" href="../../demo/demo-app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+
+    <style>
+      generic-skiplink:not(:defined), generic-disclosure:not(:defined), generic-tabs:not(:defined), generic-switch:not(:defined), generic-alert:not(:defined) {
+        display: none;
+      }
+    </style>
+    
+    <title>generic-components</title>
+  </head>
+
+  <body>
+    <div class="app">
+      <div class="banner">
+        <generic-skiplink for="main">Skip to main content</generic-skiplink>
+        <h1><a href="/demo/demo-app.html">Showcase</a></h1>
+      </div>
+      <div class="sidebar">
+        <generic-tabs>
+          <button class="panel-button" slot="tab">info</button>
+          <div slot="panel">
+            <h2>Showcase</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            <button id="invoker" class="dialog-button centered">Open a dialog!</button>
+            <generic-disclosure>
+              <button slot="toggle">About</button>
+              <p slot="detail">Some content</p>
+            </generic-disclosure>
+
+            <generic-disclosure>
+              <button slot="toggle">Sources</button>
+              <p slot="detail">Some more content</p>
+            </generic-disclosure>
+
+            <generic-disclosure>
+              <button slot="toggle">Credits</button>
+              <p slot="detail">And some credits</p>
+            </generic-disclosure>
+          </div>
+
+          <button class="panel-button" slot="tab">settings</button>
+          <div slot="panel">
+            <h2>Settings</h2>
+            <generic-switch></generic-switch>
+            <generic-switch></generic-switch>
+            <generic-switch id="switchEl">Dont toggle me</generic-switch>
+            <generic-alert id="switchAlert" hidden>❌ I said don't toggle me!</generic-alert>
+          </div>
+
+          <button class="panel-button" slot="tab">update</button>
+          <div slot="panel">
+            <h2>Update</h2>
+            <generic-alert>
+              ✨ Hey! Listen! Here's some important info.
+            </generic-alert>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+          </div>
+
+          <button class="panel-button" slot="tab">contribute</button>
+          <div slot="panel">
+            <h2>Contribute</h2>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <generic-accordion>
+              <button>Design</button>
+              <div role="region">
+                <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?</p>
+                <a href="/">Click here to join</a>
+                <p>Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+              </div>
+    
+              <button>Frontend</button>
+              <div role="region">Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</div>
+    
+              <button>Backend</button>
+              <div role="region">Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</div>
+            </generic-accordion>
+          </div>
+        </generic-tabs>
+      </div>
+
+      <main id="main" class="content">
+        <h2>Here's some content!</h2>
+        <p>This is a simple showcase app built with generic-components.</p>
+        <p>The goal of this project is to create a common library of generic web components, that are accessible, framework agnostic, easy to style, and easy to consume.</p>
+        <p>The components in this repo are based on <a href="https://www.w3.org/TR/wai-aria-practices/">WAI Aria practices.</a></p>
+        <a href="/index.html">Built with generic-components</a>
+      </main>
+    </div>
+    <script type="module">
+      import { dialog } from '../generic-dialog/dialog.js';
+
+      switchEl.addEventListener('checked-changed', (e) => {
+        if(e.detail) {
+          switchAlert.style.display = 'block';
+        } else {
+          switchAlert.style.display = 'none';
+        }
+      });
+
+      invoker.addEventListener('click', (e) => {
+        dialog.open({
+          invokerNode: e.target,
+          content: (dialogNode) => {
+            dialogNode.style.width = '400px';
+            dialogNode.style.height = '400px';
+            dialogNode.style.padding = '20px';
+            dialogNode.style.backgroundColor = 'var(--col-light)';
+            dialogNode.style.color = 'white';
+
+            dialogNode.innerHTML = `
+              <h1>I'm a dialog!</h1>
+              <p>And here is some dialog content</p>
+            `;
+
+            const button = document.createElement('button');
+            button.innerHTML = 'Close';
+            button.classList.add('dialog-button');
+  
+            button.addEventListener('click', () => {
+              dialog.close();
+            })
+  
+            dialogNode.appendChild(button);
+          }
+        })
+      })
+    </script>
+
+    <script type="module" src="../generic-tabs.js"></script>
+    <script type="module" src="../generic-accordion.js"></script>
+    <script type="module" src="../generic-disclosure.js"></script>
+    <script type="module" src="../generic-skiplink.js"></script>
+    <script type="module" src="../generic-alert.js"></script>
+    <script type="module" src="../generic-switch.js"></script>
+  </body>
+</html>

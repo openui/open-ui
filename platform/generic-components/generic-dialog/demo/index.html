@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="Description" content="Put your description here.">
+  <link rel="stylesheet" type="text/css" href="../../demo/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css">
+  <script src="https://unpkg.com/prismjs@1.20.0/prism.js"></script>
+  <style>
+    generic-dialog:not(:defined) {
+      display: none;
+    }
+  </style>
+
+  <title>generic-components</title>
+</head>
+
+<body>
+  <div class="app">
+    <div class="nav">
+      <h1 class="title"><a href="/index.html">generic</a></h1>
+      <nav>
+        <ul>
+          <li>
+            <a href="/demo/demo-app.html">showcase app</a>
+          </li>
+          <hr>
+          <li>
+            <a href="/generic-accordion/demo/index.html">generic-accordion</a>
+          </li>
+          <li>
+            <a href="/generic-alert/demo/index.html">generic-alert</a>
+          </li>
+          <li>
+            <a href="/generic-dialog/demo/index.html">generic-dialog</a>
+          </li>
+          <li>
+            <a href="/generic-disclosure/demo/index.html">generic-disclosure</a>
+          </li>
+          <li>
+            <a href="/generic-listbox/demo/index.html">generic-listbox</a>
+          </li>
+          <li>
+            <a href="/generic-skiplink/demo/index.html">generic-skiplink</a>
+          </li>
+          <li>
+            <a href="/generic-switch/demo/index.html">generic-switch</a>
+          </li>
+          <li>
+            <a href="/generic-tabs/demo/index.html">generic-tabs</a>
+          </li>
+          <li>
+            <a href="/generic-tooltip/demo/index.html">generic-tooltip</a>
+          </li>
+          <li>
+            <a href="/generic-visually-hidden/demo/index.html">generic-visually-hidden</a>
+          </li>
+          <hr>
+          <li>
+            <a href="https://github.com/WICG/open-ui">Github</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <main class="content">
+      <h1>generic-dialog</h1>
+      <a href="https://www.w3.org/TR/wai-aria-practices/#dialog_modal">WAI ARIA Practices</a>
+      <br/>
+      <br/>
+
+      <p class="description">A dialog is a window overlaid on either the primary window or another dialog window. Windows under a modal dialog are inert.</p>
+      <h2>Usage:</h2>
+      <p>You can use the dialog through a JavaScript API or as a web component.</p>
+
+      <h3>Closes on escape, and outside click:</h3>
+      <div class="demo">
+        <button id="defaultExample">open</button><br/>
+      </div>
+
+      <h3>Closes on escape:</h3>
+      <div class="demo">
+        <button id="closeOnEscape">open</button><br/>
+      </div>
+
+      <h3>Only closes on button click:</h3>
+      <div class="demo">
+        <button id="closeOnButtonClick">open</button><br/>
+      </div>
+
+      <h3>Rendered with lit-html:</h3>
+      <div class="demo">
+        <button id="litHtml">open</button><br/>
+      </div>
+
+      <h3>Usage as web component:</h3>
+      <div class="demo">
+        <generic-dialog>
+          <button slot="invoker">open</button>
+          <div slot="content">
+            <h1>Im used as a web component!</h1>
+            <p>dialog content</p>
+          </div>
+        </generic-dialog>
+      </div>
+
+      <script type="module">
+        import { dialog } from '../dialog.js';
+        import '../../generic-dialog.js';
+        import { render, html } from 'https://unpkg.com/lit-html@1.2.1/lit-html.js?module';
+
+        defaultExample.addEventListener('click', (e) => {
+          dialog.open({
+            invokerNode: e.target,
+            content: (dialogNode) => {
+              dialogNode.style.width = '400px';
+              dialogNode.style.height = '400px';
+
+              dialogNode.innerHTML = 'default example, closes on escape, and on outside click';
+
+              const button = document.createElement('button');
+              button.innerHTML = 'close';
+
+              button.addEventListener('click', () => {
+                dialog.close();
+              })
+
+              dialogNode.appendChild(button);
+            }
+          });
+        });
+
+        closeOnEscape.addEventListener('click', (e) => {
+          dialog.open({
+            invokerNode: e.target,
+            closeOnOutsideClick: false,
+            content: (dialogNode) => {
+              dialogNode.style.width = '400px';
+              dialogNode.style.height = '400px';
+
+              dialogNode.innerHTML = 'only closes on escape';
+              const button = document.createElement('button');
+              button.innerHTML = 'close';
+
+              button.addEventListener('click', () => {
+                dialog.close();
+              })
+
+              dialogNode.appendChild(button);
+            }
+          });
+        });
+
+        closeOnButtonClick.addEventListener('click', (e) => {
+          dialog.open({
+            invokerNode: e.target,
+            closeOnEscape: false,
+            closeOnOutsideClick: false,
+            content: (dialogNode) => {
+              dialogNode.style.width = '400px';
+              dialogNode.style.height = '400px';
+
+              dialogNode.innerHTML = 'doesnt close on escape or outside click';
+              const button = document.createElement('button');
+              button.innerHTML = 'close';
+
+              button.addEventListener('click', () => {
+                dialog.close();
+              })
+
+              dialogNode.appendChild(button);
+            }
+          });
+        });
+
+        litHtml.addEventListener('click', (e) => {
+          dialog.open({
+            invokerNode: e.target,
+            content: (dialogNode) => {
+              dialogNode.style.width = '400px';
+              dialogNode.style.height = '400px';
+
+              render(html`
+                <h1>Im rendered by lit-html!</h1>
+                <button @click=${() => dialog.close()}>Close</button>
+                <button @click=${() => dialog.close()}>Close</button>
+                <button @click=${() => dialog.close()}>Close</button>
+              `, dialogNode);
+            }
+          });
+        });
+
+        dialog.addEventListener('dialog-opened', () => {
+          console.log('dialog opened!');
+        });
+
+        dialog.addEventListener('dialog-closed', () => {
+          console.log('dialog closed!');
+        });
+      </script>
+    </main>
+  </div>
+
+</body>
+</html>

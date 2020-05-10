@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="Description" content="Put your description here.">
+  <link rel="stylesheet" type="text/css" href="../../demo/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css">
+  <script src="https://unpkg.com/prismjs@1.20.0/prism.js"></script>
+  <style>
+    generic-tabs:not(:defined) {
+      display: none;
+    }
+
+    button[selected] {
+      border-bottom: solid 3px blue;
+    }
+  </style>
+
+  <title>generic-components</title>
+</head>
+
+<body>
+  <div class="app">
+    <div class="nav">
+      <h1 class="title"><a href="/index.html">generic</a></h1>
+      <nav>
+        <ul>
+          <li>
+            <a href="/demo/demo-app.html">showcase app</a>
+          </li>
+          <hr>
+          <li>
+            <a href="/generic-accordion/demo/index.html">generic-accordion</a>
+          </li>
+          <li>
+            <a href="/generic-alert/demo/index.html">generic-alert</a>
+          </li>
+          <li>
+            <a href="/generic-dialog/demo/index.html">generic-dialog</a>
+          </li>
+          <li>
+            <a href="/generic-disclosure/demo/index.html">generic-disclosure</a>
+          </li>
+          <li>
+            <a href="/generic-listbox/demo/index.html">generic-listbox</a>
+          </li>
+          <li>
+            <a href="/generic-skiplink/demo/index.html">generic-skiplink</a>
+          </li>
+          <li>
+            <a href="/generic-switch/demo/index.html">generic-switch</a>
+          </li>
+          <li>
+            <a href="/generic-tabs/demo/index.html">generic-tabs</a>
+          </li>
+          <li>
+            <a href="/generic-tooltip/demo/index.html">generic-tooltip</a>
+          </li>
+          <li>
+            <a href="/generic-visually-hidden/demo/index.html">generic-visually-hidden</a>
+          </li>
+
+          <hr>
+
+          <li>
+            <a href="https://github.com/WICG/open-ui">Github</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <main id="main" class="content">
+      <h1>generic-tabs</h1>
+      <a href="https://www.w3.org/TR/wai-aria-practices/#tabpanel">WAI ARIA Practices</a>
+      <br/>
+      <br/>
+      <p class="description">Tabs are a set of layered sections of content, known as tab panels, that display one panel of content at a time.</p>
+      <h2>Usage:</h2>
+      <p>The tabs component requires a button with a <code>slot="tab"</code> as trigger, and a corresponding panel node with a <code>slot="panel"</code>.</p>
+
+      <h3>Default:</h3>
+      <details>
+          <summary>Show code</summary>
+      <pre><code class="language-markup"><script type="prism-html-markup"><generic-tabs label="people">
+  <button slot="tab">
+    John
+  </button>
+  <div slot="panel">
+    <p>My name is John. I like dogs.</p>
+    <button>click</button>
+    <p>some text</p>
+    <button>click</button>
+  </div>
+
+  <button slot="tab">
+    Mark
+  </button>
+  <div slot="panel">
+    <p>And I am Mark. I dont like dogs!</p>
+  </div>
+
+  <button slot="tab">
+    Ron
+  </button>
+  <div slot="panel">
+    <p>Hello I am Ron</p>
+    <a href="/">foo</a>
+    <p>i like cats</p>
+    <button>click</button>
+  </div>
+</generic-tabs>
+</script></code></pre>
+</details>
+
+      <div class="demo">
+        <generic-tabs label="people">
+          <button slot="tab">
+            John
+          </button>
+          <div slot="panel">
+            <p>My name is John. I like dogs.</p>
+            <button>click</button>
+            <p>some text</p>
+            <button>click</button>
+          </div>
+
+          <button slot="tab">
+            Mark
+          </button>
+          <div slot="panel">
+            <p>And I am Mark. I dont like dogs!</p>
+          </div>
+
+          <button slot="tab">
+            Ron
+          </button>
+          <div slot="panel">
+            <p>Hello I am Ron</p>
+            <a href="/">foo</a>
+            <p>i like cats</p>
+            <button>click</button>
+          </div>
+        </generic-tabs>
+      </div>
+
+
+
+      <h3>Selected:</h3>
+      <details>
+          <summary>Show code</summary>
+      <pre><code class="language-markup"><script type="prism-html-markup"><generic-tabs selected="1" label="people">
+  <button slot="tab">
+      Jim
+    </button>
+    <div slot="panel">
+      <p>And my name is Jim. Im not opened by default.</p>
+    </div>
+
+    <button slot="tab">
+      Jack
+    </button>
+    <div slot="panel">
+      <p>I am Jack. I am opened by default.</p>
+    </div>
+</generic-tabs>
+</script></code></pre>
+</details>
+      <div class="demo">
+        <generic-tabs selected="1" label="people">
+          <button slot="tab">
+            Jim
+          </button>
+          <div slot="panel">
+            <p>And my name is Jim. Im not opened by default.</p>
+          </div>
+
+          <button slot="tab">
+            Jack
+          </button>
+          <div slot="panel">
+            <p>I am Jack. I am opened by default.</p>
+          </div>
+        </generic-tabs>
+      </div>
+<!--
+      <div id="foo"></div>
+
+      <script type="module">
+        import { render, html } from 'https://unpkg.com/lit-html@1.2.1/lit-html.js?module';
+        render(html`
+          <h2>Rendered with lit-html:</h2>
+
+          <p>Default:</p>
+          <div class="demo">
+            <generic-tabs>
+              <button slot="tab">
+                Jim
+              </button>
+              <div slot="panel">
+                My name is Jim.
+              </div>
+
+              <button slot="tab">
+                Jack
+              </button>
+              <div slot="panel">
+                And I am Jack.
+              </div>
+            </generic-tabs>
+          </div>
+
+
+          <p>Selected:</p>
+          <div class="demo">
+            <generic-tabs selected="1">
+              <button slot="tab">
+                Jim
+              </button>
+              <div slot="panel">
+                My name is Jim.
+              </div>
+
+              <button slot="tab">
+                Jack
+              </button>
+              <div slot="panel">
+                And I am Jack.
+              </div>
+            </generic-tabs>
+          </div>
+        `, foo);
+      </script> -->
+      <script type="module" src="../../generic-tabs.js"></script>
+    </main>
+  </div>
+
+</body>
+</html>
+

@@ -1,0 +1,61 @@
+{
+  "name": "@open-ui/generic-components",
+  "version": "0.0.1",
+  "description": "Set of generic, accessible, zero dependency components",
+  "author": "Pascal Schilp",
+  "license": "MIT",
+  "main": "index.js",
+  "module": "index.js",
+  "homepage": "https://modest-bhaskara-e8742f.netlify.app/",
+  "repository": "https://github.com/WICG/open-ui/",
+  "scripts": {
+    "start": "es-dev-server --node-resolve --open --watch",
+    "lint:eslint": "eslint --ext .js . --ignore-path .gitignore --ignore-pattern web_modules/**/*.*",
+    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore --ignore-pattern web_modules/**/*.*",
+    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
+    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .prettierignore",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "format": "npm run format:eslint && npm run format:prettier",
+    "test": "karma start --coverage",
+    "test:watch": "karma start --auto-watch=true --single-run=false  --browsers=Chrome --single-run=false"
+  },
+  "devDependencies": {
+    "@open-wc/eslint-config": "^1.0.0",
+    "@open-wc/prettier-config": "^0.1.10",
+    "@open-wc/testing": "^2.5.8",
+    "@open-wc/testing-karma": "^3.0.0",
+    "@open-wc/testing-karma-bs": "^1.0.0",
+    "es-dev-server": "^1.5.0",
+    "eslint": "^6.1.0",
+    "husky": "^1.0.0",
+    "lint-staged": "^8.0.0",
+    "lit-html": "1.1.1",
+    "sinon": "^7.5.0",
+    "webpack-merge": "^4.1.5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@open-wc/eslint-config",
+      "eslint-config-prettier"
+    ],
+    "rules": {
+      "wc/no-constructor-attributes": "off"
+    }
+  },
+  "prettier": "@open-wc/prettier-config",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix --ignore-pattern web_modules/**/*.*",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "@a11y/focus-trap": "^1.0.5"
+  }
+}

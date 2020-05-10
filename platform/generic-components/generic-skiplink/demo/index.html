@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="Description" content="Put your description here.">
+  <link rel="stylesheet" type="text/css" href="../../demo/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css">
+  <script src="https://unpkg.com/prismjs@1.20.0/prism.js"></script>
+  <style>
+    generic-skiplink:not(:defined) {
+      display: none;
+    }
+
+    .custom-style::part(anchor) {
+      background-color: lightgrey;
+      border: solid 2px blue;
+    }
+
+    #foo {
+      height: 0;
+    }
+  </style>
+
+  <title>generic-components</title>
+</head>
+
+<body>
+  <generic-skiplink for="main"></generic-skiplink>
+  <generic-skiplink for="main" class="custom-style">Go to main content</generic-skiplink>
+  <div id="foo"></div>
+
+  <div class="app">
+    <div class="nav">
+      <h1 class="title"><a href="/index.html">generic</a></h1>
+      <nav>
+        <ul>
+          <li>
+            <a href="/demo/demo-app.html">showcase app</a>
+          </li>
+          <hr>
+          <li>
+            <a href="/generic-accordion/demo/index.html">generic-accordion</a>
+          </li>
+          <li>
+            <a href="/generic-alert/demo/index.html">generic-alert</a>
+          </li>
+          <li>
+            <a href="/generic-dialog/demo/index.html">generic-dialog</a>
+          </li>
+          <li>
+            <a href="/generic-disclosure/demo/index.html">generic-disclosure</a>
+          </li>
+          <li>
+            <a href="/generic-listbox/demo/index.html">generic-listbox</a>
+          </li>
+          <li>
+            <a href="/generic-skiplink/demo/index.html">generic-skiplink</a>
+          </li>
+          <li>
+            <a href="/generic-switch/demo/index.html">generic-switch</a>
+          </li>
+          <li>
+            <a href="/generic-tabs/demo/index.html">generic-tabs</a>
+          </li>
+          <li>
+            <a href="/generic-tooltip/demo/index.html">generic-tooltip</a>
+          </li>
+          <li>
+            <a href="/generic-visually-hidden/demo/index.html">generic-visually-hidden</a>
+          </li>
+          <hr>
+          <li>
+            <a href="https://github.com/WICG/open-ui">Github</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <main id="main" class="content">
+      <h1>generic-skiplink</h1>
+      <a href="https://webaim.org/techniques/skipnav/">WebAIM</a>
+      <br/>
+      <br/>
+
+      <p class="description">Skiplinks allow users to quickly reach the main content of a page.</p>
+      <h2>Usage:</h2>
+      <p>The skiplink component requires a <code>for="id"</code> attribute, this id should correspond to the id of the element you want to skip to. See the examples for more information.</p>
+      <p>You can then place the component at the top of your <code>body</code>.</p>
+
+      <h3>Example</h3>
+      <p>Try tabbing from the browser URL bar into the page, and the skiplinks will show up.</p>
+      <details><summary>Show code</summary><pre><code class="language-markup"><script type="prism-html-markup"><generic-skiplink for="main">Continue to main content</generic-skiplink>
+<main id="main"></main></script></code></pre></details>
+      <p>You can override styles like so:</p>
+      <details><summary>Show code</summary><pre><code class="language-markup"><script type="prism-html-markup"><style>
+  .custom-style::part(anchor) {
+    background-color: lightgrey;
+    border: solid 2px blue;
+  }
+</style>
+<generic-skiplink for="main" class="custom-style">Go to main content</generic-skiplink>
+<main id="main"></main></script></code></pre></details>
+
+      <!-- <script type="module">
+        import { render, html } from 'https://unpkg.com/lit-html@1.2.1/lit-html.js?module';
+        render(html`
+          <generic-skiplink for="main">Im rendered with lit-html</generic-skiplink><br/><br/>
+        `, foo);
+      </script> -->
+
+      <script type="module" src="../../generic-skiplink.js"></script>
+    </main>
+  </div>
+
+</body>
+</html>
