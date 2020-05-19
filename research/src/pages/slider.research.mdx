@@ -4,26 +4,135 @@ path: /components/slider.research
 menu: Components
 ---
 
-import Anatomy from '../components/anatomy'
-import Concepts from '../components/concepts'
-import ComponentCoverage from '../components/component-coverage'
+import Implementation from '../components/implementation'
 
-<ComponentCoverage component="Slider" />
+## Implementations
 
-## Anatomy
+<Implementation name="Material UI" src="materialui-slider" />
 
-<Anatomy component="Slider" />
+```html
+<span class="MuiSlider-root MuiSlider-colorPrimary">
+  <span class="MuiSlider-rail"></span>
+  <span class="MuiSlider-track" style="left: 0%; width: 89%;"></span>
+  <input type="hidden" value="89" />
+  <span
+    class="MuiSlider-thumb MuiSlider-thumbColorPrimary MuiSlider-active"
+    tabindex="0"
+    role="slider"
+    style="left: 89%;"
+    data-index="0"
+    aria-labelledby="continuous-slider"
+    aria-orientation="horizontal"
+    aria-valuemax="100"
+    aria-valuemin="0"
+    aria-valuenow="89"
+    data-keydown="true"
+  ></span>
+</span>
+```
 
-## Concepts
+<Implementation name="Fluent UI React" src="fluent-ui-react-slider" />
 
-<Concepts component="Slider" />
+```html
+<div
+  id="Slider305"
+  aria-valuenow="7"
+  aria-valuemin="0"
+  aria-valuemax="10"
+  aria-valuetext="7"
+  aria-disabled="false"
+  class="ms-Slider-slideBox ms-Slider-showValue slideBox-343"
+  role="slider"
+  tabindex="0"
+  data-is-focusable="true"
+  data-keydown="true"
+>
+  <div class="ms-Slider-line line-345">
+    <span class="ms-Slider-thumb thumb-456" style="left: 68.8596%;"></span>
+    <span
+      class="lineContainer-346 ms-Slider-active activeSection-457"
+      style="width: 68.8596%;"
+    ></span>
+    <span
+      class="lineContainer-346 ms-Slider-inactive inactiveSection-458"
+      style="width: 31.1404%;"
+    ></span>
+  </div>
+</div>
+```
 
-## Notes
+<!-- https://codesandbox.io/s/fluent-ui-example-6k67q?file=/example.js -->
 
-While not called out explicitly, sliders usually have a min/max value.
+<Implementation
+  name="Fluent UI React Northstar"
+  src="https://codesandbox.io/embed/fluent-ui-example-6k67q?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+/>
 
-Sliders with a filled in slide indicates whether or not the values include the preceeding value. Sliders without a filled in slide indicate an individual point is selected.
+```html
+<div class="ui-slider">
+  <div class="ui-slider__input-wrapper">
+    <span class="ui-slider__rail"></span>
+    <span class="ui-slider__track" style="width: 62%;"></span>
+    <input
+      class="ui-box ui-slider__input"
+      aria-orientation="horizontal"
+      aria-valuemin="100"
+      aria-valuemax="100"
+      aria-valuenow="62"
+      aria-valuetext="62"
+      min="0"
+      max="100"
+      step="1"
+      type="range"
+      value="62"
+    />
+    <span class="ui-slider__thumb" style="left: 62%;"></span>
+  </div>
+</div>
+```
 
-Snapping behavior is supported by some sliders. That's where there are only a select few steps and the slider jumps to those points rather than smoothly going between them.
+## Tests
 
-Most sliders support a "controlled" state where a value can be entered elsewhere and the slider will move the appropriate position that accompanies the value
+### Keyboard
+
+1. Navigate to slider using Tab key
+   **Expected:** Value 5 is narrated
+2. Press key right
+   **Expected:** Value 6 is narrated
+3. Press key right
+   **Expected:** Value 7 is narrated
+4. Press PgUp
+   **Expected:** Value 12 is narrated
+5. Press PgDown
+   **Expected:** Value 7 is narrated
+6. Press left arros
+   **Expected:** Value 6 is narrated
+7. Press left arros
+   **Expected:** Value 5 is narrated
+8. Press Home key
+   **Expected:**: Value 0 is narrated
+9. Press End key
+   **Expected:** Value 30 is narrated
+
+### Voiceover VO keys
+
+1. Navigate to slider using VO keys
+   **Expected:** Value 5 is narrated
+2. Press key right
+   **Expected:** Value 6 is narrated
+3. Press key right
+   **Expected:** Value 7 is narrated
+4. Press PgUp
+   **Expected:** Value 12 is narrated
+5. Press PgDown
+   **Expected:** Value 7 is narrated
+6. Press left arros
+   **Expected:** Value 6 is narrated
+7. Press left arros
+   **Expected:** Value 5 is narrated
+8. Press Home key
+   \*\*Expected:\88 Value 0 is narrated
+9. Press End key
+   **Expected:** Value 30 is narrated
+
+## Test runs

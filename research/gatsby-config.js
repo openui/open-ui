@@ -1,12 +1,13 @@
 const images = require('remark-images')
 const emoji = require('remark-emoji')
+const codeblocks = require('remark-code-blocks')
 
 module.exports = {
   siteMetadata: {
-    title: 'Open UI',
-    description: 'Open UI ',
-    author: 'Open UI',
-    githubURL: 'https://github.com/WICG/open-ui',
+    title: 'Open A11Y',
+    description: 'Open A11Y ',
+    author: 'Open A11Y',
+    githubURL: 'https://github.com/jurokapsiar/open-a11y',
   },
 
   plugins: [
@@ -27,7 +28,7 @@ module.exports = {
         defaultLayouts: {
           default: `${__dirname}/src/components/layout.js`,
         },
-        remarkPlugins: [images, emoji],
+        remarkPlugins: [images, emoji, codeblocks],
       },
     },
 

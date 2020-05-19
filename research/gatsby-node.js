@@ -1,4 +1,10 @@
 const _ = require('lodash')
+const express = require('express')
+
+// based on https://github.com/gatsbyjs/gatsby/issues/17761
+exports.onCreateDevServer = ({ app }) => {
+  app.use(express.static('public'))
+}
 
 exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
