@@ -1,11 +1,9 @@
 # Open A11Y
-> **Tip:** This repo is in development. Ideas and patterns you'll see here are in-progress. You are encouraged to join in and help shape the foundation of Open UI.
+> **Tip:** This repo is in development. Ideas and patterns you'll see here are in-progress. You are encouraged to join in and help shape the foundation of Open A11Y.
 
 **:rocket: Mission:** Research accessibility across component libraries.
 
-**:busts_in_silhouette: Audience:** The broader UI community including designers, engineers, and managers.
-
-Learn more at https://jurokapsiar.github.io/open-a11y.
+**:busts_in_silhouette: Audience:** The broader UI community including designers, engineers, and managers. Learn more at https://jurokapsiar.github.io/open-a11y.
 
 **:pray: Thanks to** https://open-ui.org
 
