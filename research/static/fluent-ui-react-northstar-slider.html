@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Fluent UI Slider</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="https://unpkg.com/react@16.13.1/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+    
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://www.unpkg.com/@fluentui/react-northstar@0.49.0/dist/umd/fluent-ui-react-northstar.min.js" crossorigin="anonymous"></script>
+
+    <script src="impl-header.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+const {
+  Slider,
+  Provider
+} = Fluent;
+
+function App() {
+
+    const [value, setValue] = React.useState(5);
+
+    const handleChange = (newValue) => {
+      setValue(newValue)
+    };
+
+    const valuetext = value => {
+       return `Selected ${value}`;
+    }
+
+    return (
+    <div>
+        <Slider onChange={handleChange} label={'Slider value ' + value} min={0} max={30} step={1} value={value} showValue snapToStep />
+        <Slider onChange={handleChange} styles={{ root: { height: 200 } }} label={'Vertical Slider value ' + value} min={0} max={30} step={1} value={value} showValue snapToStep vertical />
+        <Slider label="Disabled slider" min={0} max={30} step={1} defaultValue={5} showValue snapToStep disabled />
+    </div>
+  );
+}
+
+ReactDOM.render(
+    <App />,
+  document.querySelector('#root'),
+);
+    </script>
+  </body>
+</html>
