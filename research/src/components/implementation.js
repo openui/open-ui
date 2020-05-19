@@ -1,9 +1,10 @@
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { withPrefix } from 'gatsby'
 
 const Implementation = ({ name, src }) => {
-  const iframeSrc = src.indexOf('//') > 0 ? src : `/${src}.html`
+  const iframeSrc = src.indexOf('//') > 0 ? src : withPrefix(`/${src}.html`)
 
   return (
     <>

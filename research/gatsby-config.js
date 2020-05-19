@@ -10,6 +10,8 @@ module.exports = {
     githubURL: 'https://github.com/jurokapsiar/open-a11y',
   },
 
+  pathPrefix: '/open-a11y',
+
   plugins: [
     {
       resolve: `gatsby-source-filesystem`,

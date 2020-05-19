@@ -13,7 +13,8 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "serve": "gatsby build && gatsby serve",
+    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "serve": "gatsby build --prefix-paths && gatsby serve --prefix-paths",
     "start": "gatsby develop"
   },
   "husky": {
@@ -76,5 +77,8 @@
     "sharp": "^0.25.2",
     "theme-ui": "^0.3.1",
     "typography": "^0.16.19"
+  },
+  "devDependencies": {
+    "gh-pages": "^2.2.0"
   }
 }
