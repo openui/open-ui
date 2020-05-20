@@ -1,0 +1,178 @@
+---
+menu: Components
+name: File (Editor's Draft)
+path: /components/file
+pathToResearch: /components/file.research
+---
+
+import Image from '../components/image'
+
+# File Input Component Specification
+
+## Overview <a href="#overview" id="overview"></a>
+
+The File Input component is a control that provides the user with the ability
+to select local files.
+
+### Background <a href="#background" id="background"></a>
+
+File Input controls are widely used and implemented on the web. They are as of
+today, the only thing that allows an application to access the local file
+system, in a fairly limited but controlled way.
+
+### Use Cases <a href="#use-cases" id="use-cases"></a>
+
+The `<input type=file>` control is widely used to provide applications with the
+capability of reading local files on form submission, or uploading files to a
+server.
+
+#### Stylability
+
+Authors may want to replace the `&lt;button>` or `&lt;label>` contents.
+
+<Image
+  alt="Example of an input with both replaced button and label contents"
+  src="file-replaced-contents.png"
+/>
+
+### Features <a href="#features" id="features"></a>
+
+The main feature is selecting local files, potentially receiving hints from the
+website about which file kinds are allowed, for example.
+
+### Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+#### Browser implementations
+
+Browsers show an interoperable rendering for file inputs, consisting of a
+button and a label.
+
+- WebKit and Blink use an `<input type=button>`, and a magical label that
+  doesn't show up in the DOM.
+
+- Gecko uses an actual `<button tabindex=-1>` and an HTML `<label>` element.
+
+Those three implementations use some form of middle-cropping when the selected
+file name is too large.
+
+#### Custom inputs on the web
+
+Custom inputs on the web are generally achieved by hiding the original input.
+Some approach it by hiding it in a way that the user can still hit (like
+`opacity: 0`), others use JS to forward the click from some other UI element to
+the underlying file input.
+
+- [Bootstrap](https://getbootstrap.com/docs/4.0/components/forms/#file-browser)
+  uses the former approach, by generating a "Browse" button with generated
+  content.
+
+- [Carbon Design System](https://www.carbondesignsystem.com/components/file-uploader/code/)
+  uses the later.
+
+---
+
+### API <a href="#api" id="api"></a>
+
+See [the Resources section](#resources) for the specification and the MDN reference.
+
+#### Properties and Attributes <a href="#properties-attributes" id="properties-attributes"></a>
+
+See [the Resources section](#resources) for the specification and the MDN reference.
+
+#### Events <a href="#events" id="events"></a>
+
+See [the Resources section](#resources) for the specification and the MDN reference.
+
+### Appearance <a href="#appearance" id="appearance"></a>
+
+<Image alt="File Chooser Example" src="file.png" />
+
+### Anatomy <a href="#anatomy" id="anatomy"></a>
+
+TODO
+
+#### Diagram <a href="#diagram" id="diagram"></a>
+
+TODO
+
+#### DOM Structure <a href="#dom-structure" id="dom-structure"></a>
+
+```html
+<button tabindex="-1" part="file-selector-button">
+  <slot name="button">
+    <!-- Localized "Browse..." string -->
+  </slot>
+</button>
+<label part="file-selector-label">
+  <slot name="label">
+    <!-- implementation and state-dependent -->
+  </slot>
+</label>
+```
+
+The button is not tab-navigable, as the input is focused atomically, see below.
+
+#### CSS Parts <a href="#css-parts" id="css-parts"></a>
+
+| Part Name              | Description                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| `file-selector-button` | Enables styling the `&lt;button>` part without requiring it to be completely replaced via its slot. |
+| `file-selector-label`  | Enables styling the `&lt;label>` part without requiring it to be completely replaced via its slot.  |
+
+---
+
+## Behavior <a href="#behavior" id="behavior"></a>
+
+### States and Interactions <a href="#states-interactions" id="states-interactions"></a>
+
+- As a result of keyboard (either Enter or Spacebar without modifier) or mouse
+  / touch interaction (click), an implementation-dependent dialog will show
+  up. This dialog cannot be accessed by the website, but its contents and
+  appearance may depend on things like the `accept` attribute.
+
+- Dragging an file into the component may also be used to select a particular
+  file.
+
+## Accessibility <a href="#accessibility" id="accessibility"></a>
+
+File Inputs should be focusable via a keyboard navigation.
+
+#### Keyboard Navigation and Focus <a href="#keyboard-navigation" id="keyboard-navigation"></a>
+
+File input is focused atomically.
+
+<p class="question">
+
+Seems like ideally we could delegate focus to the button, or something something... Gecko used to
+do that, but I had to change it because the button exists as a result of layout (in Gecko, at
+least, that is). Also input type changes would be trickier with such a setup.
+See <a href="https://github.com/WICG/open-ui/issues/107">Issue #107</a>
+
+</p>
+
+#### Form Input <a href="#form-input" id="form-input"></a>
+
+This component integrates naturally with form submission as described in [the HTML spec](<https://html.spec.whatwg.org/#file-upload-state-(type=file)>).
+
+### Globalization <a href="#globalization" id="globalization"></a>
+
+The component reacts naturally to directionality. The initial label content and
+the button contents should be localized.
+
+### Security <a href="#security" id="security"></a>
+
+The component very intentionally doesn't expose to the outside world anything
+in the local file system that hasn't been chosen by the user.
+
+---
+
+## Resources <a href="#resources" id="resources"></a>
+
+- [MDN Reference for `<input type=file>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file)
+- [HTML Specification](<https://html.spec.whatwg.org/#file-upload-state-(type=file)>)
+
+---
+
+## Next Steps <a href="#next-steps" id="next-steps"></a>
+
+_What next steps, if any, are there? Is there some functionality that would be a nice-to-have or a common feature in other implementations that could be added but is not considered part of the MVP? Link all feature additions, modifications, bugs, or editorial change issues._
