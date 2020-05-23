@@ -5,10 +5,11 @@ menu: Components
 ---
 
 import Implementation from '../components/implementation'
+import TestRuns from '../components/testruns'
 
 ## Implementations
 
-<Implementation name="Material UI" src="materialui-slider" />
+<Implementation name="Material UI" id="materialui" component="Slider" />
 
 ```html
 <span class="MuiSlider-root MuiSlider-colorPrimary">
@@ -31,7 +32,7 @@ import Implementation from '../components/implementation'
 </span>
 ```
 
-<Implementation name="Fluent UI React" src="fluent-ui-react-slider" />
+<Implementation name="Fluent UI React" id="fluent-ui-react" component="Slider" />
 
 ```html
 <div
@@ -66,6 +67,8 @@ import Implementation from '../components/implementation'
 <Implementation
   name="Fluent UI React Northstar"
   src="https://codesandbox.io/embed/fluent-ui-example-6k67q?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  id="fluent-ui-react-northstar"
+  component="Slider"
 />
 
 ```html
@@ -91,48 +94,6 @@ import Implementation from '../components/implementation'
 </div>
 ```
 
-## Tests
-
-### Keyboard
-
-1. Navigate to slider using Tab key
-   **Expected:** Value 5 is narrated
-2. Press key right
-   **Expected:** Value 6 is narrated
-3. Press key right
-   **Expected:** Value 7 is narrated
-4. Press PgUp
-   **Expected:** Value 12 is narrated
-5. Press PgDown
-   **Expected:** Value 7 is narrated
-6. Press left arros
-   **Expected:** Value 6 is narrated
-7. Press left arros
-   **Expected:** Value 5 is narrated
-8. Press Home key
-   **Expected:**: Value 0 is narrated
-9. Press End key
-   **Expected:** Value 30 is narrated
-
-### Voiceover VO keys
-
-1. Navigate to slider using VO keys
-   **Expected:** Value 5 is narrated
-2. Press key right
-   **Expected:** Value 6 is narrated
-3. Press key right
-   **Expected:** Value 7 is narrated
-4. Press PgUp
-   **Expected:** Value 12 is narrated
-5. Press PgDown
-   **Expected:** Value 7 is narrated
-6. Press left arros
-   **Expected:** Value 6 is narrated
-7. Press left arros
-   **Expected:** Value 5 is narrated
-8. Press Home key
-   **Expected:** Value 0 is narrated
-9. Press End key
-   **Expected:** Value 30 is narrated
-
 ## Test runs
+
+<TestRuns name="Slider" />
