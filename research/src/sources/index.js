@@ -1,44 +1,30 @@
 import _ from 'lodash'
 
-import materialComponentsWeb from './materialComponentsWeb.json5'
+import sliderTests from './slider.tests.json5'
 
-// Sources
-export const sources = [materialComponentsWeb].map((source) => ({
-  ...source,
-  components: source.components.map((component) => {
-    const componentOpenUIName = component.openUIName || component.name
-    return {
-      ...component,
-      sourceName: source.name,
-      openUIName: componentOpenUIName,
-      concepts: _.map(component.concepts, (concept) => {
-        const conceptOpenUIName = concept.openUIName || concept.name
-        return {
-          ...concept,
-          sourceName: source.name,
-          componentName: componentOpenUIName,
-          openUIName: conceptOpenUIName,
-        }
-      }),
-    }
-  }),
-}))
+const allTests = [sliderTests]
 
-export const sourceNames = _.map(sources, 'name')
-export const sourcesCount = sources.length
-export const sourceComponentConceptMap = sources.reduce((acc, src) => {
-  acc[src.name] = {}
+// Tests
+export const sources = _.keyBy(
+  allTests.map((test) => ({
+    ...test,
+  })),
+  'name',
+)
 
-  _.forEach(src.components, (comp) => {
-    acc[src.name][comp.openUIName] = {}
+export const getVariantNames = (component) => {
+  const componentTests = sources[component]
+  const variantsMap = {}
+  if (componentTests) {
+    componentTests.variants.map((v) => v.names.map((n) => (variantsMap[n] = true)))
+  }
+  return Object.keys(variantsMap)
+}
 
-    _.forEach(comp.concepts, (con) => {
-      acc[src.name][comp.openUIName][con.openUIName] = con
-    })
-  })
-
-  return acc
-}, {})
+export const getComponentTestSteps = (component, variant, mode) => {
+  const componentTests = sources[component]
+  return componentTests.variants.filter((v) => v.names.indexOf(variant) >= 0)[0][mode]
+}
 
 // Components
 const componentList = _.flatMap(sources, 'components')

@@ -1,0 +1,86 @@
+{
+  "$schema": "../schemas/test.schema.json5",
+  "lastUpdated": "2019-08-22",
+  "name": "Slider",
+  "description": "Test steps for slider component",
+  "variants": [
+    {
+      "names": ["horizontal", "vertical"],
+
+      "keyboard": [
+        {
+          "key": "navigate",
+          "description": "Navigate to the slider using TAB key",
+          "expected": "Screen reader narrates label of the slider, its current value and orientation"
+        },
+        {
+          "key": "increase-right",
+          "description": "Increase value of the slider using right arrow key",
+          "expected": "Screen reader narrates increased value"
+        },
+        {
+          "key": "increase-up",
+          "description": "Increase value of the slider using up arrow key",
+          "expected": "Screen reader narrates increased value"
+        },
+        {
+          "key": "decrease-left",
+          "description": "Decrease value of the slider using left arrow key",
+          "expected": "Screen reader narrates decreased value"
+        },
+        {
+          "key": "decrease-down",
+          "description": "Decrease value of the slider using down arrow key",
+          "expected": "Screen reader narrates decreased value"
+        },
+        {
+          "key": "increase-pgup",
+          "description": "Increase value of the slider using PgUp key",
+          "expected": "Screen reader narrates increased value"
+        },
+        {
+          "key": "decrease-pgdown",
+          "description": "Decrease value of the slider using PgDown key",
+          "expected": "Screen reader narrates decreased value"
+        },
+        {
+          "key": "decrease-home",
+          "description": "Decrease value of the slider using home key",
+          "expected": "Screen reader narrates minimal value"
+        },
+        {
+          "key": "increase-end",
+          "description": "Increase value of the slider using End key",
+          "expected": "Screen reader narrates maximal value"
+        }
+      ],
+      "reader": [
+        {
+          "key": "navigate",
+          "description": "Navigate to the slider using screen reader keys",
+          "expected": "Screen reader narrates label of the slider, its current value and orientation"
+        },
+        {
+          "key": "increase",
+          "description": "Increase value of the slider using screen reader increase key",
+          "expected": "Screen reader narrates increased value"
+        },
+        {
+          "key": "decrease",
+          "description": "Decrease value of the slider using screen reader decrease key",
+          "expected": "Screen reader narrates decreased value"
+        },
+        {
+          "key": "increase-min",
+          "description": "Increase value of the slider using minimum key",
+          "expected": "Screen reader narrates minimal value"
+        },
+        {
+          "key": "decrease-end",
+          "description": "Decrease value of the slider using maximum key",
+          "expected": "Screen reader narrates maximal value"
+        }
+      ]
+    }
+  ]
+}

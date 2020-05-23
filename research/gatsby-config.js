@@ -24,6 +24,11 @@ module.exports = {
     },
 
     {
+      resolve: `gatsby-source-filesystem`,
+      options: { name: `testruns`, path: `${__dirname}/src/testruns` },
+    },
+    'gatsby-transformer-json',
+    {
       resolve: `gatsby-plugin-mdx`,
       options: {
         extensions: [`.mdx`, `.md`],

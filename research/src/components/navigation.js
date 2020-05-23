@@ -14,9 +14,6 @@ const Navigation = ({ style }) => (
                 menu
                 name
                 path
-                pathToResearch
-                pathToProposal
-                showInMenu
               }
             }
           }
