@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { getComponentTestSteps } from '../sources'
+import { getComponentTestScenarios } from '../sources'
 import Layout from '../components/layout'
 
 const ShowTestRun = ({ location }) => {
@@ -9,11 +9,11 @@ const ShowTestRun = ({ location }) => {
 }
 
 const ShowTestRunInternal = ({ state }) => {
-  const { name, component, variantName, steps, testKey, mode } = state
+  const { name, component, variantName, scenarios, testKey, mode } = state
 
-  const stepsDefinition = {}
-  getComponentTestSteps(component, variantName, mode).map(
-    (step) => (stepsDefinition[step.key] = step),
+  const scenariosDefinition = {}
+  getComponentTestScenarios(component, variantName, mode).map(
+    (scenario) => (scenariosDefinition[scenario.key] = scenario),
   )
 
   return (
@@ -32,15 +32,17 @@ const ShowTestRunInternal = ({ state }) => {
             <th>Expected</th>
             <th>Status</th>
             <th>Narration</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
-          {steps.map((step, index) => (
+          {scenarios.map((scenario, index) => (
             <tr key={index}>
-              <td key="description">{stepsDefinition[step.key].description}</td>
-              <td key="expected">{stepsDefinition[step.key].expected}</td>
-              <td key="status">{step.passed ? 'PASSED' : 'FAILED'}</td>
-              <td key="naration">{step.narration}</td>
+              <td key="description">{scenariosDefinition[scenario.key].description}</td>
+              <td key="expected">{scenariosDefinition[scenario.key].expected}</td>
+              <td key="status">{scenario.passed ? 'PASSED' : 'FAILED'}</td>
+              <td key="naration">{scenario.narration}</td>
+              <td key="notes">{scenario.notes}</td>
             </tr>
           ))}
         </tbody>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 
-import { getVariantNames, getComponentTestSteps } from '../sources'
+import { getVariantNames, getComponentTestScenarios } from '../sources'
 import { getBrowserInfo, downloadJson } from '../utils/utils'
 import Layout from '../components/layout'
 import Implementation from '../components/implementation'
@@ -42,7 +42,7 @@ const Checkbox = React.forwardRef(({ id, defaultValue, label }, ref) => {
   )
 })
 
-const Input = React.forwardRef(({ id, defaultValue, label, hidden }, ref) => {
+const Input = React.forwardRef(({ id, defaultValue, label, hidden, size }, ref) => {
   return (
     <div key={`input-${id}`}>
       {!hidden && <label htmlFor={`${id}`}>{label}</label>}
@@ -52,6 +52,7 @@ const Input = React.forwardRef(({ id, defaultValue, label, hidden }, ref) => {
         defaultValue={defaultValue}
         ref={ref}
         {...(hidden && { type: 'hidden' })}
+        {...(size && { size })}
       />
     </div>
   )
@@ -59,7 +60,7 @@ const Input = React.forwardRef(({ id, defaultValue, label, hidden }, ref) => {
 
 const downloadTestRun = ({ form, state }) => {
   const { component, version, id } = state
-  const { variant, mode, browser, browserVersion, reader, readerVersion, steps } = form
+  const { variant, mode, browser, browserVersion, reader, readerVersion, scenarios } = form
 
   const doc = {
     $schema: '../schemas/testrun.schema.json5',
@@ -75,7 +76,7 @@ const downloadTestRun = ({ form, state }) => {
       reader,
       readerVersion,
     },
-    steps,
+    scenarios,
   }
 
   const fileName = `${id}.${component}.${variant}.${mode}.${browser}.${reader}.json`.toLowerCase()
@@ -97,7 +98,7 @@ const NewTestRunInternal = ({ state }) => {
   const [variant, setVariant] = React.useState(variants[0])
   const [mode, setMode] = React.useState(modes[0])
 
-  const steps = React.useMemo(() => getComponentTestSteps(component, variant, mode), [
+  const scenarios = React.useMemo(() => getComponentTestScenarios(component, variant, mode), [
     component,
     variant,
     mode,
@@ -148,27 +149,39 @@ const NewTestRunInternal = ({ state }) => {
         <table>
           <thead>
             <tr key="head">
-              <th>{mode} step</th>
+              <th>{mode} scenario</th>
               <th>Expected</th>
-              <th>Actual</th>
+              <th style={{ minWidth: '50%' }}>Actual</th>
             </tr>
           </thead>
           <tbody>
-            {steps.map((step, index) => (
+            {scenarios.map((scenario, index) => (
               <tr key={index}>
-                <td key="description">{step.description}</td>
-                <td key="expected">{step.expected}</td>
+                <td key="description">{scenario.description}</td>
+                <td key="expected">{scenario.expected}</td>
                 <td key="actual">
-                  <Checkbox id={`steps[${index}].passed`} label="Passed " ref={register()} />
+                  <Checkbox id={`scenarios[${index}].passed`} label="Passed " ref={register()} />
                   <Input
-                    id={`steps[${index}].key`}
+                    id={`scenarios[${index}].key`}
                     label="Key: "
-                    defaultValue={step.key}
+                    defaultValue={scenario.key}
                     ref={register()}
                     hidden
                   />
                   <br />
-                  <Input id={`steps[${index}].narration`} label="Narration: " ref={register()} />
+                  <Input
+                    id={`scenarios[${index}].narration`}
+                    label="Narration: "
+                    size={50}
+                    ref={register()}
+                  />
+                  <br />
+                  <Input
+                    id={`scenarios[${index}].notes`}
+                    label="Notes: "
+                    size={50}
+                    ref={register()}
+                  />
                 </td>
               </tr>
             ))}

@@ -21,7 +21,7 @@ export const getVariantNames = (component) => {
   return Object.keys(variantsMap)
 }
 
-export const getComponentTestSteps = (component, variant, mode) => {
+export const getComponentTestScenarios = (component, variant, mode) => {
   const componentTests = sources[component]
   return componentTests.variants.filter((v) => v.names.indexOf(variant) >= 0)[0][mode]
 }

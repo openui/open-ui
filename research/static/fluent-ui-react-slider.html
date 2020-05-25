@@ -29,15 +29,15 @@ function App() {
       setValue(newValue)
     };
 
-    const valuetext = value => {
-       return `Selected ${value}`;
+    const sliderAriaValueText = value => {
+       return `${value} degrees`;
     }
 
     return (
     <div>
-        <Slider onChange={handleChange} label={'Slider value ' + value} min={0} max={30} step={1} value={value} showValue snapToStep />
-        <Slider onChange={handleChange} styles={{ root: { height: 100 } }} label={'Vertical Slider value ' + value} min={0} max={30} step={1} value={value} showValue snapToStep vertical />
-        <Slider label="Disabled slider" min={0} max={30} step={1} defaultValue={5} showValue snapToStep disabled />
+        <Slider onChange={handleChange} label={'Slider value ' + value} min={0} max={30} step={1} value={value} showValue snapToStep ariaValueText={sliderAriaValueText}/>
+        <Slider onChange={handleChange} styles={{ root: { height: 100 } }} label={'Vertical Slider value ' + value} min={0} max={30} step={1} value={value} showValue snapToStep vertical ariaValueText={sliderAriaValueText}/>
+        <Slider label="Disabled slider" min={0} max={30} step={1} defaultValue={5} showValue snapToStep disabled/>
     </div>
   );
 }

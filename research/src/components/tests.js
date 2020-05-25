@@ -19,15 +19,15 @@ const Tests = ({ name }) => {
             <table key={mode}>
               <thead>
                 <tr key="head">
-                  <th>{mode} steps</th>
+                  <th>{mode} scenarios</th>
                   <th>Expected</th>
                 </tr>
               </thead>
               <tbody>
-                {variant[mode].map((step, id) => (
+                {variant[mode].map((scenario, id) => (
                   <tr key={id}>
-                    <td key="description">{step.description}</td>
-                    <td key="expected">{step.expected}</td>
+                    <td key="description">{scenario.description}</td>
+                    <td key="expected">{scenario.expected}</td>
                   </tr>
                 ))}
               </tbody>

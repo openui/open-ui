@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider -->
+<html lang="en">
+  <head>
+    <title>Native Slider</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="impl-header.js"></script>
+    <style>
+ input.vertical {
+   position: relative;
+   top: 50px;
+   transform: rotate(270deg);
+}
+    </style>
+  </head>
+  <body>
+    <div id="root">
+
+      <p>Default range slider:</p>
+      <input type="range" min="0" max="30" value="5" onChange="handleChange(event)" aria-valuetext="5 degrees">
+    
+      <p>Vertical range slider:</p>
+      <input type="range" min="0" max="30" value="5" class="vertical" aria-orientation="vertical"  onChange="handleChange(event)" aria-valuetext="5 degrees">
+
+      <script>
+        handleChange = (event) => event.target.setAttribute('aria-valuetext', `${event.target.value} degrees`)
+      </script>
+
+    </div>
+
+  </body>
+</html>

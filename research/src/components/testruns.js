@@ -8,7 +8,7 @@ import { ensureObjectProperty } from '../utils/utils'
 /**
  * impl:
  *   - variant:
- *       - mode/browser/reader status|status|status (per test step)
+ *       - mode/browser/reader status|status|status (per test scenario)
  */
 
 const query = graphql`
@@ -26,10 +26,11 @@ const query = graphql`
             reader
             readerVersion
           }
-          steps {
+          scenarios {
             key
             passed
             narration
+            notes
           }
           component
         }
@@ -46,14 +47,17 @@ const indicatorStyle = {
   borderRadius: '2px',
 }
 
-const TestRunSteps = ({ steps, definition }) => (
+const TestRunScenarios = ({ scenarios, definition }) => (
   <div style={{ display: 'inline-flex', verticalAlign: 'middle' }}>
-    {steps.map((step, index) => {
-      let title = step.narration
-      if (definition[step.key]) {
-        title = `${definition[step.key]['description']}\n\nExpected:${
-          definition[step.key]['expected']
-        }\nNarration: ${step.narration}`
+    {scenarios.map((scenario, index) => {
+      let title = scenario.narration
+      if (definition[scenario.key]) {
+        title = `${definition[scenario.key]['description']}\n\nExpected:${
+          definition[scenario.key]['expected']
+        }\nNarration: ${scenario.narration}`
+      }
+      if (scenario.notes) {
+        title = `${title}\nNotes:${scenario.notes}`
       }
       return (
         <div
@@ -61,7 +65,7 @@ const TestRunSteps = ({ steps, definition }) => (
           title={title}
           style={{
             ...indicatorStyle,
-            background: step.passed ? 'green' : step.passed === false ? 'red' : '#ddd',
+            background: scenario.passed ? 'green' : scenario.passed === false ? 'red' : '#ddd',
           }}
         ></div>
       )
@@ -73,12 +77,12 @@ const TestRun = ({ testRun, component, variantName, implementationName, mode }) 
   const test = sources[component]
   const definition = test.variants.filter((v) => v.names.indexOf(variantName) >= 0)[0]
 
-  const stepDefinitions = {}
+  const scenarioDefinitions = {}
   ;['keyboard', 'reader'].map((mode) => {
-    stepDefinitions[mode] = {}
+    scenarioDefinitions[mode] = {}
     definition &&
       definition[mode] &&
-      definition[mode].map((d) => (stepDefinitions[mode][d.key] = d))
+      definition[mode].map((d) => (scenarioDefinitions[mode][d.key] = d))
   })
 
   return (
@@ -100,7 +104,7 @@ const TestRun = ({ testRun, component, variantName, implementationName, mode }) 
                   variantName,
                   name: implementationName,
                   mode: testRun[key]['mode'],
-                  steps: testRun[key]['steps'],
+                  scenarios: testRun[key]['scenarios'],
                   testKey: key,
                 }}
               >
@@ -108,9 +112,9 @@ const TestRun = ({ testRun, component, variantName, implementationName, mode }) 
               </Link>
             </td>
             <td key="status">
-              <TestRunSteps
-                steps={testRun[key]['steps']}
-                definition={stepDefinitions[testRun[key]['mode']]}
+              <TestRunScenarios
+                scenarios={testRun[key]['scenarios']}
+                definition={scenarioDefinitions[testRun[key]['mode']]}
               />
             </td>
           </tr>
@@ -133,7 +137,7 @@ const ComponentTestRuns = ({ runs, component }) => {
       run.environment.readerVersion,
     ].join(' ')
     ensureObjectProperty(groupped[run.implementation][run.variant], key)
-    groupped[run.implementation][run.variant][key] = { mode: run.mode, steps: run.steps }
+    groupped[run.implementation][run.variant][key] = { mode: run.mode, scenarios: run.scenarios }
   })
 
   return Object.keys(groupped).map((implementationName) => (

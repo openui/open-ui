@@ -9,6 +9,42 @@ import TestRuns from '../components/testruns'
 
 ## Implementations
 
+<Implementation name="Native" id="native" component="Slider" />
+
+```html
+<p>Default range slider:</p>
+<input type="range" min="0" max="30" value="5" />
+
+<p>Vertical range slider:</p>
+<input type="range" min="0" max="30" value="5" class="vertical" />
+```
+
+<Implementation name="ARIA" id="aria" component="Slider" />
+
+```html
+<div class="aria-widget-vertical-slider">
+  <div id="idTemp" class="label">
+    Temperature
+  </div>
+  <div id="idTempValue" class="value">
+    0
+  </div>
+  <div class="rail" style="height: 200px">
+    <div
+      id="idTempThumb"
+      role="slider"
+      tabindex="0"
+      class="thumb"
+      aria-valuemin="50"
+      aria-valuenow="68"
+      aria-valuemax="100"
+      aria-labelledby="idTemp"
+      data-keydown="true"
+    ></div>
+  </div>
+</div>
+```
+
 <Implementation name="Material UI" id="materialui" component="Slider" />
 
 ```html
@@ -66,7 +102,7 @@ import TestRuns from '../components/testruns'
 
 <Implementation
   name="Fluent UI React Northstar"
-  src="https://codesandbox.io/embed/fluent-ui-example-6k67q?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  src="https://codesandbox.io/embed/fluent-ui-example-wvg1u?fontsize=14&hidenavigation=1&theme=dark&view=preview"
   id="fluent-ui-react-northstar"
   component="Slider"
 />
