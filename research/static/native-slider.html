@@ -17,11 +17,11 @@
   <body>
     <div id="root">
 
-      <p>Default range slider:</p>
-      <input type="range" min="0" max="30" value="5" onChange="handleChange(event)" aria-valuetext="5 degrees">
+      <label for="default-slider">Default range slider:</label>
+      <input id="default-slider" type="range" min="0" max="30" value="5" onChange="handleChange(event)" aria-valuetext="5 degrees">
     
-      <p>Vertical range slider:</p>
-      <input type="range" min="0" max="30" value="5" class="vertical" aria-orientation="vertical"  onChange="handleChange(event)" aria-valuetext="5 degrees">
+      <label for="vertical-slider">Vertical range slider:</label>
+      <input id="vertical-slider" type="range" min="0" max="30" value="5" class="vertical" aria-orientation="vertical"  onChange="handleChange(event)" aria-valuetext="5 degrees">
 
       <script>
         handleChange = (event) => event.target.setAttribute('aria-valuetext', `${event.target.value} degrees`)
