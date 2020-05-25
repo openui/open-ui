@@ -11,7 +11,7 @@
         {
           "key": "navigate",
           "description": "Navigate to the slider using TAB key",
-          "expected": "Screen reader narrates label of the slider, its current value and orientation"
+          "expected": "Screen reader narrates label of the slider, its current value and possibly orientation"
         },
         {
           "key": "increase-right",
@@ -56,29 +56,19 @@
       ],
       "reader": [
         {
-          "key": "navigate",
+          "key": "navigate-slider-narration",
           "description": "Navigate to the slider using screen reader keys",
-          "expected": "Screen reader narrates label of the slider, its current value and orientation"
+          "expected": "Screen reader narrates label of the slider, its current value and possibly orientation"
         },
         {
-          "key": "increase",
-          "description": "Increase value of the slider using screen reader increase key",
-          "expected": "Screen reader narrates increased value"
+          "key": "navigate-and-use",
+          "description": "Navigate to the slider using screen reader keys. Based on the screen reader enable slider interaction. Verify slider works in the same way as in keyboard mode.",
+          "expected": "User is able to interact with slider. Exact behavior will rely on screen reader."
         },
         {
-          "key": "decrease",
-          "description": "Decrease value of the slider using screen reader decrease key",
-          "expected": "Screen reader narrates decreased value"
-        },
-        {
-          "key": "increase-min",
-          "description": "Increase value of the slider using minimum key",
-          "expected": "Screen reader narrates minimal value"
-        },
-        {
-          "key": "decrease-end",
-          "description": "Decrease value of the slider using maximum key",
-          "expected": "Screen reader narrates maximal value"
+          "key": "navigate-through",
+          "description": "Navigate though the slider.",
+          "expected": "Focus is not trap in the slider. There is no `blank` narration. Navigation continue in the following DOM elements, after slider."
         }
       ]
     }

@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/testrun.schema.json5",
+  "lastUpdated": "2020-05-25T14:00:14.871Z",
+  "implementation": "fluent-ui-react-northstar",
+  "component": "Slider",
+  "variant": "horizontal",
+  "mode": "keyboard",
+  "environment": {
+    "browser": "chrome",
+    "browserVersion": "83.0.4103.61",
+    "reader": "jaws",
+    "readerVersion": "2020.2004.66"
+  },
+  "scenarios": [
+    {
+      "passed": true,
+      "key": "navigate",
+      "narration": "Slider value 5 left right slider  5 degrees To increase or decrease use the Arrow keys",
+      "notes": ""
+    },
+    {
+      "passed": true,
+      "key": "increase-right",
+      "narration": "`x` degrees",
+      "notes": ""
+    },
+    {
+      "passed": false,
+      "key": "increase-up",
+      "narration": "12 degrees 13 degrees",
+      "notes": "https://github.com/FreedomScientific/VFO-standards-support/issues/219"
+    },
+    {
+      "passed": true,
+      "key": "decrease-left",
+      "narration": "`x` degrees",
+      "notes": ""
+    },
+    {
+      "passed": false,
+      "key": "decrease-down",
+      "narration": "13 degrees 12 degrees",
+      "notes": "https://github.com/FreedomScientific/VFO-standards-support/issues/219"
+    },
+    {
+      "passed": false,
+      "key": "increase-pgup",
+      "narration": "narrate value twice",
+      "notes": "https://github.com/FreedomScientific/VFO-standards-support/issues/220"
+    },
+    {
+      "passed": false,
+      "key": "decrease-pgdown",
+      "narration": "narrate value twice",
+      "notes": "https://github.com/FreedomScientific/VFO-standards-support/issues/220"
+    },
+    {
+      "passed": false,
+      "key": "decrease-home",
+      "narration": "narrate value twice",
+      "notes": "not reported now"
+    },
+    {
+      "passed": false,
+      "key": "increase-end",
+      "narration": "narrate value twice",
+      "notes": "not reported now"
+    }
+  ]
+}
