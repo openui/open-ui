@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Material UI Checkbox</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="https://unpkg.com/react@16.13.1/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@material-ui/core@4.9.14/umd/material-ui.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js" crossorigin="anonymous"></script>
+    <script src="impl-header.js"></script>
+    <!-- Fonts to support Material Design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <!-- Icons to support Material Design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+const {
+  colors,
+  CssBaseline,
+  ThemeProvider,
+  Typography,
+  Container,
+  makeStyles,
+  createMuiTheme,
+  Checkbox,
+  FormControlLabel,
+} = MaterialUI;
+
+const theme = createMuiTheme();
+const useStyles = makeStyles();
+
+function App() {
+
+    const classes = useStyles();
+    const [value, setValue] = React.useState(false);
+
+    const handleChange = (event) => {
+      setValue(event.target.checked)
+    };
+
+    return (
+    <div className={classes.root}>
+      <FormControlLabel
+        control={<Checkbox checked={value} onChange={handleChange} name="checkbox" />}
+        label="Default"
+      />
+    </div>
+  );
+}
+
+ReactDOM.render(
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <App />
+  </ThemeProvider>,
+  document.querySelector('#root'),
+);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+---
+name: Checkbox (Editor's Draft)
+path: /components/checkbox.research
+menu: Components
+---
+
+import Implementation from '../components/implementation'
+import TestRuns from '../components/testruns'
+
+## Implementations
+
+<Implementation name="Native" id="native" component="Checkbox" />
+
+```html
+<label for="default-checkbox">Default:</label>
+<input id="default-checkbox" type="checkbox" />
+```
+
+<Implementation name="ARIA" id="aria" component="Checkbox" />
+
+```html
+<div role="checkbox" aria-checked="false" tabindex="0">
+  Default
+</div>
+```
+
+<Implementation name="Material UI" id="materialui" component="Checkbox" />
+
+```html
+<span
+  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-13 MuiCheckbox-root MuiCheckbox-colorSecondary MuiIconButton-colorSecondary"
+  aria-disabled="false"
+>
+  <span class="MuiIconButton-label">
+    <input
+      class="PrivateSwitchBase-input-16"
+      name="checkbox"
+      type="checkbox"
+      data-indeterminate="false"
+      value=""
+    />
+    <svg>...</svg>
+  </span>
+  <span class="MuiTouchRipple-root"></span>
+</span>
+```
+
+<Implementation name="Fluent UI React" id="fluent-ui-react" component="Checkbox" />
+
+```html
+<div class="ms-Checkbox is-enabled root-40">
+  <input
+    type="checkbox"
+    class="input-41"
+    id="checkbox-1"
+    aria-label="Default"
+    aria-checked="false"
+  />
+  <label class="ms-Checkbox-label label-42" for="checkbox-1">
+    <div class="ms-Checkbox-checkbox checkbox-43">
+      <i data-icon-name="CheckMark" aria-hidden="true" class="ms-Checkbox-checkmark checkmark-47">
+        
+      </i>
+    </div>
+    <span aria-hidden="true" class="ms-Checkbox-text text-45">Default</span>
+  </label>
+</div>
+```
+
+<!-- https://codesandbox.io/s/fluent-ui-example-h20xx?file=/example.js -->
+
+<Implementation
+  name="Fluent UI React Northstar"
+  src="https://codesandbox.io/embed/fluent-ui-example-h20xx?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  id="fluent-ui-react-northstar"
+  component="Checkbox"
+/>
+
+```html
+<div
+  aria-checked="false"
+  role="checkbox"
+  tabindex="0"
+  data-is-focusable="true"
+  data-aa-class="Checkbox"
+  class="ui-checkbox"
+>
+  <div class="ui-box ui-checkbox__indicator"></div>
+  <span class="ui-text ui-checkbox__label" dir="auto">Default</span>
+</div>
+```
+
+## Test runs
+
+<TestRuns name="Checkbox" />

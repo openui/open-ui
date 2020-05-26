@@ -1,0 +1,125 @@
+---
+name: Radio (Editor's Draft)
+path: /components/radio.research
+menu: Components
+---
+
+import Implementation from '../components/implementation'
+import TestRuns from '../components/testruns'
+
+## Implementations
+
+<Implementation name="Native" id="native" component="Radio" />
+
+```html
+<fieldset>
+  <legend>Pizza crust</legend>
+  <input type="radio" id="regular" name="radio" value="regular" />
+  <label for="regular">Regular</label>
+  <br />
+  <input type="radio" id="deep-dish" name="radio" value="deep-dish" />
+  <label for="deep-dish">Deep dish</label>
+  <br />
+  <input type="radio" id="thin-crust" name="radio" value="thin-crust" />
+  <label for="thin-crust">Thin crust</label>
+  <br />
+  <input type="radio" id="disabled" name="radio" value="disabled" disabled="" />
+  <label for="disabled">(Disabled option)</label>
+</fieldset>
+```
+
+<Implementation name="ARIA" id="aria" component="Radio" />
+
+```html
+<div role="radiogroup" aria-label="group_label_1" id="rg1">
+  <h3 id="group_label_1">
+    Pizza Crust
+  </h3>
+  <div role="radio" aria-checked="false" tabindex="0">
+    Regular crust
+  </div>
+  <div role="radio" aria-checked="false" tabindex="-1">
+    Deep dish
+  </div>
+  <div role="radio" aria-checked="false" tabindex="-1">
+    Thin crust
+  </div>
+</div>
+```
+
+<Implementation name="Material UI" id="materialui" component="Radio" />
+
+```html
+<div>
+  <div class="MuiFormGroup-root" role="radiogroup" aria-label="Pizza crust">
+    <label class="MuiFormControlLabel-root">
+    <span class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-14 MuiRadio-root MuiRadio-colorSecondary PrivateSwitchBase-checked-15 Mui-checked MuiIconButton-colorSecondary"
+        aria-disabled="false">
+        <span class="MuiIconButton-label">
+        <input class="PrivateSwitchBase-input-17" name="pick-one" type="radio" value="regular" />
+          <div class="PrivateRadioButtonIcon-root-30 PrivateRadioButtonIcon-checked-32">
+            <svg
+              class="MuiSvgIcon-root"
+              focusable="false"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            > ... </svg>
+          </div>
+        </span>
+        <span class="MuiTouchRipple-root">
+      </span>
+    </span>
+  </div>
+</div>
+```
+
+<Implementation name="Fluent UI React" id="fluent-ui-react" component="Radio" />
+
+```html
+<div class="ms-ChoiceFieldGroup root-40" role="radiogroup" aria-labelledby="ChoiceGroup1-label">
+  <label class="ms-Label root-41" id="ChoiceGroup1-label">Pizza crust</label>
+  <div class="ms-ChoiceFieldGroup-flexContainer">
+    <div class="ms-ChoiceField root-42">
+      <div class="ms-ChoiceField-wrapper">
+        <input
+          id="ChoiceGroup1-regular"
+          class="ms-ChoiceField-input input-43"
+          type="radio"
+          name="ChoiceGroup1"
+        />
+        <label for="ChoiceGroup1-regular" class="ms-ChoiceField-field field-44">
+          <span id="ChoiceGroupLabel2-regular" class="ms-ChoiceFieldLabel">Regular</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+<!-- https://codesandbox.io/s/fluent-ui-example-780cy?file=/example.js -->
+
+<Implementation
+  name="Fluent UI React Northstar"
+  src="https://codesandbox.io/embed/fluent-ui-example-780cy?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  id="fluent-ui-react-northstar"
+  component="Radio"
+/>
+
+```html
+<div role="radiogroup" data-aa-class="RadioGroup" class="ui-radiogroup">
+  <div
+    class="ui-radiogroup__item"
+    role="radio"
+    tabindex="0"
+    aria-checked="false"
+    data-aa-class="RadioGroupItem"
+  >
+    <div class="ui-box ui-radiogroup__item__indicator"></div>
+    <span dir="auto" class="ui-box">Regular</span>
+  </div>
+</div>
+```
+
+## Test runs
+
+<TestRuns name="Radio" />
