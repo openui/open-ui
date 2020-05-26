@@ -62,6 +62,13 @@ const downloadTestRun = ({ form, state }) => {
   const { component, version, id } = state
   const { variant, mode, browser, browserVersion, reader, readerVersion, scenarios } = form
 
+  // forms hook for some reason returns array for checkboxes if state changes
+  const fixedScenarios = scenarios.map((scenario) => ({
+    ...scenario,
+    passed:
+      scenario.passed === true || (Array.isArray(scenario.passed) && scenario.passed.length === 1),
+  }))
+
   const doc = {
     $schema: '../schemas/testrun.schema.json5',
     lastUpdated: new Date().toISOString(),
@@ -76,7 +83,7 @@ const downloadTestRun = ({ form, state }) => {
       reader,
       readerVersion,
     },
-    scenarios,
+    scenarios: fixedScenarios,
   }
 
   const fileName = `${id}.${component}.${variant}.${mode}.${browser}.${reader}.json`.toLowerCase()
