@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!-- ARIA Radio pattern from https://www.w3.org/TR/wai-aria-practices/examples/radio/radio-1/radio-1.html-->
+<html lang="en">
+  <head>
+    <title>ARIA Radio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="impl-header.js"></script>
+    <script>
+/*
+*   This content is licensed according to the W3C Software License at
+*   https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+*
+*   File:   radioGroup.js
+*
+*   Desc:   Radio group widget that implements ARIA Authoring Practices
+*/
+
+/*
+*   @constructor radioGroup
+*
+*
+*/
+var RadioGroup = function (domNode) {
+
+this.domNode   = domNode;
+
+this.radioButtons = [];
+
+this.firstRadioButton  = null;
+this.lastRadioButton   = null;
+
+};
+
+RadioGroup.prototype.init = function () {
+
+// initialize pop up menus
+if (!this.domNode.getAttribute('role')) {
+  this.domNode.setAttribute('role', 'radiogroup');
+}
+
+var rbs = this.domNode.querySelectorAll('[role=radio]');
+
+for (var i = 0; i < rbs.length; i++) {
+  var rb = new RadioButton(rbs[i], this);
+  rb.init();
+  this.radioButtons.push(rb);
+
+  console.log(rb);
+
+  if (!this.firstRadioButton) {
+    this.firstRadioButton = rb;
+  }
+  this.lastRadioButton = rb;
+}
+this.firstRadioButton.domNode.tabIndex = 0;
+};
+
+RadioGroup.prototype.setChecked  = function (currentItem) {
+for (var i = 0; i < this.radioButtons.length; i++) {
+  var rb = this.radioButtons[i];
+  rb.domNode.setAttribute('aria-checked', 'false');
+  rb.domNode.tabIndex = -1;
+}
+currentItem.domNode.setAttribute('aria-checked', 'true');
+currentItem.domNode.tabIndex = 0;
+currentItem.domNode.focus();
+};
+
+RadioGroup.prototype.setCheckedToPreviousItem = function (currentItem) {
+var index;
+
+if (currentItem === this.firstRadioButton) {
+  this.setChecked(this.lastRadioButton);
+}
+else {
+  index = this.radioButtons.indexOf(currentItem);
+  this.setChecked(this.radioButtons[index - 1]);
+}
+};
+
+RadioGroup.prototype.setCheckedToNextItem = function (currentItem) {
+var index;
+
+if (currentItem === this.lastRadioButton) {
+  this.setChecked(this.firstRadioButton);
+}
+else {
+  index = this.radioButtons.indexOf(currentItem);
+  this.setChecked(this.radioButtons[index + 1]);
+}
+};
+
+/*
+*   This content is licensed according to the W3C Software License at
+*   https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+*
+*   File:   RadioButton.js
+*
+*   Desc:   Radio button widget that implements ARIA Authoring Practices
+*/
+
+/*
+*   @constructor RadioButton
+*
+*
+*/
+var RadioButton = function (domNode, groupObj) {
+
+this.domNode = domNode;
+this.radioGroup = groupObj;
+
+this.keyCode = Object.freeze({
+  'RETURN': 13,
+  'SPACE': 32,
+  'END': 35,
+  'HOME': 36,
+  'LEFT': 37,
+  'UP': 38,
+  'RIGHT': 39,
+  'DOWN': 40
+});
+};
+
+RadioButton.prototype.init = function () {
+this.domNode.tabIndex = -1;
+this.domNode.setAttribute('aria-checked', 'false');
+
+this.domNode.addEventListener('keydown',    this.handleKeydown.bind(this));
+this.domNode.addEventListener('click',      this.handleClick.bind(this));
+this.domNode.addEventListener('focus',      this.handleFocus.bind(this));
+this.domNode.addEventListener('blur',       this.handleBlur.bind(this));
+
+};
+
+/* EVENT HANDLERS */
+
+RadioButton.prototype.handleKeydown = function (event) {
+var tgt = event.currentTarget,
+  flag = false,
+  clickEvent;
+
+//  console.log("[RadioButton][handleKeydown]: " + event.keyCode + " " + this.radioGroup)
+
+switch (event.keyCode) {
+  case this.keyCode.SPACE:
+  case this.keyCode.RETURN:
+    this.radioGroup.setChecked(this);
+    flag = true;
+    break;
+
+  case this.keyCode.UP:
+    this.radioGroup.setCheckedToPreviousItem(this);
+    flag = true;
+    break;
+
+  case this.keyCode.DOWN:
+    this.radioGroup.setCheckedToNextItem(this);
+    flag = true;
+    break;
+
+  case this.keyCode.LEFT:
+    this.radioGroup.setCheckedToPreviousItem(this);
+    flag = true;
+    break;
+
+  case this.keyCode.RIGHT:
+    this.radioGroup.setCheckedToNextItem(this);
+    flag = true;
+    break;
+
+  default:
+    break;
+}
+
+if (flag) {
+  event.stopPropagation();
+  event.preventDefault();
+}
+};
+
+RadioButton.prototype.handleClick = function (event) {
+this.radioGroup.setChecked(this);
+};
+
+RadioButton.prototype.handleFocus = function (event) {
+this.domNode.classList.add('focus');
+};
+
+RadioButton.prototype.handleBlur = function (event) {
+this.domNode.classList.remove('focus');
+};
+    </script>
+    <style>
+[role="radiogroup"] {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+[role="radiogroup"]:focus {
+  outline: none;
+}
+
+[role="radio"] {
+  border: 2px solid transparent;
+  border-radius: 5px;
+  display: inline-block;
+  position: relative;
+  padding: 0.125em;
+  padding-left: 1.5em;
+  padding-right: 0.5em;
+  cursor: default;
+  outline: none;
+}
+
+[role="radio"] + [role="radio"] {
+  margin-left: 1em;
+}
+
+[role="radio"]::before,
+[role="radio"]::after {
+  position: absolute;
+  top: 50%;
+  left: 7px;
+  transform: translate(-20%, -50%);
+  content: '';
+}
+
+[role="radio"]::before {
+  width: 14px;
+  height: 14px;
+  border: 1px solid hsl(0, 0%, 66%);
+  border-radius: 100%;
+  background-image: linear-gradient(to bottom, hsl(300, 3%, 93%), #fff 60%);
+}
+
+[role="radio"]:active::before {
+  background-image: linear-gradient(to bottom, hsl(300, 3%, 73%), hsl(300, 3%, 93%));
+}
+
+[role="radio"][aria-checked="true"]::before {
+  border-color: hsl(216, 80%, 50%);
+  background: hsl(217, 95%, 68%);
+  background-image: linear-gradient(to bottom, hsl(217, 95%, 68%), hsl(216, 80%, 57%));
+}
+
+[role="radio"][aria-checked="true"]::after {
+  display: block;
+  border: 0.1875em solid #fff;
+  border-radius: 100%;
+  transform: translate(25%, -50%);
+}
+
+[role="radio"][aria-checked="mixed"]:active::before,
+[role="radio"][aria-checked="true"]:active::before {
+  background-image: linear-gradient(to bottom, hsl(216, 80%, 57%), hsl(217, 95%, 68%) 60%);
+}
+
+[role="radio"]:hover::before {
+  border-color: hsl(216, 94%, 65%);
+}
+
+[role="radio"].focus {
+  border-color: hsl(216, 94%, 73%);
+  background-color: hsl(216, 80%, 97%);
+}
+
+[role="radio"]:hover {
+  background-color: hsl(216, 80%, 92%);
+}      
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div role="radiogroup"
+      aria-label="group_label_1"
+      id="rg1">
+   <h3 id="group_label_1">
+     Pizza Crust
+   </h3>
+   <div role="radio"
+        aria-checked="false"
+        tabindex="0">
+     Regular crust
+   </div>
+   <div role="radio"
+        aria-checked="false"
+        tabindex="-1">
+     Deep dish
+   </div>
+   <div role="radio"
+        aria-checked="false"
+        tabindex="-1">
+     Thin crust
+   </div>
+ </div>
+ <script type="text/javascript">
+   var rg1 = new RadioGroup(document.getElementById('rg1'));
+   rg1.init();
+ </script>
+     </div>
+  </body>
+</html>

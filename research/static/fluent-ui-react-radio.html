@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Fluent UI Radio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="https://unpkg.com/react@16.13.1/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+    <script>
+        define = (name, fnc ) => {}
+    </script>
+    <script src="https://unpkg.com/office-ui-fabric-react@7.114.2/dist/office-ui-fabric-react.umd.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js" crossorigin="anonymous"></script>
+
+    <script src="impl-header.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+const {
+  ChoiceGroup,
+} = Fabric;
+
+const options = [
+  { key: 'regular', text: 'Regular' },
+  { key: 'deep-dish', text: 'Deep dish' },
+  { key: 'thin-crust', text: 'Thin crust' },
+  { key: 'disabled', text: '(Disabled option)', disabled: true },
+];
+
+function App() {
+
+    const [value, setValue] = React.useState(undefined);
+
+    const handleChange = (e, {key}) => {
+      setValue(key)
+    };
+
+    return (
+    <div>
+      <ChoiceGroup options={options} onChange={handleChange} label="Pizza crust" />
+      <div>Selected {value}</div>
+    </div>
+  );
+}
+
+ReactDOM.render(
+    <App />,
+  document.querySelector('#root'),
+);
+    </script>
+  </body>
+</html>

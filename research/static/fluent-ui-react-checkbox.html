@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Fluent UI Checkbox</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="https://unpkg.com/react@16.13.1/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+    <script>
+        define = (name, fnc ) => {}
+    </script>
+    <script src="https://unpkg.com/office-ui-fabric-react@7.114.2/dist/office-ui-fabric-react.umd.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js" crossorigin="anonymous"></script>
+
+    <script src="impl-header.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+const {
+  Checkbox,
+} = Fabric;
+
+function App() {
+
+    const [value, setValue] = React.useState(false);
+
+    const handleChange = (newValue) => {
+      setValue(newValue)
+    };
+
+    return (
+    <div>
+        <Checkbox onChange={handleChange} label="Default" value={value} />
+    </div>
+  );
+}
+
+ReactDOM.render(
+    <App />,
+  document.querySelector('#root'),
+);
+    </script>
+  </body>
+</html>

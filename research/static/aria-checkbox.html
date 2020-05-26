@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!-- ARIA Checkbox pattern from https://www.w3.org/TR/wai-aria-practices/examples/checkbox/checkbox-1/checkbox-1.html-->
+<html lang="en">
+  <head>
+    <title>ARIA Checkbox</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="impl-header.js"></script>
+    <script>
+      /*
+       *   This content is licensed according to the W3C Software License at
+       *   https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+       *
+       *   File:   Checkbox.js
+       *
+       *   Desc:   Checkbox widget that implements ARIA Authoring Practices
+       *           for a menu of links
+       *
+       */
+
+      /*
+       *   @constructor Checkbox
+       *
+       *
+       */
+      var Checkbox = function (domNode) {
+        this.domNode = domNode
+
+        this.keyCode = Object.freeze({
+          RETURN: 13,
+          SPACE: 32,
+        })
+      }
+
+      Checkbox.prototype.init = function () {
+        this.domNode.tabIndex = 0
+
+        if (!this.domNode.getAttribute('aria-checked')) {
+          this.domNode.setAttribute('aria-checked', 'false')
+        }
+
+        this.domNode.addEventListener('keydown', this.handleKeydown.bind(this))
+        this.domNode.addEventListener('click', this.handleClick.bind(this))
+        this.domNode.addEventListener('focus', this.handleFocus.bind(this))
+        this.domNode.addEventListener('blur', this.handleBlur.bind(this))
+      }
+
+      Checkbox.prototype.toggleCheckbox = function () {
+        if (this.domNode.getAttribute('aria-checked') === 'true') {
+          this.domNode.setAttribute('aria-checked', 'false')
+        } else {
+          this.domNode.setAttribute('aria-checked', 'true')
+        }
+      }
+
+      /* EVENT HANDLERS */
+
+      Checkbox.prototype.handleKeydown = function (event) {
+        var flag = false
+
+        switch (event.keyCode) {
+          case this.keyCode.SPACE:
+            this.toggleCheckbox()
+            flag = true
+            break
+
+          default:
+            break
+        }
+
+        if (flag) {
+          event.stopPropagation()
+          event.preventDefault()
+        }
+      }
+
+      Checkbox.prototype.handleClick = function (event) {
+        this.toggleCheckbox()
+      }
+
+      Checkbox.prototype.handleFocus = function (event) {
+        this.domNode.classList.add('focus')
+      }
+
+      Checkbox.prototype.handleBlur = function (event) {
+        this.domNode.classList.remove('focus')
+      }
+
+      window.onload = function () {
+        var checkboxes = document.querySelectorAll('[role="checkbox"]')
+
+        for (var i = 0; i < checkboxes.length; i++) {
+          var cb = new Checkbox(checkboxes[i])
+          cb.init()
+        }
+      }
+    </script>
+    <style>
+      ul.checkboxes {
+        list-style: none;
+        margin-left: 0;
+        padding-left: 1em;
+      }
+
+      [role='checkbox'] {
+        display: inline-block;
+        position: relative;
+        padding-left: 1.4em;
+        cursor: default;
+      }
+
+      [role='checkbox']::before,
+      [role='checkbox']::after {
+        position: absolute;
+        top: 50%;
+        left: 7px;
+        transform: translate(-50%, -50%);
+        content: '';
+      }
+
+      [role='checkbox']::before {
+        width: 14px;
+        height: 14px;
+        border: 1px solid hsl(0, 0%, 66%);
+        border-radius: 0.2em;
+        background-image: linear-gradient(to bottom, hsl(300, 3%, 93%), #fff 30%);
+      }
+
+      [role='checkbox']:active::before {
+        background-image: linear-gradient(to bottom, hsl(300, 3%, 73%), hsl(300, 3%, 93%) 30%);
+      }
+
+      [role='checkbox'][aria-checked='mixed']::before,
+      [role='checkbox'][aria-checked='true']::before {
+        border-color: hsl(216, 80%, 50%);
+        background: hsl(217, 95%, 68%);
+        background-image: linear-gradient(to bottom, hsl(217, 95%, 68%), hsl(216, 80%, 57%));
+      }
+
+      [role='checkbox'][aria-checked='mixed']::after {
+        display: block;
+        width: 8px;
+        border-bottom: 0.125em solid #fff;
+        transform: translate(-50%, -50%) rotateZ(45deg);
+        transform-origin: center center;
+      }
+
+      [role='checkbox'][aria-checked='mixed']:active::after,
+      [role='checkbox'][aria-checked='true']::after {
+        display: block;
+        width: 0.25em;
+        height: 0.4em;
+        border: solid #fff;
+        border-width: 0 0.125em 0.125em 0;
+        transform: translateY(-65%) translateX(-50%) rotate(45deg);
+      }
+
+      [role='checkbox'][aria-checked='mixed']:active::before,
+      [role='checkbox'][aria-checked='true']:active::before {
+        background-image: linear-gradient(to bottom, hsl(216, 80%, 57%), hsl(217, 95%, 68%));
+      }
+
+      [role='checkbox']:focus {
+        outline: none;
+      }
+
+      [role='checkbox']:focus::before {
+        width: 16px;
+        height: 16px;
+        box-sizing: content-box;
+        border-color: hsl(216, 94%, 73%);
+        border-width: 3px;
+        border-radius: calc(0.2em + 3px);
+        box-shadow: inset 0 0 0 1px hsl(216, 80%, 50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div role="checkbox" aria-checked="false" tabindex="0">
+        Default
+      </div>
+    </div>
+  </body>
+</html>
