@@ -46,7 +46,7 @@ if you have any questions then that means that our documentation can be improved
 
 # Design Systems <a href="#design-systems" id="design-systems"></a>
 
-Open UI uses design systems and component as one of its forms of evidence for cataloging emergent UI standards.
+Open UI uses design systems as one of its forms of evidence for cataloging emergent UI standards.
 Design systems are documented in JSON5 format according a JSON schema.
 This provides us with a consistent and machine readable way of documenting the design system.
 
@@ -159,6 +159,13 @@ If the image requires showing motion or interaction, considering using a gif too
 
 <Image src="sui-button-animated.gif" alt="Semantic UI Animated Button" />
 
+### Try it out
+
+You should now be able to `yarn start` the docs and see your component in the menu.
+You should also have a toggle on the component page to switch between the proposal page and research page.
+
+:smile: You're all set! We're looking forward to your contribution to Open UI!
+
 # Creating a component spec <a href="#document-component" id="document-component"></a>
 
 Adding a component to Open UI is a research process.
@@ -268,9 +275,21 @@ denote them, they'll be incremented automatically and pre-pended with 'Question'
 
 `<p class="question">QUESTION</p>`
 
-### Try it out
+# Definitions <a href="#whats-a-component"></a>
 
-You should now be able to `yarn start` the docs and see your component in the menu.
-You should also have a toggle on the component page to switch between the proposal page and research page.
+Since Open UI is about doing research across design systems to understand their components
+and controls it's important to have clear definitions. For the purposes of Open UI here are
+some common terms used in specifications and their definitions.
 
-:smile: You're all set! We're looking forward to your contribution to Open UI!
+## Component
+
+The dictionary defines a component as, "a part or element of a larger whole" and this is
+true for components in a design system's component library. Components normally have a meaning,
+although this meaning may not be presented to the user (such as a utility component). A component,
+as the definition states can be a part of another component which are known as **composite components**.
+
+## Control
+
+A control is a subset of component that allows some form of user interaction. Controls have a defined model,
+known [parts](https://drafts.csswg.org/css-shadow-parts-1/#part-attr) and [slots](https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element),
+possible states, and controller code that manages the transition of states and the model based on end user interaction with the defined parts.
