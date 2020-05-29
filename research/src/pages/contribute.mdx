@@ -72,7 +72,7 @@ A design system does not need to meet all of these criteria but it should meet m
 The design systems we've launched with we believe are representative of these criteria.
 We may not accept PRs contributing design systems that are lacking by these criteria.
 
-### Adding a design system <a href="#add-a-design-system" id="add-a-design-systems"></a>
+### Adding a design system <a href="#add-a-design-system" id="add-a-design-system"></a>
 
 Create a JSON5 file in `/sources` for the design system, like `/antd.json5`.
 Add the `$schema` key pointing to our `design-system.schema.json5` schema and complete the required fields.
@@ -280,11 +280,18 @@ some common terms used in specifications and their definitions.
 
 The dictionary defines a component as, "a part or element of a larger whole" and this is
 true for components in a design system's component library. Components normally have a meaning,
-although this meaning may not be presented to the user (such as a utility component). A component,
-as the definition states can be a part of another component which are known as **composite components**.
+although this meaning may not be presented to the user (such as a utility component). The _meaning_ is
+defined by the component's model, defined [parts](https://drafts.csswg.org/css-shadow-parts-1/#part-attr) and
+[slots](https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element), and states.
 
 ## Control <a href="#definition-control" id="definition-control"></a>
 
-A control is a subset of component that allows some form of user interaction. Controls have a defined model,
-known [parts](https://drafts.csswg.org/css-shadow-parts-1/#part-attr) and [slots](https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element),
-possible states, and controller code that manages the transition of states and the model based on end user interaction with the defined parts.
+A control is a subset of component that allows some form of user interaction. The control has controller code
+that manages the transition of the component's states and the model based on end user interaction with the
+defined parts.
+
+## Composite Component
+
+It is often necessary to produce a component that contains other components. For example, the `<file>`
+control is a component that normally contains an `<input>` component and a `<button>` component.
+These types of components are commonly referred to as composite components.
