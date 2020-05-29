@@ -62,6 +62,10 @@
   content: "slot";
 }
 
+.component-anatomy slot:not([name=""])::before {
+  content:  attr(name) " [slot]";
+}
+
 .component-anatomy host {
   border: 5px solid black;
 }

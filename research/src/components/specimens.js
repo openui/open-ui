@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import React from 'react'
 import { getImagesForComponentConcept } from '../sources'
 import Image from './image'
@@ -8,7 +7,7 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', border: '1px solid #ccc' }}>
-      {images.map(image => {
+      {images.map((image) => {
         const hasOverrideName = image.name !== image.openUIName
 
         return (

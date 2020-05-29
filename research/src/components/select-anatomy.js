@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from 'react'
 import './anatomy.css'
 
@@ -8,26 +10,24 @@ const SelectAnatomy = () => {
       <label for="show-slots"> Show slots</label>
       <div class="component-anatomy">
         <host name="select" data-slot>
-          <slot>
-            <slot data-slot>
-              <part name="button" data-slot>
-                <slot>Currently selected option</slot>
-              </part>
-            </slot>
-            <slot data-slot>
-              <part name="listbox" data-slot>
-                <slot>
-                  <div class="element">
-                    <div class="anatomy-label" name="optgroup" data-slot></div>
-                    <slot>
-                      <part name="option" data-slot>
-                        <slot>Content</slot>
-                      </part>
-                    </slot>
-                  </div>
-                </slot>
-              </part>
-            </slot>
+          <slot name="button-wrapper" data-slot>
+            <part name="button" data-slot>
+              <slot>Currently selected option</slot>
+            </part>
+          </slot>
+          <slot name="listbox-wrapper" data-slot>
+            <part name="listbox" data-slot>
+              <slot>
+                <div class="element">
+                  <div class="anatomy-label" name="optgroup" data-slot></div>
+                  <slot>
+                    <part name="option" data-slot>
+                      <slot>Content</slot>
+                    </part>
+                  </slot>
+                </div>
+              </slot>
+            </part>
           </slot>
         </host>
       </div>
