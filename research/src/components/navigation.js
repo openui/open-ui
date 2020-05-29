@@ -67,6 +67,32 @@ const Navigation = ({ style }) => (
       return (
         <nav style={style}>
           <ul style={{ position: 'sticky', top: '1em', margin: 0 }}>
+            <li
+              key="Home"
+              style={{
+                margin: 0,
+                listStyleType: 'none',
+              }}
+            >
+              <Link
+                to="/"
+                style={{
+                  display: 'block',
+                  padding: '0.25em 1em 0.25em 0.5em',
+                  margin: 0,
+                  color: 'inherit',
+                  borderLeft: '2px solid transparent',
+                  borderRadius: '2px',
+                  whiteSpace: 'nowrap',
+                }}
+                activeStyle={{
+                  borderLeftColor: '#00a453',
+                  backgroundColor: '#f2f2f2',
+                }}
+              >
+                Home
+              </Link>
+            </li>
             {topLevelNodes.map(listItem)}
 
             <div style={{ margin: '1rem' }} />
