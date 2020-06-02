@@ -12,7 +12,7 @@ const SelectAnatomy = () => {
         <host name="select" data-slot>
           <slot name="button-wrapper" data-slot>
             <part name="button" data-slot>
-              <slot>Currently selected option</slot>
+              <slot name="selected-value">Currently selected value</slot>
             </part>
           </slot>
           <slot name="listbox-wrapper" data-slot>
