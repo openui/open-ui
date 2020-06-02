@@ -5,7 +5,7 @@ const anchors = new AnchorJS({
 })
 
 exports.onRouteUpdate = (location, prevLocation) => {
-  anchors.add()
+  anchors.add('h1, h2, h3, h4')
 }
 
 exports.onClientEntry = (...args) => {
