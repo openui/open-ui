@@ -116,11 +116,24 @@ children:
   Should this apply to the entire anatomy or solely the &lt;option&gt; and &lt;optgroup&gt; element
 </p>
 
+## Events <a class="link" href="#events" id="events"></a>
+
+### part button
+
+| Event          |                     Behavior                      |                                                             Impacts |
+| -------------- | :-----------------------------------------------: | ------------------------------------------------------------------: |
+| `click`        |        Toggles the open state on the host         |                                           [open state](#open-state) |
+| `click`        |               Toggles aria-expanded               | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) |
+| `keyup(space)` | Toggles the [open state](#open-state) on the host |                                           [open state](#open-state) |
+| `keyup(space)` |               Toggles aria-expanded               | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) |
+| `keyup(enter)` | Toggles the [open state](#open-state) on the host |                                           [open state](#open-state) |
+| `keyup(enter)` |               Toggles aria-expanded               | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) |
+
 ## Behavior
 
 ### States <a class="link" href="#states" id="states"></a>
 
-#### open
+#### open <a href="#open" class="link" id="open-state"></a>
 
 This state is applied to the `<select>` when the listbox is visible to the user.
 
