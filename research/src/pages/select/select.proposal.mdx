@@ -46,7 +46,7 @@ then select the appropriate one for you.
 | [`type`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/type)                       | `string`                | `"select-one"`                        | Returns either `"select-multiple"` or `"select-one"`                                                                                                     |     |
 | `validationMessage`                                                                                     | `string`                | `""`                                  | Represents the message that describes the validation constraints that the control does not satisfy                                                       |     |
 | `validity`                                                                                              | `ValidityState`         |                                       | Represents the current validity state of the control                                                                                                     |     |
-| `value`                                                                                                 | `string`                | `""`                                  | Returns the `value` property of the first selected `<option>` if there is one, otherwise an empty string                                                 |     |
+| `value` <a id="value"></a>                                                                              | `string`                | `""`                                  | Returns the `value` property of the first selected `<option>` if there is one, otherwise an empty string                                                 |     |
 | `willValidate`                                                                                          | `bool`                  | `true`                                | A `boolean` that indicates whether the button is a candidate for constraint validation. It is false if any conditions bar it from constraint validation. |     |
 
 ## &lt;select&gt; Methods <a href="#select-methods" id="select-methods"></a>
@@ -70,16 +70,16 @@ then select the appropriate one for you.
 
 ## &lt;option&gt; Properties <a href="#option-properties" id="option-properties"></a>
 
-| Property Name     | Type                                                                                | Default Value                     | Description                                                                                                       |
-| ----------------- | ----------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `defaultSelected` | `bool`                                                                              | `false`                           | The initial value of the `selected` attribute                                                                     |
-| `disabled`        | `bool`                                                                              | inherited from containing element | If set to `true` the user will not be able to interact with the `<option>`                                        |
-| `form`            | [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement) |                                   | Returns the form element that the `<option>` is associated with, the association is inherited from the `<select>` |
-| `index`           | `long`                                                                              |                                   | The position of the `<option>` in the list of options it belongs to, in tree order                                |
-| `label`           | `string`                                                                            |                                   | Reflects the value of the `value` attribute if it exists; else reflects `Node.textContent`                        |
-| `selected`        | `bool`                                                                              | `false`                           | If set to `true` then the `<option>` is selected                                                                  |
-| `text`            | `string`                                                                            |                                   | Contains the text content of the element                                                                          |
-| `value`           | `string`                                                                            |                                   | Reflects the value of the `value` attribute if it exists; else reflects `Node.textContent`                        |
+| Property Name                    | Type                                                                                | Default Value                     | Description                                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `defaultSelected`                | `bool`                                                                              | `false`                           | The initial value of the `selected` attribute                                                                     |
+| `disabled`                       | `bool`                                                                              | inherited from containing element | If set to `true` the user will not be able to interact with the `<option>`                                        |
+| `form`                           | [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement) |                                   | Returns the form element that the `<option>` is associated with, the association is inherited from the `<select>` |
+| `index`                          | `long`                                                                              |                                   | The position of the `<option>` in the list of options it belongs to, in tree order                                |
+| `label`                          | `string`                                                                            |                                   | Reflects the value of the `value` attribute if it exists; else reflects `Node.textContent`                        |
+| `selected` <a id="selected"></a> | `bool`                                                                              | `false`                           | If set to `true` then the `<option>` is selected                                                                  |
+| `text`                           | `string`                                                                            |                                   | Contains the text content of the element                                                                          |
+| `value`                          | `string`                                                                            |                                   | Reflects the value of the `value` attribute if it exists; else reflects `Node.textContent`                        |
 
 ### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
 
@@ -120,14 +120,40 @@ children:
 
 ### part button
 
-| Event          |                     Behavior                      |                                                             Impacts |
-| -------------- | :-----------------------------------------------: | ------------------------------------------------------------------: |
-| `click`        |        Toggles the open state on the host         |                                           [open state](#open-state) |
-| `click`        |               Toggles aria-expanded               | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) |
-| `keyup(space)` | Toggles the [open state](#open-state) on the host |                                           [open state](#open-state) |
-| `keyup(space)` |               Toggles aria-expanded               | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) |
-| `keyup(enter)` | Toggles the [open state](#open-state) on the host |                                           [open state](#open-state) |
-| `keyup(enter)` |               Toggles aria-expanded               | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) |
+| Event          | Behavior                           | Impacts                                                                  |
+| -------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| `click`        | Toggles the open state on the host | [open](#open-state) state                                                |
+| `click`        | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keyup(space)` | Toggles the open state on the host | [open](#open-state) state                                                |
+| `keyup(space)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keyup(enter)` | Toggles the open state on the host | [open](#open-state) state                                                |
+| `keyup(enter)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+
+### part listbox
+
+| Event             | Behavior                                                                                                               | Impacts                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `keyup(down key)` | Moves focus to the next `<option>` in the listbox and sets the                                                         | focus                                                                    |
+| `keyup(up key)`   | Moves focus to the previous `<option>` in the listbox                                                                  | focus                                                                    |
+| `keyup(enter)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                    |
+| `keyup(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`         | [open](#open-state) state                                                |
+| `keyup(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the aria-expanded attribute on the `<select>` | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keyup(escape)`   | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                                |
+
+<p class="question">
+  When the user presses the up/down keys should that automatically set the value to the currently
+  highlighted option?{' '}
+  <a href="https://github.com/WICG/open-ui/issues/102" target="_blank">
+    Issue 102
+  </a>
+</p>
+
+### part option
+
+| Event   | Behavior                                                                                                       | Impacts                                               |
+| ------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `click` | Changes the `selected` state of the current `<option>` and updates the `<select>` value property               | [selected](#selected) prop <br/> [value](#value) prop |
+| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>` | [open](#open-state) state                             |
 
 ## Behavior
 

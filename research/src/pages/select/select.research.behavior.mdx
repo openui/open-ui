@@ -263,53 +263,26 @@ Currently this is testing the built-in browser based `<select>` control
   <option value="ZW">Zimbabwe</option>
 </select>
 
-## States:
+## Pressing escape
 
-**Open** - this is when the popup is open and the state is placed on the select.
+While adding in the events I noticed an interesting user experience that I
+wasn't expecting. Using the following repro steps:
 
-When the user invokes the button via pointer or keyboard
+1. Select any option from the list
+2. Then re-open the popup
+3. Move to another option using the keyboard
+4. Press escape
 
-- presses space or enter on the keyboard
-- the state is transitioned to open
-
-## Upon popup open:
-
-- Focus is transitioned to the currently selected option within the popup.
-- If necessary, the list is adjusted to ensure that the currently selected
-  option is within view to the user
-- All other input events are still fired
-- The popup position direction is dependant on the location of the select within the
-
-## Closing the popup:
-
-- When the user:
-  - engages with a pointer outside of the popup
-  - When the user invokes an option with keyboard or point the
-    currently selected value is update to the value of the option that
-    was invoked.
-  - user dismisses the popup by pressing the escape key
-  - user dismisses the popup by tabbing to another element
-- the popup closes and the open state is removed from select
-
-## Misc observations:
-
-- Firefox & Chromium show 20 options. This will probably need to be adjusted since
-  layout based adjustments can now impact options.
-
-## Proposed changes to the HTML specification
-
-- arbitrary content within the option element
-  - web compatibility \* telemetry of arbitrary content that is within an option element
-- [OPEN QUESTION] What will occur for other form inputs (any others)
-- [OPEN QUESTION] Validation/Invalidation of sub form controls within an option
-- [OPEN QUESTION][other form control capabilities??]
-- [Are there a11y implications]
-- introduction of popup element/part [based upon popup investigation]
-- introduction of select button part
-
-## Proposed changes to the CSS specification(s)
-
-- select button psuedo element
-- popup element/psuedo element
-- [possible layering proposal for windowing following popup investigation]
-- [possible focus trapping proposal following popup investigation]
+| Library                       | Behavior                                         |
+| ----------------------------- | ------------------------------------------------ |
+| Chrome/Edge/Firefox (Windows) | Selects the currently highlighted option         |
+| Safari (Catalina)             | Retains the previously selected option           |
+| Evergreen Combobox            | Removes all selected options to default settings |
+| Fluent UI                     | Retains the previously selected option           |
+| Ant Design                    | Retains the previously selected option           |
+| Atlas Kit                     | Retains the previously selected option           |
+| Carbon                        | Selects the currently highlighted option         |  | Fluent UI | Retains the previously selected option |
+| FastDNA                       | Retains the previously selected option           |
+| Lightning (uses native)       | Retains the previously selected option           |
+| Material Components           | Retains the previously selected option           |
+| Semantic                      | Retains the previously selected option           |
