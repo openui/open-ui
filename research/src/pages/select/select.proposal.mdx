@@ -118,12 +118,20 @@ children:
 
 ## Events <a class="link" href="#events" id="events"></a>
 
+### select
+
+| Event    | Behavior                                                                                         | Impacts          |
+| -------- | ------------------------------------------------------------------------------------------------ | ---------------- |
+| `change` | Updates the textContent property of the selected-value slot with the value property text content | textContent prop |
+
 ### part button
 
 | Event          | Behavior                           | Impacts                                                                  |
 | -------------- | ---------------------------------- | ------------------------------------------------------------------------ |
 | `click`        | Toggles the open state on the host | [open](#open-state) state                                                |
 | `click`        | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `pointerup`    | Toggles the open state on the host | [open](#open-state) state                                                |
+| `pointerup`    | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
 | `keyup(space)` | Toggles the open state on the host | [open](#open-state) state                                                |
 | `keyup(space)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
 | `keyup(enter)` | Toggles the open state on the host | [open](#open-state) state                                                |
@@ -150,10 +158,12 @@ children:
 
 ### part option
 
-| Event   | Behavior                                                                                                       | Impacts                                               |
-| ------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `click` | Changes the `selected` state of the current `<option>` and updates the `<select>` value property               | [selected](#selected) prop <br/> [value](#value) prop |
-| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>` | [open](#open-state) state                             |
+| Event       | Behavior                                                                                                       | Impacts                                               |
+| ----------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `click`     | Changes the `selected` state of the current `<option>` and updates the `<select>` value property               | [selected](#selected) prop <br/> [value](#value) prop |
+| `click`     | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>` | [open](#open-state) state                             |
+| `pointerup` | Changes the `selected` state of the current `<option>` and updates the `<select>` value property               | [selected](#selected) prop <br/> [value](#value) prop |
+| `pointerup` | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>` | [open](#open-state) state                             |
 
 ## Behavior
 
