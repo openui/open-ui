@@ -126,35 +126,30 @@ children:
 
 ### part button
 
-| Event          | Behavior                           | Impacts                                                                  |
-| -------------- | ---------------------------------- | ------------------------------------------------------------------------ |
-| `click`        | Toggles the open state on the host | [open](#open-state) state                                                |
-| `click`        | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `pointerup`    | Toggles the open state on the host | [open](#open-state) state                                                |
-| `pointerup`    | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keyup(space)` | Toggles the open state on the host | [open](#open-state) state                                                |
-| `keyup(space)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keyup(enter)` | Toggles the open state on the host | [open](#open-state) state                                                |
-| `keyup(enter)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| Event            | Behavior                           | Impacts                                                                  |
+| ---------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| `click`          | Toggles the open state on the host | [open](#open-state) state                                                |
+| `click`          | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `pointerup`      | Toggles the open state on the host | [open](#open-state) state                                                |
+| `pointerup`      | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)` | Toggles the open state on the host | [open](#open-state) state                                                |
+| `keydown(space)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(enter)` | Toggles the open state on the host | [open](#open-state) state                                                |
+| `keydown(enter)` | Toggles aria-expanded              | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
 
 ### part listbox
 
-| Event             | Behavior                                                                                                               | Impacts                                                                  |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `keyup(down key)` | Moves focus to the next `<option>` in the listbox and sets the                                                         | focus                                                                    |
-| `keyup(up key)`   | Moves focus to the previous `<option>` in the listbox                                                                  | focus                                                                    |
-| `keyup(enter)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                    |
-| `keyup(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`         | [open](#open-state) state                                                |
-| `keyup(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the aria-expanded attribute on the `<select>` | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keyup(escape)`   | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                                |
-
-<p class="question">
-  When the user presses the up/down keys should that automatically set the value to the currently
-  highlighted option?{' '}
-  <a href="https://github.com/WICG/open-ui/issues/102" target="_blank">
-    Issue 102
-  </a>
-</p>
+| Event                 | Behavior                                                                                                               | Impacts                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `keydown(down key)`\* | Moves focus to the next `<option>` in the listbox                                                                      | focus                                                                    |
+| `keydown(up key)`\*   | Moves focus to the previous `<option>` in the listbox                                                                  | focus                                                                    |
+| `keydown(enter)`      | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                    |
+| `keydown(space)`      | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                    |
+| `keydown(enter)`      | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`         | [open](#open-state) state                                                |
+| `keydown(enter)`      | If the `<select>` does **not** have the `multiple` attribute then toggle the aria-expanded attribute on the `<select>` | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)`      | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`         | [open](#open-state) state                                                |
+| `keydown(space)`      | If the `<select>` does **not** have the `multiple` attribute then toggle the aria-expanded attribute on the `<select>` | [aria-expanded](#https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(escape)`     | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                                |
 
 ### part option
 
@@ -234,7 +229,6 @@ When the `<select>` is in its `open` state the `listbox` should
 
 Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
 [HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
-[WIA-ARIA Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox) and [WIA-ARIA Listbox](https://www.w3.org/TR/wai-aria-practices-1.1/#Listbox) states and keyboard interactions
 
 ### Security <a class="link" href="#security" id="security"></a>
 
