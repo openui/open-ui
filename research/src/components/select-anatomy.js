@@ -22,11 +22,7 @@ const SelectAnatomy = () => {
               <slot>
                 <div class="element">
                   <div class="anatomy-label" name="optgroup" data-slot></div>
-                  <slot>
-                    <part name="option" data-slot>
-                      <slot>Content</slot>
-                    </part>
-                  </slot>
+                  <part name="option" data-slot></part>
                 </div>
               </slot>
             </part>
