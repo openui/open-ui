@@ -1,0 +1,27 @@
+{
+  "name": "superfakefast",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@microsoft/fast-element": "^0.9.0",
+    "@microsoft/fast-foundation": "^1.0.0"
+  },
+  "devDependencies": {
+    "lodash-es": "^4.17.10",
+    "http-server": "^0.12.1",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^7.0.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "scripts": {
+    "build": "rimraf dist && webpack --config webpack.config.js --mode=production",
+    "dev": "webpack-dev-server",
+    "serve": "http-server -c-1"
+  },
+  "author": "",
+  "license": "ISC"
+}
