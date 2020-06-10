@@ -9,11 +9,10 @@ const Image = ({ src, alt = src, style, ...rest }) => {
   return (
     <img
       alt={alt}
-      src={imageData}
+      srcset={imageData + ' 2x'}
       style={{
         display: 'inline-block',
         verticalAlign: 'middle',
-        zoom: 0.5,
         margin: 0,
         ...style,
       }}
