@@ -1,3 +1,10 @@
 
 import { css } from "@microsoft/fast-element";
-export const OuiListboxStyles = css`.oui-listbox { border: 2px dashed green; }`;
+export const OuiListboxStyles = css`
+
+    :host {
+        display: flex;
+        flex-direction: column;
+    }
+
+`;
