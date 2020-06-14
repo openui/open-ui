@@ -27,6 +27,44 @@ export class Select extends FormAssociated<HTMLInputElement> {
         }
     }
 
+    /**
+     * Provides the default state of open
+     */
+    @attr({ attribute: "open", mode: "boolean" })
+    public openAttribute: boolean;
+    private openAttributeChanged(): void {
+        this.defaultOpen = this.openAttribute;
+    }
+
+    @observable
+    public defaultOpen: boolean = !!this.openAttribute;
+    private defaultOpenChanged(): void {
+        if (!this.dirtyOpen) {
+            // Setting this.open will cause us to enter a dirty state,
+            // but if we are clean when defaultChecked is changed, we want to stay
+            // in a clean state, so reset this.dirtyOpen
+            this.open = this.defaultOpen;
+            this.dirtyOpen = false;
+        }
+    }
+
+    /**
+     * Tracks whether the "open" property has been changed.
+     */
+    private dirtyOpen: boolean = false;
+
+    @observable
+    public open: boolean = this.defaultOpen;
+    private openChanged(): void {
+        if (!this.dirtyOpen) {
+            this.dirtyOpen = true;
+        }
+
+        if (this.constructed) {
+            this.$emit("change");
+        }
+    }
+
     @observable
     public defaultSlottedNodes: Node[];
 
