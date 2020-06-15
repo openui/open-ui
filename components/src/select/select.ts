@@ -17,10 +17,9 @@ export class Select extends FormAssociated<HTMLInputElement> {
     public readOnly: boolean; // Map to proxy element
 
     /**
-     * The element's value to be included in form submission when checked.
-     * Default to "on" to reach parity with input[type="checkbox"]
+     * The element's
      */
-    public value: string = "o"; // Map to proxy element.
+    public value: string = "Selected Value"; // Map to proxy element.
     private valueChanged(): void {
         if (this.proxy instanceof HTMLElement) {
             this.proxy.value = this.value;

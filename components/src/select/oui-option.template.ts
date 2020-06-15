@@ -2,7 +2,9 @@ import { html, slotted } from "@microsoft/fast-element";
 import { OuiOption } from "./oui-option";
 
 export const OuiOptionTemplate = html<OuiOption>`
-    <template>
-        <div class="oui-option"><slot>Option</slot></div>
+    <template
+    @click="${(x, c) => x.clickHandler(c.event as MouseEvent)}"
+    checked="${x => x.checked ? "" : null}">
+        <slot></slot>
     </template>
 `;

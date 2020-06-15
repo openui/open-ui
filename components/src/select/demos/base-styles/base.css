@@ -1,0 +1,32 @@
+/*
+Select Base
+=========================
+While Open UI does not intend on standardizing on styles
+there are general paradigms that have an expectation. Many
+of the states come from these common paradigms. So in order
+to simplify the demos to solely show the delta's this base
+file will provide a common paradigm. This can be commonly
+referred to as a "Recommended UA stylesheet" which no
+implementation is required to leverage but is usually a good
+starting point.
+*/
+
+oui-select {
+    display: block;
+}
+
+oui-listbox {
+    display: none;
+}
+
+oui-select[open] oui-listbox {
+    display: flex;
+    border: 2px solid grey;
+    flex-direction: column;
+    position: absolute;
+}
+
+oui-option:hover {
+    cursor: pointer;
+    background: #eee;
+}
