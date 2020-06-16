@@ -2,17 +2,59 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Select - Firefox Demo</title>
+    <title>Select - Open UI Firefox Styles</title>
+    <link rel="stylesheet" href="../base-styles/base.css" />
     <style>
+      [slot=button-container] {
+        display: inline-flex;
+        padding: 0 0 0 3px;
+        border: 1px solid #7a7a7a;
+      }
 
+      .ff-arrow {
+        min-width: 10px;
+        min-height: 6px;
+        background-image: url(arrow.jpg);
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 1px solid transparent;
+        justify-self: flex-end;
+        padding-right: 3px;
+      }
+
+      oui-select[open] [slot=button-container] .ff-arrow,
+      [slot=button-container]:hover .ff-arrow {
+        background-color: #e5f1fb;
+        border: 1px solid #0078d7;
+      }
+
+      oui-select[open] oui-listbox {
+        border: 1px solid #a0a0a0;
+      }
+
+      oui-option {
+        padding: 8px 6px;
+      }
+
+      oui-option:hover {
+        background: #0078d7;
+        color: white;
+      }
     </style>
   </head>
   <body>
+    <h1>Select - Open UI Firefox Styles</h1>
+    <p>To achieve the current Firefox UA default design we leverage the button-container slot.</p>
+
         <oui-select>
+            <div slot="button-container">
+              <div part="selected-value">Choose One...</div>
+              <div class="ff-arrow"></div>
+            </div>
             <oui-listbox>
-              <oui-option value="option one">Option One</oui-option>
-              <oui-option value="option two">Option Two</oui-option>
-              <oui-option value="option three">Option Three</oui-option>
+              <oui-option value="Option One">Option One</oui-option>
+              <oui-option value="Option Two">Option Two</oui-option>
+              <oui-option value="Option Three">Option Three</oui-option>
             </oui-listbox>
         </oui-select>
 

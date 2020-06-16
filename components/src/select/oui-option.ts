@@ -85,20 +85,9 @@ export class OuiOption extends FormAssociated<HTMLInputElement> {
         super.connectedCallback();
     }
 
-    public keypressHandler = (e: KeyboardEvent): void => {
-        super.keypressHandler(e);
-        console.log('button pressed');
-        switch (e.keyCode) {
-            case keyCodeSpace:
-                console.log('space pressed');
-                break;
-        }
-    };
-
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public clickHandler = (e: MouseEvent): void => {
         (this.checked) ? this.checked = false : this.checked = true;
-        console.log(this.checked);
         this.$emit("oui-option-selection-change");
     };
 }

@@ -88,7 +88,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
 
     public keypressHandler = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
-        console.log('button pressed');
         switch (e.keyCode) {
             case keyCodeSpace:
                 console.log('space pressed');
@@ -102,4 +101,31 @@ export class Select extends FormAssociated<HTMLInputElement> {
             this.open = !this.open;
         }
     };
+
+    /**
+     * This will update the text that is in the select's
+     * button by default that renders the selected value
+     *
+     * @param value This is the value for the <option>
+     */
+    private updateSelectValue(value: string) {
+        let selectedValue = this.querySelector('[part=selected-value]');
+        if (!selectedValue) {
+            selectedValue = this.shadowRoot.querySelector('[part=selected-value]');
+        }
+
+        if (selectedValue) selectedValue.textContent = value;
+    }
+
+    /**
+     * When a user clicks on an option we need to update the known
+     * parts of
+     * - currently selected value
+     * - array of values
+     */
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    public optionSelectionChange(value: string): void {
+        this.updateSelectValue(value);
+        this.open = !this.open;
+    }
 }

@@ -1,5 +1,3 @@
-# Template Component
+# Select Component
 
-This folder uses the checkbox component to provide you with a complete
-component but also a relatively simple one to get you started created
-newer ones for components you're working on.
+This is the select component that is built following the [select](https://open-ui.org/components/select) Open UI specification. The content under demos has the varying stages of the base component with that of demos of a variety of different design systems to show the flexibility.
