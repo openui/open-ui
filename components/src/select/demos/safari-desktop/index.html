@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Select - Open UI Safari Styles</title>
+    <link rel="stylesheet" href="../base-styles/base.css" />
+    <style>
+      oui-select {
+        font: 400 13px Arial;
+        position: relative;
+      }
+
+      oui-select:focus {
+        outline: none;
+      }
+
+      [slot=button-container] {
+        display: inline-flex;
+        /* Safari has an outline and border that follow the border radius
+           but this is not interoperably implemented across UAs so I'll comment this out */
+        /* outline: 1px solid #e1e1e1; */
+        border: 1px solid #d8d8d8;
+        margin: 3px;
+        border-radius: 3px;
+        cursor: default;
+        line-height: 13px;
+      }
+
+      oui-select:focus [slot=button-container] {
+        /* Another unfortunate situation due to outlines not following the border, so to keep
+           the select from jumping I've set it to 1px */
+        border: 1px solid #92b3f5;
+        outline: none;
+      }
+
+      [part=selected-value] {
+        display: flex;
+        padding: 3.5px 7.5px 2px 7.5px;
+        align-items: center;
+      }
+
+      .arrow-container {
+        min-width: 14px;
+        min-height: 16px;
+        max-height: 100%;
+        background: linear-gradient(180deg, rgba(120,165,244,1) 0%, rgba(41,108,246,1) 100%);
+        background-repeat: no-repeat;
+        background-position: center;
+        justify-self: flex-end;
+        justify-content: center;
+        display: flex;
+      }
+
+      .arrow {
+        background: url(arrow.png);
+        width: 6.5px;
+        height: 10px;
+        align-self: center;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      oui-select[open] oui-listbox {
+        background: #eff0ef;
+        border: 1px solid #b5b5b5;
+        border-radius: 2px;
+        box-shadow: 10px 10px 17px -6px rgba(225,225,225,0.84);
+        top: -50%;
+        left: -2px;
+        width: max-content;
+      }
+
+      oui-option {
+        padding: 0 5.5px;
+        border: 2px solid transparent;
+      }
+
+      oui-option::before {
+        content: "✓";
+        display: inline-block;
+        visibility: hidden;
+        max-width: 7px;
+        padding: 0 7.5px 0 0;
+      }
+
+      oui-option[checked]::before {
+        visibility: visible;
+      }
+
+      oui-option:hover {
+        background: #598ff0;
+        color: white;
+      }
+
+      oui-option
+    </style>
+  </head>
+  <body>
+    <h1>Select - Open UI Safari Styles</h1>
+    <p>To achieve the current Safari UA default design we leverage the button-container slot.</p>
+
+        <oui-select>
+            <div slot="button-container">
+              <div part="selected-value">Choose One...</div>
+              <div class="arrow-container"><span class="arrow"></span></div>
+            </div>
+            <oui-listbox>
+              <oui-option value="Option One">Option One</oui-option>
+              <oui-option value="Option Two">Option Two</oui-option>
+              <oui-option value="Option Three">Option Three</oui-option>
+            </oui-listbox>
+        </oui-select>
+
+    <script src="/dist/bundle.js"></script>
+  </body>
+</html>

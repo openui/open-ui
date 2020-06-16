@@ -3,7 +3,7 @@ import { Select } from "./select";
 
 export const SelectTemplate = html<Select>`
     <template
-    tab-index="0"
+    tabindex="0"
     @oui-option-selection-change="${(x, c) => {
             let v = (c.event.target as any).value;
             x.value = v;

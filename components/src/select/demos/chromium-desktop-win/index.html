@@ -5,10 +5,20 @@
     <title>Select - Open UI Edge Styles</title>
     <link rel="stylesheet" href="../base-styles/base.css" />
     <style>
+      oui-select {
+        font: 400 13.3333px Arial;
+      }
+
+      *:focus {
+        border: 2px solid outline;
+      }
+
       [slot=button-container] {
         display: inline-flex;
         padding: 0 0 0 3px;
-        border: 1px solid #7a7a7a;
+        border: 1px solid #767676;
+        border-radius: 2px;
+        cursor: default;
       }
 
       .ff-arrow {
@@ -22,29 +32,27 @@
         padding-right: 3px;
       }
 
-      oui-select[open] [slot=button-container] .ff-arrow,
-      [slot=button-container]:hover .ff-arrow {
-        background-color: #e5f1fb;
-        border: 1px solid #0078d7;
-      }
-
       oui-select[open] oui-listbox {
-        border: 1px solid #a0a0a0;
+        border: 2px solid transparent;
+        border-radius: 2px;
+        box-shadow: 10px 10px 17px -6px rgba(225,225,225,0.84);
+        margin-top: 4px;
       }
 
       oui-option {
-        padding: 8px 6px;
+        padding: 0 4px;
+        border: 2px solid transparent;
       }
 
       oui-option:hover {
-        background: #0078d7;
-        color: white;
+        background: #cecece;
+        border: 2px solid black;
       }
     </style>
   </head>
   <body>
-    <h1>Select - Open UI Firefox Styles</h1>
-    <p>To achieve the current Firefox UA default design we leverage the button-container slot.</p>
+    <h1>Select - Chromium Styles</h1>
+    <p>To achieve the current Chromium UA default design we leverage the button-container slot.</p>
 
         <oui-select>
             <div slot="button-container">
