@@ -168,12 +168,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public clickHandler = (e: MouseEvent): void => {
-        console.log(e);
+        console.log('select click handler');
         if (!this.disabled && !this.readOnly) {
             this.open = !this.open;
 
             if (this.open) {
-                this.setFocusOnOption();
+                setTimeout(() => this.setFocusOnOption(), 0);
             }
         }
     };

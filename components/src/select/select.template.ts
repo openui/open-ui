@@ -9,11 +9,12 @@ export const SelectTemplate = html<Select>`
             x.optionSelectionChange(v)
         }
     }"
+    @click="${(x, c) => x.clickHandler(c.event as MouseEvent)}"
     class="${x => (x.readOnly ? "readonly" : "")}" open="${x => x.open ? "" : null}"
     >
         <slot tabindex="0" name="button-container"
         @keydown="${(x, c) => x.keypressHandlerButtonContainer(c.event as KeyboardEvent)}"
-        @click="${(x, c) => x.clickHandler(c.event as MouseEvent)}">
+        >
             <button part="button" aria-expanded="${x => x.open == true}" aria-haspopup="true">
                 <span part="selected-value">
                     <slot name="selected-value">${x => x.value}</slot>

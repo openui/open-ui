@@ -83,7 +83,7 @@
 
     <script>
         let selectedValue = document.querySelector('[part=selected-value]');
-        selectedValue.addEventListener('click', (e) => {console.log('hello'); e.stopPropagation()});
+        selectedValue.addEventListener('click', (e) => {console.log('hello'); e.preventDefault(); e.stopImmediatePropagation()});
     </script>
 
     <script src="/dist/bundle.js"></script>
