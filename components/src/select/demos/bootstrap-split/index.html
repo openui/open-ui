@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Select - Open UI Edge Styles</title>
+    <link rel="stylesheet" href="../base-styles/base.css" />
+    <style>
+      [slot=button-container] {
+        display: inline-flex;
+        padding: 0 0 0 3px;
+        margin: .25rem 0;
+        color: white;
+        font-family: sans-serif, Arial;
+      }
+
+      [part=selected-value] {
+        border: 1px solid #007bff;
+        border-radius: .25rem;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: #007bff;
+        padding: 6px 12px;
+      }
+
+      .arrow {
+        border: 1px solid transparent;
+        border-radius: .25rem;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        background-color: #007bff;
+        display: flex;
+        padding: 6px 9px;
+      }
+
+      .arrow::after {
+        display: inline-block;
+        margin-left: .255em;
+        vertical-align: .255em;
+        content: "";
+        border-top: .3em solid;
+        border-right: .3em solid transparent;
+        border-bottom: 0;
+        border-left: .3em solid transparent;
+        justify-self: center;
+        align-self: center;
+      }
+
+      oui-select[open] [slot=button-container] .arrow,
+      [slot=button-container]:hover .arrow {
+        background-color: #0069d9;
+        border: 1px solid #007bff;
+      }
+
+      oui-select[open] oui-listbox {
+        border: 1px solid #a0a0a0;
+      }
+
+      oui-option {
+        padding: 8px 6px;
+      }
+
+      oui-option:hover {
+        background: #0078d7;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Select - Open UI Firefox Styles</h1>
+    <p>To achieve the current Firefox UA default design we leverage the button-container slot.</p>
+
+        <oui-select>
+            <div slot="button-container">
+              <div part="selected-value">Choose One...</div>
+              <div class="arrow" label="toggle dropdown"></div>
+            </div>
+            <oui-listbox>
+              <oui-option value="Option One">Option One</oui-option>
+              <oui-option value="Option Two">Option Two</oui-option>
+              <oui-option value="Option Three">Option Three</oui-option>
+            </oui-listbox>
+        </oui-select>
+
+    <script>
+        let selectedValue = document.querySelector('[part=selected-value]');
+        selectedValue.addEventListener('click', (e) => {console.log('hello'); e.stopPropagation()});
+    </script>
+
+    <script src="/dist/bundle.js"></script>
+  </body>
+</html>

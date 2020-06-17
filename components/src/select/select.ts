@@ -168,6 +168,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public clickHandler = (e: MouseEvent): void => {
+        console.log(e);
         if (!this.disabled && !this.readOnly) {
             this.open = !this.open;
 
