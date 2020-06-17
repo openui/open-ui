@@ -90,10 +90,29 @@ export class Select extends FormAssociated<HTMLInputElement> {
     private updateForm(): void {
     }
 
+    public keypressHandlerButtonContainer = (e: KeyboardEvent): void => {
+        super.keypressHandler(e);
+        switch (e.keyCode) {
+            // Space
+            case 32:
+                this.open = !this.open;
+                this.setFocusOnOption();
+                break;
+            // Enter
+            case 13:
+                this.open = !this.open;
+                this.setFocusOnOption();
+                break;
+            case 9:
+                this.setFocusOnOption();
+                break;
+        }
+    }
+
     /**
-     * Handle keyboard interactions
+     * Handle keyboard interactions for listbox
      */
-    public keypressHandler = (e: KeyboardEvent): void => {
+    public keypressHandlerListbox = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
         let options = this.getOptions();
         switch (e.keyCode) {
@@ -137,10 +156,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
             case "next":
                 options.current.removeAttribute('current');
                 options.next.setAttribute('current', "");
+                options.next.focus();
                 break;
             case "prev":
                 options.current.removeAttribute('current');
                 options.previous.setAttribute('current', "");
+                options.previous.focus();
                 break;
         }
     }
@@ -150,7 +171,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
         if (!this.disabled && !this.readOnly) {
             this.open = !this.open;
 
-            if (this.open == true) {
+            if (this.open) {
                 this.setFocusOnOption();
             }
         }

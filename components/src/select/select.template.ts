@@ -3,7 +3,6 @@ import { Select } from "./select";
 
 export const SelectTemplate = html<Select>`
     <template
-    tabindex="0"
     @oui-option-selection-change="${(x, c) => {
             let v = (c.event.target as any).value;
             x.value = v;
@@ -12,7 +11,8 @@ export const SelectTemplate = html<Select>`
     }"
     class="${x => (x.readOnly ? "readonly" : "")}" open="${x => x.open ? "" : null}"
     >
-        <slot name="button-container"
+        <slot tabindex="0" name="button-container"
+        @keydown="${(x, c) => x.keypressHandlerButtonContainer(c.event as KeyboardEvent)}"
         @click="${(x, c) => x.clickHandler(c.event as MouseEvent)}">
             <button part="button" aria-expanded="${x => x.open == true}">
                 <span part="selected-value">
@@ -21,7 +21,7 @@ export const SelectTemplate = html<Select>`
             </button>
         </slot>
         <slot name="listbox-container"
-        @keydown="${(x, c) => x.keypressHandler(c.event as KeyboardEvent)}">
+        @keydown="${(x, c) => x.keypressHandlerListbox(c.event as KeyboardEvent)}">
             <!-- This is where the listbox part will be inserted -->
             <slot></slot>
         </slot>
