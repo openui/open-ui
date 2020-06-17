@@ -99,8 +99,34 @@ export class Select extends FormAssociated<HTMLInputElement> {
     public clickHandler = (e: MouseEvent): void => {
         if (!this.disabled && !this.readOnly) {
             this.open = !this.open;
+
+            if (this.open == true) {
+                this.setFocusOnOption();
+            }
         }
     };
+
+    public setFocusOnOption = (): void => {
+        // Set focus to the first option that has a state of checked
+        let option = this.getElement('oui-option[checked]') as HTMLInputElement;
+
+        // If no option is currently checked set it to the first element
+        if (!option) {
+            option = this.getElement('oui-option') as HTMLInputElement;
+        }
+
+        if (option) {
+            option.focus();
+        }
+    }
+
+    public getElement(selector: string) {
+        let el = this.querySelector(selector);
+        if (!el) {
+            el = this.shadowRoot.querySelector(selector);
+        }
+        return el;
+    }
 
     /**
      * This will update the text that is in the select's
@@ -109,11 +135,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
      * @param value This is the value for the <option>
      */
     private updateSelectValue(value: string) {
-        let selectedValue = this.querySelector('[part=selected-value]');
-        if (!selectedValue) {
-            selectedValue = this.shadowRoot.querySelector('[part=selected-value]');
-        }
-
+        let selectedValue = this.getElement('[part=selected-value]');
         if (selectedValue) selectedValue.textContent = value;
     }
 

@@ -10,7 +10,7 @@
       }
 
       *:focus {
-        border: 2px solid outline;
+        border: 2px solid black;
       }
 
       [slot=button-container] {
@@ -48,6 +48,10 @@
         background: #cecece;
         border: 2px solid black;
       }
+
+      oui-option:focus {
+        background: blue;
+      }
     </style>
   </head>
   <body>
@@ -66,6 +70,14 @@
             </oui-listbox>
         </oui-select>
 
+    <script>
+      function checkActiveElement() {
+        let activeElement = document.activeElement;
+        console.log(activeElement);
+      }
+
+      setInterval(checkActiveElement, 5000);
+    </script>
     <script src="/dist/bundle.js"></script>
   </body>
 </html>

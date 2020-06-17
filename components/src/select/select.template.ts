@@ -20,7 +20,8 @@ export const SelectTemplate = html<Select>`
                 </slot>
             </button>
         </slot>
-        <slot name="listbox-container">
+        <slot name="listbox-container"
+        @keydown="${(x, c) => x.keypressHandler(c.event as KeyboardEvent)}">
             <!-- This is where the listbox part will be inserted -->
             <slot></slot>
         </slot>
