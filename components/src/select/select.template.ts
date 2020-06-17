@@ -14,7 +14,7 @@ export const SelectTemplate = html<Select>`
     >
         <slot name="button-container"
         @click="${(x, c) => x.clickHandler(c.event as MouseEvent)}">
-            <button part="button">
+            <button part="button" aria-expanded="${x => x.open == true}">
                 <span part="selected-value">
                     <slot name="selected-value">${x => x.value}</slot>
                 </slot>
