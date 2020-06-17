@@ -88,12 +88,45 @@ export class Select extends FormAssociated<HTMLInputElement> {
 
     public keypressHandler = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
+        let options = this.getOptions();
         switch (e.keyCode) {
-            case keyCodeSpace:
-                console.log('space pressed');
+            // Down
+            case 40:
+                this.moveOption("next", options);
+                break;
+            // Up
+            case 38:
+                this.moveOption("prev", options);
+                break;
+            // Space
+            case 32:
+                this.optionSelectionChange(options.current.value);
+                break;
+            // Enter
+            case 13:
+                this.optionSelectionChange(options.current.value);
+                break;
+            // Escape
+            case 27:
+                options.current.removeAttribute('current');
+                this.open = !this.open;
                 break;
         }
     };
+
+    public moveOption(direction: string, options: any) {
+        switch(direction) {
+            case "next":
+                options.current.removeAttribute('current');
+                options.next.setAttribute('current', "");
+                break;
+            case "prev":
+                case "next":
+                options.current.removeAttribute('current');
+                options.previous.setAttribute('current', "");
+                break;
+        }
+    }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public clickHandler = (e: MouseEvent): void => {
@@ -106,18 +139,60 @@ export class Select extends FormAssociated<HTMLInputElement> {
         }
     };
 
-    public setFocusOnOption = (): void => {
-        // Set focus to the first option that has a state of checked
-        let option = this.getElement('oui-option[checked]') as HTMLInputElement;
-
-        // If no option is currently checked set it to the first element
-        if (!option) {
-            option = this.getElement('oui-option') as HTMLInputElement;
+    public getOptions = (): any => {
+        let optionBag = {
+            "options": null,
+            "current": null,
+            "previous": null,
+            "next": null
         }
+
+        optionBag.options = this.getElements("oui-option");
+
+        for (let i: number = 0; i < optionBag.options.length; i++) {
+            let el = optionBag.options[i]
+            let currentIndex = i;
+            if (el.hasAttribute('current')) {
+                optionBag.current = el;
+
+                // Set the next option
+                if (i == optionBag.options.length) {
+                    optionBag.next = optionBag.options[0]
+                }
+                else {
+                    optionBag.next = optionBag.options[currentIndex + 1]
+                }
+
+                currentIndex = i;
+
+                // Set the previous option
+                if (i == 0) {
+                    optionBag.previous = optionBag.options[optionBag.options.length];
+                }
+                else {
+                    optionBag.previous = optionBag.options[currentIndex - 1];
+                }
+            }
+        }
+
+        return optionBag;
+    }
+
+    public setFocusOnOption = (): void => {
+        let option = this.getFirstSelectedOption();
 
         if (option) {
+            option.setAttribute('current', "");
             option.focus();
         }
+    }
+
+    public getElements(selector: string) {
+        let els = this.querySelectorAll(selector);
+        if (els.length === 0) {
+            els = this.shadowRoot.querySelectorAll(selector);
+        }
+        return els;
     }
 
     public getElement(selector: string) {
@@ -128,6 +203,18 @@ export class Select extends FormAssociated<HTMLInputElement> {
         return el;
     }
 
+    public getCurrentOption(): HTMLInputElement {
+        // Set focus to the first option that has a state of checked
+        let option = this.getElement('oui-option[current]') as HTMLInputElement;
+
+        // If no option is currently set as current, get the first element
+        if (!option) {
+            option = this.getElement('oui-option') as HTMLInputElement;
+        }
+
+        return option;
+    }
+
     /**
      * This will update the text that is in the select's
      * button by default that renders the selected value
@@ -135,8 +222,21 @@ export class Select extends FormAssociated<HTMLInputElement> {
      * @param value This is the value for the <option>
      */
     private updateSelectValue(value: string) {
+        this.value = value;
         let selectedValue = this.getElement('[part=selected-value]');
         if (selectedValue) selectedValue.textContent = value;
+    }
+
+    private getFirstSelectedOption(): HTMLInputElement {
+        // Set focus to the first option that has a state of checked
+        let option = this.getElement('oui-option[checked]') as HTMLInputElement;
+
+        // If no option is currently checked set it to the first element
+        if (!option) {
+            option = this.getElement('oui-option') as HTMLInputElement;
+        }
+
+        return option;
     }
 
     /**
