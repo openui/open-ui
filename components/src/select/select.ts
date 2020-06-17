@@ -16,6 +16,10 @@ export class Select extends FormAssociated<HTMLInputElement> {
     @attr({ attribute: "readonly", mode: "boolean" })
     public readOnly: boolean; // Map to proxy element
 
+    @attr({ attribute: "multiple", mode: "boolean" })
+    public multiple: boolean;
+
+
     /**
      * The element's
      */
@@ -86,6 +90,9 @@ export class Select extends FormAssociated<HTMLInputElement> {
     private updateForm(): void {
     }
 
+    /**
+     * Handle keyboard interactions
+     */
     public keypressHandler = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
         let options = this.getOptions();
@@ -100,10 +107,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 break;
             // Space
             case 32:
+                options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
                 break;
             // Enter
             case 13:
+                options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
                 break;
             // Escape
@@ -114,6 +123,15 @@ export class Select extends FormAssociated<HTMLInputElement> {
         }
     };
 
+    /**
+     * Set which option has the 'current' attribute based on keyboard
+     * direction input. I'm not sure * if there is a need for this
+     * attribute in a standard. Once I get * focus fully working I'll
+     * determine if we need this or not
+     *
+     * @param direction
+     * @param options
+     */
     public moveOption(direction: string, options: any) {
         switch(direction) {
             case "next":
@@ -121,7 +139,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 options.next.setAttribute('current', "");
                 break;
             case "prev":
-                case "next":
                 options.current.removeAttribute('current');
                 options.previous.setAttribute('current', "");
                 break;
@@ -139,11 +156,17 @@ export class Select extends FormAssociated<HTMLInputElement> {
         }
     };
 
+    /**
+     * To allow for options to be anywhere within the select and also
+     * ensure that the behaviors work and avoid needing to do additional
+     * queries this creates a general options object to gather them.
+     */
     public getOptions = (): any => {
         let optionBag = {
             "options": null,
             "current": null,
             "previous": null,
+            "checked": [],
             "next": null
         }
 
@@ -173,20 +196,34 @@ export class Select extends FormAssociated<HTMLInputElement> {
                     optionBag.previous = optionBag.options[currentIndex - 1];
                 }
             }
+
+            if (el.hasAttribute('checked')) {
+                optionBag.checked.push(el);
+            }
         }
 
         return optionBag;
     }
 
+    /**
+     * Will set focus to the necessary element
+     * TODO: This will probably get removed by moveOption
+     */
     public setFocusOnOption = (): void => {
         let option = this.getFirstSelectedOption();
+        let options = this.getOptions();
 
         if (option) {
+            if (options.current) options.current.removeAttribute('current');
             option.setAttribute('current', "");
             option.focus();
         }
     }
 
+    /**
+     * Gathers elements within the select that match the selector param
+     * @param selector
+     */
     public getElements(selector: string) {
         let els = this.querySelectorAll(selector);
         if (els.length === 0) {
@@ -195,24 +232,17 @@ export class Select extends FormAssociated<HTMLInputElement> {
         return els;
     }
 
+    /**
+     * Returns the first element that matches the selector param
+     *
+     * @param selector
+     */
     public getElement(selector: string) {
         let el = this.querySelector(selector);
         if (!el) {
             el = this.shadowRoot.querySelector(selector);
         }
         return el;
-    }
-
-    public getCurrentOption(): HTMLInputElement {
-        // Set focus to the first option that has a state of checked
-        let option = this.getElement('oui-option[current]') as HTMLInputElement;
-
-        // If no option is currently set as current, get the first element
-        if (!option) {
-            option = this.getElement('oui-option') as HTMLInputElement;
-        }
-
-        return option;
     }
 
     /**
@@ -223,6 +253,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
      */
     private updateSelectValue(value: string) {
         this.value = value;
+
         let selectedValue = this.getElement('[part=selected-value]');
         if (selectedValue) selectedValue.textContent = value;
     }
