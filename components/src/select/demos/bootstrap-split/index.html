@@ -5,8 +5,9 @@
     <title>Select - Open UI Bootstrap Split-Button Styles</title>
     <link rel="stylesheet" href="../base-styles/base.css" />
     <style>
-      oui-select {
+      body {
         font-family: sans-serif, Arial;
+        max-width: 80%;
       }
 
       [slot=button-container] {
@@ -14,6 +15,10 @@
         margin: .25rem 0;
         color: white;
         transition: box-shadow .35s;
+      }
+
+      [slot=button-container]:hover {
+        cursor: pointer;
       }
 
       oui-select[open] [slot=button-container],
@@ -68,8 +73,9 @@
         border: 1px solid rgba(0,0,0,.15);
         border-radius: .25rem;
         background-clip: padding-box;
-        left: 85%;
+        left: 72%;
         width: max-content;
+        margin-top: .2rem;
       }
 
       oui-option {
@@ -85,12 +91,23 @@
         background-color: #007bff;
         color: white;
       }
+
+      .seperator {
+        border-top: 1px solid #e9ecef;
+        flex: 0 0 auto;
+        height: 0;
+        margin: .5rem 0;
+      }
     </style>
   </head>
   <body>
     <h1>Select - Open UI Bootstrap Split Button Styles</h1>
-    <p></p>
+    <p>This shows the split button from <a href="https://getbootstrap.com/docs/4.3/components/dropdowns/#split-button" target="_blank">Bootstrap</a>.
+       It leverages the slotting capability and part declaration. Additionally it leverages the
+       capability of inserting arbitrary content inside of the listbox while still keeping keyboard
+       support for the option parts.</p>
 
+        <h2>Single</h2>
         <oui-select>
             <div slot="button-container" part="button">
               <div class="select-label">Primary</div>
@@ -100,13 +117,10 @@
               <oui-option value="Option One">Option One</oui-option>
               <oui-option value="Option Two">Option Two</oui-option>
               <oui-option value="Option Three">Option Three</oui-option>
+              <div class="seperator"></div>
+              <oui-option value="Option Four">Option Four</oui-option>
             </oui-listbox>
         </oui-select>
-
-    <script>
-        let selectedValue = document.querySelector('.select-label');
-        selectedValue.addEventListener('click', (e) => {console.log('hello'); e.preventDefault(); e.stopImmediatePropagation()});
-    </script>
 
     <script src="/dist/bundle.js"></script>
   </body>

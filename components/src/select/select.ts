@@ -25,9 +25,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
     @observable
     public defaultSlottedNodes: Node[];
 
-    /**
-     * The element's
-     */
+    // TODO: This needs to change to support multiple values
     public value: string = "Selected Value"; // Map to proxy element.
     private valueChanged(): void {
         if (this.proxy instanceof HTMLElement) {
@@ -94,12 +92,14 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 break;
             // Space
             case 32:
+                this.value = options.current.value;
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
                 this.updateButtonPartAttr();
                 break;
             // Enter
             case 13:
+                this.value = options.current.value;
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
                 this.updateButtonPartAttr();
@@ -150,6 +150,21 @@ export class Select extends FormAssociated<HTMLInputElement> {
     };
 
     /**
+     * This will only allow a selection of multiple values if the
+     * multiple attribute is set
+     */
+    public handleMultiple = (value: string): void => {
+        if (!this.multiple) {
+            let optionBag = this.getOptions();
+            optionBag.options.forEach(element => {
+                if (element.value != this.value && element.hasAttribute('checked')) {
+                    element.removeAttribute('checked');
+                }
+            });
+        }
+    }
+
+    /**
      * To allow for options to be anywhere within the select and also
      * ensure that the behaviors work and avoid needing to do additional
      * queries this creates a general options object to gather them.
@@ -172,6 +187,8 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 optionBag.current = el;
 
                 // Set the next option
+                // TODO: When you get to the end of the list it doesn't go back around to
+                //       the first one.
                 if (i == optionBag.options.length) {
                     optionBag.next = optionBag.options[0]
                 }
@@ -285,6 +302,8 @@ export class Select extends FormAssociated<HTMLInputElement> {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public optionSelectionChange(value: string): void {
         let options = this.getOptions();
+
+        this.handleMultiple(value);
 
         options.options.forEach(element  => {
             if (element.value != value) element.removeAttribute('current');

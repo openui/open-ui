@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Open UI Select Demos</title>
+    <style>body { font-family: sans-serif; } code { background: #eee; }</style>
   </head>
   <body>
   <h1>Select</h1>
@@ -10,7 +11,8 @@
     specification. The implementation is a work in progress but is being used to investigate
     behavior changes as well as ensure that what is being defined enables the most common scenarios</p>
 
-    <p>Note: There are many aspects not currently implemented, but we'll continue to iterate</p>
+    <p>Note: There are many aspects not currently implemented, but we'll continue to iterate
+    on this.</p>
 
     <ul>
       <li><a href="demos/base/">Base component</a></li>
@@ -19,6 +21,26 @@
       <li><a href="demos/chromium-desktop-win/">Chromium desktop (Windows)</a></li>
       <li><a href="demos/safari-desktop/">Safari desktop (MacOSX)</a></li>
       <li><a href="demos/bootstrap-split/">Bootstrap split button</a></li>
+    </ul>
+
+    <h2>Polyfills</h2>
+    <p>Since some aspects of this control are showing capabilities that will need
+    adjustments to the web platform - some items have been polyfilled. Here is a current list
+    that as they become supported we can remove them.</p>
+
+    <ul>
+      <li><strong>oui-option:</strong> This is a custom option which enables the
+          capability to allow arbitrary HTML content.
+      <li><strong>checked:</strong> Due to the need of a custom option the <code>:checked</code>
+          psuedo class doesn't work so the CSS leverages the <code>checked</code> attribute
+    </ul>
+
+    <h2>Gaps</h2>
+    <ul>
+       <li>Support multiple in the value property</li>
+       <li>Add popup on top of other content (painting order is currently broken)</li>
+       <li>Add support for light dismiss</li>
+       <li>Don't dismiss the popup on selection when <code>multiple</code> attr is set</li>
     </ul>
 
     <script src="../../dist/bundle.js"></script>
