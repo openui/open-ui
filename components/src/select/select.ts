@@ -326,6 +326,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
                     button.setAttribute('tabindex', "0");
                     button.setAttribute('aria-haspopup', 'true');
                     button.setAttribute('aria-expanded', 'false');
+                    button.setAttribute('role', 'button');
                 }
             });
         }
