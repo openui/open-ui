@@ -1,4 +1,4 @@
-import { html, slotted } from "@microsoft/fast-element";
+import { html, slotted, ref } from "@microsoft/fast-element";
 import { Select } from "./select";
 
 export const SelectTemplate = html<Select>`
@@ -12,8 +12,8 @@ export const SelectTemplate = html<Select>`
     class="${x => (x.readOnly ? "readonly" : "")}" open="${x => x.open ? "" : null}"
     >
         <slot name="button-container"
-        @click="${(x, c) => x.clickHandler(c.event as MouseEvent)}"
         @keydown="${(x, c) => x.keypressHandlerButtonContainer(c.event as KeyboardEvent)}"
+        ${ref("button")}
         >
             <button tabindex="0" part="button" aria-expanded="${x => x.open == true}" aria-haspopup="true">
                 <span part="selected-value">
