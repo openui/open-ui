@@ -25,6 +25,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
     @observable
     public defaultSlottedNodes: Node[];
 
+    @observable
+    public button: HTMLElement;
+    private buttonChanged(prev: HTMLElement) {
+        this.button.addEventListener("click", this.clickHandler);
+    }
+
     // TODO: This needs to change to support multiple values
     public value: string = "Selected Value"; // Map to proxy element.
     private valueChanged(): void {
@@ -139,7 +145,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public clickHandler = (e: MouseEvent): void => {
-        console.log('select click handler');
         if (!this.disabled && !this.readOnly) {
             this.open = !this.open;
 

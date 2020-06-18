@@ -122,5 +122,11 @@
         </oui-select>
 
     <script src="/dist/bundle.js"></script>
+    <script>
+        document.querySelector("[part='button']").addEventListener("click", e => {
+          console.log("external", e, e.target)
+          e.stopPropagation();
+        })
+    </script>
   </body>
 </html>
