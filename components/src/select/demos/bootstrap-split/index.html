@@ -2,18 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Select - Open UI Edge Styles</title>
+    <title>Select - Open UI Bootstrap Split-Button Styles</title>
     <link rel="stylesheet" href="../base-styles/base.css" />
     <style>
-      [slot=button-container] {
-        display: inline-flex;
-        padding: 0 0 0 3px;
-        margin: .25rem 0;
-        color: white;
+      oui-select {
         font-family: sans-serif, Arial;
       }
 
-      [part=selected-value] {
+      [slot=button-container] {
+        display: inline-flex;
+        margin: .25rem 0;
+        color: white;
+        transition: box-shadow .35s;
+      }
+
+      oui-select[open] [slot=button-container],
+      [slot=button-container]:focus {
+        box-shadow: 0 0 0 0.2rem rgba(38,143,255,.5);
+        outline: none;
+        border-radius: .25em;
+      }
+
+      .select-label {
         border: 1px solid #007bff;
         border-radius: .25rem;
         border-top-right-radius: 0;
@@ -52,26 +62,38 @@
       }
 
       oui-select[open] oui-listbox {
-        border: 1px solid #a0a0a0;
+        padding: .5rem 0;
+        color: #212529;
+        background: #fff;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: .25rem;
+        background-clip: padding-box;
+        left: 85%;
+        width: max-content;
       }
 
       oui-option {
         padding: 8px 6px;
       }
 
-      oui-option:hover {
-        background: #0078d7;
+      oui-option:focus {
+        background: #f8f9fa;
+        outline: none;
+      }
+
+      oui-option[checked] {
+        background-color: #007bff;
         color: white;
       }
     </style>
   </head>
   <body>
-    <h1>Select - Open UI Firefox Styles</h1>
-    <p>To achieve the current Firefox UA default design we leverage the button-container slot.</p>
+    <h1>Select - Open UI Bootstrap Split Button Styles</h1>
+    <p></p>
 
         <oui-select>
-            <div slot="button-container">
-              <div part="selected-value">Choose One...</div>
+            <div slot="button-container" part="button">
+              <div class="select-label">Primary</div>
               <div class="arrow" label="toggle dropdown"></div>
             </div>
             <oui-listbox>
@@ -82,7 +104,7 @@
         </oui-select>
 
     <script>
-        let selectedValue = document.querySelector('[part=selected-value]');
+        let selectedValue = document.querySelector('.select-label');
         selectedValue.addEventListener('click', (e) => {console.log('hello'); e.preventDefault(); e.stopImmediatePropagation()});
     </script>
 

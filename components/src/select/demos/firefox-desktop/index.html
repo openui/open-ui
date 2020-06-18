@@ -23,7 +23,8 @@
       }
 
       oui-select[open] [slot=button-container] .ff-arrow,
-      [slot=button-container]:hover .ff-arrow {
+      [slot=button-container]:hover .ff-arrow,
+      [slot=button-container]:focus .ff-arrow {
         background-color: #e5f1fb;
         border: 1px solid #0078d7;
       }
@@ -47,7 +48,7 @@
     <p>To achieve the current Firefox UA default design we leverage the button-container slot.</p>
 
         <oui-select>
-            <div slot="button-container">
+            <div slot="button-container" part="button">
               <div part="selected-value">Choose One...</div>
               <div class="ff-arrow"></div>
             </div>

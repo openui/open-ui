@@ -19,6 +19,11 @@ export class Select extends FormAssociated<HTMLInputElement> {
     @attr({ attribute: "multiple", mode: "boolean" })
     public multiple: boolean;
 
+    @attr({ attribute: "open", mode: "boolean" })
+    public open: boolean;
+
+    @observable
+    public defaultSlottedNodes: Node[];
 
     /**
      * The element's
@@ -29,47 +34,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
             this.proxy.value = this.value;
         }
     }
-
-    /**
-     * Provides the default state of open
-     */
-    @attr({ attribute: "open", mode: "boolean" })
-    public openAttribute: boolean;
-    private openAttributeChanged(): void {
-        this.defaultOpen = this.openAttribute;
-    }
-
-    @observable
-    public defaultOpen: boolean = !!this.openAttribute;
-    private defaultOpenChanged(): void {
-        if (!this.dirtyOpen) {
-            // Setting this.open will cause us to enter a dirty state,
-            // but if we are clean when defaultChecked is changed, we want to stay
-            // in a clean state, so reset this.dirtyOpen
-            this.open = this.defaultOpen;
-            this.dirtyOpen = false;
-        }
-    }
-
-    /**
-     * Tracks whether the "open" property has been changed.
-     */
-    private dirtyOpen: boolean = false;
-
-    @observable
-    public open: boolean = this.defaultOpen;
-    private openChanged(): void {
-        if (!this.dirtyOpen) {
-            this.dirtyOpen = true;
-        }
-
-        if (this.constructed) {
-            this.$emit("change");
-        }
-    }
-
-    @observable
-    public defaultSlottedNodes: Node[];
 
     /**
      * Set to true when the component has constructed
@@ -84,6 +48,8 @@ export class Select extends FormAssociated<HTMLInputElement> {
     public connectedCallback(): void {
         super.connectedCallback();
 
+        this.buttonSlotUsed();
+
         this.updateForm();
     }
 
@@ -96,12 +62,14 @@ export class Select extends FormAssociated<HTMLInputElement> {
             // Space
             case 32:
                 this.open = !this.open;
-                this.setFocusOnOption();
+                this.updateButtonPartAttr();
+                setTimeout(() => this.setFocusOnOption(), 0);
                 break;
             // Enter
             case 13:
                 this.open = !this.open;
-                this.setFocusOnOption();
+                this.updateButtonPartAttr();
+                setTimeout(() => this.setFocusOnOption(), 0);
                 break;
             case 9:
                 this.setFocusOnOption();
@@ -128,16 +96,19 @@ export class Select extends FormAssociated<HTMLInputElement> {
             case 32:
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
+                this.updateButtonPartAttr();
                 break;
             // Enter
             case 13:
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
+                this.updateButtonPartAttr();
                 break;
             // Escape
             case 27:
                 options.current.removeAttribute('current');
                 this.open = !this.open;
+                this.updateButtonPartAttr();
                 break;
         }
     };
@@ -242,6 +213,19 @@ export class Select extends FormAssociated<HTMLInputElement> {
         }
     }
 
+    public updateButtonPartAttr(): void {
+        let button = this.getElement('[part=button]');
+
+        switch(this.open) {
+            case true:
+                button.setAttribute('aria-expanded', 'true');
+                break;
+            case false:
+                button.setAttribute('aria-expanded', 'false');
+                break;
+        }
+    }
+
     /**
      * Gathers elements within the select that match the selector param
      * @param selector
@@ -300,7 +284,31 @@ export class Select extends FormAssociated<HTMLInputElement> {
      */
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     public optionSelectionChange(value: string): void {
+        let options = this.getOptions();
+
+        options.options.forEach(element  => {
+            if (element.value != value) element.removeAttribute('current');
+        });
+
         this.updateSelectValue(value);
         this.open = !this.open;
+    }
+
+    /**
+     * When the author leverages the slot we need to ensure that the a11y and
+     * functionality that is tied to the given part still function as designed
+     */
+    public buttonSlotUsed(): void {
+        let slot = this.shadowRoot.querySelector('slot[name=button-container]');
+        if (slot) {
+            slot.addEventListener('slotchange', () => {
+                let button = this.getElement('[part=button]');
+                if (button) {
+                    button.setAttribute('tabindex', "0");
+                    button.setAttribute('aria-haspopup', 'true');
+                    button.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
     }
 }
