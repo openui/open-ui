@@ -20,6 +20,7 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
     /**
      * Handle keyboard interactions for listbox
      */
+    private typeAheadValue;
     keypressHandlerListbox: (e: KeyboardEvent) => void;
     /**
      * Set which option has the 'current' attribute based on keyboard
@@ -47,7 +48,7 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * Will set focus to the necessary element
      * TODO: This will probably get removed by moveOption
      */
-    setFocusOnOption: () => void;
+    setFocusOnOption: (optionToFocus?: any) => void;
     updateButtonPartAttr(): void;
     /**
      * Gathers elements within the select that match the selector param
@@ -80,5 +81,14 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * functionality that is tied to the given part still function as designed
      */
     buttonSlotUsed(): void;
+    private regexEscape;
+    /**
+     * This will move focus to an attribute based on the
+     * value. This is useful for searching scenarios
+     *
+     * @param typeAheadValue
+     * @param options
+     */
+    moveFocusToOptionBasedOnValue(typeAheadValue: any, options: any): void;
 }
 //# sourceMappingURL=select.d.ts.map

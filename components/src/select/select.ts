@@ -1,5 +1,4 @@
 import { attr, observable } from "@microsoft/fast-element";
-import { keyCodeSpace } from "@microsoft/fast-web-utilities";
 import { FormAssociated } from "../form-associated/index";
 import { customElement } from "@microsoft/fast-element";
 import { CheckboxStyles as styles } from "./select.styles";
@@ -60,6 +59,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
     private updateForm(): void {
     }
 
+    
     public keypressHandlerButtonContainer = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
         switch (e.keyCode) {
@@ -84,6 +84,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
     /**
      * Handle keyboard interactions for listbox
      */
+    private typeAheadValue: string = '';
     public keypressHandlerListbox = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
         let options = this.getOptions();
@@ -98,6 +99,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 break;
             // Space
             case 32:
+                // If you are in type ahead mode do not select option on space
+                if (this.typeAheadValue != '') {
+                    this.typeAheadValue = `${this.typeAheadValue}${e.key}`;
+                    break;
+                }
+
                 this.value = options.current.value;
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
@@ -115,6 +122,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 options.current.removeAttribute('current');
                 this.open = !this.open;
                 this.updateButtonPartAttr();
+                break;
+            // Handle type ahead mode
+            default:
+                this.typeAheadValue = `${this.typeAheadValue}${e.key}`
+                this.moveFocusToOptionBasedOnValue(this.typeAheadValue, options.options);
+                console.log(this.typeAheadValue);
                 break;
         }
     };
@@ -224,9 +237,13 @@ export class Select extends FormAssociated<HTMLInputElement> {
      * Will set focus to the necessary element
      * TODO: This will probably get removed by moveOption
      */
-    public setFocusOnOption = (): void => {
-        let option = this.getFirstSelectedOption();
+    public setFocusOnOption = (optionToFocus = null): void => {
+        let option = optionToFocus;
         let options = this.getOptions();
+
+        if (!option) {
+            option = this.getFirstSelectedOption();
+        }
 
         if (option) {
             if (options.current) options.current.removeAttribute('current');
@@ -315,6 +332,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
         });
 
         this.updateSelectValue(value);
+        this.typeAheadValue = '';
         this.open = !this.open;
     }
 
@@ -335,5 +353,35 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 }
             });
         }
+    }
+
+    private regexEscape(str) {
+        return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+    }
+
+    /**
+     * This will move focus to an attribute based on the 
+     * value. This is useful for searching scenarios
+     * 
+     * @param typeAheadValue 
+     * @param options 
+     */
+    public moveFocusToOptionBasedOnValue(typeAheadValue, options) {
+        let value = null;
+        typeAheadValue = this.regexEscape(typeAheadValue);
+        let pattern = `^(${typeAheadValue})`;
+        let re = new RegExp(pattern, "gi");
+
+        options.forEach(option => {
+            if (!value) {
+                let matches = option.value.match(re);
+
+                if (matches) { 
+                    value = option;
+                }
+            }
+        });
+
+        return this.setFocusOnOption(value);
     }
 }
