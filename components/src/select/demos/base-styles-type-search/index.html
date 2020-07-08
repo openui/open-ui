@@ -11,8 +11,7 @@
     
     <oui-select>
             <div slot="button-container" part="button">
-              <div class="select-label">Primary</div>
-              <div class="arrow" aria-label="toggle dropdown"></div>
+              <input id="filter-search" />
             </div>
             <oui-listbox>
               <oui-option value="0">-- Select Country --</oui-option>
@@ -254,6 +253,17 @@
               <oui-option value="Zimbabwe">Zimbabwe</oui-option>
             </oui-listbox>
         </oui-select>
+
+      <script>
+        let select = document.querySelector('oui-select');
+
+        document.querySelector("#filter-search").addEventListener("click", e => {
+          e.stopPropagation();
+          select.toggleAttribute('open');
+        })
+        
+
+      </script>
 
     <script src="/dist/bundle.js"></script>
   </body>
