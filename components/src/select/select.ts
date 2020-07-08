@@ -127,7 +127,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
             default:
                 this.typeAheadValue = `${this.typeAheadValue}${e.key}`
                 this.moveFocusToOptionBasedOnValue(this.typeAheadValue, options.options);
-                console.log(this.typeAheadValue);
                 break;
         }
     };

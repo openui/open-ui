@@ -11,13 +11,17 @@
     </style>
   </head>
   <body>
-    <h1>Select - Open UI Base with Styles + Search</h1>
-    <p>While all of the prior demos allow for type ahead this list has all of the 
-      countries so it is easier to see that as you type it jumps to different ones. While 
-      not a great UX this mirrors what occurs in today's browsers.
-    </p>
+    <h1>Select - Open UI Base with Styles + Filter</h1>
+    <p>This select has a lot going on. Not only does it leverage the button-container 
+      slot but it also inserts an input and removes keyboard propogation that begins there. 
+      Then upon typing into the input the list of options is filtered of options that don't 
+      match. This provides a good user experience for selecting from a large list.
+    </p> 
     
     <oui-select>
+            <div slot="button-container" part="button">
+              <input id="filter-search" />
+            </div>
             <oui-listbox>
               <oui-option value="0">-- Select Country --</oui-option>
               <oui-option value="United States">United States</oui-option>
@@ -259,12 +263,48 @@
             </oui-listbox>
         </oui-select>
 
-        <h3>Todos</h3>
-        <ul>
-          <li>Handle non-character keys by not adding them to the 
-            search capability but doing the expected behavior (eg: backspace should remove one 
-          char</li>
-        </ul>
+      <script>
+        let select = document.querySelector('oui-select');
+        let searchInput = document.querySelector("#filter-search");
+        let options = document.querySelectorAll('oui-option');
+
+        // This produces an interesting issue due to initial focus
+        // worth discussing
+        searchInput.addEventListener("click", e => {
+          e.stopPropagation();
+          select.toggleAttribute('open');
+        });
+
+        // Handle key input
+        let filterValue = '';
+        searchInput.addEventListener('keydown', (e) => {
+          e.stopImmediatePropagation();
+          filterValue = `${filterValue}${e.key}`;
+          this.value = filterValue;
+          this.textContent = filterValue;
+          filterOptions(filterValue, options)
+        });
+
+        function filterOptions(filterValue, options) {
+          filterValue = regexEscape(filterValue);
+          let pattern = `^(${filterValue})`;
+          let re = new RegExp(pattern, "gi");
+  
+          options.forEach(option => {
+                let matches = option.value.match(re);
+                if (!matches) {
+                  option.classList.add('hidden');
+                }
+                else {
+                  option.classList.remove('hidden');
+                }
+          });
+      }
+
+      function regexEscape(str) {
+          return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+      }
+      </script>
 
     <script src="/dist/bundle.js"></script>
   </body>
