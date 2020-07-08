@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <title>Select - Open UI Base</title>
     <link rel="stylesheet" href="base.css" />
+    <style>
+      oui-option.hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <h1>Select - Open UI Base with Styles + Search</h1>
@@ -256,13 +261,45 @@
 
       <script>
         let select = document.querySelector('oui-select');
+        let searchInput = document.querySelector("#filter-search");
+        let options = document.querySelectorAll('oui-option');
 
-        document.querySelector("#filter-search").addEventListener("click", e => {
+        // This produces an interesting issue due to initial focus
+        // worth discussing
+        searchInput.addEventListener("click", e => {
           e.stopPropagation();
           select.toggleAttribute('open');
-        })
-        
+        });
 
+        // Handle key input
+        let filterValue = '';
+        searchInput.addEventListener('keydown', (e) => {
+          e.stopImmediatePropagation();
+          filterValue = `${filterValue}${e.key}`;
+          this.value = filterValue;
+          this.textContent = filterValue;
+          filterOptions(filterValue, options)
+        });
+
+        function filterOptions(filterValue, options) {
+          filterValue = regexEscape(filterValue);
+          let pattern = `^(${filterValue})`;
+          let re = new RegExp(pattern, "gi");
+  
+          options.forEach(option => {
+                let matches = option.value.match(re);
+                if (!matches) {
+                  option.classList.add('hidden');
+                }
+                else {
+                  option.classList.remove('hidden');
+                }
+          });
+      }
+
+      function regexEscape(str) {
+          return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+      }
       </script>
 
     <script src="/dist/bundle.js"></script>
