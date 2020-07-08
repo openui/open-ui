@@ -204,9 +204,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 optionBag.current = el;
 
                 // Set the next option
-                // TODO: When you get to the end of the list it doesn't go back around to
-                //       the first one.
-                if (i == optionBag.options.length) {
+                if (i == (optionBag.options.length - 1)) {
                     optionBag.next = optionBag.options[0]
                 }
                 else {
@@ -217,7 +215,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
 
                 // Set the previous option
                 if (i == 0) {
-                    optionBag.previous = optionBag.options[optionBag.options.length];
+                    optionBag.previous = optionBag.options[optionBag.options.length - 1];
                 }
                 else {
                     optionBag.previous = optionBag.options[currentIndex - 1];
