@@ -19,7 +19,11 @@ export class Select extends FormAssociated<HTMLInputElement> {
     public multiple: boolean;
 
     @attr({ attribute: "open", mode: "boolean" })
+    @observable
     public open: boolean;
+    private openChanged() {
+        this.updateButtonPartAttr();
+    }
 
     @observable
     public defaultSlottedNodes: Node[];
@@ -66,13 +70,11 @@ export class Select extends FormAssociated<HTMLInputElement> {
             // Space
             case 32:
                 this.open = !this.open;
-                this.updateButtonPartAttr();
                 setTimeout(() => this.setFocusOnOption(), 0);
                 break;
             // Enter
             case 13:
                 this.open = !this.open;
-                this.updateButtonPartAttr();
                 setTimeout(() => this.setFocusOnOption(), 0);
                 break;
             case 9:
@@ -108,20 +110,17 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 this.value = options.current.value;
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
-                this.updateButtonPartAttr();
                 break;
             // Enter
             case 13:
                 this.value = options.current.value;
                 options.current.checked = true;
                 this.optionSelectionChange(options.current.value);
-                this.updateButtonPartAttr();
                 break;
             // Escape
             case 27:
                 options.current.removeAttribute('current');
                 this.open = !this.open;
-                this.updateButtonPartAttr();
                 break;
             // Handle type ahead mode
             default:

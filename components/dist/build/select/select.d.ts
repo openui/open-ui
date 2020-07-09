@@ -4,6 +4,7 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
     readOnly: boolean;
     multiple: boolean;
     open: boolean;
+    private openChanged;
     defaultSlottedNodes: Node[];
     button: HTMLElement;
     private buttonChanged;
