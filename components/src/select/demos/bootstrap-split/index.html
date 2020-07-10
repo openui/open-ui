@@ -92,7 +92,7 @@
         color: white;
       }
 
-      .seperator {
+      .separator {
         border-top: 1px solid #e9ecef;
         flex: 0 0 auto;
         height: 0;
@@ -108,15 +108,15 @@
        support for the option parts.</p>
 
         <oui-select>
-            <div slot="button-container" part="button">
+            <div slot="button-container">
               <div class="select-label">Primary</div>
-              <div class="arrow" aria-label="toggle dropdown"></div>
+              <div class="arrow" part="button"></div>
             </div>
-            <oui-listbox>
+            <oui-listbox slot="listbox-container" part="listbox-container">
               <oui-option value="Option One">Option One</oui-option>
               <oui-option value="Option Two">Option Two</oui-option>
               <oui-option value="Option Three">Option Three</oui-option>
-              <div class="seperator"></div>
+              <div class="separator"></div>
               <oui-option value="Option Four">Option Four</oui-option>
             </oui-listbox>
         </oui-select>
