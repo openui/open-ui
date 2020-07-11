@@ -81,7 +81,14 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * When the author leverages the slot we need to ensure that the a11y and
      * functionality that is tied to the given part still function as designed
      */
-    buttonSlotUsed(): void;
+    registerButtonSlotChange(): void;
+    /**
+     * When the author leverages the slot we need to ensure that the a11y and
+     * functionality that is tied to the given part still function as designed
+     */
+    registerListboxSlotChange(): void;
+    private applyButtonControllerCode;
+    private applyListboxControllerCode;
     private regexEscape;
     /**
      * This will move focus to an attribute based on the
