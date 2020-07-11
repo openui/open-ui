@@ -368,21 +368,21 @@ export class Select extends FormAssociated<HTMLInputElement> {
     private applyButtonControllerCode(): void {
         let button = this.getElement('[part=button]');
         if (button) {
-            button.setAttribute('tabindex', "0");
+            button.setAttribute('tabindex', '0');
             button.setAttribute('aria-haspopup', 'listbox');
             button.setAttribute('aria-expanded', this.open ? 'true' : 'false');
             button.setAttribute('role', 'button');
 
-            button.addEventListener("click", this.clickHandler);
-            button.addEventListener("keydown", this.keypressHandlerButton);
+            button.addEventListener('click', this.clickHandler);
+            button.addEventListener('keydown', this.keypressHandlerButton);
         }
     }
 
     private applyListboxControllerCode(): void {
-        let listbox = this.getElement("oui-listbox"); // TODO: Or look for part="listbox"?
+        let listbox = this.getElement('oui-listbox'); // TODO: Or look for part="listbox"?
         if (listbox) {
             listbox.setAttribute('role', 'listbox');
-            listbox.addEventListener("keydown", this.keypressHandlerListbox);
+            listbox.addEventListener('keydown', this.keypressHandlerListbox);
         }
     }
 
