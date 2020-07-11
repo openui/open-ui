@@ -17,7 +17,7 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
     constructor();
     connectedCallback(): void;
     private updateForm;
-    keypressHandlerButtonContainer: (e: KeyboardEvent) => void;
+    keypressHandlerButton: (e: KeyboardEvent) => void;
     /**
      * Handle keyboard interactions for listbox
      */

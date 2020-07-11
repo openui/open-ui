@@ -64,7 +64,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
     }
 
     
-    public keypressHandlerButtonContainer = (e: KeyboardEvent): void => {
+    public keypressHandlerButton = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
         switch (e.keyCode) {
             // Space
@@ -343,9 +343,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 let button = this.getElement('[part=button]');
                 if (button) {
                     button.setAttribute('tabindex', "0");
-                    button.setAttribute('aria-haspopup', 'true');
-                    button.setAttribute('aria-expanded', 'false');
+                    button.setAttribute('aria-haspopup', 'listbox');
+                    button.setAttribute('aria-expanded', this.open ? 'true' : 'false');
                     button.setAttribute('role', 'button');
+
+                    button.addEventListener("click", this.clickHandler);
+                    button.addEventListener("keydown", this.keypressHandlerButton);
                 }
             });
         }

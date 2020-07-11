@@ -11,11 +11,9 @@ export const SelectTemplate = html<Select>`
     }"
     class="${x => (x.readOnly ? "readonly" : "")}" open="${x => x.open ? "" : null}"
     >
-        <slot name="button-container"
-        @keydown="${(x, c) => x.keypressHandlerButtonContainer(c.event as KeyboardEvent)}"
-        ${ref("button")}
-        >
-            <button tabindex="0" part="button" aria-expanded="${x => x.open == true}" aria-haspopup="true">
+        <slot name="button-container">
+            <button tabindex="0" part="button" aria-expanded="${x => x.open == true}" aria-haspopup="listbox" ${ref("button")}
+            @keydown="${(x, c) => x.keypressHandlerButton(c.event as KeyboardEvent)}">
                 <span part="selected-value">
                     <slot name="selected-value">${x => x.value}</slot>
                 </slot>
