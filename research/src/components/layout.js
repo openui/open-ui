@@ -4,6 +4,7 @@ import { graphql, StaticQuery } from 'gatsby'
 import { MDXProvider } from '@mdx-js/react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import vsDark from 'prism-react-renderer/themes/vsDark'
+import SEO from './seo'
 
 import './global.css'
 import Header from './header'
@@ -11,7 +12,7 @@ import Navigation from './navigation'
 import ComponentLayout from './component-layout'
 
 const components = {
-  pre: props => {
+  pre: (props) => {
     // get the code content from the compiled `pre > code`
     const code = props.children
     const exampleCode = code.props.children
@@ -43,6 +44,8 @@ const Layout = ({ children, pageContext }) => {
       ? ComponentLayout
       : ({ children }) => <>{children}</>
 
+  console.log(frontmatter)
+
   return (
     <StaticQuery
       query={graphql`
@@ -55,8 +58,9 @@ const Layout = ({ children, pageContext }) => {
           }
         }
       `}
-      render={data => (
+      render={(data) => (
         <MDXProvider components={components}>
+          <SEO title={frontmatter.name} />
           <div style={{ paddingBottom: '10rem' }}>
             <Header
               siteTitle={data.site.siteMetadata.title}
