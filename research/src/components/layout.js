@@ -44,8 +44,6 @@ const Layout = ({ children, pageContext }) => {
       ? ComponentLayout
       : ({ children }) => <>{children}</>
 
-  console.log(frontmatter)
-
   return (
     <StaticQuery
       query={graphql`
