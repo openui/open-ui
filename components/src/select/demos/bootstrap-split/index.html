@@ -21,8 +21,8 @@
         cursor: pointer;
       }
 
-      oui-select[open] [slot=button-container],
-      [slot=button-container]:focus {
+      oui-select[open] [part=button],
+      [slot=button-container] div:focus {
         box-shadow: 0 0 0 0.2rem rgba(38,143,255,.5);
         outline: none;
         border-radius: .25em;
@@ -109,7 +109,7 @@
 
         <oui-select>
             <div slot="button-container">
-              <div class="select-label">Primary</div>
+              <div class="select-label" tabindex="0">Primary</div>
               <div class="arrow" part="button"></div>
             </div>
             <oui-listbox slot="listbox-container" part="listbox-container">
