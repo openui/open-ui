@@ -21,8 +21,8 @@
         cursor: pointer;
       }
 
-      oui-select[open] [slot=button-container],
-      [slot=button-container]:focus {
+      oui-select[open] [part=button],
+      [slot=button-container] div:focus {
         box-shadow: 0 0 0 0.2rem rgba(38,143,255,.5);
         outline: none;
         border-radius: .25em;
@@ -87,12 +87,12 @@
         outline: none;
       }
 
-      oui-option[checked] {
+      oui-option[current] {
         background-color: #007bff;
         color: white;
       }
 
-      .seperator {
+      .separator {
         border-top: 1px solid #e9ecef;
         flex: 0 0 auto;
         height: 0;
@@ -108,25 +108,18 @@
        support for the option parts.</p>
 
         <oui-select>
-            <div slot="button-container" part="button">
-              <div class="select-label">Primary</div>
-              <div class="arrow" aria-label="toggle dropdown"></div>
+            <div slot="button-container">
+              <div class="select-label" tabindex="0">Primary</div>
+              <div class="arrow" part="button"></div>
             </div>
-            <oui-listbox>
+            <oui-listbox slot="listbox-container" part="listbox-container">
               <oui-option value="Option One">Option One</oui-option>
               <oui-option value="Option Two">Option Two</oui-option>
               <oui-option value="Option Three">Option Three</oui-option>
-              <div class="seperator"></div>
+              <div class="separator"></div>
               <oui-option value="Option Four">Option Four</oui-option>
             </oui-listbox>
         </oui-select>
-
     <script src="/dist/bundle.js"></script>
-    <script>
-        document.querySelector(".select-label").addEventListener("click", e => {
-          console.log("external", e, e.target)
-          e.stopPropagation();
-        })
-    </script>
   </body>
 </html>

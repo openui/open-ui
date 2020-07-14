@@ -11,20 +11,18 @@ export const SelectTemplate = html<Select>`
     }"
     class="${x => (x.readOnly ? "readonly" : "")}" open="${x => x.open ? "" : null}"
     >
-        <slot name="button-container"
-        @keydown="${(x, c) => x.keypressHandlerButtonContainer(c.event as KeyboardEvent)}"
-        ${ref("button")}
-        >
-            <button tabindex="0" part="button" aria-expanded="${x => x.open == true}" aria-haspopup="true">
+        <slot name="button-container">
+            <button part="button" ${ref("button")}>
                 <span part="selected-value">
                     <slot name="selected-value">${x => x.value}</slot>
                 </slot>
             </button>
         </slot>
-        <slot name="listbox-container"
-        @keydown="${(x, c) => x.keypressHandlerListbox(c.event as KeyboardEvent)}">
+        <slot name="listbox-container">
             <!-- This is where the listbox part will be inserted -->
-            <slot></slot>
+            <oui-listbox>
+                <slot></slot>
+            </oui-listbox>
         </slot>
     </template>
 `;

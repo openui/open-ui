@@ -55,7 +55,13 @@ export class Select extends FormAssociated<HTMLInputElement> {
     public connectedCallback(): void {
         super.connectedCallback();
 
-        this.buttonSlotUsed();
+        this.registerButtonSlotChange();
+        this.registerListboxSlotChange();
+
+        // We won't get a slotchange for event for parts that were not replaced
+        // by user-provided parts, so apply their controller code here.
+        this.applyButtonControllerCode();
+        this.applyListboxControllerCode();
 
         this.updateForm();
     }
@@ -64,7 +70,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
     }
 
     
-    public keypressHandlerButtonContainer = (e: KeyboardEvent): void => {
+    public keypressHandlerButton = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
         switch (e.keyCode) {
             // Space
@@ -76,6 +82,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
             case 13:
                 this.open = !this.open;
                 setTimeout(() => this.setFocusOnOption(), 0);
+                e.preventDefault(); // Enter also causes 'click' to fire for <button>s.  Prevent that so we don't immediately revert the change to this.open.
                 break;
             case 9:
                 this.setFocusOnOption();
@@ -336,18 +343,46 @@ export class Select extends FormAssociated<HTMLInputElement> {
      * When the author leverages the slot we need to ensure that the a11y and
      * functionality that is tied to the given part still function as designed
      */
-    public buttonSlotUsed(): void {
+    public registerButtonSlotChange(): void {
         let slot = this.shadowRoot.querySelector('slot[name=button-container]');
         if (slot) {
             slot.addEventListener('slotchange', () => {
-                let button = this.getElement('[part=button]');
-                if (button) {
-                    button.setAttribute('tabindex', "0");
-                    button.setAttribute('aria-haspopup', 'true');
-                    button.setAttribute('aria-expanded', 'false');
-                    button.setAttribute('role', 'button');
-                }
+                this.applyButtonControllerCode();
             });
+        }
+    }
+
+    /**
+     * When the author leverages the slot we need to ensure that the a11y and
+     * functionality that is tied to the given part still function as designed
+     */
+    public registerListboxSlotChange(): void {
+        let slot = this.shadowRoot.querySelector('slot[name=listbox-container]');
+        if (slot) {
+            slot.addEventListener('slotchange', () => {
+                this.applyListboxControllerCode();
+            });
+        }
+    }
+
+    private applyButtonControllerCode(): void {
+        let button = this.getElement('[part=button]');
+        if (button) {
+            button.setAttribute('tabindex', '0');
+            button.setAttribute('aria-haspopup', 'listbox');
+            button.setAttribute('aria-expanded', this.open ? 'true' : 'false');
+            button.setAttribute('role', 'button');
+
+            button.addEventListener('click', this.clickHandler);
+            button.addEventListener('keydown', this.keypressHandlerButton);
+        }
+    }
+
+    private applyListboxControllerCode(): void {
+        let listbox = this.getElement('oui-listbox'); // TODO: Or look for part="listbox"?
+        if (listbox) {
+            listbox.setAttribute('role', 'listbox');
+            listbox.addEventListener('keydown', this.keypressHandlerListbox);
         }
     }
 
