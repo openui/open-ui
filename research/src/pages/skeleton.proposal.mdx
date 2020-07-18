@@ -21,21 +21,22 @@ The Skeleton component is primarily leveraged to reserve a place in the layout f
 - [Semantic UI](https://semantic-ui.com/elements/placeholder.html)
 - [Fabric UI](https://developer.microsoft.com/en-us/fluentui#/controls/web/shimmer)
 
-## &lt;Skeleton&gt; Properties <a href="#skeleton-properties" id="skeleton-properties"></a>
+## &lt;skeleton&gt; Properties <a href="#skeleton-properties" id="skeleton-properties"></a>
 
 | Attribute Name | Type     | Default Value | Description                                                                                |     |
 | -------------- | -------- | ------------- | ------------------------------------------------------------------------------------------ | --- |
 | `fluid`        | `bool`   | `false`       | A fluid Skeleton fills up the entire width of its container.                               |     |
 | `animation`    | `string` | `off`         | Define the animation for the Skeleton, possible "wave", "pulse" or "off" for no animation. |     |
 
-## &lt;Skeleton.Line&gt; Properties <a href="#skeleton-line-properties" id="skeleton-line-properties"></a>
+## &lt;skeleton-line&gt; Properties <a href="#skeleton-line-properties" id="skeleton-line-properties"></a>
 
-| Attribute Name | Type     | Default Value | Description                      |     |
-| -------------- | -------- | ------------- | -------------------------------- | --- |
-| `height`       | `string` | `100%`        | The height the line should fill. |     |
-| `width`        | `string` | `100%`        | The width the line should fill.  |     |
+| Attribute Name | Type     | Default Value | Description                             |     |
+| -------------- | -------- | ------------- | --------------------------------------- | --- |
+| `height`       | `string` | `100%`        | The height the line should fill.        |     |
+| `width`        | `string` | `100%`        | The width the line should fill.         |     |
+| `round`        | `bool`   | `false`       | Set whether should have rounded borders |     |
 
-## &lt;Skeleton.Shape&gt; Properties <a href="#skeleton-shape-properties" id="skeleton-shape-properties"></a>
+## &lt;skeleton-shape&gt; Properties <a href="#skeleton-shape-properties" id="skeleton-shape-properties"></a>
 
 | Attribute Name | Type     | Default Value | Description                            |     |
 | -------------- | -------- | ------------- | -------------------------------------- | --- |
@@ -44,3 +45,15 @@ The Skeleton component is primarily leveraged to reserve a place in the layout f
 | `circle`       | `bool`   | `false`       | Define if the shape should be a circle |     |
 
 ## Anatomy
+
+<SkeletonAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<skeleton>` - The root element that contains the lines or shapes and controls the internal animation **[required]**
+- `<skeleton-line>` - retangular fluid element representing a line
+- `<skeleton-shape>` - element representing a shape
+
+### Content not allowed within the anatomy
+
+Skeleton should be atomic **NOT** containing any interactive element inside
