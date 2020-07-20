@@ -58,7 +58,7 @@ const Layout = ({ children, pageContext }) => {
       `}
       render={(data) => (
         <MDXProvider components={components}>
-          <SEO title={frontmatter.name} />
+          <SEO title={frontmatter?.name} />
           <div style={{ paddingBottom: '10rem' }}>
             <Header
               siteTitle={data.site.siteMetadata.title}
