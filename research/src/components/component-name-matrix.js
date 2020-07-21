@@ -11,18 +11,18 @@ const SORT_NEXT = {
   MATCH_COUNT: SORT_OPTIONS.COMPONENT_NAME,
 }
 
-const ComponentNameMatrix = props => {
+const ComponentNameMatrix = (props) => {
   const [sort, setSort] = useState(SORT_OPTIONS.COMPONENT_NAME)
 
-  const getMatchName = name =>
+  const getMatchName = (name) =>
     name
       .replace(/ /gi, '')
       .toLowerCase()
-      .replace(/(\w+)(e|s|es|er|ing)$/, '$1')
+      .replace(/(\w+)(e|er)?(s|ing)$/, '$1')
 
   const matchNameMap = new Map([])
 
-  const matchNames = componentOriginalNames.map(name => {
+  const matchNames = componentOriginalNames.map((name) => {
     const matchName = getMatchName(name)
     matchNameMap.set(name, matchName)
     return matchName
@@ -92,7 +92,7 @@ const ComponentNameMatrix = props => {
           })}
         </div>
 
-        {_.map(sources, source => (
+        {_.map(sources, (source) => (
           <div key={source.name} style={colStyle}>
             <strong style={headerStyle}>
               <a target="_blank" rel="noopener noreferrer" href={source.url}>
