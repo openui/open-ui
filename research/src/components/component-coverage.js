@@ -17,24 +17,18 @@ const ComponentCoverage = ({ component }) => {
       <ul style={{ marginLeft: 0 }}>
         {_.map(withDifferentNamesUniq, (component, i) => {
           const components = withDifferentNamesGrouped[component.name]
-
           return (
-            <li key={component.name} style={{ listStyleType: 'none' }}>
+            <li key={component.name + component.sourceName} style={{ listStyleType: 'none' }}>
               {component.name}
               {' - '}
               <small style={{ opacity: 0.75 }}>
                 {components.map((component, i, arr) => (
-                  <>
-                    <a
-                      key={component.sourceName}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={component.url}
-                    >
+                  <span key={component.name + component.sourceName}>
+                    <a target="_blank" rel="noopener noreferrer" href={component.url}>
                       {component.sourceName}
                     </a>
                     {i < arr.length - 1 && ', '}
-                  </>
+                  </span>
                 ))}
               </small>
             </li>
