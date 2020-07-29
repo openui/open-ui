@@ -8,8 +8,9 @@ export default function Concept({
   component,
   uniqueNames,
   showDescriptions,
+  initExpand,
 }) {
-  const [open, toggleOpen] = React.useState(true)
+  const [open, toggleOpen] = React.useState(initExpand)
 
   return (
     <div style={{ padding: '8px', marginBottom: '36px' }}>
@@ -42,7 +43,7 @@ export default function Concept({
               textAlign: 'center',
             }}
           >
-            {open ? <>&#9660;</> : <>&#9650;</>}
+            {open && initExpand ? <>&#9660;</> : <>&#9650;</>}
           </span>{' '}
           {conceptOpenUIName}
         </a>
@@ -68,7 +69,7 @@ export default function Concept({
           ))}
         </div>
       )}
-      {open && (
+      {open && initExpand && (
         <Specimens
           showDescriptions={showDescriptions}
           component={component}

@@ -6,6 +6,7 @@ import Concept from './concept'
 
 const Concepts = ({ component }) => {
   const [showDescriptions, setShowDescriptions] = React.useState(false)
+  const [collapseAll, toggleCollapseAll] = React.useState(true)
 
   const conceptsForComponent = _.sortBy(
     _.toPairs(openUIConceptsByComponent[component]),
@@ -14,14 +15,56 @@ const Concepts = ({ component }) => {
 
   return (
     <>
-      <div>
-        <input
-          type="checkbox"
-          checked={showDescriptions}
-          aria-checked={showDescriptions}
-          onChange={() => setShowDescriptions(!showDescriptions)}
-        />{' '}
-        Show descriptions
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <label
+          style={{
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          for="descriptions"
+        >
+          <input
+            type="checkbox"
+            id="descriptions"
+            checked={showDescriptions}
+            aria-checked={showDescriptions}
+            onChange={() => setShowDescriptions((isDescShown) => !isDescShown)}
+            style={{
+              marginRight: '8px',
+              verticalAlign: 'middle',
+            }}
+          />
+          Show descriptions
+        </label>
+        <label
+          style={{
+            cursor: 'pointer',
+          }}
+          for="collapse"
+        >
+          <input
+            type="checkbox"
+            id="collapse"
+            checked={collapseAll}
+            aria-checked={collapseAll}
+            onChange={() => toggleCollapseAll((isCollapsed) => !isCollapsed)}
+            style={{
+              marginRight: '8px',
+              verticalAlign: 'middle',
+            }}
+            style={{
+              width: '0px',
+              height: '0px',
+            }}
+          />
+          {collapseAll ? 'Collapse all' : 'Expand all'}
+        </label>
       </div>
       {_.map(conceptsForComponent, ([conceptOpenUIName, concepts]) => {
         const uniqueNames = _.uniq(_.map(concepts, 'name'))
@@ -35,6 +78,7 @@ const Concepts = ({ component }) => {
             uniqueNames={uniqueNames}
             showDescriptions={showDescriptions}
             key={conceptOpenUIName}
+            initExpand={collapseAll}
           />
         )
       })}
