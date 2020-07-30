@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Select - Open UI Safari Styles</title>
+    <link rel="stylesheet" href="../base-styles/base.css" />
+    <style>
+      oui-select {
+        font: 400 1.5rem Arial;
+        position: relative;
+        display: grid;
+      }
+
+      oui-select,
+      oui-select oui-listbox,
+      oui-select[open] oui-listbox {
+        width: 200px;
+        height: 200px;
+        display: grid;
+        grid-template-rows: repeat(3, calc(200px/3));
+        grid-template-columns: repeat(5, calc(200px/5));
+        gap: 2px;
+        border: none;
+      }
+
+      oui-select:focus {
+        outline: none;
+      }
+
+      [slot=button-container] {
+        display: inline-flex;
+        grid-column: 3;
+        grid-row: 2;
+        align-self: center;
+        justify-self: center;
+        z-index: 2;
+      }
+
+      [part=selected-value] {
+        display: flex;
+        padding: 3.5px 7.5px 2px 7.5px;
+        align-items: center;
+      }
+
+      .arrow-container {
+        min-width: 14px;
+        min-height: 16px;
+        max-height: 100%;
+        background: linear-gradient(180deg, rgba(120,165,244,1) 0%, rgba(41,108,246,1) 100%);
+        background-repeat: no-repeat;
+        background-position: center;
+        justify-self: flex-end;
+        justify-content: center;
+        display: flex;
+      }
+
+      .arrow {
+        background: url(arrow.png);
+        width: 6.5px;
+        height: 10px;
+        align-self: center;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      oui-select oui-listbox {
+        position: absolute;
+        grid-row: 1;
+        grid-column: 1;
+      }
+
+      oui-option {
+        opacity: 0;
+        visibility: hidden;
+        padding: 0 5.5px;
+        text-align: center;
+        background: #ccc;
+        border-radius: 50%;
+        transition: opacity .5s linear;
+      }
+
+      oui-select[open] oui-option {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      oui-option:focus {
+        outline: none;
+      }
+
+      oui-option:nth-child(1) {
+        grid-column: 3;
+        grid-row: 1;
+        align-self: start;
+      } 
+
+      oui-option:nth-child(2) {
+        grid-column: 4;
+        grid-row: 1;
+        align-self: end;
+      }
+
+      oui-option:nth-child(3) {
+        grid-column: 5;
+        grid-row: 2;
+        align-self: center;
+      }
+
+      oui-option:nth-child(4) {
+        grid-column: 4;
+        grid-row: 3;
+        align-self: start;
+      }
+
+      oui-option:nth-child(5) {
+        grid-column: 3;
+        grid-row: 3;
+        align-self: center;
+      }
+
+      oui-option:nth-child(6) {
+        grid-column: 2;
+        grid-row: 3;
+        align-self: start;
+      }
+
+      oui-option:nth-child(7) {
+        grid-column: 1;
+        grid-row: 2;
+        align-self: center;
+      }
+
+      oui-option:nth-child(8) {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: end;
+      }
+
+      oui-option:hover,
+      oui-option:focus {
+        background: #333;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Select - Contacts by Alphabet on round display</h1>
+    <p>To achieve the current Safari UA default design we leverage the button-container slot.</p>
+
+        <oui-select>
+            <div slot="button-container" part="button">
+              <div part="selected-value">A</div>
+            </div>
+            <oui-listbox>
+              <oui-option value="A" class="circle">A</oui-option>
+              <oui-option value="B">B</oui-option>
+              <oui-option value="C">C</oui-option>
+              <oui-option value="D">D</oui-option>
+              <oui-option value="E">E</oui-option>
+              <oui-option value="F">F</oui-option>
+              <oui-option value="G">G</oui-option>
+              <oui-option value="H">H</oui-option>
+            </oui-listbox>
+        </oui-select>
+
+    <script src="/dist/bundle.js"></script>
+  </body>
+</html>
