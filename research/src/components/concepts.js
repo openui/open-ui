@@ -27,7 +27,7 @@ const Concepts = ({ component }) => {
             display: 'flex',
             alignItems: 'center',
           }}
-          for="descriptions"
+          htmlFor="descriptions"
         >
           <input
             type="checkbox"
@@ -46,7 +46,7 @@ const Concepts = ({ component }) => {
           style={{
             cursor: 'pointer',
           }}
-          for="collapse"
+          htmlFor="collapse"
         >
           <input
             type="checkbox"
@@ -57,8 +57,6 @@ const Concepts = ({ component }) => {
             style={{
               marginRight: '8px',
               verticalAlign: 'middle',
-            }}
-            style={{
               width: '0px',
               height: '0px',
             }}
