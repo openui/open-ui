@@ -24,6 +24,14 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
     private typeAheadValue;
     keypressHandlerListbox: (e: KeyboardEvent) => void;
     /**
+     * Set state to closed when focus moves away from the listbox ("light dismiss").
+     * With this implementation, clicking on non-focusable content inside
+     * the listbox will cause it to close (e.relatedTarget will be null).
+     * This issue is not trivially remedied (see https://github.com/WICG/open-ui/issues/137).
+     * But, this behavior works sufficiently well for the current set of examples.
+     */
+    focusoutHandlerListbox: (e: FocusEvent) => void;
+    /**
      * Set which option has the 'current' attribute based on keyboard
      * direction input. I'm not sure * if there is a need for this
      * attribute in a standard. Once I get * focus fully working I'll
@@ -39,6 +47,8 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * multiple attribute is set
      */
     handleMultiple: (value: string) => void;
+    getButton(): Element;
+    getListbox(): Element;
     /**
      * To allow for options to be anywhere within the select and also
      * ensure that the behaviors work and avoid needing to do additional
