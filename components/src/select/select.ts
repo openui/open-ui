@@ -138,6 +138,22 @@ export class Select extends FormAssociated<HTMLInputElement> {
     };
 
     /**
+     * Set state to closed when focus moves away from the listbox ("light dismiss").
+     * With this implementation, clicking on non-focusable content inside
+     * the listbox will cause it to close (e.relatedTarget will be null).
+     * This issue is not trivially remedied (see https://github.com/WICG/open-ui/issues/137).
+     * But, this behavior works sufficiently well for the current set of examples.
+     */
+    public focusoutHandlerListbox = (e: FocusEvent): void => {
+        const listbox = this.getListbox();
+        const elementReceivingFocus = e.relatedTarget as HTMLElement;
+
+        if (this.open && (!elementReceivingFocus || !listbox.contains(elementReceivingFocus))) {
+            this.open = false;
+        }
+    };
+
+    /**
      * Set which option has the 'current' attribute based on keyboard
      * direction input. I'm not sure * if there is a need for this
      * attribute in a standard. Once I get * focus fully working I'll
@@ -185,6 +201,14 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 }
             });
         }
+    }
+
+    public getButton() {
+        return this.getElement('[part=button]');
+    }
+
+    public getListbox() {
+        return this.getElement('oui-listbox'); // TODO: Or look for part="listbox"?
     }
 
     /**
@@ -366,7 +390,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
     }
 
     private applyButtonControllerCode(): void {
-        let button = this.getElement('[part=button]');
+        let button = this.getButton();
         if (button) {
             button.setAttribute('tabindex', '0');
             button.setAttribute('aria-haspopup', 'listbox');
@@ -379,10 +403,11 @@ export class Select extends FormAssociated<HTMLInputElement> {
     }
 
     private applyListboxControllerCode(): void {
-        let listbox = this.getElement('oui-listbox'); // TODO: Or look for part="listbox"?
+        let listbox = this.getListbox();
         if (listbox) {
             listbox.setAttribute('role', 'listbox');
             listbox.addEventListener('keydown', this.keypressHandlerListbox);
+            listbox.addEventListener('focusout', this.focusoutHandlerListbox);
         }
     }
 
