@@ -9,59 +9,26 @@ showInMenu: false
 >
 > Thanks!
 
-# Vision
+<h2 style="margin: 30px 15px 25px 0;color: #888">The missing industry standard definition of UI</h2>
 
-The web deserves interoperability between component frameworks and design systems.
-The UI community is in a similar place as the industrial revolution prior to standardization.
-Untold amounts of human effort are exhausted globally every day on rebuilding identical components for web apps.
+# Web platform
 
-This should not be the case.
-The UI community should standardize namings and structures for common components.
-We should also standardize a way of theming these components.
-We should set a path for existing solutions to converge and for browser to natively provide these things in the future.
+The purpose of Open UI to the web platform is to allow web developers to style and extend built-in web UI controls, such as `<select>` dropdowns, checkboxes, radio buttons, and date/color pickers.
 
-UI component patterns have evolved and stabilized but have not made their way to browsers or standards.
-Designers and developers reinvent the same components for every product they build.
-When building a web app or web page designers and developers should have a common set of components at their disposal.
-We shouldn't have to rebuild a dropdown, modal dialog, split button, or other components before we build our products.
+To do that, we'll need to fully specify the component parts, states, and behaviors of the built-in controls, as well as necessary accessibility requirements, and provide test suites to ensure compatibility. We'll also implement polyfills for our extensible web UI controls.
+
+Today, component frameworks and design systems reinvent common web UI controls to give designers full control over their appearance and behavior. We hope to make it unnecessary to reinvent built-in UI controls, but for those who choose to do so, we expect that these design systems will benefit from Open UI's specifications and test suites.
+
+Long term, we hope that Open UI will establish a standard process for developing high-quality UI controls suitable for addition to the web platform.
 
 For complete outline of goals and process view our [full charter](./charter).
 
-## Goals for web specifications
+## Out of scope
 
-For web app component specifications here are the specific goals:
+We do not intend to standardize the default appearance for built-in web UI controls, leaving this up to each browser to decide.
+(We do intend to standardize the "reset" `appearance: none` appearance for these controls.)
 
-- Standardize on the names of the component parts and anatomy structure
-- Standardize the name of states which are applicable to the component and its parts
-- Standardize the behaviors of components
-- Update other specifications in other standards bodies when gaps are discovered (eg: If
-  discover the need for a new HTML element or CSS property, propose and have it standardized in
-  the WHATWG HTML spec and CSSWG respectively)
+# Other platforms
 
-## Non-goals for web specifications
-
-For web app component specifications here are specific non-goals:
-
-- Standardize on the default appearance of a component for all implementations
-
-# Principles
-
-These are the principles Open UI believes should be considered to realize the above goals.
-As with all rules, there are always exceptions.
-
-## Naming
-
-- **Descriptivism is superior to prescriptivism for finding names**
-
-  **Why?**
-  Borrowing from [linguistic analysis](https://en.wikipedia.org/wiki/Linguistic_description) we believe that objective analysis of existing words in use in the UI community at large will produce names that are most likely to be adopted by the broader web.
-
-- **Names should be void of design information**
-
-  **Why?**
-  When designs change names should not become invalid.
-  Names should stand the test of time.
-  Usually, names based on intent or usage are more robust and stand this test.
-  Consider a component that displays mock content while waiting for the actual content to load.
-  It might be more ideally named `Placeholder` opposed to `Shimmer`, even though most implementations appears to flash or shimmer.
-  When the design changes and these components no longer shimmer, the name will become invalid and not make sense.
+Open UI is for designers, developers, and implementers on all platforms.
+[Contact us](public-open-ui@w3.org) to learn how to contribute toward other platforms.
