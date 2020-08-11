@@ -16,7 +16,7 @@ const ConceptCoverage = ({ component, conceptName, openUIConceptName }) => {
 
   return (
     <div style={{ display: 'inline-flex', verticalAlign: 'middle' }}>
-      {_.map(withConcept, sourceName => (
+      {_.map(withConcept, (sourceName) => (
         <div
           key={sourceName}
           style={{ ...indicatorStyle, background: '#6C6' }}
@@ -24,7 +24,7 @@ const ConceptCoverage = ({ component, conceptName, openUIConceptName }) => {
         />
       ))}
 
-      {_.map(withoutConcept, sourceName => (
+      {_.map(withoutConcept, (sourceName) => (
         <div
           key={sourceName}
           style={{ ...indicatorStyle, background: '#ddd' }}
