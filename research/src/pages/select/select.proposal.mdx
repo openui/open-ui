@@ -201,12 +201,17 @@ and is therefore considered to be invalid.
   - Selecting one, or more (if `multiple` is true), options by clicking or hitting the `enter` or `space` key
 
 ### Light dismiss
+
 The listbox part has "light dismiss", behavior, defined as being dismissed (removing
 the `open` state of the `<select>`, in this case) by either of the following things:
+
 - The user presses the escape key.
-- Focus moves outside of the subtree of the listbox (because of either user interaction or script),
-  *except* in the case where focus was switched to the `<body>` element due to a user invoking a
-  non-focusable element inside the subtree of the listbox.
+- A focus change occurs (because of either user interaction or script), where the focus
+  target is outside of the subtree of the listbox. This includes the case where the user
+  invokes a non-focusable element, which causes focus to switch to the `<body>`.
+  - There is one exception to this: if a user invokes a non-focusable element
+    in the subtree of the listbox, focus still moves to the `<body>`, but "light
+    dismiss" does not occur.
 
 ### Keyboard traversal
 
