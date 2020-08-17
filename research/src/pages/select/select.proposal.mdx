@@ -137,17 +137,18 @@ children:
 
 ### part listbox
 
-| Event               | Behavior                                                                                                               | Impacts                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `keydown(down key)` | Moves focus to the next `<option>` in the `listbox`                                                                    | focus                                                                   |
-| `keydown(up key)`   | Moves focus to the previous `<option>` in the `listbox`                                                                | focus                                                                   |
-| `keydown(enter)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
-| `keydown(space)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
-| `keydown(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
-| `keydown(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keydown(space)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
-| `keydown(space)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keydown(escape)`   | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                               |
+|                                 Event                                  |                                                        Behavior                                                        |                                 Impacts                                 |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `keydown(down key)`                                                    | Moves focus to the next `<option>` in the `listbox`                                                                    | focus                                                                   |
+| `keydown(up key)`                                                      | Moves focus to the previous `<option>` in the `listbox`                                                                | focus                                                                   |
+| `keydown(enter)`                                                       | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `keydown(space)`                                                       | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `keydown(enter)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `keydown(enter)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `keydown(space)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(escape)`                                                      | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                               |
+| `keydown(any single character that no other listbox event listens to)` | Run the [typeahead steps](#typeahead-steps) given `<select>` and `event.key`                                           | focus                                                                   |
 
 ### part option
 
@@ -201,7 +202,48 @@ and is therefore considered to be invalid.
   - Presses the escape key
   - Selects one, or more (if `multiple` is true), by clicking or hitting `enter` or `space` key
 
-### Keyboard traversal
+### Typeahead
+
+#### The <a class="link" href="#typeahead-steps" id="typeahead-steps">typeahead steps</a> given a `<select>` and a `typed character` are as follows:
+
+1. Let `start new search` be false.
+1. If longer than the <a href="#typeahead-search-timeout">typeahead search timeout</a>
+   has elapsed since the previous invocation of the [typeahead steps](#typeahead-steps)
+   for `listbox`, then set `start new search` to true and set `buffer` to an empty string.
+1. Let `buffer` be `<select>`'s [`typeahead buffer`](#typeahead-buffer)
+1. Append `typed character` to `buffer`.
+1. Let `options` be the `<select>`'s list of options.
+1. If `start new search` is true, then let `starting option` be the option after
+   the currently focused option (this is the first option if the currently
+   focused option is the last option). Otherwise let `starting option` be the
+   currently focused option.
+   <p class="note">
+     The point is that if we're in the middle of a search, we should keep trying to match on the
+     currently selected &lt;option&gt;. If this is a new search, we should start searching at the
+     &lt;option&gt; after the currently selected &lt;option&gt;. If the user wanted the current
+     &lt;option&gt;, then presumably they wouldn't still be typing search text.
+   </p>
+1. Let `newly focused option` be the result of [finding the first matching
+   option](#find-the-first-matching-option) given `buffer`, `options`, and `starting option`.
+1. If `newly focused option` is not null, move focus to `newly focused option`.
+
+#### To <a class="link" href="#find-the-first-matching-option" id="find-the-first-matching-option">find the first matching option</a> given a character buffer `buffer` and a list of options `options`, and a `starting option`, run these steps:
+
+1. For each `option` in `options`, starting with `starting option`, proceeding
+   until the last option, then starting from the first option and proceeding to
+   the option before `starting option`:
+   1. If `buffer` is a case-insensitive prefix of `option.label`, then return `option`.
+1. Return null.
+
+#### The <a class="link" href="#typeahead-buffer" id="typeahead-buffer">`typeahead buffer`</a> of a `<select>`
+
+A buffer containing the characters typed by the user for typeahead. Initially an empty string.
+
+#### <a class="link" href="#typeahead-search-timeout" id="typeahead-search-timeout">Typeahead search timeout</a>
+
+This is the maximum time that may elapse between keystrokes without the typeahead
+search being reset. The value is left to implementations to determine. Typically
+it will be somewhere around 0.5-1s.
 
 ### Listbox positioning <a class="link" href="#listbox-positioning" id="listbox-positioning"></a>
 
