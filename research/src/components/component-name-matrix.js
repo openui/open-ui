@@ -114,12 +114,22 @@ const ComponentNameMatrix = (props) => {
 
               return foundComponent ? (
                 <a
+                  title={foundComponent.name}
                   target="_blank"
                   rel="noopener noreferrer"
                   href={foundComponent.url}
                   style={style}
                 >
-                  {foundComponent.name}
+                  <span
+                    style={{
+                      maxWidth: '55px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {foundComponent.name}
+                  </span>
                 </a>
               ) : (
                 <div key={matchName} style={style} />
