@@ -22,6 +22,9 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * Handle keyboard interactions for listbox
      */
     private typeAheadValue;
+    private typeAheadTimeoutHandler;
+    private typeAheadExpired;
+    private static readonly TYPE_AHEAD_TIMEOUT_MS;
     keypressHandlerListbox: (e: KeyboardEvent) => void;
     /**
      * Set state to closed when focus moves away from the listbox ("light dismiss").
@@ -65,7 +68,7 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * Gathers elements within the select that match the selector param
      * @param selector
      */
-    getElements(selector: string): NodeListOf<Element>;
+    getElements(selector: string): Element[];
     /**
      * Returns the first element that matches the selector param
      *
@@ -105,8 +108,8 @@ export declare class Select extends FormAssociated<HTMLInputElement> {
      * value. This is useful for searching scenarios
      *
      * @param typeAheadValue
-     * @param options
+     * @param isNewSearch
      */
-    moveFocusToOptionBasedOnValue(typeAheadValue: any, options: any): void;
+    moveFocusToOptionBasedOnValue(typeAheadValue: any, isNewSearch: any): void;
 }
 //# sourceMappingURL=select.d.ts.map

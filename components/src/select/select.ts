@@ -94,8 +94,15 @@ export class Select extends FormAssociated<HTMLInputElement> {
      * Handle keyboard interactions for listbox
      */
     private typeAheadValue: string = '';
+    private typeAheadTimeoutHandler: number = -1;
+    private typeAheadExpired: boolean = false;
+    private static readonly TYPE_AHEAD_TIMEOUT_MS = 1000;
     public keypressHandlerListbox = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
+        
+        // Don't scroll the page for arrow keys, and spacebar.
+        e.preventDefault();
+        
         let options = this.getOptions();
         switch (e.keyCode) {
             // Down
@@ -105,18 +112,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
             // Up
             case 38:
                 this.moveOption("prev", options);
-                break;
-            // Space
-            case 32:
-                // If you are in type ahead mode do not select option on space
-                if (this.typeAheadValue != '') {
-                    this.typeAheadValue = `${this.typeAheadValue}${e.key}`;
-                    break;
-                }
-
-                this.value = options.current.value;
-                options.current.checked = true;
-                this.optionSelectionChange(options.current.value);
                 break;
             // Enter
             case 13:
@@ -131,8 +126,21 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 break;
             // Handle type ahead mode
             default:
-                this.typeAheadValue = `${this.typeAheadValue}${e.key}`
-                this.moveFocusToOptionBasedOnValue(this.typeAheadValue, options.options);
+                if (/^.$/.test(e.key)) {
+                    window.clearTimeout(this.typeAheadTimeoutHandler);
+                    this.typeAheadTimeoutHandler = window.setTimeout(() => {
+                        this.typeAheadExpired = true;
+                    }, Select.TYPE_AHEAD_TIMEOUT_MS);
+
+                    if (this.typeAheadExpired) {
+                        this.typeAheadValue = '';
+                    }
+
+                    this.typeAheadValue = `${this.typeAheadValue}${e.key}`
+                    this.moveFocusToOptionBasedOnValue(this.typeAheadValue, this.typeAheadExpired);
+
+                    this.typeAheadExpired = false;
+                }
                 break;
         }
     };
@@ -301,7 +309,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
         if (els.length === 0) {
             els = this.shadowRoot.querySelectorAll(selector);
         }
-        return els;
+        return Array.from(els);
     }
 
     /**
@@ -420,24 +428,35 @@ export class Select extends FormAssociated<HTMLInputElement> {
      * value. This is useful for searching scenarios
      * 
      * @param typeAheadValue 
-     * @param options 
+     * @param isNewSearch
      */
-    public moveFocusToOptionBasedOnValue(typeAheadValue, options) {
+    public moveFocusToOptionBasedOnValue(typeAheadValue, isNewSearch) {
+
+        let options = this.getOptions().options;
+        let focusedIndex = options.indexOf(document.activeElement);
+        let searchStartOffset = isNewSearch ? 1 : 0;
+        let optionsForSearch = options.slice(focusedIndex + searchStartOffset, options.length).concat(options.slice(0, focusedIndex + searchStartOffset));
+
         let value = null;
         typeAheadValue = this.regexEscape(typeAheadValue);
         let pattern = `^(${typeAheadValue})`;
         let re = new RegExp(pattern, "gi");
 
-        options.forEach(option => {
+        optionsForSearch.forEach(option => {
             if (!value) {
-                let matches = option.value.match(re);
+                // Match against the visible text of the option, rather than
+                // the 'value' attribute. For a real <option> element, the
+                // 'label' property could be used here.
+                // Igmore whitespace at the beginning/end of the visible text.
+                let matches = option.innerText.trim().match(re);
 
-                if (matches) { 
+                if (matches) {
                     value = option;
                 }
             }
         });
-
-        return this.setFocusOnOption(value);
+        if (value) {
+            this.setFocusOnOption(value);
+        }
     }
 }
