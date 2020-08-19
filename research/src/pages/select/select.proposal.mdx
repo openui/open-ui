@@ -232,7 +232,10 @@ and is therefore considered to be invalid.
 1. For each `option` in `options`, starting with `starting option`, proceeding
    until the last option, then starting from the first option and proceeding to
    the option before `starting option`:
-   1. If `buffer` is a case-insensitive prefix of `option.label`, then return `option`.
+   1. Let `match text` be `option.label` with whitespace at the beginning and
+      end removed (whitespace characters between non-whitespace characters are
+      not removed).
+   1. If `buffer` is a case-insensitive prefix of `match text`, then return `option`.
 1. Return null.
 
 #### The <a class="link" href="#typeahead-buffer" id="typeahead-buffer">`typeahead buffer`</a> of a `<select>`
