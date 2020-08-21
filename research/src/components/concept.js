@@ -39,7 +39,6 @@ export default function Concept({
             e.preventDefault()
             toggleOpen((isOpen) => !isOpen)
           }}
-          role="button"
         >
           <span
             style={{
