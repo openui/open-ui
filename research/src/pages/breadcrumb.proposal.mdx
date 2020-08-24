@@ -1,0 +1,69 @@
+---
+menu: Components
+name: Breadcrumb (Editor's Draft)
+path: /components/breadcrumb
+pathToResearch: /components/breadcrumb.research
+---
+
+import BreadcrumbAnatomy from '../components/breadcrumb-anatomy'
+
+## Overview
+
+Breadcrumbs are navigation land marks used to show a user's location within the site or app.
+
+## Use Cases
+
+A `<breadcrumb />` trail consists of a list of links to the parent pages of the current page in hierarchical order. It helps users find their place within a website or web application. Breadcrumbs are often placed horizontally before a page's main content.
+
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+- [Ant Design](https://ant.design/components/breadcrumb/)
+- [Bootstrap](https://getbootstrap.com/docs/4.3/components/breadcrumb/)
+- [Auth0](https://styleguide.auth0.com/components/breadcrumb)
+- [Atlas Kit](https://atlassian.design/components/breadcrumbs/examples)
+- [Carbon](https://www.carbondesignsystem.com/components/breadcrumb/code/)
+- [Fabric](https://developer.microsoft.com/en-us/fluentui#/controls/web/breadcrumb)
+- [Lightning](https://www.lightningdesignsystem.com/components/breadcrumbs/)
+- [Semantic UI](https://semantic-ui.com/collections/breadcrumb.html)
+
+## &lt;breadcrumb&gt; Properties <a href="#breadcrumb-properties" id="breadcrumb-properties"></a>
+
+| Attribute Name | Type             | Default Value | Description                                                                      |     |
+| -------------- | ---------------- | ------------- | -------------------------------------------------------------------------------- | --- |
+| `items`        | `HTMLCollection` |               | A `HTMLCollection` of items to represent the current path within the application |     |
+| `divider`      | `custom`         | `/`           | Represnets the custom item to be used as divider between the items               |     |
+
+## &lt;breadcrumb-item&gt; Properties <a href="#breadcrumb-item-properties" id="breadcrumb-item-properties"></a>
+
+| Property Name | Type     | Default Value | Description                               |
+| ------------- | -------- | ------------- | ----------------------------------------- |
+| `href`        | `string` |               | link to redirect when clicked in the item |
+| `content`     | `string` |               | The text to be displayed.                 |
+
+## &lt;breadcrumb-divider&gt; Properties <a href="#breadcrumb-divider-properties" id="breadcrumb-divider-properties"></a>
+
+| Property Name | Type     | Default Value | Description                                       |
+| ------------- | -------- | ------------- | ------------------------------------------------- |
+| `icon`        | `custom` |               | The icon to be rendered as boundary for the items |
+
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
+
+#### Diagram <a class="link" href="#diagram" id="diagram"></a>
+
+<BreadcrumbAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<breadcrumb>` - The root element that contains the list of items and dividers **[required]**
+- `<breadcrumb-item>` - The element representing a place in the path to the current position on the application **[required]**
+- `<breadcrumb-divider>` - The divider between the `<breadcrumb-item />`
+
+#### Accessibility <a class="link" href="#accessibility" id="accessibility"></a>
+
+It should be wrapped by a navigation landmark `nav` conatining `aria-label` or `aria-labelledby`, the `<breadcrumb-item />` representing the current page should contain `aria-current="page"` ( if the current page isn't a link the attribut is optional )
+
+## Resources <a class="link" href="#resources" id="resources"></a>
+
+- [Breadcrumb design pattern example](https://www.w3.org/TR/wai-aria-practices/examples/breadcrumb/index.html)
+- [ARIA Best Practices for Breadcrumb](https://www.w3.org/TR/wai-aria-practices/#breadcrumb)
+- [MDN Breadcrumb Navigation](https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook/Breadcrumb_Navigation)
