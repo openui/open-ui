@@ -126,38 +126,36 @@ children:
 
 ### part button
 
-| Event            | Behavior                                     | Impacts                                                                 |
-| ---------------- | -------------------------------------------- | ----------------------------------------------------------------------- |
-| `click`          | Toggles the `open` state of the `<select>`   | [open](#open-state) state                                               |
-| `click`          | Toggles `aria-expanded` attribute            | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keydown(space)` | Toggles the `open` state on the `<select>`   | [open](#open-state) state                                               |
-| `keydown(space)` | Toggles `aria-expanded`                      | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keydown(enter)` | Toggles the `open` state on th               | [open](#open-state) state                                               |
-| `keydown(enter)` | Toggles `aria-expanded` on the `button part` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| Event            | Behavior                                          | Impacts                                                                 |
+| ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `click`          | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
+| `click`          | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)` | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
+| `keydown(space)` | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(enter)` | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
+| `keydown(enter)` | Toggles `aria-expanded` of the `button part`      | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
 
 ### part listbox
 
-| Event               | Behavior                                                                                                                    | Impacts                                                                 |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `keydown(down key)` | Moves focus to the next `<option>` in the listbox                                                                           | focus                                                                   |
-| `keydown(up key)`   | Moves focus to the previous `<option>` in the listbox                                                                       | focus                                                                   |
-| `keydown(home)`     | Moves focus to the first `<option>` in the listbox                                                                          | focus                                                                   |
-| `keydown(end)`      | Moves focus to the last `<option>` in the listbox                                                                           | focus                                                                   |
-| `keydown(enter)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                            | [selected](#selected) prop <br/> [value](#value) prop                   |
-| `keydown(space)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                            | [selected](#selected) prop <br/> [value](#value) prop                   |
-| `keydown(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`              | [open](#open-state) state                                               |
-| `keydown(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute on the `button part` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keydown(space)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`              | [open](#open-state) state                                               |
-| `keydown(space)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute on the `button part` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
-| `keydown(escape)`   | Toggles the `open` state of the `<select>`                                                                                  | [open](#open-state) state                                               |
+| Event               | Behavior                                                                                                               | Impacts                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `keydown(down key)` | Moves focus to the next `<option>` in the `listbox`                                                                    | focus                                                                   |
+| `keydown(up key)`   | Moves focus to the previous `<option>` in the `listbox`                                                                | focus                                                                   |
+| `keydown(enter)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `keydown(space)`    | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `keydown(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `keydown(enter)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `keydown(space)`    | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(escape)`   | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                               |
 
 ### part option
 
-| Event   | Behavior                                                                                                                    | Impacts                                                                 |
-| ------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `click` | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                            | [selected](#selected) prop <br/> [value](#value) prop                   |
-| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` on the `<select>`              | [open](#open-state) state                                               |
-| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute on the `button part` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| Event   | Behavior                                                                                                               | Impacts                                                                 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `click` | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
 
 ## Behavior
 
