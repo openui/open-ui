@@ -93,9 +93,12 @@ export class Select extends FormAssociated<HTMLInputElement> {
     /**
      * Handle keyboard interactions for listbox
      */
-    private typeAheadValue: string = '';
     public keypressHandlerListbox = (e: KeyboardEvent): void => {
         super.keypressHandler(e);
+        
+        // Don't scroll the page for arrow keys, and spacebar.
+        e.preventDefault();
+        
         let options = this.getOptions();
         switch (e.keyCode) {
             // Down
@@ -105,18 +108,6 @@ export class Select extends FormAssociated<HTMLInputElement> {
             // Up
             case 38:
                 this.moveOption("prev", options);
-                break;
-            // Space
-            case 32:
-                // If you are in type ahead mode do not select option on space
-                if (this.typeAheadValue != '') {
-                    this.typeAheadValue = `${this.typeAheadValue}${e.key}`;
-                    break;
-                }
-
-                this.value = options.current.value;
-                options.current.checked = true;
-                this.optionSelectionChange(options.current.value);
                 break;
             // Enter
             case 13:
@@ -131,8 +122,9 @@ export class Select extends FormAssociated<HTMLInputElement> {
                 break;
             // Handle type ahead mode
             default:
-                this.typeAheadValue = `${this.typeAheadValue}${e.key}`
-                this.moveFocusToOptionBasedOnValue(this.typeAheadValue, options.options);
+                if (/^.$/.test(e.key)) {
+                    this.handleTypeAhead(e.key);
+                }
                 break;
         }
     };
@@ -301,7 +293,7 @@ export class Select extends FormAssociated<HTMLInputElement> {
         if (els.length === 0) {
             els = this.shadowRoot.querySelectorAll(selector);
         }
-        return els;
+        return Array.from(els);
     }
 
     /**
@@ -416,28 +408,61 @@ export class Select extends FormAssociated<HTMLInputElement> {
     }
 
     /**
-     * This will move focus to an attribute based on the 
-     * value. This is useful for searching scenarios
+     * Move focus to an option whose label matches characters typed by the user.
+     * Consecutive keystrokes are batched into a buffer of search text used
+     * to match against the set of options.  If TYPE_AHEAD_TIMEOUT_MS passes
+     * between consecutive keystrokes, the search restarts.
      * 
-     * @param typeAheadValue 
-     * @param options 
+     * @param typedKey
      */
-    public moveFocusToOptionBasedOnValue(typeAheadValue, options) {
-        let value = null;
-        typeAheadValue = this.regexEscape(typeAheadValue);
-        let pattern = `^(${typeAheadValue})`;
+    private typeAheadValue: string = '';
+    private typeAheadTimeoutHandler: number = -1;
+    private typeAheadExpired: boolean = false;
+    private static readonly TYPE_AHEAD_TIMEOUT_MS = 1000;
+    public handleTypeAhead(typedKey) {
+        // For every keystroke, reset the timer that triggers when enough
+        // time has elapsed such that the search should restart.
+        window.clearTimeout(this.typeAheadTimeoutHandler);
+        this.typeAheadTimeoutHandler = window.setTimeout(() => {
+            this.typeAheadExpired = true;
+        }, Select.TYPE_AHEAD_TIMEOUT_MS);
+
+        if (this.typeAheadExpired) {
+            this.typeAheadValue = '';
+        }
+
+        this.typeAheadValue = `${this.typeAheadValue}${typedKey}`;
+
+        let options = this.getOptions().options;
+        let focusedIndex = options.indexOf(document.activeElement);
+        let searchStartOffset = this.typeAheadExpired ? 1 : 0;
+        // Try to match first against options that come after the currently
+        // selected option. If none of those match, loop back around starting
+        // from the top of the list. If we're in the middle of a search,
+        // continue matching against the currently focused option before moving
+        // on to the next option.
+        let optionsForSearch =
+            options.slice(focusedIndex + searchStartOffset, options.length)
+            .concat(options.slice(0, focusedIndex + searchStartOffset));
+
+        let pattern = `^(${this.regexEscape(this.typeAheadValue)})`;
         let re = new RegExp(pattern, "gi");
 
-        options.forEach(option => {
-            if (!value) {
-                let matches = option.value.match(re);
+        for (const option of optionsForSearch) {
+            // Match against the visible text of the option, rather than
+            // the 'value' attribute. For a real <option> element, the
+            // 'label' property could be used here.
+            // Chromium/Firefox's native <select>s ignore whitespace at the
+            // beginning/end of the visible text when matching, so trim()
+            // the search text to align with that behavior.
+            let matches = option.innerText.trim().match(re);
 
-                if (matches) { 
-                    value = option;
-                }
+            if (matches) {
+                this.setFocusOnOption(option);
+                break;
             }
-        });
+        }
 
-        return this.setFocusOnOption(value);
+        this.typeAheadExpired = false;
     }
 }
