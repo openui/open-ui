@@ -4,7 +4,23 @@ path: /components/slider.research.parts
 showInMenu: false
 ---
 
+This was created to begin to investigate the anatomy of the Slider/Range control. This was spurred on
+by [this CSSWG Psuedo issue](https://github.com/w3c/csswg-drafts/issues/4410).
+
+**Legend:**
+
+- True: part or concept exists
+- False: Part or concept does not exist
+- Depends: It does exist but it depends on certain functionality existing. This does not contribute
+  to the total below but should be considered when reviewing the totals.
+- NA: This part or concept doesn't apply
+- Browser Parts: This component library leverages the currently available parts so reference
+  the browser columns for support. These columns do _not_ contribute to the total.
+
 ## Part Concepts
+
+These are general concepts that may exist for the Slider control. This does not attempt to show what the
+names should be called but the top utilized concepts should be prioritized for having a part defined.
 
 <table class="table table-bordered table-hover table-condensed nowrap-first-column">
   <col style="width: 1%; white-space: nowrap"></col>
@@ -54,6 +70,23 @@ showInMenu: false
   <tbody>
     <tr>
       <td>Thumb</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text" style="background: transparent;">
+        11
+      </td>
+    </tr>
+    <tr>
+      <td>Track</td>
       <td class="true center">TRUE</td>
       <td class="true center">TRUE</td>
       <td class="true center">TRUE</td>
@@ -225,7 +258,17 @@ showInMenu: false
   </tbody>
 </table>
 
+### Notes for some items:
+
+- **Step:** This does not reference if the step attribute is supported but that they
+  provide a part/denotion to the UI of the steps for styling
+- **Mark content:** This denotes whether you can put content into the mark. This is
+  already a [standard](https://www.w3.org/TR/html51/sec-forms.html#range-state-typerange) by assinging a datalist to a range input.
+  This is not fully supported by any browser.
+
 ## Parts
+
+These are names for the parts that may be used in a part concept.
 
 <table class="table table-bordered table-hover table-condensed nowrap-first-column">
   <col class="nowrap"></col>
@@ -233,6 +276,9 @@ showInMenu: false
     <tr>
       <th class="nowrap" title="Field #1">
         PART
+      </th>
+      <th class="nowrap" title="Field #1">
+        PART Concept
       </th>
       <th class="nowrap" title="Field #2">
         Ant Design
@@ -275,6 +321,9 @@ showInMenu: false
   <tbody>
     <tr>
       <td>thumb</td>
+      <td class="center" style="background: transparent;">
+        Thumb
+      </td>
       <td class="false center">FALSE</td>
       <td class="true center">TRUE</td>
       <td class="true center">TRUE</td>
@@ -292,6 +341,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>track</td>
+      <td class="center" style="background: transparent;">
+        Track
+      </td>
       <td>DEPENDS</td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
@@ -309,6 +361,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>value-label</td>
+      <td class="center" style="background: transparent;">
+        Number Output
+      </td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
       <td class="true center">TRUE</td>
@@ -326,6 +381,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>rail</td>
+      <td class="center" style="background: transparent;">
+        Filled Selected Track
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -343,6 +401,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>line</td>
+      <td class="center" style="background: transparent;">
+        Track
+      </td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
       <td class="true center">TRUE</td>
@@ -360,6 +421,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>progress</td>
+      <td class="center" style="background: transparent;">
+        Filled Selected Track
+      </td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -377,6 +441,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>handle-one</td>
+      <td class="center" style="background: transparent;">
+        Two Handles
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -394,6 +461,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>handle-two</td>
+      <td class="center" style="background: transparent;">
+        Two Handles
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -411,6 +481,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>tickmarks</td>
+      <td class="center" style="background: transparent;">
+        Marks
+      </td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -428,6 +501,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>mark</td>
+      <td class="center" style="background: transparent;">
+        Marksk
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -445,6 +521,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>mark text</td>
+      <td class="center" style="background: transparent;">
+        Mark Content
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -462,6 +541,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>step</td>
+      <td class="center" style="background: transparent;">
+        Step
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
@@ -479,6 +561,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>input-for-slider</td>
+      <td class="center" style="background: transparent;">
+        Number Output
+      </td>
       <td class="false center">FALSE</td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
@@ -496,6 +581,9 @@ showInMenu: false
     </tr>
     <tr>
       <td>input-number</td>
+      <td class="center" style="background: transparent;">
+        Number Output
+      </td>
       <td class="true center">TRUE</td>
       <td class="false center">FALSE</td>
       <td class="false center">FALSE</td>
