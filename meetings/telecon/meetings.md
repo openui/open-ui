@@ -6,6 +6,7 @@ meetings, their agenda's and call in information please join the Open UI communi
 -----------
 
 ## 2020
+- August 27: [Agenda](https://github.com/WICG/open-ui/blob/master/meetings/telecon/2020-08-27.md) | [Minutes](https://www.w3.org/2020/08/27-openui-minutes.html)
 - August 18: CSSWG + Open UI ([Agenda] | [Minutes])
 - July 2: ([Agenda](https://github.com/WICG/open-ui/blob/master/meetings/telecon/2020-07-02.md) | [Minutes](https://www.w3.org/2020/07/02-openui-minutes.html))
 - June 4: ([Agenda](https://lists.w3.org/Archives/Public/public-open-ui/2020Jun/0000.html) | [Minutes](https://www.w3.org/2020/06/04-openui-minutes.html))
