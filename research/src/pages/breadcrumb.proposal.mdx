@@ -34,16 +34,17 @@ A `<breadcrumb />` trail consists of a list of links to the parent pages of the 
 
 #### Structure <a class="link" href="#structure" id="structure"></a>
 
-- `<breadcrumb>` - The root element that contains the list of items and dividers, it's composed by `nav` and `ol` elements  **[required]**
+- `<breadcrumb>` - The root element that contains the list of items and dividers, it's composed by `nav` and `ol` elements **[required]**
 - `<breadcrumb-item>` - The element representing a place in the path to the current position in the application **[required]**
 - `<breadcrumb-divider>` - The divider between the `<breadcrumb-item />`, it should be a non-focusable li
 
-Proposed HTML: 
+Proposed HTML:
+
 ```html
 <nav>
   <ol>
     <li><a>Item 1</a></li>
-    <li> / </li>
+    <li>/</li>
     <li><a>Item 2</a></li>
   </ol>
 </nav>
@@ -51,7 +52,7 @@ Proposed HTML:
 
 #### Accessibility <a class="link" href="#accessibility" id="accessibility"></a>
 
-It should be wrapped by a navigation landmark `nav` containing `aria-label` or `aria-labelledby`, the `<breadcrumb-item />` representing the current page should contain `aria-current="page"` ( if the current page isn't a link the attribute is optional )
+The list of Breadcrumb Items should be wrapped by a navigation landmark `nav` containing `aria-label` or `aria-labelledby`, the `<breadcrumb-item />` representing the current page should contain `aria-current="page"` ( if the current page isn't a link the attribute is optional )
 
 ## Resources <a class="link" href="#resources" id="resources"></a>
 
