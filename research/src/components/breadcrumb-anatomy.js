@@ -10,7 +10,7 @@ const BreadcrumbAnatomy = () => {
       <input type="checkbox" id="show-slots" />
       <label for="show-slots"> Show slots</label>
       <div class="component-anatomy">
-        <host name="breadcrumb" role="nave">
+        <host name="breadcrumb" role="nav">
           <slot name="breadcrumb-container">
             <part name="ol">
               <part name="li">item</part>
