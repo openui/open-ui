@@ -59,11 +59,11 @@
 }
 
 .component-anatomy slot::before {
-  content: "slot";
+  content: 'slot';
 }
 
-.component-anatomy slot:not([name=""])::before {
-  content:  attr(name) " [slot]";
+.component-anatomy slot:not([name=''])::before {
+  content: attr(name) ' [slot]';
 }
 
 .component-anatomy host {
@@ -77,7 +77,7 @@
 }
 
 #show-slots:not(:checked) ~ .component-anatomy [data-slot]::before {
-  content: attr(name) " [has slot]";
+  content: attr(name) ' [has slot]';
 }
 
 #show-slots:not(:checked) ~ .component-anatomy slot::before {
