@@ -34,9 +34,9 @@ A `<breadcrumb />` trail consists of a list of links to the parent pages of the 
 
 #### Structure <a class="link" href="#structure" id="structure"></a>
 
-- `<breadcrumb>` - The root element that contains the list of items and dividers, it's composed by `nav` and `ol` elements **[required]**
-- `<breadcrumb-item>` - The element representing a place in the path to the current position in the application **[required]**
-- `<breadcrumb-divider>` - The divider between the `<breadcrumb-item />`, it should be a non-focusable li
+- `<breadcrumb>` - The root element that that has the semantic value of navigation **[required]**
+- `<ordered-list>` - The list containing items and dividers **[required]**
+- `<list-item>` - The wrapper to items or divider content **[required]**
 
 Proposed HTML:
 
@@ -44,7 +44,7 @@ Proposed HTML:
 <nav>
   <ol>
     <li><a>Item 1</a></li>
-    <li>/</li>
+    <li aria-hidden="true">/</li>
     <li><a>Item 2</a></li>
   </ol>
 </nav>
