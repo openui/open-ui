@@ -13,8 +13,10 @@ const BreadcrumbAnatomy = () => {
         <host name="breadcrumb" role="nav">
           <slot name="breadcrumb-container">
             <part name="ol">
-              <part name="li">item</part>
-              <part name="li" aria-hidden="true">
+              <part name="li [part=item]" data-slot>
+                item
+              </part>
+              <part name="li [part=divider]" data-slot aria-hidden="true">
                 divider
               </part>
             </part>
