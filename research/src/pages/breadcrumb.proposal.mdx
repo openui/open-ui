@@ -52,7 +52,12 @@ Proposed HTML:
 
 #### Accessibility <a class="link" href="#accessibility" id="accessibility"></a>
 
-The list of Breadcrumb Items should be wrapped by a navigation landmark `nav` containing `aria-label` or `aria-labelledby`, the `<breadcrumb-item />` representing the current page should contain `aria-current="page"` ( if the current page isn't a link the attribute is optional )
+The Breadcrumb is composed by:
+
+- A `nav` equivalent wrapper that should always have `aria-label` or `aria-labelledby`
+- A ordered `list`
+- `li` items and dividers where the `li` represeting the item can contain anchor or other elements and the `li` represeting the divider should have `aria-hidden="true"`
+- If the last `li` represeting item has an anchor for the current page, this anchor should have `aria-current="page"` otherwise this attribute is optional
 
 ## Resources <a class="link" href="#resources" id="resources"></a>
 
