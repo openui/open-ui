@@ -10,7 +10,7 @@ showInMenu: false
 
 ## Overview <a href="#overview" id="overview"></a>
 
-*Tabs* are a set of layered sections of content that display one panel of content at a time. Each tab panel has an associated tab element, that when activated, displays the panel. The list of tab elements is arranged along one edge of the currently displayed panel.
+*Tabs* are a set of sections of content that display one panel of content at a time. Each tab panel has an associated tab element, that when activated, displays the panel. The list of tab elements is arranged along one edge of the currently displayed panel.
 
 ### Background <a href="#background" id="background"></a>
 
@@ -42,13 +42,19 @@ Some scenarios require an indicator that highlights the currently active tab the
 
 ### Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
 
+#### Design Systems
+
+- [Material Design](https://material.io/components/tabs/#anatomy)
+- [Windows (UWP)](https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/tab-view)
+- [Ant Design](https://ant.design/components/tabs/)
+- [Lightning Design](https://www.lightningdesignsystem.com/components/tabs/)
+
+#### Tabs Implementations
+
 - [FAST Tabs](https://github.com/microsoft/fast/blob/master/packages/web-components/fast-foundation/src/tabs/tabs.spec.md)
 - [FAST Pivot (React)](https://www.npmjs.com/package/@microsoft/fast-components-react-msft)
 - [Material UI](https://material-ui.com/components/tabs/)
-- [Lightning Design](https://www.lightningdesignsystem.com/components/tabs/)
-- [Ant Design](https://ant.design/components/tabs/)
 - [Atlassian](https://atlaskit.atlassian.com/packages/core/tabs)
-- [Windows (UWP)](https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/tab-view)
 
 ---
 
@@ -204,7 +210,7 @@ _List key component states, valid state transitions, and how interactions trigge
 
 - _Are states changed as a result of keyboard? mouse? touch?_
 - _Are there corresponding keyboard interactions for mouse/touch interactions?_
-- _Are some events triggered on key down vs key press?_
+- _Are some events triggered on key down vs key press? On swipe?_
 
 _Example Table_
 
@@ -221,6 +227,10 @@ _Consider the accessibility of the component._
 - _Arrow vs tabbing key behavior_
 - _Modifier key effects (e.g. shift, ctrl, meta)_
 - _Does this component use focus delegation?_
+- _What is the behavior around disabled tabs?_
+- _What is the behavior around tabs that move around in the UI (i.e. using flexbox order to move the active tab to be "first" in the tabgroup?_
+
+- [WAI-ARIA Authoring Practices Keyboard Support](https://www.w3.org/TR/wai-aria-practices/examples/tabs/tabs-2/tabs.html#kbd_label)
 
 _Example Table_
 
