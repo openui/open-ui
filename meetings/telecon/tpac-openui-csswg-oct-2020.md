@@ -13,9 +13,11 @@
 
 ## Agenda
 
-1. Overview of the problem
-2. Spectrum of customization
-3. Definition of a control
-4. Questions/Comments
-5. Font picker control intro (Myles)
+1. Intros
+2. Font picker control intro (Myles Maxfield - Apple)
+3. Holistic approach to control/component standardization (Melanie - Microsoft, Greg Whitworth - Salesforce)
+    1. Overview of the problem
+    2. Spectrum of customization
+    3. Definition of a control
+    4. Questions/Comments
 
