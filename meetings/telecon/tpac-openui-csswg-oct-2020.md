@@ -21,3 +21,6 @@
     3. Definition of a control
     4. Questions/Comments
 
+## Participate
+* Call-in info: https://lists.w3.org/Archives/Member/w3c-css-wg/2020OctDec/0008.html
+* IRC: #css on irc.w3.org
