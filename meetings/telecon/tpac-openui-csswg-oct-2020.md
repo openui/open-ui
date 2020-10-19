@@ -20,6 +20,20 @@
     2. Spectrum of customization
     3. Definition of a control
     4. Questions/Comments
+    
+## Minutes
+* [Minutes for the presentation can be found here](https://www.w3.org/2020/10/12-css-minutes.html)
+* [Video and presentation](https://noti.st/gregwhitworth/d6IRrv/customizable-control-ui-solving-a-multi-decade-problem) presented by Melanie Richards & Greg Whitworth
+
+## Actions
+* Define an Open UI process for proposals and engagement with other standards groups
+* Define a spectrum of customization in Open UI, include CSSWG members
+* Define a control & component
+
+## Resolutions
+* Web developers needing to re-create the native form controls due to limitations is a problem
+* We should define a spectrum of customization
+* Open UI is where control and component parts, behaviors, states and their composition will be defined
 
 ## Participate
 * Call-in info: https://lists.w3.org/Archives/Member/w3c-css-wg/2020OctDec/0008.html
