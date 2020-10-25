@@ -54,17 +54,14 @@ The `<checkbox>` control is primarily leveraged to indicate a binary state. For 
 #### DOM Structure
 
 ```html
-<host>
-  <label part="label"><slot name="label"></slot></label>
-  <div part="control">
-    <div part="checked-indicator">
-      <slot name="checked-indicator"></slot>
-    </div>
-    <div part="indeterminate-indicator">
-      <slot name="indeterminate-indicator"></slot>
-    </div>
+<oui-checkbox>
+  <label part="label">
+    <slot name="label"></slot>
+  </label>
+  <div part="indicator">
+    <slot name="indicator"></slot>
   </div>
-</host>
+</oui-checkbox>
 ```
 
 #### Slots
@@ -77,11 +74,10 @@ The `<checkbox>` control is primarily leveraged to indicate a binary state. For 
 
 #### CSS Parts
 
-| Slot Name                 | Description                                         |
-| ------------------------- | --------------------------------------------------- |
-| `label`                   | The control's label                                 |
-| `checked-indicator`       | Indicates the checkbox is in a checked state        |
-| `indeterminate-indicator` | Indicates the checkbox is in an indeterminate state |
+| Slot Name   | Description                                                   |
+| ----------- | ------------------------------------------------------------- |
+| `label`     | The control's label                                           |
+| `indicator` | Indicates the checkbox is in a checked or indeterminate state |
 
 ## Behavior
 
