@@ -9,6 +9,7 @@ import evergreen from './evergreen.json5'
 import fabric from './fabric.json5'
 import fast from './fast.json5'
 import lightning from './lightning.json5'
+import lion from './lion.json5'
 import materialComponentsWeb from './materialComponentsWeb.json5'
 import primer from './primer.json5'
 import semantic from './semantic.json5'
@@ -27,6 +28,7 @@ export const sources = [
   fabric,
   fast,
   lightning,
+  lion,
   materialComponentsWeb,
   primer,
   semantic,
