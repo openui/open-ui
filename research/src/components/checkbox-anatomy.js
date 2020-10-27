@@ -4,7 +4,7 @@ import './anatomy.css'
 export default () => {
   return (
     <div className="component-anatomy">
-      <host name="checkbox">
+      <host name="oui-checkbox">
         <part name="label">
           <slot name="label"></slot>
         </part>
