@@ -27,7 +27,7 @@ const Navigation = ({ style }) => (
       const allFrontmatter = _.map(data.allMdx.edges, 'node.frontmatter')
 
       const frontmatterForNav = allFrontmatter
-        .filter(({ name, pathToProposal }) => !!name && !pathToProposal)
+        .filter(({ name, pathToProposal }) => !!name)
         .filter(({ showInMenu }) => showInMenu !== false)
 
       const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
