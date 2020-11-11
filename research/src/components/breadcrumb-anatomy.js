@@ -16,9 +16,6 @@ const BreadcrumbAnatomy = () => {
               <part name="li [part=item]" data-slot>
                 item
               </part>
-              <part name="li [part=divider]" data-slot aria-hidden="true">
-                divider
-              </part>
             </part>
           </slot>
         </host>
