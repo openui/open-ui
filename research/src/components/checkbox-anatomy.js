@@ -8,13 +8,8 @@ export default () => {
         <part name="label">
           <slot name="label"></slot>
         </part>
-        <part name="checkbox">
-          <part name="checked-indicator">
-            <slot></slot>
-          </part>
-          <part name="indeterminate-indicator">
-            <slot></slot>
-          </part>
+        <part name="indicator">
+          <slot></slot>
         </part>
       </host>
     </div>
