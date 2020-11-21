@@ -193,10 +193,10 @@ and paste it into your proposal document.
 
 The research page is a place to collect, analyse, and deeply understand the data available on the component.
 
-Copy in the content from the [Component Research Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-research-template.mdx)
-
 Define your research page front matter.
 The `pathToProposal` key tells your research page where its proposal page is hosted.
+
+Example:
 
 ```
 ---
@@ -206,9 +206,27 @@ pathToProposal: /components/test
 ---
 ```
 
-There are some MDX components available in Open UI's docs to help analyze and understand the data collected.
-You can reference some other component doc pages for usage examples.
-Otherwise, you can collect and analyze your data more manually.
+### Research page content
+
+After this front matter, copy in the content from the [Component Research Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-research-template.mdx).
+
+This template includes a few optional partials you can import into the research page.
+Each of these walks through the design system JSON5 files in `/sources` to finds components where the `openUIName` value matches the `Name` value of your research page front matter.
+
+- **Anatomy:** lists out component anatomy by part,
+  if any matching components have defined an anatomy.
+- **Concept Coverage:** lists matching components according to unique names,
+  as well as which design systems use that name.
+- **Concepts:** for each unique concept defined for matching components
+  (per the [concepts section of this documentation](#concepts))
+  the research page will display:
+  this concept name,
+  the various names used by different design systems for this concept,
+  and examples of this concept from the design systems.
+
+You may also collect and add research manually to this page.
+
+### Additional research pages
 
 For any other research that you believe will make more sense on its own, create a seperate research documents
 following `<component-name.research.<research-topic>.mdx`.
