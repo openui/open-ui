@@ -26,7 +26,7 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
               <Image
                 src={image.image}
                 title={image.image}
-                alt={`An image of the ${conceptName} concept on a ${component} component in ${image.sourceName}.`}
+                alt={`${conceptName} concept on a ${component} component in ${image.sourceName}.`}
               />
             </div>
             <div
