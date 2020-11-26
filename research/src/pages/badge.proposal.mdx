@@ -1,0 +1,63 @@
+---
+menu: Proposals
+name: Badge (Editor's Draft)
+path: /components/badge
+pathToResearch: /components/badge.research
+---
+
+import BadgeAnatomy from '../components/badge-anatomy'
+
+# Badge Component Specification
+
+## Overview <a href="#overview" id="overview"></a>
+
+_Badge_ is normally a label holding small amount of information such as value or status. Appears as some sort of notification with eye-catching appeal.
+
+### Use Cases <a href="#use-cases" id="use-cases"></a>
+
+The <badge /> control is primarily leveraged to indicate value of notifications or status. For example a badge in a avatar can indicate status as busy, available and other while a badge in a inbox can indicate the number of new messages.
+
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+- [Ant Design](https://ant.design/components/badge/)
+- [Bootstrap](https://getbootstrap.com/docs/4.3/components/badge/)
+- [Evergreen](https://evergreen.segment.com/components/badge-and-pill/)
+- [Material](https://material-ui.com/components/badges/#badge)
+- [FAST DNA](https://explore.fast.design/components/fast-badge)
+- [Atlas Kit](https://atlassian.design/components/badge/examples)
+- [Lightning](https://www.lightningdesignsystem.com/components/badges/)
+
+## &lt;badge&gt; Properties <a href="#badge-properties" id="badge-properties"></a>
+
+| Attribute Name | Type      | Default Value | Description                                                 |     |
+| -------------- | --------- | ------------- | ----------------------------------------------------------- | --- |
+| `value`        | `string`  | `""`          | Text value to be displayed by badge                         |     |
+| `circular`     | `boolean` | `true`        | If the badge shape is circular                              |     |
+| `color`        | `string`  | `red`         | Badge background color                                      |     |
+| `empty`        | `boolean` | `false`       | Badge can be rendered as a dot                              |     |
+| `ribbon`       | `string`  | `right`       | Badge can appear as a ribbon attaching itself to an element |     |
+| `size`         | `string`  | `small`       | Badge can have different sizes                              |     |
+
+#### &lt;badge&gt; Events <a href="#badge-events" id="badge-events"></a>
+
+| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                        |
+| ---------- | ----------- | ------- | -------- | ----------- | ---------------------------------------- |
+| `click`    | none        | `true`  | `true`   | `false`     | Fired when the user clicks on the badge. |
+
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
+
+<BadgeAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<badge>` - The root element that contains the value and styles set by the user **[required]**
+
+#### DOM Structure
+
+```html
+<oui-badge>
+  <span part="badge-root">
+    <slot name="value"></slot>
+  </span>
+</oui-badge>
+```
