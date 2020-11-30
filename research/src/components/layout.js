@@ -35,6 +35,9 @@ const components = {
               padding: '0.25rem 0.5rem',
               overflow: 'auto',
             }}
+            tabIndex={0}
+            role="region"
+            aria-label="Code example"
           >
             {tokens.map((line, i) => (
               <div {...getLineProps({ line, key: i })}>
