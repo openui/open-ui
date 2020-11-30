@@ -11,11 +11,18 @@ import Header from './header'
 import Navigation from './navigation'
 import ComponentLayout from './component-layout'
 
+// Add JSON5 language support to Prism
+import Prism from 'prism-react-renderer/prism'
+
+// Need to create the Prism global before importing new languages
+(typeof global !== 'undefined' ? global : window).Prism = Prism
+require('prismjs/components/prism-json5')
+
 const components = {
   pre: (props) => {
     // get the code content from the compiled `pre > code`
     const code = props.children
-    const exampleCode = code.props.children
+    const exampleCode = code.props.children.trimEnd()
     const language = (code.props.className || '').replace('language-', '')
 
     return (
