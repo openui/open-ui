@@ -15,7 +15,7 @@ import ComponentLayout from './component-layout'
 import Prism from 'prism-react-renderer/prism'
 
 // Need to create the Prism global before importing new languages
-(typeof global !== 'undefined' ? global : window).Prism = Prism
+;(typeof global !== 'undefined' ? global : window).Prism = Prism
 require('prismjs/components/prism-json5')
 
 const components = {
@@ -28,7 +28,14 @@ const components = {
     return (
       <Highlight {...defaultProps} theme={vsDark} code={exampleCode} language={language}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <pre className={className} style={{ ...style, padding: '0.25rem 0.5rem' }}>
+          <pre
+            className={className}
+            style={{
+              ...style,
+              padding: '0.25rem 0.5rem',
+              overflow: 'auto',
+            }}
+          >
             {tokens.map((line, i) => (
               <div {...getLineProps({ line, key: i })}>
                 {line.map((token, key) => (
@@ -81,7 +88,7 @@ const Layout = ({ children, pageContext }) => {
             >
               <Navigation style={{ marginRight: '2em' }} />
 
-              <div style={{ flex: '1' }}>
+              <div style={{ flex: '1 1 auto', minWidth: 0 }}>
                 <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>
               </div>
             </div>
