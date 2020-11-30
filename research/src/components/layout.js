@@ -35,7 +35,9 @@ const components = {
               padding: '0.25rem 0.5rem',
               overflow: 'auto',
             }}
-            tabIndex={0}
+            // Adding tabIndex to this non-interactive pre element to allow
+            // keyboard users to scroll this pre element using only the keyboard
+            tabIndex={0} // eslint-disable-line jsx-a11y/no-noninteractive-tabindex
             role="region"
             aria-label="Code example"
           >
