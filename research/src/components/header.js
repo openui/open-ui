@@ -3,8 +3,9 @@ import React from 'react'
 import Logo from './logo'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 
-const Header = ({ siteTitle, githubURL }) => (
+const Header = ({ siteTitle, githubURL, menuOpened, onToggleMenu }) => (
   <header
     style={{
       background: '#333',
@@ -27,19 +28,33 @@ const Header = ({ siteTitle, githubURL }) => (
         <Logo siteTitle={siteTitle} />
       </span>
 
-      <a href={githubURL} target="_blank" rel="noreferrer noopener" style={{ color: 'inherit' }}>
-        <FontAwesomeIcon style={{ marginRight: '0.2em' }} icon={faGithub} /> GitHub
-      </a>
+      <div className="header-nav">
+        <a href={githubURL} target="_blank" rel="noreferrer noopener" style={{ color: 'inherit' }}>
+          <FontAwesomeIcon style={{ marginRight: '0.2em' }} icon={faGithub} /> GitHub
+        </a>
 
-      <a
-        href="https://discord.gg/DEWjhSw"
-        target="_blank"
-        rel="noreferrer noopener"
-        style={{ color: 'inherit' }}
+        <a
+          href="https://discord.gg/DEWjhSw"
+          target="_blank"
+          rel="noreferrer noopener"
+          style={{ color: 'inherit' }}
+        >
+          <FontAwesomeIcon style={{ marginRight: '0.2em', marginLeft: '1em' }} icon={faDiscord} />{' '}
+          Discord
+        </a>
+      </div>
+
+      <button
+        type="button"
+        className="header-menu-btn"
+        aria-label="Toggle menu"
+        title="Toggle menu"
+        onClick={onToggleMenu}
+        aria-expanded={menuOpened ? 'true' : 'false'}
+        aria-controls="site-nav"
       >
-        <FontAwesomeIcon style={{ marginRight: '0.2em', marginLeft: '1em' }} icon={faDiscord} />{' '}
-        Discord
-      </a>
+        <FontAwesomeIcon icon={faBars} size="lg" />
+      </button>
     </div>
   </header>
 )

@@ -56,6 +56,9 @@ const components = {
 }
 
 const Layout = ({ children, pageContext }) => {
+  const [opened, setOpen] = React.useState(false)
+  const onToggleMenu = React.useCallback(() => setOpen((opened) => !opened), [setOpen])
+
   const { frontmatter } = pageContext || {}
 
   const ContentWrapper =
@@ -82,16 +85,11 @@ const Layout = ({ children, pageContext }) => {
             <Header
               siteTitle={data.site.siteMetadata.title}
               githubURL={data.site.siteMetadata.githubURL}
+              menuOpened={opened}
+              onToggleMenu={onToggleMenu}
             />
-            <div
-              style={{
-                display: 'flex',
-                padding: '0 1rem',
-                margin: '0 auto',
-                maxWidth: '1200px',
-              }}
-            >
-              <Navigation style={{ marginRight: '2em' }} />
+            <div className="page-wrapper">
+              <Navigation opened={opened} />
 
               <div style={{ flex: '1 1 auto', minWidth: 0 }}>
                 <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>
