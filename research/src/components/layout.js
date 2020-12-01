@@ -60,11 +60,7 @@ const Layout = ({ children, pageContext }) => {
   const onToggleMenu = React.useCallback(() => setOpen((opened) => !opened), [setOpen])
 
   const { frontmatter } = pageContext || {}
-
-  const ContentWrapper =
-    frontmatter && frontmatter.path && frontmatter.path.startsWith('/components/')
-      ? ComponentLayout
-      : ({ children }) => <>{children}</>
+  const useComponentLayout = frontmatter?.path?.startsWith('/components/') ?? false
 
   return (
     <StaticQuery
@@ -92,7 +88,11 @@ const Layout = ({ children, pageContext }) => {
               <Navigation opened={opened} />
 
               <div style={{ flex: '1 1 auto', minWidth: 0 }}>
-                <ContentWrapper frontmatter={frontmatter}>{children}</ContentWrapper>
+                {useComponentLayout ? (
+                  <ComponentLayout frontmatter={frontmatter}>{children}</ComponentLayout>
+                ) : (
+                  children
+                )}
               </div>
             </div>
           </div>
