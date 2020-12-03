@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Logo from './logo'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
+import Logo from './logo'
+import CommunityLinks from './community-links'
 
 const Header = ({ siteTitle, githubURL, menuOpened, onToggleMenu }) => (
   <header
@@ -28,21 +28,7 @@ const Header = ({ siteTitle, githubURL, menuOpened, onToggleMenu }) => (
         <Logo siteTitle={siteTitle} />
       </span>
 
-      <div className="header-nav">
-        <a href={githubURL} target="_blank" rel="noreferrer noopener" style={{ color: 'inherit' }}>
-          <FontAwesomeIcon style={{ marginRight: '0.2em' }} icon={faGithub} /> GitHub
-        </a>
-
-        <a
-          href="https://discord.gg/DEWjhSw"
-          target="_blank"
-          rel="noreferrer noopener"
-          style={{ color: 'inherit' }}
-        >
-          <FontAwesomeIcon style={{ marginRight: '0.2em', marginLeft: '1em' }} icon={faDiscord} />{' '}
-          Discord
-        </a>
-      </div>
+      <CommunityLinks githubURL={githubURL} />
 
       <button
         type="button"

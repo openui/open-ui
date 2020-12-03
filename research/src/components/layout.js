@@ -85,9 +85,9 @@ const Layout = ({ children, pageContext }) => {
               onToggleMenu={onToggleMenu}
             />
             <div className="page-wrapper">
-              <Navigation opened={opened} />
+              <Navigation opened={opened} githubURL={data.site.siteMetadata.githubURL} />
 
-              <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+              <div className="page-content" style={{ flex: '1 1 auto', minWidth: 0 }}>
                 {useComponentLayout ? (
                   <ComponentLayout frontmatter={frontmatter}>{children}</ComponentLayout>
                 ) : (
