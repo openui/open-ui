@@ -22,7 +22,14 @@ const typography = new Typography({
   headerGrayHue: 'warm',
 
   // Body
-  bodyFontFamily: ['Source Sans Pro', 'Georgia', 'serif'],
+  bodyFontFamily: [
+    'Source Sans Pro',
+    'Helvetica Neue',
+    'Segoe UI',
+    'Helvetica',
+    'Arial',
+    'sans-serif',
+  ],
   bodyWeight: 400,
   boldWeight: 700,
   bodyGray: 0.2,
