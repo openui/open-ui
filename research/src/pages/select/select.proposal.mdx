@@ -28,7 +28,7 @@ then select the appropriate one for you.
 
 ## &lt;select&gt; Properties <a href="#select-properties" id="select-properties"></a>
 
-| Attribute Name                                                                                          | Type                    | Default Value                         | Description                                                                                                                                              |     |
+| Property Name                                                                                           | Type                    | Default Value                         | Description                                                                                                                                              |     |
 | ------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
 | `autocomplete`                                                                                          | `string`                | `off`                                 | Allows the developer to provide a hint on how to search the content within the `<option>`(s)                                                             |     |
 | [`autofocus`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/autofocus)             | `bool`                  | `false`                               | If set to `true` the `input` will have focus set on page load                                                                                            |     |
@@ -38,6 +38,7 @@ then select the appropriate one for you.
 | `length`                                                                                                | `int`                   | `0`                                   | The number of `<option>` elements in the `<select>` element                                                                                              |     |
 | `multiple`                                                                                              | `bool`                  | `false`                               | If set to true this will allow more than one `<option>`                                                                                                  |     |
 | `name`                                                                                                  | `string`                | `null`                                | Represents the name of the control                                                                                                                       |     |
+| `open`                                                                                                  | `bool`                  | `false`                               | A `boolean` that indicates whether the `<select>` is in the [`open`](#open-state) state                                                                  |     |
 | [`options`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/options)                 | `HTMLOptionsCollection` |                                       | Returns a `HTMLOptionsCollection` of the `<option>` elements contained by the `<select>` element                                                         |     |
 | `required`                                                                                              | `bool`                  | `false`                               | A value must be provided for the control if set to `true`                                                                                                |     |
 | [`selectedIndex`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedIndex)     | `int`                   | `-1`                                  | The index of the first or last selected `<option>` element, depending on the value of `multiple`                                                         |     |
@@ -184,12 +185,18 @@ and is therefore considered to be invalid.
 
 **Default State**
 
-- Show the currently selected `<option>` or the first `<option>`
-- When the user invokes the `button` by:
+- The `selected-value` part should show the currently selected `<option>` or the first `<option>`.
+- The `listbox` part is not visible to the user.
+- The state of the `<select>` is set to `open` when the user invokes the `button` by:
   - a [pointerup](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerup_event) or
     [click](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) event is fired
   - the user presses the `space` or `enter` key
-- The state of the `<select>` is set to `open`
+
+<p class="note">
+  If an author wants a &lt;select&gt; to be open by default, they can set the &lt;select&gt;'s
+  `open` property to true in the JavaScript responsible for initializing the component, or in HTML
+  set the &lt;select&gt;'s `open` boolean content attribute, which reflects the `open` property.
+</p>
 
 **Open State**
 
