@@ -2,8 +2,9 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { StaticQuery, graphql, Link } from 'gatsby'
+import CommunityLinks from './community-links'
 
-const Navigation = ({ style }) => (
+const Navigation = ({ opened, githubURL }) => (
   <StaticQuery
     query={graphql`
       query NavigationQuery {
@@ -65,8 +66,10 @@ const Navigation = ({ style }) => (
       )
 
       return (
-        <nav style={style}>
-          <ul style={{ position: 'sticky', top: '1em', margin: 0 }}>
+        <nav id="site-nav" className={opened ? 'opened' : ''}>
+          <CommunityLinks githubURL={githubURL} className={'mobile'} />
+
+          <ul style={{ top: '1em', margin: 0 }}>
             <li
               key="Home"
               style={{
