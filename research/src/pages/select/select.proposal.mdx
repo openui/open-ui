@@ -203,23 +203,11 @@ and is therefore considered to be invalid.
 - The currently selected `<option>`, or the first if one isn't selected, should be
   visible within the listbox. This may require moving the list to accomodate listbox positioning
   and available space.
+- The listbox has <a href="/behaviors/light-dismiss">light dismiss</a>.
 - The user can dismiss the listbox and remove the state of `open` from the `<select>` in either of the
   following manners:
-  - Triggering any of the listbox's <a href="#light-dismiss">light dismiss</a> behaviors
-  - Selecting one, or more (if `multiple` is true), options by clicking or hitting the `enter` or `space` key
-
-### Light dismiss
-
-The listbox part has "light dismiss", behavior, defined as being dismissed (removing
-the `open` state of the `<select>`, in this case) by either of the following things:
-
-- The user presses the escape key.
-- A focus change occurs (because of either user interaction or script), where the focus
-  target is outside of the subtree of the listbox. This includes the case where the user
-  invokes a non-focusable element, which causes focus to switch to the `<body>`.
-  - There is one exception to this: if a user invokes a non-focusable element
-    in the subtree of the listbox, focus still moves to the `<body>`, but "light
-    dismiss" does not occur.
+  - Triggering <a href="/behaviors/light-dismiss">light dismiss</a> for the listbox.
+  - Selecting one, or more (if `multiple` is true), options by clicking or hitting the `enter` or `space` key.
 
 ### Typeahead
 
