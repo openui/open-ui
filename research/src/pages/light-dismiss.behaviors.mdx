@@ -38,10 +38,7 @@ The actions that trigger light dismiss are:
 - A focus change occurs (because of either user interaction or script), where
   the focus target is outside of the contents of the component. This includes
   the case where the user invokes a non-focusable element, which causes focus to
-  switch to the `<body>`.
-  - There is one exception to this: if a user invokes a non-focusable element
-    in the subtree of the component, focus still moves to the `<body>`, but light
-    dismiss does not occur.
+  jump to the nearest focusable ancestor of that element.
 - An OS-level focus change occurs such that the window containing the
   component no longer has focus. For example, the user switches to a different
   browser tab or switches to a different application.
@@ -50,3 +47,11 @@ For a <a href="/contribute#composite-component">composite component</a>, light
 dismiss can apply to some sub-parts of the component but not others. For
 example, a <a href="/components/select">select</a>'s listbox dropdown has light
 dismiss but its button does not.
+
+<p class="note">
+  If a component (or part of a component) has light dismiss and it can contain non-focusable
+  content, then the top level element of the component or part with light dismiss should be made
+  focusable (e.g. with `tabindex="-1"`). Otherwise, if a user invokes any of the non-focusable
+  content in the component, then focus will move outside of the part to the nearest focusable
+  ancestor, triggering light dismiss when it probably isn't what the user expected.
+</p>
