@@ -1,0 +1,70 @@
+---
+menu: Proposals
+name: Pills (Editor's Draft)
+path: /components/pills
+pathToResearch: /components/pills.research
+---
+
+import PillsAnatomy from '../components/pills-anatomy'
+
+## Overview
+
+A pill represents an object, usually in a list of selected items or options.
+
+## Use Cases
+
+A `<pill />` can be used to represent optins selected in a multi selectable dropdown or to represent selected filters. A `pill` can be used as part of a listbox or individually to present some information
+
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+- [Evergreen](https://evergreen.segment.com/components/badge-and-pill/)
+- [Lightning](https://www.lightningdesignsystem.com/components/pills/)
+
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
+
+#### Diagram <a class="link" href="#diagram" id="diagram"></a>
+
+<PillsAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<pills>` - The root element that that has the semantic value of a listbox **[required]**
+- `<list-item>` - The list item containing the pill **[required]**
+- `<pill>` - Element representing the pill content **[required]**
+
+Proposed HTML:
+
+```html
+<ul>
+  <li>
+    <span>
+      Pill
+    </span>
+  </li>
+</ul>
+```
+
+#### Accessibility <a class="link" href="#accessibility" id="accessibility"></a>
+
+- A `ul` as container of the pills should have `role="listbox"`
+- `aria-label` is applied to `listbox` to describe what the list of options are to the user
+- `aria-orientation="horizontal"` is applied to the listbox to describe the left to right direction of the pills
+- `role="presentation"` is placed on the li elements
+- `role="option"` is placed on the pill ( span element in the proposed HTML ) element
+- `aria-selected="true"` is applied to all option elements, this is because they have all be selected
+
+#### Keyboard Navigation <a class="link" href="#keyboard" id="keyboard"></a>
+
+- The first option in the list will be take user focus initially, when tabbed to the container
+- Right arrow key will move focus to the next pill in the list
+- Left arrow key will move focus to the previous pill in the list
+- Left arrow key when on the first option should cycle user focus to the last option
+- Right arrow key when on the last option should cycle user focus to the first option
+- Delete or Backspace key when focused on an option should remove that option. Focus should then be placed on the nearest option
+  - When on the last option, place user focus on the previous option
+  - When on the first option, place user focus on the next option
+  - When on the only option, place user focus on the listbox or any input element the option might be associated with
+
+## Resources <a class="link" href="#resources" id="resources"></a>
+
+- [Lightning Accessibility for Pills](https://www.lightningdesignsystem.com/components/pills/#Accessibility)
