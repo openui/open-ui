@@ -5,6 +5,7 @@ import atlassian from './atlassian.json5'
 import auth0 from './auth0.json5'
 import bootstrap from './bootstrap.json5'
 import carbon from './carbon.json5'
+import chromium from './chromium.json5'
 import evergreen from './evergreen.json5'
 import fabric from './fabric.json5'
 import fast from './fast.json5'
@@ -24,6 +25,7 @@ export const sources = [
   auth0,
   bootstrap,
   carbon,
+  chromium,
   evergreen,
   fabric,
   fast,
