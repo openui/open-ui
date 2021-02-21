@@ -1,17 +1,19 @@
 import React from 'react'
-import './anatomy.css'
+import { AnatomyWrapper, Host, Part, Slot } from './anatomy-components'
 
-export default () => {
+const CheckboxAnatomy = () => {
   return (
-    <div className="component-anatomy">
-      <host name="checkbox">
-        <part name="label">
-          <slot name="label"></slot>
-        </part>
-        <part name="indicator">
-          <slot></slot>
-        </part>
-      </host>
-    </div>
+    <AnatomyWrapper>
+      <Host name="openui-checkbox">
+        <Part name="label">
+          <Slot name="label" />
+        </Part>
+        <Part name="indicator">
+          <Slot name="indicator" />
+        </Part>
+      </Host>
+    </AnatomyWrapper>
   )
 }
+
+export default CheckboxAnatomy
