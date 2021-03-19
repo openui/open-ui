@@ -1,32 +1,14 @@
 # Open UI
-> **Tip:** This repo is in development. Ideas and patterns you'll see here are in-progress. You are encouraged to join in and help shape the foundation of Open UI.
 
-**:rocket: Mission:** Maintain an open standard for UI and promote its adherence and adoption.
+The purpose of Open UI to the web platform is to allow web developers to style and extend built-in web UI controls, such as <select> dropdowns, checkboxes, radio buttons, and date/color pickers.
 
-**:busts_in_silhouette: Audience:** The broader UI community including designers, engineers, and managers.
+To do that, we'll need to fully specify the component parts, states, and behaviors of the built-in controls, as well as necessary accessibility requirements, and provide test suites to ensure compatibility. We'll also implement polyfills for our extensible web UI controls.
 
-Learn more at https://open-ui.org.
+Today, component frameworks and design systems reinvent common web UI controls to give designers full control over their appearance and behavior. We hope to make it unnecessary to reinvent built-in UI controls, but for those who choose to do so, we expect that these design systems will benefit from Open UI's specifications and test suites.
 
-## Why?
+Long term, we hope that Open UI will establish a standard process for developing high-quality UI controls suitable for addition to the web platform.
 
-We identify these issues in the UI community:
-
-- **Effort** - Engineers waste countless hours of human effort duplicating work that could be shared.
-- **Support** - Accessible users are often left with subpar experiences, or are entirely unsupported.
-- **Consistency** - User experience is often inconsistent and compromised between UIs due to isolated development practices.
-- **Portability** - The lack of a shared language for UI limits our ability as a community to communicate, collaborate, and share.
-- **Timing** - UI's have existed long enough to observe and codify a shared standard; the time is right.
-
-Open UI is a open source collective effort to standardize names and anatomies for common UI patterns.
-
-## How?
-
-There are two pillars of focus here:
-  - `/research` documenting UI as it has naturally emerged
-  - `/platform` representing browser testing for component support against common use cases using standards based approaches
-
-These two will iterate in a cyclic collaboration to define and develop standardized UI.
-Refer to the resources in each effort for more information.
+For complete outline of goals and process view our full [charter](https://open-ui.org/charter).
 
 ## Meetings
 
@@ -34,6 +16,4 @@ To view the latest information on meetings and their minutes, please visit our [
 
 ## Contributing
 
-This repository is being used for work in the W3C Web Platform Incubator Community Group, governed by the [W3C Community License
-Agreement (CLA)](http://www.w3.org/community/about/agreements/cla/). To make substantive contributions,
-you must join the [WICG](https://www.w3.org/community/wicg/) prior to making a PR.
+Please see our contributing documentation on the site [here](https://open-ui.org/contribute).

@@ -1,0 +1,696 @@
+{
+  "$schema": "../schemas/design-system.schema.json5",
+  "lastUpdated": "2019-08-22",
+  "name": "Atlaskit",
+  "description": "Atlassian's official UI library, built according to the Atlassian Design Guidelines.",
+  "url": "https://atlaskit.atlassian.com",
+  "by": "Atlassian",
+  "components": [
+    {
+      "name": "Analytics next",
+      "url": "https://atlaskit.atlassian.com/packages/core/analytics-next"
+    },
+    {
+      "name": "Analytics",
+      "url": "https://atlaskit.atlassian.com/packages/core/analytics"
+    },
+    {
+      "name": "Avatar group",
+      "url": "https://atlaskit.atlassian.com/packages/core/avatar-group"
+    },
+    {
+      "name": "Avatar",
+      "url": "https://atlaskit.atlassian.com/packages/core/avatar",
+      "decription": "An avatar is a visual representation of a user or entity.",
+      "concepts": [
+        {
+          "name": "image",
+          "image": "atlaskit-avatar-square.png"
+        },
+        {
+          "name": "icon",
+          "description": "A default image is displayed for avatars when a chosen source is unavailable",
+          "image": "atlaskit-avatar-icon.png"
+        },
+        {
+          "name": "square",
+          "description": "Use square avatars to represent an entity, such as a project, repository or space.",
+          "image": "atlaskit-avatar-square.png"
+        },
+        {
+          "name": "presence",
+          "openUIName": "badge",
+          "description": "Indicates if a user is available, away, focused, or busy.",
+          "image": "atlaskit-avatar-presence.png"
+        },
+        {
+          "name": "status",
+          "openUIName": "badge",
+          "description": "An icon that displays the avatar's status.",
+          "image": "atlaskit-avatar-status.png"
+        }
+      ]
+    },
+    {
+      "name": "Badge",
+      "url": "https://atlaskit.atlassian.com/packages/core/badge",
+      "decription": "A badge is a visual indicator for numeric values such as tallies and scores",
+      "concepts": [
+        {
+          "name": "basic",
+          "description": "Basic Badge",
+          "image": "atlaskit-badge-basic.png"
+        },
+        {
+          "name": "count",
+          "description": "The max prop can be used to cap the value of a badge. When the value to display is greater than the max prop, a + will automatically be appended. The default max value of a badge is 99.",
+          "image": "atlaskit-badge-count.png"
+        },
+        {
+          "name": "added",
+          "description": "Use an added appearance to show additions. For example, when characters are added to a line of code in Bitbucket.",
+          "image": "atlaskit-badge-added.png"
+        },
+        {
+          "name": "inverted",
+          "description": "Use a primaryInverted badge when high contrast against a darker background color is needed.",
+          "image": "atlaskit-badge-inverted.png"
+        }
+      ]
+    },
+    {
+      "name": "Banner",
+      "url": "https://atlaskit.atlassian.com/packages/core/banner"
+    },
+    {
+      "name": "Blanket",
+      "url": "https://atlaskit.atlassian.com/packages/core/blanket"
+    },
+    {
+      "name": "Breadcrumbs",
+      "openUIName": "Breadcrumb",
+      "url": "https://atlaskit.atlassian.com/packages/core/breadcrumbs",
+      "description": "Breadcrumbs are a navigation system used to show a user's location in a site or app.",
+      "concepts": [
+        {
+          "name": "basic",
+          "description": "Basic Breadcrumb",
+          "image": "atlaskit-breadcrumb-basic.png"
+        },
+        {
+          "name": "limited",
+          "description": "Breadcrumb with limited items to show",
+          "image": "atlaskit-breadcrumb-limited.png"
+        },
+        {
+          "name": "overflow",
+          "description": "Breadcrumb with content larger than the container",
+          "image": "atlaskit-breadcrumb-large.png"
+        }
+      ]
+    },
+    {
+      "name": "Button",
+      "url": "https://atlaskit.atlassian.com/packages/core/button",
+      "concepts": []
+    },
+    {
+      "name": "Calendar",
+      "url": "https://atlaskit.atlassian.com/packages/core/calendar"
+    },
+    {
+      "name": "Checkbox",
+      "url": "https://atlaskit.atlassian.com/packages/core/checkbox",
+      "category": "core",
+      "anatomy": [
+        {
+          "name": "label"
+        },
+        {
+          "name": "icon"
+        },
+        {
+          "name": "requiredIndicator"
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "description": "",
+          "image": "atlaskit-checkbox-basic.png"
+        },
+        {
+          "name": "checked",
+          "description": "Sets whether the checkbox is checked or unchecked.",
+          "image": "atlaskit-checkbox-checked.png"
+        },
+        {
+          "name": "disabled",
+          "description": "Sets whether the checkbox is disabled.",
+          "image": "atlaskit-checkbox-disabled.png"
+        },
+        {
+          "name": "fullWidth",
+          "description": "Sets whether the checkbox should take up the full width of the parent.",
+          "image": "atlaskit-checkbox-fullwidth.png"
+        },
+        {
+          "name": "indeterminate",
+          "description": "Sets whether the checkbox is indeterminate. This only affects the style and does not modify the isChecked property.",
+          "image": "atlaskit-checkbox-indeterminate.png"
+        },
+        {
+          "name": "invalid",
+          "description": "Marks the field as invalid. Changes style of unchecked component.",
+          "image": "atlaskit-checkbox-invalid.png"
+        },
+        {
+          "name": "required",
+          "description": "Marks the field as required & changes the label style.",
+          "image": "atlaskit-checkbox-required.png"
+        },
+        {
+          "name": "label",
+          "description": "The label to be displayed to the right of the checkbox. The label is part of the clickable element to select the checkbox.",
+          "image": "atlaskit-checkbox-basic.png"
+        }
+      ]
+    },
+    {
+      "name": "CheckboxIcon",
+      "url": "https://atlaskit.atlassian.com/packages/core/checkbox",
+      "concepts": [
+        {
+          "name": "checked",
+          "description": "Sets whether the checkbox is checked or unchecked."
+        },
+        {
+          "name": "disabled",
+          "description": "Sets whether the checkbox is disabled."
+        },
+        {
+          "name": "focused",
+          "description": "Sets the checkbox focus"
+        },
+        {
+          "name": "indeterminate",
+          "description": "Sets whether the checkbox is indeterminate. This only affects the style and does not modify the isChecked property."
+        },
+        {
+          "name": "invalid",
+          "description": "Sets the checkbox as invalid"
+        },
+        {
+          "name": "hovered",
+          "description": "Sets the checkbox icon hovered state"
+        },
+        {
+          "name": "primaryColor",
+          "description": "Primary color"
+        },
+        {
+          "name": "secondaryColor",
+          "description": "Secondary color"
+        },
+        {
+          "name": "label",
+          "description": "The label for icon to be displayed"
+        }
+      ]
+    },
+    {
+      "name": "Code",
+      "url": "https://atlaskit.atlassian.com/packages/core/code"
+    },
+    {
+      "name": "Comment",
+      "url": "https://atlaskit.atlassian.com/packages/core/comment"
+    },
+    {
+      "name": "Datetime picker",
+      "url": "https://atlaskit.atlassian.com/packages/core/datetime-picker",
+      "openUIName": "Datepicker",
+      "concepts": [
+        {
+          "name": "default",
+          "image": "atlaskit-datepicker-basic.png"
+        },
+        {
+          "name": "clear",
+          "description": "Datepicker can have clear button",
+          "image": "atlaskit-datepicker-clear.gif"
+        },
+        {
+          "name": "disabled",
+          "image": "atlaskit-datepicker-disabled.png"
+        },
+        {
+          "name": "disabled dates",
+          "description": "Datepicker can have some of dates disabled",
+          "image": "atlaskit-datepicker-disabled-datetime.png"
+        },
+        {
+          "name": "format",
+          "description": "Datepicker can display custom date format",
+          "image": "atlaskit-datepicker-format.png"
+        },
+        {
+          "name": "open",
+          "description": "Datepicker can be always open",
+          "image": "atlaskit-datepicker-open.png"
+        },
+        {
+          "name": "no icon",
+          "description": "Datepicker can hide icon",
+          "image": "atlaskit-datepicker-noicon.png"
+        },
+        {
+          "name": "subtle",
+          "image": "atlaskit-datepicker-subtle.png"
+        },
+        {
+          "name": "compact",
+          "image": "atlaskit-datepicker-compact.png"
+        },
+        {
+          "name": "error",
+          "image": "atlaskit-datepicker-error.png"
+        }
+      ]
+    },
+    {
+      "name": "Drawer",
+      "url": "https://atlaskit.atlassian.com/packages/core/drawer"
+    },
+    {
+      "name": "Dropdown menu",
+      "url": "https://atlaskit.atlassian.com/packages/core/dropdown-menu"
+    },
+    {
+      "name": "Droplist",
+      "url": "https://atlaskit.atlassian.com/packages/core/droplist"
+    },
+    {
+      "name": "Dynamic table",
+      "openUIName": "Table",
+      "url": "https://atlaskit.atlassian.com/packages/core/dynamic-table",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "atlaskit-table-basic.png"
+        },
+        {
+          "name": "sorting",
+          "image": "atlaskit-table-sorted.png"
+        },
+        {
+          "name": "headless",
+          "image": "atlaskit-table-headless.png"
+        },
+        {
+          "name": "context-menu",
+          "image": "atlaskit-table-context-menu.png"
+        },
+        {
+          "name": "pagination",
+          "image": "atlaskit-table-pagination.png"
+        },
+        {
+          "name": "highlight",
+          "image": "atlaskit-table-highlight.png"
+        },
+        {
+          "name": "loading",
+          "image": "atlaskit-table-loading-empty.png"
+        },
+        {
+          "name": "loading",
+          "image": "atlaskit-table-loading-rows.png"
+        },
+        {
+          "name": "truncate-content",
+          "image": "atlaskit-table-truncate.png"
+        },
+        {
+          "name": "empty",
+          "image": "atlaskit-table-empty-message.png"
+        },
+        {
+          "name": "empty",
+          "image": "atlaskit-table-empty.png"
+        }
+      ]
+    },
+    {
+      "name": "Empty state",
+      "url": "https://atlaskit.atlassian.com/packages/core/empty-state"
+    },
+    {
+      "name": "Feedback collector",
+      "url": "https://atlaskit.atlassian.com/packages/core/feedback-collector"
+    },
+    {
+      "name": "Field radio group",
+      "url": "https://atlaskit.atlassian.com/packages/core/field-radio-group"
+    },
+    {
+      "name": "Field range",
+      "url": "https://atlaskit.atlassian.com/packages/core/field-range"
+    },
+    {
+      "name": "Field text area",
+      "url": "https://atlaskit.atlassian.com/packages/core/field-text-area"
+    },
+    {
+      "name": "Field text",
+      "url": "https://atlaskit.atlassian.com/packages/core/field-text"
+    },
+    {
+      "name": "Flag",
+      "url": "https://atlaskit.atlassian.com/packages/core/flag"
+    },
+    {
+      "name": "Form",
+      "url": "https://atlaskit.atlassian.com/packages/core/form"
+    },
+    {
+      "name": "Global navigation",
+      "url": "https://atlaskit.atlassian.com/packages/core/global-navigation"
+    },
+    {
+      "name": "Icon file type",
+      "url": "https://atlaskit.atlassian.com/packages/core/icon-file-type"
+    },
+    {
+      "name": "Icon object",
+      "url": "https://atlaskit.atlassian.com/packages/core/icon-object"
+    },
+    {
+      "name": "Icon priority",
+      "url": "https://atlaskit.atlassian.com/packages/core/icon-priority"
+    },
+    {
+      "name": "Icon",
+      "url": "https://atlaskit.atlassian.com/packages/core/icon"
+    },
+    {
+      "name": "Inline dialog",
+      "url": "https://atlaskit.atlassian.com/packages/core/inline-dialog"
+    },
+    {
+      "name": "Inline edit",
+      "url": "https://atlaskit.atlassian.com/packages/core/inline-edit"
+    },
+    {
+      "name": "Inline message",
+      "url": "https://atlaskit.atlassian.com/packages/core/inline-message"
+    },
+    {
+      "name": "Layer manager",
+      "url": "https://atlaskit.atlassian.com/packages/core/layer-manager"
+    },
+    {
+      "name": "Logo",
+      "url": "https://atlaskit.atlassian.com/packages/core/logo"
+    },
+    {
+      "name": "Lozenge",
+      "url": "https://atlaskit.atlassian.com/packages/core/lozenge"
+    },
+    {
+      "name": "Modal dialog",
+      "url": "https://atlaskit.atlassian.com/packages/core/modal-dialog"
+    },
+    {
+      "name": "Navigation next",
+      "url": "https://atlaskit.atlassian.com/packages/core/navigation-next"
+    },
+    {
+      "name": "Navigation",
+      "url": "https://atlaskit.atlassian.com/packages/core/navigation"
+    },
+    {
+      "name": "Nps",
+      "url": "https://atlaskit.atlassian.com/packages/core/nps"
+    },
+    {
+      "name": "Onboarding",
+      "url": "https://atlaskit.atlassian.com/packages/core/onboarding"
+    },
+    {
+      "name": "Page header",
+      "url": "https://atlaskit.atlassian.com/packages/core/page-header"
+    },
+    {
+      "name": "Page",
+      "url": "https://atlaskit.atlassian.com/packages/core/page"
+    },
+    {
+      "name": "Pagination",
+      "url": "https://atlaskit.atlassian.com/packages/core/pagination"
+    },
+    {
+      "name": "Portal",
+      "url": "https://atlaskit.atlassian.com/packages/core/portal"
+    },
+    {
+      "name": "Progress indicator",
+      "url": "https://atlaskit.atlassian.com/packages/core/progress-indicator"
+    },
+    {
+      "name": "Progress tracker",
+      "url": "https://atlaskit.atlassian.com/packages/core/progress-tracker"
+    },
+    {
+      "name": "Radio",
+      "url": "https://atlaskit.atlassian.com/packages/core/radio"
+    },
+    {
+      "name": "Range",
+      "openUIName": "Slider",
+      "url": "https://atlaskit.atlassian.com/packages/core/range"
+    },
+    {
+      "name": "Right side panel",
+      "url": "https://atlaskit.atlassian.com/packages/core/right-side-panel"
+    },
+    {
+      "name": "Section message",
+      "url": "https://atlaskit.atlassian.com/packages/core/section-message"
+    },
+    {
+      "name": "Select",
+      "url": "https://atlaskit.atlassian.com/packages/core/select",
+      "concepts": [
+        {
+          "name": "defaultMenuIsOpen",
+          "openUIName": "defaultOpen"
+        },
+        {
+          "name": "defaultValue"
+        },
+        {
+          "name": "menuIsOpen",
+          "openUIName": "open"
+        },
+        {
+          "name": "value"
+        },
+        {
+          "name": "onChange"
+        },
+        {
+          "name": "autoFocus"
+        },
+        {
+          "name": "closeMenuOnSelect",
+          "description": "Close the select menu when the user selects an option"
+        },
+        {
+          "name": "closeMenuOnScroll",
+          "description": "Close the select menu when the user scrolls the document/body."
+        },
+        {
+          "name": "isClearable",
+          "openUIName": "clearable"
+        },
+        {
+          "name": "isDisabled",
+          "openUIName": "disabled"
+        },
+        {
+          "name": "isLoading",
+          "openUIName": "loading"
+        },
+        {
+          "name": "isMulti",
+          "openUIName": "multiple"
+        },
+        {
+          "name": "isSearchable",
+          "openUIName": "searchable"
+        },
+        {
+          "name": "onInputChange",
+          "openUIName": "onSearch"
+        },
+        {
+          "name": "onMouseOver",
+          "openUIName": "onMouseEnter"
+        },
+        {
+          "name": "onBlur"
+        },
+        {
+          "name": "onFocus"
+        },
+        {
+          "name": "onKeyDown"
+        },
+        {
+          "name": "onMenuOpen"
+        },
+        {
+          "name": "onMenuClose"
+        },
+        {
+          "name": "onMenuScrollToTop"
+        },
+        {
+          "name": "onMenuScrollToBottom"
+        },
+        {
+          "name": "openMenuOnFocus",
+          "description": "Allows control of whether the menu is opened when the Select is focused"
+        },
+        {
+          "name": "openMenuOnClick",
+          "description": "Allows control of whether the menu is opened when the Select is clicked"
+        },
+        {
+          "name": "placeholder"
+        },
+        {
+          "name": "screenReaderStatus",
+          "openUIName": "getA11yStatusMessage",
+          "description": "Status to relay to screen readers"
+        }
+      ]
+    },
+    {
+      "name": "Size detector",
+      "url": "https://atlaskit.atlassian.com/packages/core/size-detector"
+    },
+    {
+      "name": "Spinner",
+      "url": "https://atlaskit.atlassian.com/packages/core/spinner"
+    },
+    {
+      "name": "Table tree",
+      "url": "https://atlaskit.atlassian.com/packages/core/table-tree"
+    },
+    {
+      "name": "Tabs",
+      "url": "https://atlaskit.atlassian.com/packages/core/tabs"
+    },
+    {
+      "name": "Tag group",
+      "url": "https://atlaskit.atlassian.com/packages/core/tag-group"
+    },
+    {
+      "name": "Tag",
+      "url": "https://atlaskit.atlassian.com/packages/core/tag"
+    },
+    {
+      "name": "Textarea",
+      "url": "https://atlaskit.atlassian.com/packages/core/textarea"
+    },
+    {
+      "name": "Textfield",
+      "url": "https://atlaskit.atlassian.com/packages/core/textfield"
+    },
+    {
+      "name": "Theme",
+      "url": "https://atlaskit.atlassian.com/packages/core/theme"
+    },
+    {
+      "name": "Toggle",
+      "openUIName": "Switch",
+      "url": "https://atlaskit.atlassian.com/packages/core/toggle",
+      "concepts": [
+        {
+          "name": "basic",
+          "description": "basic toggle",
+          "image": "atlaskit-toggle-basic.png"
+        },
+        {
+          "name": "checked",
+          "description": "Whether the toggle is checked or not",
+          "image": "atlaskit-toggle-checked.png"
+        },
+        {
+          "name": "disabled",
+          "description": "Whether the toggle is disabled or not. This will prevent any interaction with the user",
+          "image": "atlaskit-toggle-disabled.png"
+        },
+        {
+          "name": "large",
+          "openUIName": "size",
+          "description": "Defines the size of the toggle.",
+          "image": "atlaskit-toggle-size-large.png"
+        },
+        {
+          "name": "regular",
+          "openUIName": "size",
+          "description": "Defines the size of the toggle.",
+          "image": "atlaskit-toggle-size-regular.png"
+        }
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "url": "https://atlaskit.atlassian.com/packages/core/tooltip",
+      "description": "A tooltip is a floating, non-actionable label used to explain a user interface element or feature.",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "atlaskit-tooltip-basic.png"
+        },
+        {
+          "name": "position",
+          "description": "Tooltips have four standard positions available; 'top', 'right', 'bottom', and 'left'.",
+          "image": "atlaskit-tooltip-position.png"
+        }
+      ]
+    },
+    {
+      "name": "Tree",
+      "url": "https://atlaskit.atlassian.com/packages/core/tree"
+    },
+    {
+      "name": "Width detector",
+      "url": "https://atlaskit.atlassian.com/packages/core/width-detector"
+    },
+    {
+      "name": "Page",
+      "openUIName": "Flex",
+      "definition": "A component for building page layouts.",
+      "url": "https://atlaskit.atlassian.com/packages/design-system/page",
+      "concepts": [
+        { "name": "basic", "category": "type", "image": "atlaskit-page-basic.png" },
+        { "name": "layout", "category": "type", "image": "atlaskit-page-layout.png" },
+        { "name": "spacing", "category": "type", "image": "atlaskit-page-spacing.png" }
+      ]
+    },
+    {
+      "name": "Grid",
+      "openUIName": "Flex",
+      "url": "https://atlaskit.atlassian.com/packages/design-system/page"
+    },
+    {
+      "name": "GridColumn",
+      "openUIName": "Flex",
+      "url": "https://atlaskit.atlassian.com/packages/design-system/page"
+    }
+  ]
+}

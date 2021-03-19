@@ -1,0 +1,623 @@
+{
+  "$schema": "../schemas/design-system.schema.json5",
+  "lastUpdated": "2019-08-22",
+  "name": "UI Fabric",
+  "description": "Fabric’s robust, up-to-date web controls are built with the React framework. Look through the control list to see the building blocks that are available using Fabric React.",
+  "url": "https://developer.microsoft.com/en-us/fabric",
+  "by": "Microsoft",
+  "components": [
+    {
+      "name": "Button",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/button"
+    },
+    {
+      "name": "Checkbox",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/checkbox"
+    },
+    {
+      "name": "ChoiceGroup",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/choicegroup"
+    },
+    {
+      "name": "ComboBox",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/combobox",
+      "concepts": [
+        {
+          "name": "allowFreeform",
+          "description": "Whether the ComboBox is free form, meaning that the user input is not bound to provided options. Defaults to false."
+        },
+        {
+          "name": "autoComplete",
+          "description": "Whether the ComboBox auto completes. As the user is inputing text, it will be suggested potential matches from the list of options."
+        },
+        {
+          "name": "onChange",
+          "description": "Callback issued when either: 1) the selected option changes 2) a manually edited value is submitted."
+        },
+        {
+          "name": "onItemClick",
+          "description": "Callback issued when a ComboBox item is clicked."
+        },
+        {
+          "name": "onMenuDismiss",
+          "description": "Function that gets invoked before the menu gets dismissed"
+        },
+        {
+          "name": "onMenuOpen",
+          "description": "Function that gets invoked when the ComboBox menu is launched"
+        },
+        {
+          "name": "scrollSelectedToTop",
+          "description": "When options are scrollable the selected option is positioned at the top of the callout when it is opened (unless it has reached the end of the scrollbar)."
+        },
+        {
+          "name": "useComboBoxAsMenuWidth",
+          "description": "Whether to use the ComboBoxes width as the menu's width"
+        },
+        {
+          "name": "selectedOptions",
+          "description": "All selected values"
+        }
+      ]
+    },
+    {
+      "name": "Dropdown",
+      "openUIName": "Select",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/dropdown",
+      "concepts": [
+        {
+          "name": "single",
+          "image": "fabric-select-single.png"
+        },
+        {
+          "name": "multiSelect",
+          "openUIName": "multiple",
+          "image": "fabric-select-multiple.png"
+        },
+        {
+          "name": "disabled",
+          "image": "fabric-select-disabled.png"
+        },
+        {
+          "name": "onChange"
+        },
+        {
+          "name": "placeHolder",
+          "openUIName": "placeholder"
+        },
+        {
+          "name": "selectedKeys",
+          "openUIName": "value"
+        },
+        {
+          "name": "showError",
+          "openUIName": "isInvalid",
+          "image": "fabric-select-isInvalid.png"
+        }
+      ]
+    },
+    {
+      "name": "Label",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/label"
+    },
+    {
+      "name": "Link",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/link"
+    },
+    {
+      "name": "Rating",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/rating"
+    },
+    {
+      "name": "SearchBox",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/searchbox"
+    },
+    {
+      "name": "Slider",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/slider",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "fabric-slider-basic.png"
+        },
+        {
+          "name": "vertical",
+          "image": "fabric-slider-vertical.png"
+        },
+        {
+          "name": "origin",
+          "image": "fabric-slider-origin.png"
+        },
+        {
+          "name": "controlled",
+          "image": "fabric-slider-controlled.png"
+        },
+        {
+          "name": "snapping",
+          "image": "fabric-slider-snapping.png"
+        }
+      ]
+    },
+    {
+      "name": "SpinButton",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/spinbutton"
+    },
+    {
+      "name": "TextField",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/textfield"
+    },
+    {
+      "name": "Toggle",
+      "openUIName": "Switch",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/toggle"
+    },
+    {
+      "name": "Calendar",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/calendar",
+      "openUIName": "Datepicker",
+      "concepts": [
+        {
+          "name": "default",
+          "image": "fabric-calendar-basic.gif"
+        },
+        {
+          "name": "navigation",
+          "image": "fabric-calendar-month-year-switch.gif"
+        },
+        {
+          "name": "custom weeks",
+          "description": "Datepicker can show custom number of weeks",
+          "image": "fabric-calendar-6weeks.png"
+        },
+        {
+          "name": "side by side",
+          "description": "Datepicker can show day and moth pickers side by side",
+          "image": "fabric-calendar-sidebyside.png"
+        },
+        {
+          "name": "weeknumber",
+          "description": "Datepicker can show week numbers",
+          "image": "fabric-calendar-weeknumber.png"
+        }
+      ]
+    },
+    {
+      "name": "ColorPicker",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/colorpicker"
+    },
+    {
+      "name": "DatePicker",
+      "openUIName": "Datepicker",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/datepicker",
+      "concepts": [
+        {
+          "name": "default",
+          "image": "fabric-datepicker-basic.gif"
+        },
+        {
+          "name": "disabled dates",
+          "image": "fabric-datepicker-disabled-datetime.png"
+        },
+        {
+          "name": "disabled",
+          "image": "fabric-datepicker-disabled.png"
+        },
+        {
+          "name": "format",
+          "image": "fabric-datepicker-format.png"
+        },
+        {
+          "name": "manual input",
+          "image": "fabric-datepicker-manual-input.gif"
+        },
+        {
+          "name": "required",
+          "image": "fabric-datepicker-required.png"
+        },
+        {
+          "name": "weeknumber",
+          "image": "fabric-datepicker-weeknumber.png"
+        }
+      ]
+    },
+    {
+      "name": "PeoplePicker",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/peoplepicker"
+    },
+    {
+      "name": "Pickers",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/pickers"
+    },
+    {
+      "name": "SwatchColorPicker",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/swatchcolorpicker"
+    },
+    {
+      "name": "ActivityItem",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/activityitem"
+    },
+    {
+      "name": "DetailsList",
+      "openUIName": "Table",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/detailslist",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "fabric-table-basic.png"
+        },
+        {
+          "name": "compact",
+          "image": "fabric-table-compact.png"
+        },
+        {
+          "name": "highlight",
+          "image": "fabric-table-highlight.png"
+        },
+        {
+          "name": "vertical-scroll",
+          "image": "fabric-table-vscroll.png"
+        },
+        {
+          "name": "filtering",
+          "image": "fabric-table-search.png"
+        },
+        {
+          "name": "resize",
+          "image": "fabric-table-resize.png"
+        },
+        {
+          "name": "truncate-content",
+          "image": "fabric-table-resize.png"
+        },
+        {
+          "name": "expandable",
+          "image": "fabric-table-expandable-basic.png"
+        },
+        {
+          "name": "expandable",
+          "image": "fabric-table-expandable-open.png"
+        },
+        {
+          "name": "loading",
+          "image": "fabric-table-loading.png"
+        },
+        {
+          "name": "drag-n-drop-sorting",
+          "image": "fabric-table-dnd-rows.gif"
+        },
+        {
+          "name": "columns-reorder",
+          "image": "fabric-table-dnd-columns.gif"
+        },
+        {
+          "name": "inner-navigation",
+          "image": "fabric-table-inner-navigation.gif"
+        }
+      ]
+    },
+    {
+      "name": "DocumentCard",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/documentcard"
+    },
+    {
+      "name": "Facepile",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/facepile"
+    },
+    {
+      "name": "GroupedList",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/groupedlist"
+    },
+    {
+      "name": "HoverCard",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/hovercard"
+    },
+    {
+      "name": "Basic List",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/list"
+    },
+    {
+      "name": "Persona",
+      "openUIName": "Avatar",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/persona",
+      "description": "A persona is a visual representation of a person across products, typically showcasing the image that person has chosen to upload themselves. The control can also be used to show that person's online status.",
+      "concepts": [
+        {
+          "name": "image",
+          "description": "Shows image and status",
+          "image": "fabric-persona-image.png"
+        },
+        {
+          "name": "initials",
+          "openUIName": "label",
+          "description": "Shows initials when there's no image",
+          "image": "fabric-persona-initials.png"
+        },
+        {
+          "name": "icon",
+          "description": "Shows icon if no image or initials",
+          "image": "fabric-persona-icon.png"
+        },
+        {
+          "name": "color",
+          "description": "The color can be specified",
+          "image": "fabric-persona-color.png"
+        },
+        {
+          "name": "square",
+          "description": "Square persona coin",
+          "image": "fabric-persona-square.png"
+        },
+        {
+          "name": "presence",
+          "openUIName": "badge",
+          "description": "Presence badges",
+          "image": "fabric-persona-presence.png"
+        },
+        {
+          "name": "details",
+          "description": "Shows full name and details",
+          "image": "fabric-persona-details.png"
+        }
+      ]
+    },
+    {
+      "name": "Breadcrumb",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/breadcrumb",
+      "description": "Breadcrumbs should be used as a navigational aid in your app or site. They indicate the current page’s location within a hierarchy and help the user understand where they are in relation to the rest of that hierarchy. They also afford one-click access to higher levels of that hierarchy.",
+      "concepts": [
+        {
+          "name": "basic",
+          "description": "Basic Breadcrumb",
+          "image": "fabric-breadcrumb-basic.png"
+        },
+        {
+          "name": "overflow",
+          "description": "Breadcrumb with overflow",
+          "image": "fabric-breadcrumb-collapsable.png"
+        }
+      ]
+    },
+    {
+      "name": "CommandBar",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/commandbar"
+    },
+    {
+      "name": "ContextualMenu",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/contextualmenu"
+    },
+    {
+      "name": "Nav",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/nav"
+    },
+    {
+      "name": "OverflowSet",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/overflowset"
+    },
+    {
+      "name": "Pivot",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/pivot"
+    },
+    {
+      "name": "Coachmark",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/coachmark"
+    },
+    {
+      "name": "MessageBar",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/messagebar"
+    },
+    {
+      "name": "TeachingBubble",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/teachingbubble"
+    },
+    {
+      "name": "ProgressIndicator",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/progressindicator"
+    },
+    {
+      "name": "Shimmer",
+      "openUIName": "Skeleton",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/shimmer",
+      "concepts": [
+        {
+          "name": "default",
+          "image": "fabric-shimmer-basic.png"
+        },
+        {
+          "name": "default",
+          "image": "fabric-shimmer-basic-elements.png"
+        },
+        {
+          "name": "variations",
+          "image": "fabric-shimmer-variations.png"
+        },
+        {
+          "name": "elements group",
+          "image": "fabric-shimmer-elements-group.png"
+        },
+        {
+          "name": "styles customizations",
+          "image": "fabric-shimmer-styles-custom.gif"
+        },
+        {
+          "name": "styles customizations",
+          "image": "fabric-shimmer-styles-waves.gif"
+        }
+      ]
+    },
+    {
+      "name": "Spinner",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/spinner"
+    },
+    {
+      "name": "Callout",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/callout"
+    },
+    {
+      "name": "Dialog",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/dialog"
+    },
+    {
+      "name": "Modal",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/modal"
+    },
+    {
+      "name": "Panel",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/panel"
+    },
+    {
+      "name": "ScrollablePane",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/scrollablepane"
+    },
+    {
+      "name": "Tooltip",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/tooltip",
+      "description": "A good tooltip briefly describes unlabeled controls or provides a bit of additional information about labeled controls, when this is useful.",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "fabric-tooltip-basic.png"
+        },
+        {
+          "name": "directionalHint",
+          "openUIName": "position",
+          "description": "How the tooltip should be anchored to its targetElement.",
+          "image": "fabric-tooltip-directionalHint.png"
+        },
+        {
+          "name": "custom",
+          "openUIName": "rich",
+          "description": "Tooltip with custom content",
+          "image": "fabric-tooltip-custom.png"
+        }
+      ]
+    },
+    {
+      "name": "Announced",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/announced"
+    },
+    {
+      "name": "FocusTrapZone",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/focustrapzone"
+    },
+    {
+      "name": "FocusZone",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/focuszone"
+    },
+    {
+      "name": "Icon",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/icon"
+    },
+    {
+      "name": "Image",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/image",
+      "defition": "An image is a graphic representation of something (e.g photo or illustration).",
+      "concepts": [
+        {
+          "name": "default",
+          "description": "By default, frame remains at its natural size with no image scaling",
+          "image": "fabric-image-default.png"
+        },
+        {
+          "name": "contain",
+          "openUIName": "fit",
+          "description": "Causes the image to scale up or down proportionally",
+          "image": "fabric-image-fit-contain.png"
+        },
+        {
+          "name": "centerContain",
+          "openUIName": "fit",
+          "description": "Causes the image to scale up or down proportionally, centering images smaller than their frame",
+          "image": "fabric-image-fit-center-contain.png"
+        },
+        {
+          "name": "none",
+          "openUIName": "fit",
+          "description": "Causes the image to crop if the frame is smaller than the image",
+          "image": "fabric-image-fit-none.png"
+        },
+        {
+          "name": "center",
+          "openUIName": "fit",
+          "description": "Behaves as 'none' while centering the image within the frame",
+          "image": "fabric-image-fit-center.png"
+        },
+        {
+          "name": "cover",
+          "openUIName": "fit",
+          "description": "Causes the image to scale up or down proportionally",
+          "image": "fabric-image-fit-cover.png"
+        },
+        {
+          "name": "centerCover",
+          "openUIName": "fit",
+          "description": "Behaves as 'cover' with centering of the image within the frame",
+          "image": "fabric-image-fit-center-cover.png"
+        },
+        {
+          "name": "maximizeFrame",
+          "description": "Expands image to fill the container",
+          "image": "fabric-image-maximize-frame.png"
+        },
+        {
+          "name": "center",
+          "openUIName": "alignment",
+          "description": "Centers the image within the frame",
+          "image": "fabric-image-fit-center.png"
+        }
+      ]
+    },
+    {
+      "name": "Keytips",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/keytips"
+    },
+    {
+      "name": "Layer",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/layer"
+    },
+    {
+      "name": "MarqueeSelection",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/marqueeselection"
+    },
+    {
+      "name": "Overlay",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/overlay"
+    },
+    {
+      "name": "ResizeGroup",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/resizegroup"
+    },
+    {
+      "name": "Selection",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/selection"
+    },
+    {
+      "name": "Separator",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/separator"
+    },
+    {
+      "name": "Stack",
+      "openUIName": "Flex",
+      "definition": "A Stack is a container-type component that abstracts the implementation of a flexbox in order to define the layout of its children components.",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/stack",
+      "concepts": [
+        { "name": "basic", "category": "type", "image": "fabric-stack-basic.png" },
+        { "name": "direction", "category": "type", "image": "fabric-stack-basic.png" },
+        { "name": "direction", "category": "type", "image": "fabric-stack-horizontal.png" },
+        { "name": "alignment", "category": "type", "image": "fabric-stack-align.png" },
+        { "name": "growing", "category": "type", "image": "fabric-stack-grow.png" },
+        { "name": "shrinking", "category": "type", "image": "fabric-stack-shrink.gif" },
+        { "name": "order", "category": "type", "image": "fabric-stack-order.png" },
+        { "name": "spacing", "category": "type", "image": "fabric-stack-space.png" },
+        { "name": "wrapping", "category": "type", "image": "fabric-stack-wrap.png" }
+      ]
+    },
+    {
+      "name": "Text",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/text"
+    },
+    {
+      "name": "Themes",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/themes"
+    }
+  ]
+}
