@@ -8,13 +8,7 @@ export default function Concept({
   component,
   uniqueNames,
   showDescriptions,
-  initExpand,
 }) {
-  const [open, toggleOpen] = React.useState(initExpand)
-
-  React.useEffect(() => {
-    toggleOpen(initExpand)
-  }, [initExpand])
   return (
     <div style={{ padding: '8px', marginBottom: '36px' }}>
       <h3
@@ -26,31 +20,7 @@ export default function Concept({
           lineHeight: 1,
         }}
       >
-        <button
-          style={{
-            textDecoration: 'none',
-            color: 'inherit',
-            cursor: 'pointer',
-            marginRight: '8px',
-            background: 'none',
-            border: 'none',
-          }}
-          onClick={(e) => {
-            e.preventDefault()
-            toggleOpen((isOpen) => !isOpen)
-          }}
-        >
-          <span
-            style={{
-              fontSize: '12px',
-              verticalAlign: 'middle',
-              textAlign: 'center',
-            }}
-          >
-            {open ? <>&#9660;</> : <>&#9650;</>}
-          </span>{' '}
-          {conceptOpenUIName}
-        </button>
+        <span style={{ marginRight: 8 }}>{conceptOpenUIName}</span>
         {!hasOtherNames && (
           <ConceptCoverage
             component={component}
@@ -73,14 +43,11 @@ export default function Concept({
           ))}
         </div>
       )}
-
-      {open && (
-        <Specimens
-          showDescriptions={showDescriptions}
-          component={component}
-          conceptName={conceptOpenUIName}
-        />
-      )}
+      <Specimens
+        showDescriptions={showDescriptions}
+        component={component}
+        conceptName={conceptOpenUIName}
+      />
     </div>
   )
 }

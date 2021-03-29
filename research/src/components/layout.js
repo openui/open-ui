@@ -10,6 +10,7 @@ import './global.css'
 import Header from './header'
 import Navigation from './navigation'
 import ComponentLayout from './component-layout'
+import ComponentIndex from './component-index'
 
 // Add JSON5 language support to Prism
 import Prism from 'prism-react-renderer/prism'
@@ -94,6 +95,11 @@ const Layout = ({ children, pageContext }) => {
                   children
                 )}
               </div>
+              {frontmatter ? (
+                <div className="component-index-wrapper">
+                  <ComponentIndex component={frontmatter.name} />
+                </div>
+              ) : null}
             </div>
           </div>
         </MDXProvider>

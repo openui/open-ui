@@ -6,7 +6,6 @@ import Concept from './concept'
 
 const Concepts = ({ component }) => {
   const [showDescriptions, setShowDescriptions] = React.useState(false)
-  const [collapseAll, toggleCollapseAll] = React.useState(true)
 
   const conceptsForComponent = _.sortBy(
     _.toPairs(openUIConceptsByComponent[component]),
@@ -42,27 +41,6 @@ const Concepts = ({ component }) => {
           />
           Show descriptions
         </label>
-        <label
-          style={{
-            cursor: 'pointer',
-          }}
-          htmlFor="collapse"
-        >
-          <input
-            type="checkbox"
-            id="collapse"
-            checked={collapseAll}
-            aria-checked={collapseAll}
-            onChange={() => toggleCollapseAll((isCollapsed) => !isCollapsed)}
-            style={{
-              marginRight: '8px',
-              verticalAlign: 'middle',
-              width: '0px',
-              height: '0px',
-            }}
-          />
-          {collapseAll ? 'Collapse all' : 'Expand all'}
-        </label>
       </div>
       {_.map(conceptsForComponent, ([conceptOpenUIName, concepts]) => {
         const uniqueNames = _.uniq(_.map(concepts, 'name'))
@@ -76,7 +54,6 @@ const Concepts = ({ component }) => {
             uniqueNames={uniqueNames}
             showDescriptions={showDescriptions}
             key={conceptOpenUIName}
-            initExpand={collapseAll}
           />
         )
       })}
