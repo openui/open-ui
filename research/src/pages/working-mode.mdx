@@ -1,0 +1,298 @@
+---
+name: Working Mode
+path: /working-mode
+---
+
+import Image from '../components/image'
+
+# Open UI Working Mode
+
+A guide to paving inclusive and accessible best practices into web browsers based on web frameworks and web developer norms. Currently being discussed at open-ui#197.
+
+## Summary
+
+Open UI is a Web Incubator Community Group (WICG). Our goal is to specify web components and controls. We standardize names, structures and behaviors based on common patterns in design systems and component libraries.
+
+This document covers how Open UI works, including guidance on how to work on standards with open UI, and norms about how Open UI works with with WHATWG/HTML, CSS WG, ARIA WG, and WPT.
+
+## Outcomes
+
+Open UI works towards two types of outcomes.
+
+### Web Component
+
+We make standard web components which you can use in a web application.
+
+### Graduated Specifications
+
+We write specifications for those web components and, depending on the component, work with standards bodies like WHATWG, and the W3C to add those specifications to HTML, and CSS, and work with browser engine teams to add those features to browser engines like webkit, Chromium and Gecko.
+
+## Definitions
+
+Specification: a document that describes how a component should work.
+Anatomy: The parts that make up the control/component (e.g. \<popup\>)
+States: The various states of the control/component that this can be in (e.g. \<popup state=\"open\"\>)
+Behaviors: The implications of state changes on various parts of the anatomy (eg: aria, rendering, state changes)
+Graduated Specification: a specification that has been moved to a standards body, like WHATWG, or the W3C.
+
+## Stages
+
+We follow a five stage process outlined in the Open UI Stages proposal March 2021. These stages are:
+
+0. Research
+1. Open UI Draft
+2. Community Draft
+3. Recommendation
+4. Finished
+
+| #   | Stage Name      | Purpose                                                   | Entrance Criteria                                                                                   | Entrance Signifies                                                    | Exit Criteria                                                                                                                                                                                               |
+| --- | --------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0   | Research        | Share research and synthesize idea.                       | An idea has been suggested, an issue has been opened.                                               | N/A                                                                   | A champion has been identified. Research incorporating historical precedence and stakeholder perspectives has been performed and summarized. Research has approval from two Open UI editors or chairs.      |
+| 1   | Editor’s Draft  | Agree on precise description of component within Open UI. | Initial draft has been written, covering use cases, anatomy, properties, and behaviors.             | Open UI plans to work on this component.                              | Spec has been reviewed and approved by two Open UI editors or chairs.                                                                                                                                       |
+| 2   | Community Draft | Get review from stakeholders and incorporate feedback.    | Open UI has approved the Editor’s Draft for additional review from external groups and individuals. | Open UI is seeking broad input.                                       | Spec has sign off from stakeholders including ARIA, I18n, privacy, WHATWG, CSSWG, Browser Implementers, Web Developers, library authors, and other stakeholders.                                            |
+| 3   | Recommendation  | Shephard proposal to its final state.                     | The champion has built consensus with community stakeholders.                                       | This will be implemented. Don’t use the implementation in production. | A decision on whether to add component to the web platform. Web component is implemented and/or specification graduated to a standards body. Conformance tests and web developer documentation are written. |
+| 4   | Finished        | Indicate that the component is implemented.               | Componant has an stable implementation or specification.                                            | You can use the web component in production.                          | N/A                                                                                                                                                                                                         |
+
+## Roles
+
+Here are the different ways folks contribute to Open UI, and the different skills/pieces of work.
+
+### Chair
+
+The chairs' primary responsibilities are:
+
+- Facilitate meetings
+- Ensure progress towards goals is made
+- Create and foster a respectful and productive atmosphere for the community
+- Make sure that processes outlined in the charter are followed by the members
+
+### Editor
+
+An editor owns a specification, and is responsible for driving progress on it, and reviewing PRs to the specifications you are an editor of. In order to become and editor you need to:
+Be a member of the community group
+Have five substantial technical contributions to a specification that you wish to edit
+Be nominated for editorship by either the chairs or someone that is currently an editor of that specification
+Resolved on by the community during telecon or two other editors or chairs
+
+### Champion
+
+A person who is responsible for moving a proposal from one stage to the next.
+
+### Contributor
+
+A person who has participated in some way, either by joining a meeting and participating, or writing on an issue or PR. If you’re reading this, you’re likely already a contributor. Thank you :D!
+
+## Process
+
+### 0. Research: Collect Research and share your Idea
+
+Why research:
+Research is a cornerstone of Open UI as design systems and component libraries have existed on the web platform for years. Even before the web's existence; certain terminology (such as tabs) and behaviors (swipe, pop up) are already known and ready to be cemented by the web’s UI industry and the web platform.
+
+Research enables us to not only ensure all use-cases are covered but the best approaches are taken. Research should not only be limited to component libraries or current web technology; although those are very important. Leverage any and all content that you may uncover in order to inform the proposal. Some common resources that people utilize are:
+
+- The component name matrix
+- Shipping browsers
+- Top web sites
+- Operating systems
+- User studies
+- Query httparchive to find utilization of certain components from libraries or other concepts
+- Social media or other community based input on design patterns (good or bad)
+
+What makes for good research:
+
+- Includes a summary which incorporates and distills the themes from different sources.
+- Example research flow
+  - Get input from n number of +1s from y sites with more than n users
+  - Create a web component
+  - Get feedback from authors
+  - Get end user experience
+
+How we do Research:
+
+1. Create a open-ui.org/contribute#research-page
+2. Review the concepts that you put on the research page for the component, and begin identifying common ones.
+3. Define terminology for use in your research which identifies all of its "parts" in uniform terms (they might not agree or there might be overlapping concepts - it is important that researchers can share a common understanding.
+4. Sketch out an outline of the component anatomy. The anatomy is the foundation of an Open UI component. From the parts of the anatomy we can define behaviors, and then events.
+5. Review and summarize the characteristics of existing design systems for each piece of the anatomy. Make sure to look at the Aria Practices Guide for prior art overlapping component behavior and assistive technology rendering expectations [github.com/w3c/aria-practices](https://github.com/w3c/aria-practices).Consider how writing modes, device forms and operating systems affect or impact the component design.
+6. Add relevant design system versions of your component: open-ui.org/contribute#add-design-system-component
+   7 _Optionally: Compatibility research. Do analysis on httparchive about how web developers are doing this?: httparchive.org/faq#how-do-i-use-bigquery-to…. We want to ensure that the design is web compatible (i.e., when implemented in a browser, existing websites continue to work as before). One way to understand this is to imagine the semantics of your component, think about potential ways it could break a web page, then query http archive for that scenario, and report on the results for discussion._
+7. _Optionally: Web developer research. Talk to web developers, conduct surveys and/or interviews. Create use cases. Open an issue on Github. TODO: discuss research design._
+8. _Optionally talk to end users who are most impacted by your topic. Design your research ahead of time and get input from the open ui community, and from the folks your discussing your research with. Think about the principles of [design justice](https://designjustice.org/read-the-principles) and try to recruit research participants as paid co-designers who have lived expertise._
+
+Research should end with synthesis.
+
+### 1. Open UI Draft: Write a specification
+
+Why we write specifications:
+Build consensus, harmony, drive additional peer review, and support multi implementations.
+
+What makes a good spec:
+Good specifications want to have a mix of clear and unambiguous detail about how a system should work, ambiguity where implementers require flexibility, and clarity for both an implementer and a user.
+
+In the Open UI community, we believe that specifications can be both detailed for implementers, and legible to end users (e.g. web developers).
+
+The goal of writing a spec is to describe the component in terms that we can get feedback on, and that an implementer can implement.
+
+Open UI Components have two potential outcomes in the final stage of this process. They can become standards to be added to the platform (e.g. popup) or they can stay in Open UI as web components (e.g. skeleton).
+
+In either case, we strive to write our specification prose in a way that is legible to end users of web browsers, web developers, framework authors, and browser implementers.
+
+There is a split between html and css
+
+##### CSS
+
+If you have invented a new selector, it should be defined in the [selectors spec](https://drafts.csswg.org/selectors/). If you are adding a pseudo class selector (e.g. :hover), or a pseudo-element selector (e.g. ::before) it should be added to the selector spec, and and the html semantics for that psuedo-class or pseudo-element selector should be in the html spec pseudo-classes section: https://html.spec.whatwg.org/multipage/semantics-other.html#pseudo-classes
+
+For example, the `disabled` selector is defined in CSS here: https://drafts.csswg.org/selectors/#enableddisabled and in HTML here: https://html.spec.whatwg.org/multipage/semantics-other.html#selector-disabled .
+
+##### HTML
+
+If you are adding a new element to html, that goes into the Elements of HTML section: https://html.spec.whatwg.org/multipage/#toc-semantics
+
+Example: \<select\> https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+
+If the element should participate in form submission, it will also need logic here: https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#form-submission-2
+
+Element and attribute indexes:
+https://html.spec.whatwg.org/multipage/indices.html#elements-3
+https://html.spec.whatwg.org/multipage/indices.html#attributes-3
+
+If you define new events, the Events index:
+https://html.spec.whatwg.org/multipage/indices.html#events-2
+and probably add a new “global” event listener attribute for the new event here https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers-on-elements,-document-objects,-and-window-objects
+
+#### Rendering
+
+If you’re creating a new element you’ll also need to add default rendering rules for the element to the user agent style sheet here: https://html.spec.whatwg.org/multipage/rendering.html#rendering
+
+Every spec should have a consideration for both the browser rendering, and the AT rendering. You should include an example of how to render your new widget. If you can’t represent your widget in ARIA you should extend ARIA with new semantics.
+
+If you have added a new HTML element, it will need to be added to the HTML Accessibility API Mappings (AAM) spec, which provides the mappings from ARIA to HTML: https://w3c.github.io/html-aam/
+
+For new elements, you’ll also need to add new document conformance requirements (for validators/conformance checkers) to ARIA in HTML: https://w3c.github.io/html-aria/
+
+#### Interfaces
+
+Defining keyboard interaction should be described in the UI events spec: https://w3c.github.io/uievents.
+
+Hit testing (no spec currently!)
+Define where clicks cause activation of the element.
+
+#### anatomy (HTML)
+
+#### DOM API (HTML)
+
+#### States
+
+There are two types of states in the html spec, internal and external. Internal states are stored in the browser’s internal data structure (“internal slot” in spec language), whereas external states (e.g. checkbox disabled, select open) are stored in HTML attributes only (e.g. details open).
+
+Internal:
+https://html.spec.whatwg.org/multipage/input.html#concept-input-type-file-selected
+
+External:
+Maybe only \<details open\>.
+
+TODO: Ask WHATWG if \<details open\> was a successful experiment that new features (e.g. \<popup\>) should copy?
+
+How to write a spec:
+
+- Create Component Spec: component-spec-template.mdx which will involves specifying the anatomy, behavior and states of a component.
+- Open a PR with your component spec
+- Get two internal reviews and approvals, one from each of a member of Open UI and a Chair of Open UI. _Note: you can get attention on your PR by tagging your pr agenda+ and attending Open UI telecon to facilitate a conversation about it. Or, if you are more comfortable, you can join the Open UI Discord and message a Editor and Member for review._
+- Ask someone with commit rights to merge your PR, which makes an “editor’s draft”.
+
+### 2. Community Draft: Solicit and Incorporate External Review
+
+Why we get external review:
+Peer review is a building block of consensus. Even though you’ve already gotten alignment internally within the Open UI community, it’s important to drive deeper consensus across web platform stakeholders in other groups.
+
+What makes a good review:
+Good external review takes time, kindness, and empathy. You’ll be reaching out to people who you may or may not have met, asking for input, waiting for them to be available, responding with enthusiasm, incorporating their feedback, and checking if you got it right.
+
+How to get review:
+Look up the W3C group you need review from, find the chair or another administrator, email them, and ask for advice. Or, if you don’t feel comfortable doing that, you can ask Greg (gwhitworth@salesforce.com) or Simon (simon@bocoup.com) to talk through who to talk to, and make an introduction. We recommend getting input from the following groups:
+
+- Accessibility Fill out the accessibility section of the component spec. Add an item to the ARIA WG weekly meeting agenda. Attend the ARIA weekly meeting and share your component accessible interaction model. Get input. [Add some guidance on how to develop the accessibility model of a new control based on prior art in ARIA.]
+- Privacy, and security: Whenever we design a componant it’s a good idea to get input from the privacy community. We strive to reach out to the Privacy Interest Group (PING), as well as the Design Justice Community for a consentful tech analysis. This rarely comes up, but when it does… here’s how to handle it
+- Internationalization:
+  https://github.com/w3c/i18n-activity/issues
+  https://lists.w3.org/Archives/Public/www-international.
+- Architectural coherence: After incorporating feedback from other standards groups, we seek high-level input from TAG about how the componant fits into the technical architecture of the web platform. You can open an issue here: https://github.com/w3ctag/design-reviews/issues Talking to TAG.
+- Web Developer Feedback: Check back in with the developers you talked to and see if they think we’re still on track. Adjust.
+- End User Feedback: Check back in with the most impacted end users who you talked to and see if they think we’re still on track. Adjust.
+
+TODO define sign off
+
+### 3. Recommendation: Support implementation of your feature
+
+### 3.1 Determine outcome: Open UI Componant, Graduated Spec, or Both
+
+### 3.2a Implement Web Component
+
+TODO
+
+### 3.2b Graduate Spec
+
+TODO
+
+- Determine which sections of the component need spec prose in CSS and HTML.
+- write new spec prose
+- Submit a patch to whatwg/html to add an Element referencing Open UI behavior. E.g. an element that extends html Element called \<popup\>.
+- Submit a pr to CSS [more detail needed].
+- Example decision chart: Open UI Options for Graduating \<popup\> to WHATWG and CSSWG Specs
+
+WHATWG
+Your component has HTML, so we gotta add it to HTML. Here’s the process for doing that: https://whatwg.org/working-mode. Here’s how to figure out who to talk to: https://wpc.guide/who-to-talk-to.
+
+CSS WG
+Your component also has css properties. Here’s how to write those. Reference the spectrum of stylability here https://github.com/WICG/open-ui/issues/203
+
+### 3.3 Write Tests
+
+Why we write tests:
+We write tests for a few different reasons:
+
+1. Open UI tests: To check if design systems conform to the Open UI Spec. That design systems and web frameworks are Open UI conformant.
+2. WPTs: To check if web platform features meet the requirements of Open UI. That browsers implement the behavior correctly. In order to make sure the control is implemented interoperably across engines, it's good to have tests: https://web-platform-tests.org/test-suite-design.html. It’s a good idea to have a different person write the tests than write the spec, as a form of peer review.
+3. ARIA AT Tests: To check if our components are accessible, and responsive. That Assistive Technologies like screen readers interpret and render the component correctly.
+
+What makes a good tests
+
+- Open UI test: A test for open UI should run in the browser, and test TODO
+- Web Platform Test should TODO
+- ARIA AT Tests should TODO
+
+How to write a tests
+In all cases it’s a nice idea to start with a test plan. This is a high level document or github issue that describes the goals of the test suite and answers questions like:
+
+- What code paths need to be tested in the feature?
+- Does everything need to be tested in isolation?
+- Does anything need to be tested in integration with another feature?
+- Can everything be automated? Do we need to test things manually?
+- Do we need new web driver APIs for this?
+
+Once we have a plan, it’s a good idea to start to get familiar with the workflow of the test suite:
+
+- Open UI test: TODO
+- Web Platform Test how to: TODO https://web-platform-tests.org/writing-tests/index.html
+- A11y test: TODO
+
+Getting Your Tests Review
+Find the owner for the area you’re testing in your test suite, and let them know you are working on this. In WPT ownership happens on a directory level, for example. Then it’s time to write the tests. Then, we need to ping our stakeholders to get review. This can take a while, so don’t worry if does. It is appropriate to reach out to folks and ask if they have the bandwidth.
+
+### 3.4 Write user Documentation
+
+Why we write documentation:
+Documentation helps web developers understand how to use the technology. A lot of times specs ge thrown over the wall and technical writers try to decipher them. More over, better docs make standards easier for web developers to deliver feedback on how a feature works.
+
+What makes good documentation:
+Good developer documentation has a high level explanation of the feature, specific explanations of each interface and each option, and example code.
+
+How to write documentation:
+Reach out to the MDN project lead to let the know you’re working on docs. Sign up for an MDN Account. Read the MDN style guide. Run through each possible way to use the feature, create examples, describe how they work, and test them to see how they work. Reach out to someone who has never used the feature and ask them to follow your documentation. You can watch them do it and ask them to “outloud think” what they’re experiencing, or ask them to keep a friction journal. If you are able to get funding, to this should be paid work.
+
+TODO add ARIA Practice Guide
+
+Getting Your Documentation Reviewed
+TODO
