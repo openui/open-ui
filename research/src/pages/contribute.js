@@ -9,7 +9,7 @@ import { useEffect } from 'react'
 
 function ContributePage() {
   useEffect(() => {
-    return navigate('/get-involved')
+    return navigate('/get-involved', { replace: true })
   })
 
   return null
