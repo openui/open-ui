@@ -1,0 +1,150 @@
+---
+name: Checkbox Findings
+path: /components/checkbox.research.findings
+showInMenu: false
+---
+
+import Image from '../../components/image'
+
+## What is a checkbox?
+
+A checkbox is a control that allows the user to select a binary “checked” state, either checked or unchecked. They may also support a second binary “indeterminate” state.
+
+### Checkbox vs toggle
+
+Checkboxes should usually be grouped together in a set, and the user can select zero, one, or any number of items within that list. If only one checkbox is used, it is the same thing as using a toggle or switch component. Both checkboxes and switches can support an indeterminate state.
+
+Checkboxes should not be used when only one item in the list can be selected.
+
+## General appearances
+
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <p>
+      Usually a label follows the checkbox, which should clearly describe the state when the box is
+      checked.
+    </p>
+    <p>
+      Generally a checkbox is square, but it may have rounded corners. When checked, the square box
+      can fill with any color with a check appearing in a contrasting foreground color.
+    </p>
+  </div>
+  <div style="width: 20%">
+    <Image src="checkbox-1.png" alt="checkbox example" />
+  </div>
+</div>
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <p>
+      Alternatively, when checked, the box background can remain the same and a foreground check
+      element may appear.
+    </p>
+  </div>
+  <div style="width: 20%">
+    <Image src="checkbox-2.png" alt="checkbox outline example" />
+  </div>
+</div>
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <p>The style of the label can also change when the checkbox is checked.</p>
+  </div>
+  <div style="width: 20%">
+    <Image src="checkbox-3.png" alt="checkbox with label change example" />
+  </div>
+</div>
+
+### Indeterminate checkboxes
+
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <p>
+      When a checkbox’s value is neither true nor false, it is indeterminate. An indeterminate
+      checkbox may be gray, or shown with a different mark inside the checkbox.
+    </p>
+    <p>
+      Indeterminate checkboxes are often used in a hierarchy of checkboxes, when not all children
+      are checked, the parent remains indeterminate.
+    </p>
+    <p class="question">
+      <em>Should there be a new element for checkbox hierarchy and indeterminate checkboxes?</em>
+    </p>
+  </div>
+  <div style="width: 20%">
+    <Image src="checkbox-4.png" alt="indeterminate checkbox example" />
+  </div>
+</div>
+
+### Checkbox state
+
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <p>
+      A checkbox visually changes depending on the element state: focused, disabled, hover, or
+      active. This can mean adding a shadow, border, or changing color of the box and check. The
+      label can also change style during each state.
+    </p>
+  </div>
+  <div style="width: 50%">
+    <img
+      src="https://lh3.googleusercontent.com/uIZAD8BqdUty_SKq4IqRBcQ5LZEDl_4obrO2eWArEW2FNrP6o1PgRAJrmaGM1nfF9pCI7dQKvftHIJHFBSFpAS_1HbT_3RPSv8DrJjI=w1064-v0"
+      alt="Matrix of all checkbox state combinations"
+    />
+  </div>
+</div>
+
+### Switch (toggle)
+
+<div style="display: flex; flex-direction: row;">
+  <div style="flex: 1">
+    <p>
+      A switch is usually larger and has more visual weight than a checkbox. The toggle often also
+      has a primary label describing the state, and a secondary label describing the selected state.
+    </p>
+    <p>
+      Like a checkbox, a switch can also have unique styles per element state: focused, disabled,
+      hover, or active.
+    </p>
+    <p class="question">
+      <em>Should switch be a separate component?</em>
+    </p>
+  </div>
+  <div style="width: 20%">
+    <Image src="toggle-1.png" alt="google material switch example" />
+    <Image src="toggle-2.png" alt="other switch example" />
+  </div>
+</div>
+
+### Animation
+
+A checkbox or switch may have animations on transitions between each element state:
+
+<Image src="lock-checkbox.gif" alt="checkbox animation example" />
+<Image src="flip-checkbox.gif" alt="checkbox animation example" />
+
+_Note: There should be no animation if disabled in the browser or system preferences._
+
+## Common behaviors
+
+### Selecting
+
+Clicking the label or the checkbox should toggle the component. Being able to select the label is important, because the checkbox itself can be quite small and difficult to select on high resolution screens. Clicking the label or checkbox a subsequent time, should uncheck the checkbox.
+
+### Disabled
+
+A disabled checkbox should not change state when clicked.
+
+## Accessibility (keyboard, AT support, etc)
+
+- I should be able to navigate and select by keyboard.
+- Clicking or tapping the label of the checkbox should toggle the component state.
+- As a user, I expect that there will be no animation in case I disabled animations from system preferences.
+- As a user, I should see a clear focus style.
+- As a user, In multiple checkboxes, I should hear the question or title related to them.
+
+## Sources
+
+- https://www.a11ymatters.com/pattern/checkbox/
+- https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/checkbox_role
+- https://material.io/components/checkboxes
+- https://developer.apple.com/design/human-interface-guidelines/macos/buttons/checkboxes/
+- https://www.carbondesignsystem.com/components/checkbox/usage/
