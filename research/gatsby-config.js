@@ -7,6 +7,7 @@ module.exports = {
     description: 'Open UI ',
     author: 'Open UI',
     githubURL: 'https://github.com/WICG/open-ui',
+    siteUrl: 'https://open-ui.org/',
   },
 
   plugins: [
@@ -66,6 +67,8 @@ module.exports = {
     // },
 
     'gatsby-plugin-remove-trailing-slashes',
+
+    `gatsby-plugin-sitemap`,
 
     {
       resolve: `gatsby-plugin-typography`,
