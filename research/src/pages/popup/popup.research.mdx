@@ -6,28 +6,23 @@ menu: Analysis
 
 A popup is a piece of transient UI that “pops up” over all other web app UI, i.e. “on the top layer”. A `popup` may be its own standalone element (such as a teaching bubble) or it may be part of a larger composited component (such as a combobox). Popups differ from other top-layer UI in that they are inherently transient: only one can be shown at a time unless chained by ancestry, and popups are dismissed upon “light dismiss” user interactions (e.g. sending focus out of the popup or hitting the ESC key). They can contain arbitrary content, including interactive descendents.
 
-This research page will be expanded to detail various different subclasses of "popup" UI.
+This research page gathers together various subclasses of popups into one collection. It is likely sensible to explore several of these concepts more deeply in additional Open UI components. It may also be reasonable to consider new web platform primitives/elements to handle specific but common types of popups. For now, the following are considered appropriate candidates for use of the [proposed `popup` element](/components/popup.research.explainer).
 
 ## Additional research
 
 - [Enabling Popups, Initial Explainer](/components/popup.research.explainer)
 
-This research page gathers together various types of popups and related concepts into one collection. It is likely sensible to break these popup types down further into separate Open UI components. Some of these may also not be subclasses of "popup"s, but are their own type of component entirely (tooltip may be such an example).
+## Behaviors
 
-Commonalities between concepts that may help determine "what is a popup?":
-
+- **Mutual exclusivity:** popups are inherently transient, and it is expected that a user would interact with only one at a time. Popups that are parented to another are the exception: for example, menu buttons with multiple levels of popup menus are a common paradigm.
 - **Invocation:** popups could be said to have discrete `show()` and `hide()` methods, whether they are invoked by app logic or by interacting with other UI (including parts of the same component).
 - **Light dismiss behaviors:** most popups "light dismiss", in that the following will dismiss the popup: pressing the ESC key, invoking elsewhere in the document, invoking another popup (unless it is a child of the currently opened popup).
-- **Positioning:** popups are typically position either: anchored to another UI element, at a fixed position in the viewport, or at an absolute position somewhere in the UI. Popups are displayed in a top layer above all other UI, out of flow.
-
-Popups may vary in:
-
-- **Semantics:** particular subclasses of popups may require more specific semantics.
-- **Focus behaviors:** for example, whether focus is trapped within the popup, whether focus is automatically sent to the popup and where exactly auto focused is placed, whether the tab/arrow keys are used to traverse content.
+- **Positioning:** popups are displayed in a top layer above all other UI, out of flow. They are often but not always anchored to another UI element's position.
+- Popups may vary in: **focus behaviors:** for example, whether focus is trapped within the popup, whether focus is automatically sent to the popup and where exactly auto focused is placed, whether the tab/arrow keys are used to traverse content.
 
 ## Anatomy
 
-Frequently, a popup is a part of a larger composite component, such as a select, a combobox, or a menu. A popup's anatomy will vary depending on the subclass of popup, and in some cases a popup can contain arbitrary content at the developer's discretion.
+Frequently, a popup is a part of a larger composite component, such as a select, a combobox, or a menu. A popup's anatomy will vary depending on the subclass of popup, and in some cases a popup can contain arbitrary content at the developer's discretion. Likewise, semantics may vary as well: particular subclasses of popups may require more specific semantic representation, and could be a candidate for further expansion of the web platform if appropriate.
 
 ## Overview of popup subclasses
 
