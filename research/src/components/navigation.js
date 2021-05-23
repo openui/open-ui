@@ -31,10 +31,11 @@ const Navigation = ({ opened, githubURL }) => (
         .filter(({ name, pathToProposal }) => !!name)
         .filter(({ showInMenu }) => showInMenu !== false)
 
-      const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
+      let [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
+      menuNodes = _.sortBy(menuNodes, ['name'])
 
       // get all frontmatter objects with a menu defined
-      const menu = _.sortBy(_.toPairs(_.groupBy(menuNodes, 'menu')), _.first)
+      let menu = _.sortBy(_.toPairs(_.groupBy(menuNodes, 'menu')), _.first)
 
       let listItem = (item) => (
         <li
@@ -99,7 +100,7 @@ const Navigation = ({ opened, githubURL }) => (
             {topLevelNodes.map(listItem)}
 
             <div style={{ margin: '1rem' }} />
-
+            
             {menu.map(([category, items]) => (
               <li key={category} style={{ margin: 0, listStyleType: 'none' }}>
                 <div
