@@ -17,10 +17,10 @@ _(For a lengthier discussion, on which this page was based, please refer to the 
 
 The research showed that different design systems treat radio buttons in one of two ways, i.e.:
 
-- as the main component, hosted on a “**radio button group**” component;
-- as a part of a “**radio button group**” component, which, in fact, is the actual component.
+- as a standalone component, that could be hosted on a “**radio button group**” component;
+- as an invariably non-independent part of a “**radio button group**” component (just like `<option>` tags are dependent on `<select>` tags).
 
-The two approaches seem very similar at first, but the former seems to indicate that single “radio buttons” could exist. The latter, however, shifts the scope up to the “radio button group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
+The two approaches seem very similar at first, but the former seems to indicate that single “radio buttons” could exist, to probably indicate a binary state (on or off). The latter, however, shifts the scope up to the “radio button group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
 
 > “A document must not contain an input element whose radio button group contains only that element.”
 >
