@@ -186,15 +186,25 @@ _Variant 1: simple sections_
 
 ```html
 	<tabset>
-	  <section>
-	    <tablabel>Mail</tablabel>
+	  <tab>
+	    <h2>Mail</h2>
 	    …Mail Content…
 	  </section>
-	  <section>news</section>
+	  <tab>
+	    <h2>news</h2>
 	    … News content…
-	  </section>
+	  </tab>
 	</tabset>
 ```
+
+- Pros:
+  - Provides a &#39;whole unit&#39; (Tab Section) that one operates on at once (add a tab, remove a tab, move a tab in its DOM order)
+  - Not complicated
+  - Good content and reading order if unsupported
+- Cons:
+  - We tab element is really just section, and the new element doesn't afford much that is worthwhile
+- Recommendations:
+  - We believe the pattern is ok, it's worth consideration - but the addition of the tab element doesn't afford much that is worthwhile and, depending on some other turns, might actually be undesirable. A 1 element wrapper can achive the same goals, perhaps better.
  
 ### **1 element wrapper**
 
