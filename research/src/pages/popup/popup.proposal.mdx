@@ -1,0 +1,41 @@
+---
+menu: Proposals
+name: Popup (Editor's Draft)
+path: /components/popup
+pathToResearch: /components/popup.research
+---
+
+import '../../styles/spec.css'
+
+## Overview <a href="#overview" id="overview"></a>
+
+<dl class="element">
+  <dt><span data-x="concept-element-categories">Categories</span>:</dt>
+  <dd><span>Flow content</span>.</dd>
+  <dd><span>Sectioning root</span>.</dd>
+  <dt><span data-x="concept-element-contexts">Contexts in which this element can be used</span>:</dt>
+  <dd>Where <span>flow content</span> is expected.</dd>
+  <dt><span data-x="concept-element-content-model">Content model</span>:</dt>
+  <dd><span>Flow content</span>.</dd>
+  <dt><span data-x="concept-element-attributes">Content attributes</span>:</dt>
+  <dd><span>Global attributes</span></dd>
+  <dt><span
+  data-x="concept-element-accessibility-considerations">Accessibility considerations</span>:</dt>
+  <dd>Pending description in <a href="https://w3c.github.io/html-aria/></a> and <a href="https://w3c.github.io/html-aam/">HTML-AAM</a>.</dd>
+  <dt><span data-x="concept-element-dom">DOM interface</span>:</dt>
+  <dd w-nodev>
+    <pre><code class="idl">[Exposed=Window]
+interface <dfn>HTMLPopupElement</dfn> : <span>HTMLElement</span> {
+  [<span>HTMLConstructor</span>] constructor();
+};</code></pre>
+  </dd>
+  <dd w-dev>Uses <code>HTMLPopupElement</code>.</dd>
+</dl>
+
+<p class="note">
+  Add{' '}
+  <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#cereactions">CEReactions</a>{' '}
+  to IDL.
+</p>
+
+A `popup` element represents transient application UI that “pops up” in the top layer of a web document, enabling the user to perform some task in a timely and immediate fashion. `popup` is similar to the `dialog` element, but is distinguished by its transient nature (“light dismiss” behaviors) and mutual exclusivity: only one popup`element may be rendered at a time, with the exception of nested`popup`s.
