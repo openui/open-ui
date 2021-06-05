@@ -100,10 +100,10 @@ the user can interact with it.
 If the `initiallyopen` attribute is specified, the user agent must run the following steps:
 
 1. Let _subject_ be the `popup` element on which the `initiallyopen` attribute was specified.
-2. Run the [Dismiss currently-shown `popup` elements steps](#dismiss-current-popups).
+2. Run the [Hide currently-shown `popup` elements steps](#hide-current-popups).
 3. Add the _subject_ to _subject_'s
    [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [top layer](https://fullscreen.spec.whatwg.org/#top-layer).
+   [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
 4. Set the `open` IDL attribute on the _subject_ to `true`.
 
 <p class="question">
@@ -135,10 +135,10 @@ The `show()` method displays the `popup` element.
 When `show()` is invoked, the user agent must run the following steps:
 
 1. Let _subject_ be the `popup` element on which the method was invoked.
-2. Run the [Dismiss currently-shown `popup` elements steps](#dismiss-current-popups).
+2. Run the [Hide currently-shown `popup` elements steps](#hide-current-popups).
 3. Add the _subject_ to _subject_'s
    [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [top layer](https://fullscreen.spec.whatwg.org/#top-layer).
+   [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
 4. Set the `open` IDL attribute on the _subject_ to `true`.
 
 ### The `popup` attribute
@@ -165,31 +165,56 @@ The `popup` attribute is supported on a subset of
 - `input` in the `button` state
 - `input` in the `text`, `email`, `phone`, or `url` states
 
-Let _subject_ be the element on which the `popup` attribute is specified. If the _subject_ is a
-`button` element or an `input` element in the `button` state, and the _subject_ is activated; OR the
-_subject_ is an input in the `text`, `email`, `phone`, or `url` states and focus is set to the
-_subject_, the user agent must run the following steps:
+Let _activating element_ be the element on which the `popup` attribute is specified. If the
+_activating element_ is a `button` element or an `input` element in the `button` state, and the
+_activating element_ is activated; OR the _activating element_ is an input in the `text`, `email`,
+`phone`, or `url` states and focus is set to the _activating element_, the user agent must run the
+following steps:
 
-1. Let _target_ be the element with the ID referenced by the `popup` attribute specified on the
-   _subject_. If the _target_ is not a `popup` element, then return.
-2. If the `open` IDL attribute on the _target_ is `true`:
+1. Let _subject_ be the element with the ID referenced by the `popup` attribute specified on the
+   _subject_. If the _subject_ is not a `popup` element, then return.
+2. If the `open` IDL attribute on the _subject_ is `true`, run
+   [hiding a `popup` element steps](#hiding-current-popups).
 3. Otherwise:
-   1. Run the [Dismiss currently-shown `popup` elements steps](#dismiss-current-popups).
-   2. Add the _target_ to _target_'s
+   1. Run the [Hide currently-shown `popup` elements steps](#hide-current-popups).
+   2. Add the _subject_ to _subject_'s
       [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-      [top layer](https://fullscreen.spec.whatwg.org/#top-layer).
-   3. Set the `open` IDL attribute on the _target_ to `true`.
+      [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
+   3. Set the `open` IDL attribute on the _subject_ to `true`.
 
-<p class="todo">Add "hiding" steps once written</p>
+<p class="todo">
+  Probably need to specify some way of storing the relationship once subject is activated, for
+  purposes of deciding whether to hide a popup.
+</p>
 
 <p class="question">
   Should we have a way to suppress these steps upon focus, so that the author can enable the popup
   to be shown upon text entry (or some other logic) instead?
 </p>
 
-<h4 id="dismiss-current-popups">
-  Dismiss currently-shown <code>popup</code> elements steps
+<h4 id="hide-current-popups">
+  Hide currently-shown <code>popup</code> elements steps
 </h4>
+
+Let _candidate subject_ be the new candidate `popup` element to be shown.
+If applicable, let _activating element_ be the element whose `popup` attribute specifies the ID of
+the _candidate subject_, and which has been activated by the user.
+If applicable, let the _anchor element_ be the element whose ID is referenced by the `anchor`
+specified on the _candidate subject_.
+
+Starting at the bottom of the top-layer stack: for each `popup` element which has an `open` IDL
+attribute set to `true`, and which is not the _candidate subject_:
+
+1. Let _subject_ be the current `popup` element in the top-layer stack.
+2. Walk the DOM to determine if the _subject_ is an ancestor to the _candidate subject_, the
+   _activating element_, or the _anchor element_.
+3. If the _subject_ is an ancestor, then return.
+4. Otherwise, for this _subject_ and any other `popup`s higher in the stack, run the
+   [Hiding a `popup` element steps](#hiding-current-popups).
+
+<p class="todo">
+  Step #2 probably needs to be more precise, and more specific about Shadow/light DOM
+</p>
 
 ## Setting focus when a `popup` is shown
 
@@ -199,8 +224,21 @@ _subject_, the user agent must run the following steps:
 
 ## Anchoring a `popup` to another element
 
-## Dismissing a `popup`
+## Hiding a `popup` element
 
 ### The `hide()` method
 
 ### Light dismissal
+
+<h3 id="hiding-popup-steps">
+  Hiding a <code>popup</code> element steps
+</h3>
+
+1. Remove the _subject_ from the
+   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
+   [top layer](https://fullscreen.spec.whatwg.org/#top-layer).
+2. Set the `open` IDL attribute on the _subject_ to `false`.
+3. [Queue an element task](https://html.spec.whatwg.org/multipage/webappapis.html#queue-an-element-task)
+   on the [user interaction task source](https://html.spec.whatwg.org/multipage/webappapis.html#user-interaction-task-source)
+   given the _subject_ element to [fire a non-cancelable event](https://dom.spec.whatwg.org/#concept-event-fire)
+   named `hide` at _subject_.
