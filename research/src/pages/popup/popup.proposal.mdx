@@ -113,9 +113,39 @@ If the `initiallyopen` attribute is specified, the user agent must run the follo
 
 ### The `show()` method
 
+The `show()` method displays the `popup` element.
+
+**Example:**
+
+```html
+<popup id="newFeatureUI">
+  <p>
+    <strong>New!</strong>
+    I’m some sort of educational UI…
+  </p>
+</popup>
+
+<script>
+  if (upsellNewFeature) {
+    document.getElementById('newFeatureUI').show()
+  }
+</script>
+```
+
+When `show()` is invoked, the user agent must run the following steps:
+
+1. Let _subject_ be the `popup` element on which the method was invoked.
+2. Run the [Dismiss currently-shown `popup` elements steps](#dismiss-current-popups).
+3. Add the _subject_ to _subject_'s
+   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
+   [top layer](https://fullscreen.spec.whatwg.org/#top-layer).
+4. Set the `open` IDL attribute on the _subject_ to `true`.
+
 ### The `popup` attribute
 
-<h4 id="dismiss-current-popups">Dismiss currently-shown `popup` elements steps</h4>
+<h4 id="dismiss-current-popups">
+  Dismiss currently-shown <code>popup</code> elements steps
+</h4>
 
 ## Setting focus when a `popup` is shown
 
