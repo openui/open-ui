@@ -70,6 +70,11 @@ similar to the `dialog` element, but is distinguished by its transient nature (â
 behaviors) and mutual exclusivity: only one `popup` element may be rendered at a time, with the
 exception of nested `popup`s.
 
+<p class="note">
+  Examples of popups include: button menus, listboxes used for item selection e.g. comboboxes,
+  "teaching" UI, and other progressive-disclosure widgets or content pickers.
+</p>
+
 ## Showing a `popup` element
 
 A `popup` element should not be shown to the user unless:
@@ -101,13 +106,14 @@ If the `initiallyopen` attribute is specified on a `popup` element _subject_, th
 run [showing a `popup` element steps](#showing-popup-steps).
 
 <p class="question">
-  This effectively means the last popup in the DOM order with initiallyopen specified will be the
-  popup that "wins". Is that clear enough to implementers? Is that a reasonable behavior?
+  When following these run steps, this effectively means the last popup in the DOM order with
+  initiallyopen specified will be the popup that "wins". Is that clear enough to implementers? Is
+  that a reasonable behavior?
 </p>
 
 ### The `show()` method
 
-The `show()` method displays the `popup` element.
+The `show()` method displays the `popup` element, such that the user can interact with it.
 
 **Example:**
 
@@ -160,7 +166,7 @@ _activating element_ is activated; OR the _activating element_ is an input in th
 following steps:
 
 1. Let _subject_ be the element with the ID referenced by the `popup` attribute specified on the
-   _subject_. If the _subject_ is not a `popup` element, then return.
+   _activating element_. If the _subject_ is not a `popup` element, then return.
 2. If the `open` IDL attribute on the _subject_ is `true`, run
    [hiding a `popup` element steps](#hiding-current-popups).
 3. Otherwise, run [showing a `popup` element steps](#showing-popup-steps).
@@ -179,14 +185,14 @@ following steps:
   Showing a <code>popup</code> element steps
 </h3>
 
-1. Run the [hide currently-shown `popup` elements steps](#hide-current-popups).
+1. Run the [hiding currently-shown `popup` elements steps](#hiding-current-popups).
 2. Add the _subject_ to _subject_'s
    [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
    [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
 3. Set the `open` IDL attribute on the _subject_ to `true`.
 
-<h4 id="hide-current-popups">
-  Hide currently-shown <code>popup</code> elements steps
+<h4 id="hiding-current-popups">
+  Hiding currently-shown <code>popup</code> elements steps
 </h4>
 
 Let _candidate subject_ be the new candidate `popup` element to be shown.
@@ -203,7 +209,7 @@ attribute set to `true`, and which is not the _candidate subject_:
    _activating element_, or the _anchor element_.
 3. If the _subject_ is an ancestor, then return.
 4. Otherwise, for this _subject_ and any other `popup`s higher in the stack, run the
-   [Hiding a `popup` element steps](#hiding-current-popups).
+   [hiding a `popup` element steps](#hiding-current-popups).
 
 <p class="todo">
   Step #2 probably needs to be more precise, and more specific about Shadow/light DOM
@@ -274,10 +280,9 @@ for a `popup` element _subject_ are as follows:
 
 Many popups have a visual-logical relationship with another element that may not be a part of the
 `popup` element's ancestry chain. For example, a `button` may control a `popup` element, and the
-`popup` needs to be positioned with respect to this `button`. Or the `popup` element may simply
-_describe_ the `button` element, but similarly needs to be positioned with respect to that `button`
-element. The `anchor` attribute indicates this relationship. When specified, the attribute's value
-must be the ID of an element in the same
+`popup` needs to be positioned with respect to this `button`. Or the `popup` element may simply be
+used to draw attention to or describe another element. The `anchor` attribute indicates this
+relationship. When specified, the attribute's value must be the ID of an element in the same
 [node document](https://dom.spec.whatwg.org/#concept-node-document) as the `popup` element.
 
 **Example:**
@@ -293,7 +298,7 @@ must be the ID of an element in the same
 ```
 
 The target of the `anchor` attribute participates in determining whether a candiate _popup_ element
-is "nested" in a currently-shown `popup`; refer to <a href="#hide-current-popups">hide
+is "nested" in a currently-shown `popup`; refer to <a href="#hiding-current-popups">hiding
 currently-shown <code>popup</code> elements steps</a>.
 
 <p class="todo">
