@@ -70,7 +70,7 @@ similar to the `dialog` element, but is distinguished by its transient nature (â
 behaviors) and mutual exclusivity: only one `popup` element may be rendered at a time, with the
 exception of nested `popup`s.
 
-## Showing a `popup`
+## Showing a `popup` element
 
 A `popup` element should not be shown to the user unless:
 
@@ -97,14 +97,8 @@ the user can interact with it.
 <popup initiallyopen></popup>
 ```
 
-If the `initiallyopen` attribute is specified, the user agent must run the following steps:
-
-1. Let _subject_ be the `popup` element on which the `initiallyopen` attribute was specified.
-2. Run the [Hide currently-shown `popup` elements steps](#hide-current-popups).
-3. Add the _subject_ to _subject_'s
-   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
-4. Set the `open` IDL attribute on the _subject_ to `true`.
+If the `initiallyopen` attribute is specified on a `popup` element _subject_, the user agent must
+run [showing a `popup` element steps](#showing-popup-steps).
 
 <p class="question">
   This effectively means the last popup in the DOM order with initiallyopen specified will be the
@@ -132,14 +126,8 @@ The `show()` method displays the `popup` element.
 </script>
 ```
 
-When `show()` is invoked, the user agent must run the following steps:
-
-1. Let _subject_ be the `popup` element on which the method was invoked.
-2. Run the [Hide currently-shown `popup` elements steps](#hide-current-popups).
-3. Add the _subject_ to _subject_'s
-   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
-4. Set the `open` IDL attribute on the _subject_ to `true`.
+When `show()` is invoked on a `popup` element _subject_, the user agent must
+run [showing a `popup` element steps](#showing-popup-steps).
 
 ### The `popup` attribute
 
@@ -175,12 +163,7 @@ following steps:
    _subject_. If the _subject_ is not a `popup` element, then return.
 2. If the `open` IDL attribute on the _subject_ is `true`, run
    [hiding a `popup` element steps](#hiding-current-popups).
-3. Otherwise:
-   1. Run the [Hide currently-shown `popup` elements steps](#hide-current-popups).
-   2. Add the _subject_ to _subject_'s
-      [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-      [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
-   3. Set the `open` IDL attribute on the _subject_ to `true`.
+3. Otherwise, run [showing a `popup` element steps](#showing-popup-steps).
 
 <p class="todo">
   Probably need to specify some way of storing the relationship once subject is activated, for
@@ -191,6 +174,16 @@ following steps:
   Should we have a way to suppress these steps upon focus, so that the author can enable the popup
   to be shown upon text entry (or some other logic) instead?
 </p>
+
+<h3 id="showing-popup-steps">
+  Showing a <code>popup</code> element steps
+</h3>
+
+1. Run the [hide currently-shown `popup` elements steps](#hide-current-popups).
+2. Add the _subject_ to _subject_'s
+   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
+   [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
+3. Set the `open` IDL attribute on the _subject_ to `true`.
 
 <h4 id="hide-current-popups">
   Hide currently-shown <code>popup</code> elements steps
