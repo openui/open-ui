@@ -64,19 +64,58 @@ _Target venue: [HTML Living Standard](https://html.spec.whatwg.org/multipage/)_
   @TODO: Add IDL to frontmatter (<a href="https://github.com/openui/open-ui/issues/356">#356</a>)
 </p>
 
-A `popup` element represents transient application UI that “pops up” in the top layer of a web document, enabling the user to perform some task in a timely and immediate fashion. `popup` is similar to the `dialog` element, but is distinguished by its transient nature (“light dismiss” behaviors) and mutual exclusivity: only one `popup` element may be rendered at a time, with the exception of nested `popup`s.
+A `popup` element represents transient application UI that “pops up” in the top layer of a web
+document, enabling the user to perform some task in a timely and immediate fashion. `popup` is
+similar to the `dialog` element, but is distinguished by its transient nature (“light dismiss”
+behaviors) and mutual exclusivity: only one `popup` element may be rendered at a time, with the
+exception of nested `popup`s.
 
 ## Showing a `popup`
 
+A `popup` element should not be shown to the user unless:
+
+- The `initiallyopen` attribute is specified
+- The `show()` method is invoked
+- Or the `popup` element has been invoked via the `popup` attribute.
+
+This requirement may be implemented indirectly through the style layer. For example,
+user agents that
+[support the suggested default rendering](https://html.spec.whatwg.org/multipage/infrastructure.html#renderingUA)
+implement this requirement using the CSS rules described in the
+[Rendering section](https://html.spec.whatwg.org/multipage/rendering.html#rendering).
+
 ### The `initiallyopen` attribute
+
+The `initiallyopen` attribute is a
+[boolean attribute](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attribute).
+When specified, it indicates that the `popup` element should be shown on document load, such that
+the user can interact with it.
+
+**Example:**
+
+```html
+<popup initiallyopen></popup>
+```
+
+If the `initiallyopen` attribute is specified, the user agent must run the following steps:
+
+1. Let _subject_ be the `popup` element on which the `initiallyopen` attribute was specified.
+2. Run the [Dismiss currently-shown `popup` elements steps](#dismiss-current-popups).
+3. Add the _subject_ to _subject_'s
+   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
+   [top layer](https://fullscreen.spec.whatwg.org/#top-layer).
+4. Set the `open` IDL attribute on the _subject_ to `true`.
+
+<p class="question">
+  This effectively means the last popup in the DOM order with initiallyopen specified will be the
+  popup that "wins". Is that clear enough to implementers? Is that a reasonable behavior?
+</p>
 
 ### The `show()` method
 
 ### The `popup` attribute
 
-### Steps for showing a `popup`
-
-#### Dismissing currently-shown `popup`s
+<h4 id="dismiss-current-popups">Dismiss currently-shown `popup` elements steps</h4>
 
 ## Setting focus when a `popup` is shown
 
