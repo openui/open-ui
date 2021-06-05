@@ -279,15 +279,60 @@ for a `popup` element _subject_ are as follows:
 
 ## Anchoring a `popup` to another element
 
+Many popups have a visual-logical relationship with another element that may not be a part of the
+`popup` element's ancestry chain. For example, a `button` may control a `popup` element, and the
+`popup` needs to be positioned with respect to this `button`. Or the `popup` element may simply
+_describe_ the `button` element, but similarly needs to be positioned with respect to that `button`
+element. The `anchor` attribute indicates this relationship. When specified, the attribute's value
+must be the ID of an element in the same
+[node document](https://dom.spec.whatwg.org/#concept-node-document) as the `popup` element.
+
+**Example:**
+
+```html
+<button id="myButton">Anchor element</button>
+<popup open anchor="myButton">
+  <p>
+    <strong>New!</strong>
+    I’m some sort of educational UI…
+  </p>
+</popup>
+```
+
+The target of the `anchor` attribute participates in determining whether a candiate _popup_ element
+is "nested" in a currently-shown `popup`; refer to <a href="#hide-current-popups">hide
+currently-shown <code>popup</code> elements steps</a>.
+
+<p class="todo">
+  Whenever there is a spec to point to for CSS anchored positioning, call out here that the anchor
+  attribute is used to help resolve CSS <code>anchor()</code> functions.
+</p>
+
 ## Hiding a `popup` element
 
 ### The `hide()` method
 
+The `hide()` method hides a `popup` element. When `hide()` is invoked, the user agent must run
+[hiding a `popup` element steps](#hiding-popup-steps) from the `popup` element _subject_ on which
+the method was invoked.
+
 ### Light dismissal
+
+When a `popup` element is shown and a light dismiss interaction occurs, the user agent must run
+[hiding a `popup` element steps](#hiding-popup-steps) from the `popup` element _subject_.
+
+<p class="todo">
+  Land <a href="https://github.com/openui/open-ui/pull/243">#243</a> and link out to this canonical
+  definition of light dismissal for consistency. Layout changes to the popup or its anchor element
+  are also ground for light dismissal, figure out how to surface this special case. How to handle in
+  prose light dismiss behaviors that may dismiss some but not all currently-shown popups?
+</p>
 
 <h3 id="hiding-popup-steps">
   Hiding a <code>popup</code> element steps
 </h3>
+
+The hiding steps for a `popup` element _subject_ are as follows:
 
 1. Remove the _subject_ from the
    [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
