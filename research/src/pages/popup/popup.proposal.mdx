@@ -7,7 +7,10 @@ pathToResearch: /components/popup.research
 
 import '../../styles/spec.css'
 
-**Editors:** Melanie Richards (Microsoft)
+**Editors:**
+
+- Mason Freed (Google)
+- Melanie Richards (Microsoft)
 
 ## HTML Incubation Text
 
@@ -42,11 +45,12 @@ _Target venue: [HTML Living Standard](https://html.spec.whatwg.org/multipage/)_
     <span>Global attributes</span>
   </dd>
   <dd>
-    <code>anchor</code> — Creates a relationship with another element, used in an anchored
-    positioning scheme
+    <code>anchor</code> — Creates an id-reference relationship with another element, which is used
+    for both anchor positioning and popup stack management
   </dd>
   <dd>
-    <code>delegatesfocus</code> — Whether to move focus to the popup's first focusable element
+    <code>delegatesfocus</code> — Whether to move focus to the popup's first focusable element when
+    the popup is shown
   </dd>
   <dd>
     <code>initiallyopen</code> — Whether the popup is shown upon document load
@@ -64,11 +68,11 @@ _Target venue: [HTML Living Standard](https://html.spec.whatwg.org/multipage/)_
   Add IDL to frontmatter (<a href="https://github.com/openui/open-ui/issues/356">#356</a>)
 </p>
 
-A `popup` element represents transient application UI that “pops up” in the top layer of a web
-document, enabling the user to perform some task in a timely and immediate fashion. `popup` is
-similar to the `dialog` element, but is distinguished by its transient nature (“light dismiss”
-behaviors) and mutual exclusivity: only one `popup` element may be rendered at a time, with the
-exception of nested `popup`s.
+A `popup` element represents transient application UI that “pops up” in the
+[top layer](https://fullscreen.spec.whatwg.org/#top-layer) of a web document, enabling the user to
+perform some task in a timely and immediate fashion. `popup` is similar to the `dialog` element, but
+is distinguished by its transient nature (“light dismiss” behaviors) and mutual exclusivity: only
+one `popup` element may be rendered at a time, with the exception of nested `popup`s.
 
 <p class="note">
   Examples of popups include: button menus, listboxes used for item selection e.g. comboboxes,
@@ -77,11 +81,12 @@ exception of nested `popup`s.
 
 ## Showing a `popup` element
 
-A `popup` element should not be shown to the user unless:
+A `popup` element and its contents should not be rendered unless:
 
 - The `initiallyopen` attribute is specified
 - The `show()` method is invoked
-- Or the `popup` element has been invoked via the `popup` attribute.
+- Or the `popup` element has been invoked through user interaction with an element whose `popup`
+  attribute references the `popup` element's ID
 
 This requirement may be implemented indirectly through the style layer. For example,
 user agents that
@@ -93,8 +98,8 @@ implement this requirement using the CSS rules described in the
 
 The `initiallyopen` attribute is a
 [boolean attribute](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attribute).
-When specified, it indicates that the `popup` element should be shown on document load, such that
-the user can interact with it.
+When specified, it indicates that the `popup` element should have the `show()` method called upon
+document load, such that the user can interact with it.
 
 **Example:**
 
@@ -105,15 +110,15 @@ the user can interact with it.
 If the `initiallyopen` attribute is specified on a `popup` element _subject_, the user agent must
 run [showing a `popup` element steps](#showing-popup-steps).
 
-<p class="question">
-  When following these run steps, this effectively means the last popup in the DOM order with
-  initiallyopen specified will be the popup that "wins". Is that clear enough to implementers? Is
-  that a reasonable behavior?
+<p class="note">
+  As a result of following these run steps: in the event that initiallyopen is specified on multiple
+  popups, the last of these popups (with the initiallyopen attribute) in the DOM order will be the
+  popup that is rendered upon document load.
 </p>
 
 ### The `show()` method
 
-The `show()` method displays the `popup` element, such that the user can interact with it.
+The `show()` method renders the `popup` element, such that the user can interact with it.
 
 **Example:**
 
@@ -159,6 +164,8 @@ The `popup` attribute is supported on a subset of
 - `input` in the `button` state
 - `input` in the `text`, `email`, `phone`, or `url` states
 
+#### Showing/hiding a `popup` element via the `popup` attribute
+
 Let _activating element_ be the element on which the `popup` attribute is specified. If the
 _activating element_ is a `button` element or an `input` element in the `button` state, and the
 _activating element_ is activated; OR the _activating element_ is an input in the `text`, `email`,
@@ -166,7 +173,8 @@ _activating element_ is activated; OR the _activating element_ is an input in th
 following steps:
 
 1. Let _subject_ be the element with the ID referenced by the `popup` attribute specified on the
-   _activating element_. If the _subject_ is not a `popup` element, then return.
+   _activating element_. If there is no such element, or the _subject_ is not a `popup` element,
+   then return.
 2. If the `open` IDL attribute on the _subject_ is `true`, run
    [hiding a `popup` element steps](#hiding-current-popups).
 3. Otherwise, run [showing a `popup` element steps](#showing-popup-steps).
