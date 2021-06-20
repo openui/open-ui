@@ -1,0 +1,185 @@
+---
+menu: Proposals
+name: Radio Button (Editor's Draft)
+path: /components/radio-button
+pathToResearch: /components/radio-button.research
+---
+
+import RadioButtonAnatomy from '../../components/radio-button-anatomy'
+import RadioButtonGroupAnatomy from '../../components/radio-button-group-anatomy'
+
+## Overview
+
+The `<oui-radio-button>` element is a control that allows the user to select a single choice out of a set of choices. It has a binary "checked" state, either checked or unchecked (where "checked" is the selected choice, while all the other remain "unchecked".
+
+Because the `<oui-radio-button>` is a choice from a set of choices, the choices are logically grouped by an implicit or explicit `<oui-radio-button-group>`. This proposal will deal with the existence of both elements, the different ways they can interact and their properties.
+
+### Use Cases
+
+The `<oui-radio-button-group>` is used in cases very similar to a `<select>` element, where the user is presented with a set of options from which they can select a single one.
+
+Differently from `<select>`, where all the `<option>` are condensed into a single box, the `<oui-radio-button-group>` has all the `<oui-radio-button>` visible, readily available to be read and selected. Choosing between a `<select>` and `<oui-radio-button-group>` is a matter of layout and information density preference, in most cases.
+
+Also differently from a `<select>`, there is currently no `multiple` attribute to allow a multiple choice group, and this document will not propose one for now.
+
+## Prior Art/Examples
+
+- [Radio input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio)
+- [WAI-ARIA Radio](https://www.w3.org/TR/wai-aria-practices/#radiobutton)
+- [WHATWG](<https://html.spec.whatwg.org/multipage/input.html#radio-button-state-(type=radio)>)
+
+[Further examples on research](/components/radio-button.research).
+
+## Radio Button Design
+
+This section relates to a single `<oui-radio-button>`. Because it cannot stand on its own, without being part of and either explicit or implicit `<oui-radio-button-group>`, it does not have attributes such `required` or `readonly`, those being attributes of the group. A single `required` option is a group makes the other choices pointless, while a `readonly` option makes itself pointles.
+
+The radio button has, however a `disabled` attribute, meaning it's a possible choice, but that is currently unavailable.
+
+If used inside a `<oui-radio-button-group>`, it gets implicitly bound to the group, becoming one of the choices. If declared outside of it, it should contain a `group` attribute equal to the group's `name` attribute.
+
+### API
+
+#### Properties
+
+| Attribute Name   | Type     | Default Value | Description                                                                                            |
+| ---------------- | -------- | ------------- | ------------------------------------------------------------------------------------------------------ |
+| `checked`        | `bool`   | `false`       | Controls whether the radio button is checked or unchecked.                                             |
+| `defaultChecked` | `bool`   | `false`       | The initial value for `checked`. Defaults to false.                                                    |
+| `value`          | `string` | `null`        | The value of the radio button (this is the value of a single possible choice).                         |
+| `autofocus`      | `bool`   | `false`       | Get focus by default.                                                                                  |
+| `disabled`       | `bool`   | `false`       | Prevents the user from interacting with the control. Defaults to false.                                |
+| `group`          | `string` | `null`        | Binds the button to a radio button group. While inside a radio button group, it is implicitly defined. |
+| `form`           | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.                           |
+
+#### Events
+
+| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                                     |
+| ---------- | ----------- | ------- | -------- | ----------- | --------------------------------------------------------------------- |
+| `change`   | none        | `true`  | `true`   | `false`     | Fired when the radio button's `checked` state is changed by the user. |
+| `focus`    | none        | `true`  | `true`   | `false`     | Fired when the radio button gets focus.                               |
+| `blur`     | none        | `true`  | `true`   | `false`     | Fired when the radio button loses focus.                              |
+
+### Anatomy
+
+<RadioButtonAnatomy />
+
+#### DOM Structure
+
+```html
+<oui-radio-button>
+  <slot name="label">
+    <label part="label"></label>
+  </slot>
+  <slot name="checked-indicator">
+    <div part="checked-indicator"></div>
+  </slot>
+</oui-radio-button>
+```
+
+#### Slots
+
+| Slot Name           | Description                                                | Fallback Content                                 |
+| ------------------- | ---------------------------------------------------------- | ------------------------------------------------ |
+| `label`             | Add custom markup for the control's label                  | Empty                                            |
+| `checked-indicator` | Content to indicate the radio button is in a checked state | Element with checked and indeterminate indcators |
+
+#### CSS Parts
+
+| Slot Name           | Description                                                   |
+| ------------------- | ------------------------------------------------------------- |
+| `label`             | The control's label (and implicit value)                      |
+| `checked-indicator` | Indicates the radio button is in a checked or unchecked state |
+
+## Radio Button Group Design
+
+This section relates to a `<oui-radio-button-group>`. It can host multiple `<oui-radio-button>` elements.
+
+### API
+
+#### Properties
+
+| Attribute Name | Type     | Default Value | Description                                                                                      |
+| -------------- | -------- | ------------- | ------------------------------------------------------------------------------------------------ |
+| `name`         | `string` | `null`        | Represents the name of the control, to be used upon form submission .                            |
+| `value`        | `string` | `null`        | The value of the selected choice.                                                                |
+| `autofocus`    | `bool`   | `false`       | Get focus by default. Defaults to the first option, unless explicitly defined among the options. |
+| `disabled`     | `bool`   | `false`       | Prevents the user from interacting with any of the choices. Defaults to false.                   |
+| `form`         | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.                     |
+| `readonly`     | `bool`   | `false`       | Makes it unavailable for user interaction, but the selected choice should still be submitted.    |
+| `required`     | `bool`   | `false`       | Makes it required to have a selected choice.                                                     |
+
+#### Events
+
+...
+
+### Anatomy
+
+<RadioButtonGroupAnatomy />
+
+#### DOM Structure (Implicit Grouping)
+
+The following structure represents a group with the `choices` slot filled with radio buttons (their internal structures are omitted for brevity).
+
+```html
+<oui-radio-button-group name="group-name">
+  <slot name="label">
+    <label part="label"></label>
+  </slot>
+  <slot name="required-indicator">
+    <div part="required-indicator"></div>
+  </slot>
+  <slot name="choices">
+    <div part="choices">
+      <oui-radio-button />
+      <oui-radio-button />
+      <oui-radio-button />
+      ...
+    </div>
+  </slot>
+</oui-radio-button-group>
+```
+
+#### DOM Structure (Explicit Grouping)
+
+The following structure, in contrast, represents a group with an empty `choices` slot. The choices are placed outside the group, providing layout flexibility. Each choice has a `group` attribute with value equal to the radio button group's name, making them explicitly bound as choices of that group.
+
+There is also the possibility of having both implicit and explicit choices.
+
+```html
+<oui-radio-button-group name="group-name">
+  <slot name="label">
+    <label part="label"></label>
+  </slot>
+  <slot name="required-indicator">
+    <div part="required-indicator"></div>
+  </slot>
+  <slot name="choices">
+    <div part="choices">
+      ... (it could also be populated)
+    </div>
+  </slot>
+</oui-radio-button-group>
+
+<oui-radio-button group="group-name" />
+<oui-radio-button group="group-name" />
+<oui-radio-button group="group-name" />
+```
+
+#### Slots
+
+| Slot Name            | Description                                                                      | Fallback Content |
+| -------------------- | -------------------------------------------------------------------------------- | ---------------- |
+| `label`              | Add custom markup for the control's label                                        | Empty            |
+| `required-indicator` | Content to indicate the radio button group is required to have a selected option | '\*'             |
+| `choices`            | Slot for placing the radio buttons                                               | Empty            |
+| `error-message`      | Content of any error messages                                                    | Empty            |
+
+#### CSS Parts
+
+| Slot Name            | Description                                                            |
+| -------------------- | ---------------------------------------------------------------------- |
+| `label`              | The control's label                                                    |
+| `required-indicator` | Indicates the radio button group is required to have a selected option |
+| `choices`            | Container for the choices                                              |
+| `error-message`      | Container of any error messages                                        |
