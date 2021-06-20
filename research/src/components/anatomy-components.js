@@ -1,10 +1,10 @@
 import React from 'react'
 import './anatomy.css'
 
-export const AnatomyWrapper = ({ children }) => (
+export const AnatomyWrapper = ({ children, name = 'show-slots' }) => (
   <div className="component-anatomy-wrapper">
-    <input type="checkbox" id="show-slots" />
-    <label htmlFor="show-slots"> Show slots</label>
+    <input type="checkbox" id={name} className="show-slots" />
+    <label htmlFor={name}> Show slots</label>
     <div className="component-anatomy">{children}</div>
   </div>
 )
