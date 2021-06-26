@@ -88,6 +88,20 @@
       ]
     },
     {
+      "name": "Select.Popup",
+      "openUIName": "Popup",
+      "definition": "Styled wrapper around a native select element, which allows selection of one item from a dropdown list.",
+      "url": "https://evergreen.segment.com/components/select/",
+      "concepts": [
+        {
+          "name": "select",
+          "openUIName": "select",
+          "description": "Styled wrapper around a native select element, which allows selection of one item from a dropdown list.",
+          "image": "evergreen-select.png"
+        }
+      ]
+    },
+    {
       "name": "Select Menu",
       "openUIName": "Select",
       "definition": "The SelectMenu component is an advanced interaction pattern which allows selection of multiple items from a dropdown list. It can be used as a substitute for the native multiple select element.",
@@ -145,6 +159,20 @@
       ]
     },
     {
+      "name": "Combobox.Popup",
+      "openUIName": "Popup",
+      "description": "The Combobox component is used for selecting an option from a predefined list of options. It is similar to a Select or SelectMenu component. Clicking the button will show all items. Typing in the text input will filter the list.",
+      "url": "https://evergreen.segment.com/components/combobox",
+      "concepts": [
+        {
+          "name": "combobox",
+          "openUIName": "combobox",
+          "description": "The Combobox component is used for selecting an option from a predefined list of options. It is similar to a Select or SelectMenu component. Clicking the button will show all items. Typing in the text input will filter the list.",
+          "image": "evergreen-combobox.png"
+        }
+      ]
+    },
+    {
       "name": "Popover",
       "definition": "The Popover component displays floating content in relation to a target.",
       "url": "https://evergreen.segment.com/components/popover"
@@ -178,6 +206,20 @@
       "name": "Autocomplete",
       "definition": "The Autocomplete components renders a filterable list of options in a Popover — it does not render the text input. If you need a combination with a text input and trigger button, take a look at the Combobox component. This component is mainly used to create type aheads",
       "url": "https://evergreen.segment.com/components/autocomplete/"
+    },
+    {
+      "name": "Autocomplete.Popup",
+      "openUIName": "Popup",
+      "description": "The Autocomplete components renders a filterable list of options in a Popover — it does not render the text input. If you need a combination with a text input and trigger button, take a look at the Combobox component. This component is mainly used to create type aheads",
+      "url": "ttps://evergreen.segment.com/components/autocomplete/",
+      "concepts": [
+        {
+          "name": "autocomplete",
+          "openUIName": "autocomplete",
+          "description": "The Autocomplete components renders a filterable list of options in a Popover — it does not render the text input. If you need a combination with a text input and trigger button, take a look at the Combobox component. This component is mainly used to create type aheads",
+          "image": "evergreen-autocomplete.png"
+        }
+      ]
     },
     {
       "name": "Filepicker",
@@ -235,10 +277,68 @@
         }
       ]
     },
+    // @todo: Also has a radio group element/component with a heading/label
     {
       "name": "Radio",
+      "openUIName": "Radio Button",
       "definition": "The radio and radio group are used for selecting a single option from a list. If you need to have an unselected state, just add a radio button with a None option. Begin labels with a capital letter.",
-      "url": "https://evergreen.segment.com/components/radio/"
+      "url": "https://evergreen.segment.com/components/radio",
+      "anatomy": [
+        {
+          "name": "radio-button-group",
+          "implicit": true
+        },
+        {
+          "name": "radio-button-group-label",
+          "implicit": true
+        },
+        {
+          "name": "checked-indicator",
+          "implicit": false
+        },
+        {
+          "name": "label",
+          "implicit": false
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "openUIName": "state",
+          "image": "evergreen-radio-button-basic.png",
+          "description": "The simplest use, unchecked."
+        },
+        {
+          "name": "disabled",
+          "openUIName": "state",
+          "image": "evergreen-radio-button-disabled.png",
+          "description": "Disabled for interaction."
+        },
+        {
+          "name": "checked",
+          "openUIName": "state",
+          "image": "evergreen-radio-button-checked.png",
+          "description": "Selected option."
+        },
+        {
+          "name": "medium",
+          "openUIName": "size",
+          "image": "evergreen-radio-button-medium.png",
+          "description": "Default size."
+        },
+        {
+          "name": "big",
+          "openUIName": "size",
+          "image": "evergreen-radio-button-big.png",
+          "description": "A bigger size."
+        },
+        {
+          "name": "stacked",
+          "openUIName": "radio-button-group-orientation",
+          "image": "evergreen-radio-button-group-stacked.png",
+          "description": "Vertically laid-out."
+        }
+      ]
     },
     {
       "name": "Segmented Control",
@@ -269,8 +369,17 @@
     },
     {
       "name": "Toaster",
-      "definition": "The toaster is used to show toasts (alerts) on top of an overlay. The toasts will close themselves when the close button is clicked, or after a timeout — the default is 5 seconds.",
-      "url": "https://evergreen.segment.com/components/toaster/"
+      "openUIName": "Alert",
+      "description": "The toaster is used to show toasts (alerts) on top of an overlay. The toasts will close themselves when the close button is clicked, or after a timeout — the default is 5 seconds.",
+      "url": "https://evergreen.segment.com/components/toaster/",
+      "concepts": [
+        {
+          "name": "toaster",
+          "openUIName": "basic",
+          "description": "The toaster is used to show toasts (alerts) on top of an overlay. The toasts will close themselves when the close button is clicked, or after a timeout — the default is 5 seconds.",
+          "image": "evergreen-toaster.png"
+        }
+      ]
     },
     {
       "name": "Alert",
@@ -316,8 +425,17 @@
     },
     {
       "name": "Corner Dialog",
-      "definition": "The CornerDialog component is used for announcements such as new features and feedback requests. Preferably the content of the CornerDialog should only contain one small paragraph.",
-      "url": "https://evergreen.segment.com/components/corner-dialog/"
+      "openUIName": "Dialog",
+      "description": "The CornerDialog component is used for announcements such as new features and feedback requests. Preferably the content of the CornerDialog should only contain one small paragraph.",
+      "url": "https://evergreen.segment.com/components/corner-dialog/",
+      "concepts": [
+        {
+          "name": "corner dialog",
+          "openUIName": "basic",
+          "description": "The CornerDialog component is used for announcements such as new features and feedback requests. Preferably the content of the CornerDialog should only contain one small paragraph.",
+          "image": "evergreen-corner-dialog.png"
+        }
+      ]
     },
     {
       "name": "Table",
