@@ -12,7 +12,7 @@ import '../../styles/spec.css'
 - Mason Freed (Google)
 - Melanie Richards (Microsoft)
 
-## HTML Incubation Text
+## HTML Incubation Text: Popup
 
 _Target venue: [HTML Living Standard](https://html.spec.whatwg.org/multipage/)_
 
@@ -94,6 +94,18 @@ user agents that
 implement this requirement using the CSS rules described in the
 [Rendering section](https://html.spec.whatwg.org/multipage/rendering.html#rendering).
 
+<h3 id="popup-stack">The popup stack</h3>
+
+This specification introduces a new stacking layer in the document
+[top layer](https://www.w3.org/TR/CSS2/zindex.html), called the **popup stack**. Each document has
+one popup stack.
+
+The popup stack is an [ordered set](https://infra.spec.whatwg.org/#ordered-set) of elements,
+rendered in the order they appear in the set. The last element in the set is rendered last,
+and thus appears on top.
+
+Showing or hiding a `popup` element adds or removes the element from the popup stack, respectively.
+
 ### The `initiallyopen` attribute
 
 The `initiallyopen` attribute is a
@@ -170,10 +182,10 @@ When an element with the `popup` attribute specified receives a user interaction
 the related `popup` element, this element shall be known as the `popup` element's _invoker_.
 
 <p class="note">
-  Multiple elements may have a `popup` attribute that refers to the same `popup` element. A given
-  `popup` element only has 0 or 1 _invoker_s at a given time. For example, if the `popup` element
-  was shown programmatically, the _invoker_ is null. Otherwise, the element that the user actually
-  interacted with to show the `popup` is its sole _invoker_.
+  Multiple elements may have a popup attribute that refers to the same popup element. A given popup
+  element only has 0 or 1 invokers at a given time. For example, if the popup element was shown
+  programmatically, the invoker is null. Otherwise, the element that the user actually interacted
+  with to show the popup is its sole invoker.
 </p>
 
 If the _invoker_ is a `button` element or an `input` element in the `button` state, and the
@@ -197,40 +209,56 @@ steps:
   Showing a <code>popup</code> element steps
 </h3>
 
-1. Run the [hiding currently-shown `popup` elements steps](#hiding-current-popups).
-2. Add the _subject_ to _subject_'s
-   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [top layer](https://fullscreen.spec.whatwg.org/#top-layer), at the top of the stack.
-3. Set the `open` IDL attribute on the _subject_ to `true`.
-4. If the `popup` element was shown as a result of a user interaction with an `invoker`, internally
-   set the _subject_'s _invoker_ to a pointer to the `invoker` element.
-
-<h4 id="hiding-current-popups">
-  Hiding currently-shown <code>popup</code> elements steps
-</h4>
-
 Let _candidate subject_ be the new candidate `popup` element to be shown.
 If applicable, let _invoker_ be the element whose `popup` attribute specifies the ID of
 the _candidate subject_, and which has been activated by the user.
 If applicable, let the _anchor element_ be the element whose ID is referenced by the `anchor`
 specified on the _candidate subject_.
 
-Starting at the bottom of the top-layer stack: for each `popup` element which has an `open` IDL
-attribute set to `true`, and which is not the _candidate subject_:
-
-1. Let _subject_ be the current `popup` element in the top-layer stack.
-2. Walk the [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine if the _subject_ is an ancestor to the _candidate subject_, the
-   _invoker_, or the _anchor element_.
-3. If the _subject_ is an ancestor, then return.
-4. Otherwise, for this _subject_, run the
-   [hiding a `popup` element steps](#hiding-current-popups). Go to the next `popup` in the stack and
-   return to step 1.
+1. Run the [hiding currently-shown `popup` elements steps](#hiding-current-popups).
+2. Add the _subject_ to _subject_'s
+   [node document](https://dom.spec.whatwg.org/#concept-node-document)'s [popup stack](#popup-stack).
+3. Set the `open` IDL attribute on the _subject_ to `true`.
+4. If the `popup` element was shown as a result of a user interaction with an `invoker`, internally
+   set the _subject_'s _invoker_ to a pointer to the `invoker` element.
+5. Run [focusing steps](#focusing-steps).
 
 ## Setting focus when the `popup` element is shown
 
+### The `autofocus` attribute
+
+The [autofocus](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute)
+content attribute allows the author to indicate that an element is to be focused as soon as the
+page is loaded or as soon as the `popup` within which it finds itself is shown.
+
+When specified on the `popup` element, it indicates that when the `popup` element is shown, focus
+should move to the `popup` element.
+
+**Example:**
+
+```html
+<popup autofocus>
+  <p>The popup itself will receive focus.</p>
+  <button>A focusable element</p>
+</popup>
+```
+
+When specified on a descendent of the `popup` element, it indicates that when the `popup` element is
+shown, focus should move to the descendent of the `popup` element where `autofocus` is specified.
+
+**Example:**
+
+```html
+<popup>
+  <p>Text goes here</p>
+  <button>Button one</button>
+  <button autofocus>Button two</p>
+</popup>
+```
+
 ### The `delegatesfocus` attribute
 
-The `delegatesfocus` attribute is a
+The `delegatesfocus` content attribute is a
 [boolean attribute](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attribute).
 When specified, it indicates that when the `popup` element is shown, focus should move to the first
 focusable descendent of the `popup` element.
@@ -245,37 +273,12 @@ focusable descendent of the `popup` element.
 </popup>
 ```
 
-### Focusing steps
+<h3 id="focusing-steps">Focusing steps</h3>
 
-The popup [focusing steps](https://html.spec.whatwg.org/multipage/interaction.html#focusing-steps)
-for a `popup` element _subject_ are as follows:
-
-1. If the `delegatesfocus` attribute is specified on _subject_, let _control_ be the first focusable
-   descendant element of _subject_, in [tree order](https://dom.spec.whatwg.org/#concept-tree-order),
-   that is not inert.
-2. If there is no such descendent, but `delegatesfocus` is specified, let _control_ be _subject_.
-3. Otherwise, if the `autofocus` attribute is specified on _subject_, let _control_ be _subject_.
-4. Otherwise, let _control_ be the first focusable descendant element of _subject_, in
-   [tree order](https://dom.spec.whatwg.org/#concept-tree-order), that is not inert and has the
-   [autofocus](https://html.spec.whatwg.org/multipage/interaction.html#attr-fe-autofocus) attribute
-   specified.
-5. If there is no _control_ as a result of running steps 1-4, return.
-6. Run the [focusing steps](https://html.spec.whatwg.org/multipage/interaction.html#focusing-steps)
-   for _control_.
-7. Let topDocument be the
-   [active document](https://html.spec.whatwg.org/multipage/browsers.html#active-document) of
-   _control_'s [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#concept-document-bc)'s
-   [top-level browsing context](https://html.spec.whatwg.org/multipage/browsers.html#top-level-browsing-context).
-8. If control's [node document](https://dom.spec.whatwg.org/#concept-node-document)'s
-   [origin](https://dom.spec.whatwg.org/#concept-document-origin) is not the
-   [same](https://html.spec.whatwg.org/multipage/origin.html#same-origin) as the
-   [origin](https://dom.spec.whatwg.org/#concept-document-origin) of _topDocument_, then return.
-9. [Empty](https://infra.spec.whatwg.org/#list-empty) _topDocument_'s
-   [autofocus candidates](https://html.spec.whatwg.org/multipage/interaction.html#autofocus-candidates).
-10. Set _topDocument_'s
-    [autofocus processed flag](https://html.spec.whatwg.org/multipage/interaction.html#autofocus-processed-flag)
-    to true.
+When a `popup` is shown, user agents must set the candidate `popup` element to the _focus target_,
+then run [get the focusable area
+steps](https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area) and
+[focusing steps](https://html.spec.whatwg.org/multipage/interaction.html#focusing=steps).
 
 <p class="note">
   Without the precense of the autofocus or delegatefocus attribute, focus remains on the active
@@ -324,15 +327,56 @@ the method was invoked.
 
 ### Light dismissal
 
-When a `popup` element is shown and a light dismiss interaction occurs, the user agent must run
-[hiding a `popup` element steps](#hiding-popup-steps) from the `popup` element _subject_.
+"Light dismiss" describes the behavior of a component which dismisses itself automatically when a
+user performs an action that implies that they are finished interacting with the component. The
+actions that trigger light dismiss are:
+
+- The user presses the escape key.
+- A focus change occurs (because of either user interaction or script), where the focus target is
+  outside of the contents of the component. This includes the case where the user invokes a
+  non-focusable element, which causes focus to jump to the nearest focusable ancestor of that element.
+- An OS-level focus change occurs such that the window containing the component no longer has focus.
+  For example, the user switches to a different browser tab or switches to a different application.
 
 <p class="todo">
   Land <a href="https://github.com/openui/open-ui/pull/243">#243</a> and link out to this canonical
-  definition of light dismissal for consistency. Layout changes to the popup or its anchor element
-  are also ground for light dismissal, figure out how to surface this special case. How to handle in
-  prose light dismiss behaviors that may dismiss some but not all currently-shown popups?
+  definition of light dismissal for consistency (remove inline definition). Layout changes to the
+  popup or its anchor element are also ground for light dismissal, figure out how to surface this
+  special case.
 </p>
+
+When a `popup` element is shown and a light dismiss interaction occurs:
+
+1. If a keypress event for the `ESCAPE` key was fired, the user agent must set the _subject_ to
+   the `popup` element and run [hiding a `popup` element steps](#hiding-popup-steps).
+2. If a focus change occurs, the user agent must set the _start node_ to the element which received
+   the focus event and run [Hiding currently-shown `popup` elements steps](#hiding-current-popups).
+3. Otherwise, the user agent must set the _start node_ to null and run [Hiding currently-shown
+   `popup` elements steps](#hiding-current-popups).
+
+<h3 id="hiding-current-popups">
+  Hiding currently-shown <code>popup</code> elements steps
+</h3>
+
+Starting at the top of the [popup stack](#popup-stack):
+
+1. Let _subject_ be the current `popup` element in the [popup stack](#popup-stack).
+2. If _candidate subject_ is null, skip to step 6.
+3. Otherwise, starting with the _candidate subject_, walk the
+   [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_ is
+   an ancestor to the _candidate subject_. If the _subject_ is an ancestor, then return.
+4. Otherwise, if the _invoker_ is not null, starting with the _invoker_, walk the
+   [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_ is
+   an ancestor to the _invoker_. If the _subject_ is an ancestor, then return.
+5. Otherwise, if the _anchor element_ is not null, starting with the _anchor element_, walk the
+   [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_ is
+   an ancestor to the _anchor element_. If the _subject_ is an ancestor, then return.
+6. If _start node_ is not null, starting with the _start node_, walk the
+   [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_ is
+   the _start node_ or an ancestor to the _start node_. If either condition is met, then return.
+7. Otherwise, for this _subject_, run the
+   [hiding a `popup` element steps](#hiding-popup-steps). Repeat for the next `popup` element in
+   the [popup stack](#popup-stack).
 
 <h3 id="hiding-popup-steps">
   Hiding a <code>popup</code> element steps
@@ -349,3 +393,26 @@ The hiding steps for a `popup` element _subject_ are as follows:
    on the [user interaction task source](https://html.spec.whatwg.org/multipage/webappapis.html#user-interaction-task-source)
    given the _subject_ element to [fire a non-cancelable event](https://dom.spec.whatwg.org/#concept-event-fire)
    named `hide` at _subject_.
+
+---
+
+## HTML Incubation Text: User Interaction > Focus > Processing Model
+
+<p class="note">
+  The following text to be inserted into the
+  <a href="https://html.spec.whatwg.org/multipage/interaction.html#focus-processing-model)">
+    get the focusable area steps
+  </a>.
+</p>
+
+**If _focus target_ is a `popup` element**
+
+1. If the `delegatesfocus` attribute is specified on _focus target_, return the first focusable
+   descendent element of _focus target_, in
+   [tree order](https://dom.spec.whatwg.org/#concept-tree-order), that is not inert.
+2. If there is no such descendent, but `delegatesfocus` is specified, return the _focus target_.
+3. Otherwise, if the `autofocus` attribute is specified on _focus target_, return the _focus target_.
+4. Otherwise, if the `autofocus` attribute is specified on a descendent element of _focus target_,
+   return the first such descendent element of _focus target_, in
+   [tree order](https://dom.spec.whatwg.org/#concept-tree-order), that is not inert.
+5. Otherwise, return.
