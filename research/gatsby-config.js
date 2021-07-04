@@ -68,7 +68,7 @@ module.exports = {
 
     'gatsby-plugin-remove-trailing-slashes',
 
-    `gatsby-plugin-sitemap`,
+    `gatsby-plugin-advanced-sitemap`,
 
     {
       resolve: `gatsby-plugin-typography`,
