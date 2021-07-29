@@ -106,6 +106,7 @@ const Navigation = ({ opened, githubURL }) => (
             
             {menu.map(([category, items]) => (
               <div key={category} style={{ margin: 0, listStyleType: 'none' }}>
+                <h3
                   style={{
                     display: 'inline-block',
                     opacity: 0.5,
@@ -113,6 +114,7 @@ const Navigation = ({ opened, githubURL }) => (
                   }}
                 >
                   {category}
+                </h3>
                 <ul style={{ margin: '0.25em 0 1.5em 0' }}>{items.map(listItem)}</ul>
               </div>
             ))}
