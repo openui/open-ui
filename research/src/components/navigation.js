@@ -109,8 +109,10 @@ const Navigation = ({ opened, githubURL }) => (
                 <h3
                   style={{
                     display: 'inline-block',
-                    opacity: 0.5,
-                    marginLeft: 'calc(2px + 0.5em)', // align with items
+                    opacity: 0.75,
+                    fontWeight: 'bold',
+                    fontSize: '1em',
+                    margin: '0 0 0 calc(2px + 0.5em)', // align with items
                   }}
                 >
                   {category}
