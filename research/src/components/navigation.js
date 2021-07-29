@@ -70,8 +70,8 @@ const Navigation = ({ opened, githubURL }) => (
         <nav id="site-nav" className={opened ? 'opened' : ''}>
           <CommunityLinks githubURL={githubURL} className={'mobile'} />
 
-          <ul style={{ top: '1em', margin: 0 }}>
-            <li
+          <div style={{ top: '1em', margin: 0 }}>
+            <div
               key="Home"
               style={{
                 margin: 0,
@@ -96,14 +96,16 @@ const Navigation = ({ opened, githubURL }) => (
               >
                 Home
               </Link>
-            </li>
+            </div>
+
+            <ul style={{ margin: '0.25em 0 1.5em 0' }}>
             {topLevelNodes.map(listItem)}
+            </ul>
 
             <div style={{ margin: '1rem' }} />
             
             {menu.map(([category, items]) => (
-              <li key={category} style={{ margin: 0, listStyleType: 'none' }}>
-                <div
+              <div key={category} style={{ margin: 0, listStyleType: 'none' }}>
                   style={{
                     display: 'inline-block',
                     opacity: 0.5,
@@ -111,11 +113,10 @@ const Navigation = ({ opened, githubURL }) => (
                   }}
                 >
                   {category}
-                </div>
                 <ul style={{ margin: '0.25em 0 1.5em 0' }}>{items.map(listItem)}</ul>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </nav>
       )
     }}
