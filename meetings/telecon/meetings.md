@@ -14,7 +14,7 @@ meetings, their agenda's and call in information please join the Open UI communi
 ## Discord
 
 Telecon agendas are announced in the #telecon-agendas channel in [our Discord
-server](https://discord.gg/W5QNec). If you join Discord, be sure to introduce
+server](https://discord.com/invite/DEWjhSw). If you join Discord, be sure to introduce
 yourself in the #introductions channel.
 
 ## IRC
