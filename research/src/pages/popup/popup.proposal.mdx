@@ -74,19 +74,17 @@ perform some task in a timely and immediate fashion. `popup` is similar to the `
 is distinguished by its transient nature (“light dismiss” behaviors) and mutual exclusivity: only
 one `popup` element may be rendered at a time, with the exception of nested `popup`s.
 
-When a `popup` is
-[browsing-context connected](https://html.spec.whatwg.org/#becomes-browsing-context-connected), set
-its _open state_ to `false`, prior to running any
-[showing a `popup` element steps](#showing-popup-steps) on the element, as applicable.
-
 <p class="note">
   Examples of popups include: button menus, listboxes used for item selection e.g. comboboxes,
   "teaching" UI, and other progressive-disclosure widgets or content pickers.
 </p>
 
+The `open` IDL attribute, on getting, must return the last value to which it was set. On setting,
+it must be set to the new value. When the element is created, it must be set to `false`.
+
 ## Showing a `popup` element
 
-A `popup` element and its contents should not be rendered unless:
+A `popup` element and its contents must not be rendered unless:
 
 - The `initiallyopen` attribute is specified
 - The `show()` method is invoked
@@ -115,8 +113,8 @@ Showing or hiding a `popup` element adds or removes the element from the popup s
 
 The `initiallyopen` attribute is a
 [boolean attribute](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attribute).
-When specified, it indicates that the `popup` element should have the `show()` method called upon
-document load, such that the user can interact with it.
+When specified, it indicates that the popup element will be shown upon document load, such that the
+user can interact with it.
 
 **Example:**
 
@@ -126,15 +124,14 @@ document load, such that the user can interact with it.
 
 When a `popup` element becomes
 [browsing-context connected](https://html.spec.whatwg.org/#becomes-browsing-context-connected), the
-user agent must run the following steps:
+user agent must run the following steps, given a popup element _candidate subject_:
 
-1. If the `initiallyopen` content attribute is specified on the `popup` element, run the
-   [showing a `popup` element steps](#showing-popup-steps) with _candidate subject_ set to the current
-   `popup` element.
-2. Otherwise, return.
+1. If the `initiallyopen` content attribute is specified on the _candidate subject_, run the
+   [showing a `popup` element steps](#showing-popup-steps).
+2. Otherwise, set the _candidate subject_'s _open state_ to `false`.
 
 <p class="note">
-  As a result of following these run steps: in the event that initiallyopen is specified on multiple
+  As a result of following this run step: in the event that initiallyopen is specified on multiple
   popups, the last of these popups (with the initiallyopen attribute) in the DOM order will be the
   popup that is rendered upon document load.
 </p>
@@ -209,7 +206,7 @@ steps:
    element, then return.
 2. Get the _subject_'s _open state_.
 3. If _subject_'s _open state_ is `true`, run
-   [hiding a `popup` element steps](#hiding-current-popups).
+   [hiding a `popup` element steps](#hiding-current-popups), with _subject_ and _invoker_.
 4. Otherwise, run [showing a `popup` element steps](#showing-popup-steps) with _subject_ and _invoker_.
 
 <p class="question">
@@ -228,13 +225,12 @@ element _invoker_, and an optional element _anchor element_, are:
    _candidate subject_, _invoker_ if it was given, and _anchor element_ if it was given.
 2. Add the _candidate subject_ to _candidate subject_'s
    [node document](https://dom.spec.whatwg.org/#concept-node-document)'s [popup stack](#popup-stack).
-3. Set the `open` IDL attribute on the _candidate subject_ to `true`.
-4. Set the _candidate subject_'s _open state_ to `true`.
-5. If the `popup` element was shown as a result of a user interaction with an `invoker`, internally
-   set the _candidate subject_'s _invoker_ to a pointer to the `invoker` element.
-6. Let _focusableArea_ be the result of [getting the focusable area
+3. Set the _candidate subject_'s _open state_ to `true`.
+4. If the `popup` element was shown as a result of a user interaction with an `invoker`,
+   set the _candidate subject_'s _invoker_ to _invoker_.
+5. Let _focusableArea_ be the result of [getting the focusable area
    steps](https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area) given _candidate subject_.
-7. Run the [focusing steps](https://html.spec.whatwg.org/multipage/interaction.html#focusing-steps) given _focusableArea_.
+6. Run the [focusing steps](https://html.spec.whatwg.org/multipage/interaction.html#focusing-steps) given _focusableArea_.
 
 <p class="note">
   Without the presence of the autofocus or delegatefocus attribute, focus remains on the active
@@ -250,7 +246,7 @@ content attribute allows the author to indicate that an element is to be focused
 page is loaded or as soon as the `popup` within which it finds itself is shown.
 
 When specified on the `popup` element, it indicates that when the `popup` element is shown, focus
-should move to the `popup` element.
+moves to the `popup` element.
 
 **Example:**
 
@@ -342,13 +338,6 @@ actions that trigger light dismiss are:
 - An OS-level focus change occurs such that the window containing the component no longer has focus.
   For example, the user switches to a different browser tab or switches to a different application.
 
-<p class="todo">
-  Land <a href="https://github.com/openui/open-ui/pull/243">#243</a> and link out to this canonical
-  definition of light dismissal for consistency (remove inline definition). Layout changes to the
-  popup or its anchor element are also ground for light dismissal, figure out how to surface this
-  special case.
-</p>
-
 When a `popup` element is shown and a light dismiss interaction occurs:
 
 1. If a keypress event for the `ESCAPE` key was fired, run [hiding a `popup` element
@@ -368,10 +357,10 @@ _candidate subject_, an optional element _invoker_, and an optional element _anc
 optional element _start node_, are as follows.
 
 For each popup element _subject_ in the
-[node document](https://dom.spec.whatwg.org/#concept-node-document)'s [popup stack](#popup-stack),
-from top to bottom:
+[node document](https://dom.spec.whatwg.org/#concept-node-document)'s [popup stack](#popup-stack):
 
-1. If _candidate subject_ is null, skip to step 6.
+1. If _candidate subject_ is null, run the
+   [hiding a `popup` element steps](#hiding-popup-steps), with _subject_ as _candidate subject_.
 2. Otherwise, starting with the _candidate subject_, walk the
    [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_
    is an ancestor to the _candidate subject_. If this condition is met, then return.
@@ -381,11 +370,14 @@ from top to bottom:
 4. Otherwise, if the _anchor element_ is not null, starting with the _anchor element_, walk the
    [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_
    is an ancestor to the _anchor element_. If this condition is met, then return.
-5. If _start node_ is not null, starting with the _start node_, walk the
+5. If _start node_ is not null:
+6. If the _start node_ is the _subject_, then return.
+7. Otherwise, starting with the _start node_, walk the
    [flat tree](https://drafts.csswg.org/css-scoping/#flattening) to determine whether the _subject_
-   is the _start node_ or an ancestor to the _start node_. If either condition is met, then return.
-6. Otherwise, for this _subject_, run the
-   [hiding a `popup` element steps](#hiding-popup-steps), with _subject_ as _candidate subject_.
+   is an ancestor to the _start node_. If this condition is met, then return.
+8. Otherwise, for this _subject_, run the
+   [hiding a `popup` element steps](#hiding-popup-steps), with _subject_ as _candidate subject_, and
+   optional element _invoker_.
 
 <h3 id="hiding-popup-steps">
   Hiding a <code>popup</code> element steps
@@ -396,10 +388,9 @@ element _invoker_, are as follows:
 
 1. Remove the _candidate subject_ from the
    [node document](https://dom.spec.whatwg.org/#concept-node-document)'s [popup stack](#popup-stack).
-2. Set the `open` IDL attribute on the _candidate subject_ to `false`.
-3. Set the _candidate subject_'s _open state_ to `false`.
-4. If applicable, empty the _candidate subject_'s _invoker_.
-5. [Queue an element task](https://html.spec.whatwg.org/multipage/webappapis.html#queue-an-element-task)
+2. Set the _candidate subject_'s _open state_ to `false`.
+3. Set the _candidate subject_'s _invoker_ to _null_.
+4. [Queue an element task](https://html.spec.whatwg.org/multipage/webappapis.html#queue-an-element-task)
    on the [user interaction task source](https://html.spec.whatwg.org/multipage/webappapis.html#user-interaction-task-source)
    given the _candidate subject_ element to
    [fire an event](https://dom.spec.whatwg.org/#concept-event-fire)
@@ -411,7 +402,7 @@ element _invoker_, are as follows:
 
 <p class="note">
   The following text to be inserted into the
-  <a href="https://html.spec.whatwg.org/multipage/interaction.html#focus-processing-model)">
+  <a href="https://html.spec.whatwg.org/multipage/interaction.html#focus-processing-model">
     get the focusable area steps
   </a>.
 </p>
