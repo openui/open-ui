@@ -161,6 +161,18 @@ children:
 
 ## Behavior
 
+### Design Specification
+
+When specifying a select in design comps, the following accessibility red lines need to be called out: 
+
+_Example Table_
+
+| Red line | Detail | Notes |
+| ---------- | --------------- | ------- |
+| name    | label              | This is usually the visible label of the select  |
+| role    | combobox           |   |
+| value   | "Make a selection" | It is a better experience to not have an empty default value |
+
 ### States <a class="link" href="#states" id="states"></a>
 
 #### open <a href="#open" class="link" id="open-state"></a>
@@ -182,6 +194,26 @@ The `<select>` does not meet its validation constraints,
 and is therefore considered to be invalid.
 
 ### Interaction &amp; transition of states
+
+[Select Usage State Diagram](https://xstate.js.org/viz/?gist=7965135d58118c828140f6e830ca93a1)
+
+![Usage of select within other UI](../../images/statediagram-usage-select.png)
+
+[Select State Diagram](https://xstate.js.org/viz/?gist=24e03b6b21dcb0d1eb7471d6ff9043f3)
+
+![States of a select](../../images/statediagram-select.png)
+
+A `change`event fires on AltUpOREnter, as well as when tabbing off the select when the listbox is open.
+
+### Walk Through Scenario Example
+_Example Table_
+
+| State | Action | Resulting red line change | State change / Event fired
+| ---------- | --------------- | ------- | --------- |
+| collapsed    | Alt+Down      |  | expanded |
+| expanded | Type Ahead        |  |  |
+| navigating   | Enter | Value: `<new value>` | change |
+| collapsed |  |  |  |
 
 **Default State**
 
