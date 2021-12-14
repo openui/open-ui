@@ -37,4 +37,4 @@ the RRSAgent will provide the URL where the generated minutes will end up (it de
 
 # Participating in a meeting
 
-Please see [`meetings.md`](https://github.com/openui/open-ui/blob/master/meetings/telecon/meetings.md) for more information.
+Please see [`meetings.md`](https://github.com/openui/open-ui/blob/main/meetings/telecon/meetings.md) for more information.
