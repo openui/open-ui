@@ -20,4 +20,4 @@ yarn build        # build docs
 
 ## Deployments
 
-The site is deployed automatically on merge to `master`.
+The site is deployed automatically on merge to `main`.
