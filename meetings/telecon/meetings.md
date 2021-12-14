@@ -51,4 +51,4 @@ An example of this is:
 
 ### Setting up and running a meeting
 
-Please refer to [`chair-meeting.md`](https://github.com/WICG/open-ui/blob/master/meetings/telecon/chair-meeting.md).
+Please refer to [`chair-meeting.md`](https://github.com/openui/open-ui/blob/master/meetings/telecon/chair-meeting.md).
