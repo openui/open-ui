@@ -4,6 +4,8 @@ path: /prototypes/selectmenu
 menu: Prototypes
 ---
 
+import SelectAnatomy from '../../components/select-anatomy'
+
 # selectmenu
 
 Based on the [select](../components/select) proposal, the implementation of a new `<selectmenu>` control has started in [Chromium](https://chromestatus.com/feature/5737365999976448).
@@ -19,18 +21,18 @@ If you encouter bugs or limitations with the design of the control, please send 
 
 Because the various parts of the selectmenu can be styled, it's important to understand the anatomy of this UI control.
 
-- selectmenu
-  - button
-    - selected-value
-  - listbox
-    - opt-group (optional)
-      - option
+<SelectAnatomy />
+
+- `<select>` - The root element that contains the button and listbox.
+- `<button>` - The button element that contains the selected value and triggers the visibility of the listbox.
+- `<selected-value>` - The element that displays the selected value text.
+- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
+- `<optgroup>` - Groups `<option>`(s) together with a label (optional).
+- `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
 ## Default behavior
 
-The default behavior of the `<selectmenu>` control mimics the behavior of the native `<select>` control.
-
-You can use it just like a native `<select>`, with the following markup:
+The default behavior of the `<selectmenu>` control mimics the behavior of the `<select>` control. You can use it just like a native `<select>`, with the following minimal markup:
 
 ```html
 <selectmenu>
@@ -40,7 +42,7 @@ You can use it just like a native `<select>`, with the following markup:
 </selectmenu>
 ```
 
-When doing so, the default button, select-value, and listbox will be created for you.
+When doing so, the default button, select-value, and listbox are created for you.
 
 ## Styling parts of the control
 
@@ -60,6 +62,8 @@ One way to style the control to match your requirements is to use the CSS `::par
   border-radius: 5px;
 }
 ```
+
+`::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
 
 ## Use your own markup
 
