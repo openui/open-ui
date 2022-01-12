@@ -1,0 +1,82 @@
+---
+name: selectmenu
+path: /prototypes/selectmenu
+menu: Prototypes
+---
+
+# selectmenu
+
+Based on the [select](../components/select) proposal, the implementation of a new `<selectmenu>` control has started in [Chromium](https://chromestatus.com/feature/5737365999976448).
+This control is available in Chromium-based browsers by enabling the **Experimental Web Platform features** experiment in about:flags.
+
+## Help test the control
+
+`<selectmenu>` is not ready for production use yet, but we value your feedback if you want to spend some time testing it. By being an early tester, you can actively help us make the control better for everyone. Read the documentation below to learn how to use the control.
+
+If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues) (prefixing your issue title with `[select]`).
+
+## Anatomy of the selectmenu
+
+Because the various parts of the selectmenu can be styled, it's important to understand the anatomy of this UI control.
+
+- selectmenu
+  - button
+    - selected-value
+  - listbox
+    - opt-group (optional)
+      - option
+
+## Default behavior
+
+The default behavior of the `<selectmenu>` control mimics the behavior of the native `<select>` control.
+
+You can use it just like a native `<select>`, with the following markup:
+
+```html
+<selectmenu>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
+```
+
+When doing so, the default button, select-value, and listbox will be created for you.
+
+## Styling parts of the control
+
+One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
+
+```css
+/* Make the button red with white text. */
+.my-select-menu::part(button) {
+  color: white;
+  background-color: #f00;
+}
+
+/* Change the listbox's padding and border */
+.my-select-menu::part(listbox) {
+  padding: 10px;
+  border: 1px solid red;
+  border-radius: 5px;
+}
+```
+
+## Use your own markup
+
+To further customize the control to fit your needs, you can provide your own markup to replace the default one, as well as extend the existing parts.
+
+### Slotting your own markup
+
+TODO
+
+### Wiring the browser behavior
+
+TODO
+
+### Extending the markup
+
+TODO
+
+## Examples
+
+TODO: show some examples, with code snippets to help devs understand the control.
