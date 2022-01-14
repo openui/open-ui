@@ -6,7 +6,7 @@ menu: Prototypes
 
 import SelectAnatomy from '../../components/select-anatomy'
 
-# selectmenu
+# &lt;selectmenu&gt;
 
 Based on the [select](../components/select) proposal, the implementation of a new `<selectmenu>` control has started in [Chromium](https://chromestatus.com/feature/5737365999976448).
 This control is available in Chromium-based browsers by enabling the **Experimental Web Platform features** experiment in about:flags.
@@ -15,7 +15,7 @@ This control is available in Chromium-based browsers by enabling the **Experimen
 
 `<selectmenu>` is not ready for production use yet, but we value your feedback if you want to spend some time testing it. By being an early tester, you can actively help us make the control better for everyone. Read the documentation below to learn how to use the control.
 
-If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues) (prefixing your issue title with `[select]`).
+If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select) (prefixing your issue title with `[select]`).
 
 ## Anatomy of the selectmenu
 
@@ -24,8 +24,8 @@ Because the various parts of the selectmenu can be styled, it's important to und
 <SelectAnatomy />
 
 - `<select>` - The root element that contains the button and listbox.
-- `<button>` - The button element that contains the selected value and triggers the visibility of the listbox.
-- `<selected-value>` - The element that displays the selected value text.
+- `<button>` - The button element that triggers the visibility of the listbox.
+- `<selected-value>` - The element that displays the value of the currently selected option (optional).
 - `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
 - `<optgroup>` - Groups `<option>`(s) together with a label (optional).
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
@@ -71,13 +71,70 @@ To further customize the control to fit your needs, you can provide your own mar
 
 ### Slotting your own markup
 
-TODO
+A `<selectmenu>` has named [slots](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots#adding_flexibility_with_slots)
+that can be referenced to replace the default `button` or `listbox` parts. For example, to replace
+the default button with your own, you can do the following:
+
+```html
+<style>
+  .custom-button {
+    /* Styles for my custom button */
+  }
+</style>
+<selectmenu>
+  <div slot="button">
+    <div behavior="button" class="custom-button">
+      My custom button
+      <img src="/my-custom-button-icon.jpg" />
+    </div>
+  </div>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
+```
+
+The `slot="button"` attribute on the outer `<div>` tells the `<selectmenu>` to replace its default
+button with the contents of that `<div>`.
+
+The `behavior="button"` attribute on the inner `<div>` tells the browser that this element is what
+we want to use as the new button. The browser will automatically apply all the behavior to this
+element that we expect for a select menu's button, like click and keyboard handlers that open the
+listbox and the appropriate accessibility semantics.
+
+You can replace the default listbox in a similar fashion:
+
+```html
+<style>
+  .custom-listbox {
+    /* Styles for my custom listbox */
+  }
+</style>
+<selectmenu>
+  <div slot="listbox">
+    <popup behavior="listbox" class="custom-listbox">
+      <option>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+    </popup>
+</selectmenu>
+```
+
+The `<popup>` used here is the element proposed at
+[Popup (Editor's Draft)](http://localhost:8000/components/popup). The element with
+`behavior="listbox"` is required to be a `<popup>`. Applying `behavior="listbox"` tells the browser
+to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s
+button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
 ### Wiring the browser behavior
 
 TODO
 
 ### Extending the markup
+
+TODO
+
+### Replacing the default shadow DOM
 
 TODO
 
