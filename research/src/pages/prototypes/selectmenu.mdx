@@ -142,17 +142,17 @@ You can replace the default listbox part in a similar fashion:
 
 ```html
 <style>
-.my-custom-select popup {
-  width: 300px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  padding: 10px;
-  box-shadow: none;
-  margin: 10px 0;
-  border: 1px solid;
-  background: #f7f7f7;
-}
+  .my-custom-select popup {
+    width: 300px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    box-shadow: none;
+    margin: 10px 0;
+    border: 1px solid;
+    background: #f7f7f7;
+  }
 </style>
 <selectmenu class="my-custom-select">
   <div slot="listbox">
@@ -163,6 +163,7 @@ You can replace the default listbox part in a similar fashion:
       <option>Option 4</option>
       <option>Option 5</option>
     </popup>
+  </div>
 </selectmenu>
 ```
 
@@ -182,9 +183,74 @@ Not only can you replace the default parts with your own, you can also extend th
 Consider the following example:
 
 ```html
-<style></style>
-<selectmenu class="my-custom-select"></selectmenu>
+<style>
+  .my-custom-select [slot='button'] {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .my-custom-select button {
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+  }
+  .my-custom-select button::before {
+    content: '\25BC';
+  }
+  .my-custom-select popup {
+    padding: 0;
+  }
+  .my-custom-select .section {
+    padding: 1rem 0 0;
+    background: radial-gradient(ellipse 60% 50px at center top, #000a 0%, transparent 130%);
+  }
+  .my-custom-select h3 {
+    margin: 0 0 1rem 0;
+    text-align: center;
+    color: white;
+  }
+  .my-custom-select option {
+    text-align: center;
+    padding: 0.5rem;
+  }
+</style>
+<selectmenu class="my-custom-select">
+  <div slot="button">
+    <span class="label">Choose a plant</span>
+    <span behavior="selected-value" slot="selected-value"></span>
+    <button behavior="button"></button>
+  </div>
+  <div slot="listbox">
+    <popup behavior="listbox">
+      <div class="section">
+        <h3>Flowers</h3>
+        <option>Rose</option>
+        <option>Lily</option>
+        <option>Orchid</option>
+        <option>Tulip</option>
+      </div>
+      <div class="section">
+        <h3>Trees</h3>
+        <option>Weeping willow</option>
+        <option>Dragon tree</option>
+        <option>Giant sequoia</option>
+      </div>
+    </popup>
+  </div>
+</selectmenu>
 ```
+
+Using custom markup to wrap the list of options, the above example creates sections with their own styles and content as seen below:
+
+<Image
+  src="selectmenu-using-custom-markup.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
 
 ### Replacing the default shadow DOM
 
