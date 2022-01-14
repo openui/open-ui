@@ -5,6 +5,7 @@ menu: Prototypes
 ---
 
 import SelectAnatomy from '../../components/select-anatomy'
+import Image from '../../components/image'
 
 # &lt;selectmenu&gt;
 
@@ -13,9 +14,11 @@ This control is available in Chromium-based browsers by enabling the **Experimen
 
 ## Help test the control
 
-`<selectmenu>` is not ready for production use yet, but we value your feedback if you want to spend some time testing it. By being an early tester, you can actively help us make the control better for everyone. Read the documentation below to learn how to use the control.
+`<selectmenu>` is not ready for production use yet, but we value your feedback if you want to spend some time testing it.
 
-If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select) (prefixing your issue title with `[select]`).
+By being an early tester, you can actively help us make the control better for everyone. Read the documentation below to learn how to use the control.
+
+If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select).
 
 ## Anatomy of the selectmenu
 
@@ -25,7 +28,7 @@ Because the various parts of the selectmenu can be styled, it's important to und
 
 - `<select>` - The root element that contains the button and listbox.
 - `<button>` - The button element that triggers the visibility of the listbox.
-- `<selected-value>` - The element that displays the value of the currently selected option (optional).
+- `<selected-value>` - The element that displays the value of the currently selected option (optional). Note that this part does not necessarily have to be places inside the `<button>` part (read on for more information about how to slot your own markup).
 - `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
 - `<optgroup>` - Groups `<option>`(s) together with a label (optional).
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
@@ -48,45 +51,73 @@ When doing so, the default button, select-value, and listbox are created for you
 
 One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
 
-```css
-/* Make the button red with white text. */
-.my-select-menu::part(button) {
-  color: white;
-  background-color: #f00;
-}
+```html
+<style>
+  .my-select-menu::part(button) {
+    color: white;
+    background-color: #f00;
+    padding: 5px;
+    border-radius: 5px;
+  }
 
-/* Change the listbox's padding and border */
-.my-select-menu::part(listbox) {
-  padding: 10px;
-  border: 1px solid red;
-  border-radius: 5px;
-}
+  .my-select-menu::part(listbox) {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid red;
+    border-radius: 5px;
+  }
+</style>
+<selectmenu class="my-select-menu">
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
 ```
+
+The above example results in the following style:
+
+<Image
+  src="selectmenu-styling-parts.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
 
 `::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
 
 ## Use your own markup
 
-To further customize the control to fit your needs, you can provide your own markup to replace the default one, as well as extend the existing parts.
+You can further customize the control to fit your needs by providing your own markup to replace the default one, and extend and re-order the parts.
 
-### Slotting your own markup
+### Slotting your own content
 
 A `<selectmenu>` has named [slots](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots#adding_flexibility_with_slots)
-that can be referenced to replace the default `button` or `listbox` parts. For example, to replace
-the default button with your own, you can do the following:
+that can be referenced to replace the default parts.
+
+For example, to replace the default button with your own, you can do the following:
 
 ```html
 <style>
-  .custom-button {
-    /* Styles for my custom button */
+  .my-custom-select [slot='button'] {
+    display: flex;
+    align-content: center;
+  }
+  .my-custom-select button {
+    padding: 5px;
+    border: none;
+    background: #f06;
+    border-radius: 5px 0 0 5px;
+    color: white;
+    font-weight: bold;
+  }
+  .my-custom-select .label {
+    padding: 5px;
+    border: 1px solid #f06;
+    border-radius: 0 5px 5px 0;
   }
 </style>
-<selectmenu>
+<selectmenu class="my-custom-select">
   <div slot="button">
-    <div behavior="button" class="custom-button">
-      My custom button
-      <img src="/my-custom-button-icon.jpg" />
-    </div>
+    <button behavior="button">Open</button>
+    <span class="label">Choose an option</span>
   </div>
   <option>Option 1</option>
   <option>Option 2</option>
@@ -94,45 +125,66 @@ the default button with your own, you can do the following:
 </selectmenu>
 ```
 
-The `slot="button"` attribute on the outer `<div>` tells the `<selectmenu>` to replace its default
-button with the contents of that `<div>`.
+The `slot="button"` attribute on the outer `<div>` tells the `<selectmenu>` to replace its default button with the contents of that `<div>`.
 
-The `behavior="button"` attribute on the inner `<div>` tells the browser that this element is what
-we want to use as the new button. The browser will automatically apply all the behavior to this
-element that we expect for a select menu's button, like click and keyboard handlers that open the
-listbox and the appropriate accessibility semantics.
+The `behavior="button"` attribute on the inner `<button>` tells the browser that this element is what we want to use as the new button. The browser will automatically apply all the click and keyboard handling behavior to this element as well as the appropriate accessibility semantics.
 
-You can replace the default listbox in a similar fashion:
+The above code snippet results in the following style:
+
+<Image
+  src="selectmenu-replacing-button-part.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
+
+Note that the `slot` and `behavior` attributes can be used on the same element too.
+
+You can replace the default listbox part in a similar fashion:
 
 ```html
 <style>
-  .custom-listbox {
-    /* Styles for my custom listbox */
-  }
+.my-custom-select popup {
+  width: 300px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  box-shadow: none;
+  margin: 10px 0;
+  border: 1px solid;
+  background: #f7f7f7;
+}
 </style>
-<selectmenu>
+<selectmenu class="my-custom-select">
   <div slot="listbox">
-    <popup behavior="listbox" class="custom-listbox">
+    <popup behavior="listbox">
       <option>Option 1</option>
       <option>Option 2</option>
       <option>Option 3</option>
+      <option>Option 4</option>
+      <option>Option 5</option>
     </popup>
 </selectmenu>
 ```
 
-The `<popup>` used here is the element proposed at
-[Popup (Editor's Draft)](http://localhost:8000/components/popup). The element with
-`behavior="listbox"` is required to be a `<popup>`. Applying `behavior="listbox"` tells the browser
-to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s
-button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
+The `<popup>` used here is the element proposed at [Popup (Editor's Draft)](http://localhost:8000/components/popup). The element with `behavior="listbox"` is required to be a `<popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
-### Wiring the browser behavior
+The above code snippet results in the following style:
 
-TODO
+<Image
+  src="selectmenu-replacing-listbox-part.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
 
 ### Extending the markup
 
-TODO
+Not only can you replace the default parts with your own, you can also extend the control's markup by adding new elements. This can be useful to augment the listbox or button with extra information, or to add new functionality.
+
+Consider the following example:
+
+```html
+<style></style>
+<selectmenu class="my-custom-select"></selectmenu>
+```
 
 ### Replacing the default shadow DOM
 
@@ -140,4 +192,4 @@ TODO
 
 ## Examples
 
-TODO: show some examples, with code snippets to help devs understand the control.
+You can find multiple examples of `<selectmenu>` on our [demo page](https://microsoftedge.github.io/Demos/selectmenu/).
