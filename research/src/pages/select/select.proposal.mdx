@@ -117,6 +117,30 @@ children:
   Should this apply to the entire anatomy or solely the &lt;option&gt; and &lt;optgroup&gt; element
 </p>
 
+### Accessibility Implementation <a class="link" id="assistive-tech"></a>
+
+The `<select>` element represents a "combobox" and would be mapped as such across the different accessibility APIs per the [`combobox` role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) and the [HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings). The `<listbox>` popup would be mapped per the [`listbox` role](https://www.w3.org/TR/core-aam-1.2/) 
+
+The different parts of the `<select>` element and its popup `<listbox>` must expose the following default accessibility roles, states and properties: 
+
+
+| Part       | Role                   | State/Property Attribute     | Usage                                                                               |
+| -----------| -----------------------| -----------------------------|------------------------------------------------------------------------------------ |
+| select     |                        |                              | Serves as a wrapper to its accessible parts                                         |
+| button     | `combobox`             |                              | Exposes the necessary `combobox` role                                                |
+|            |                        | `aria-controls=IDREF`        | Creates association with the `listbox`                                              |
+|            |                        | `aria-expanded=true / false` | Identifies if the `listbox` popup is displayed. Reflects the `open` attribute       |
+|            |                        | `aria-haspopup=listbox`      | Identifies that the control will invoke a listbox popup. *Note* the [value of this attribute may change](https://github.com/w3c/aria/issues/1024#issuecomment-1011303969).      |
+|            |                        | `aria-controls=IDREF`        | Creates association with the `listbox`                                              |
+| listbox    | `listbox`              |                              | Exposes the necessary `listbox` role                                              |
+| option     | `option`               |                              | Exposes the necessary `option` role                                             |
+| optgroup   | `group`                |                              | xposes the necessary `group` role                                              |
+  
+**Note / open question:** the `<button>` part will need to use `aria-activedescendant` if keyboard focus is to remain on that element when the `<listbox>` popup is invoked. If keyboard focus is actually set to one of the `<option>` elements within the `<listbox>`, then this may not be necessary and focus management can be handled differently.
+
+**Question:** should all accessibile states and properties be covered here?  e.g., `disabled`, `selected`, etc.?  If `<select>` will retain multiselect functionality, it seems reasonable. If not, then it may be beyond what's necessary.
+
+
 ## Events <a class="link" href="#events" id="events"></a>
 
 ### select
@@ -130,11 +154,11 @@ children:
 | Event            | Behavior                                          | Impacts                                                                 |
 | ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
 | `click`          | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
-| `click`          | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `click`          | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.2/#aria-expanded) attr |
 | `keydown(space)` | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
-| `keydown(space)` | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)` | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.2/#aria-expanded) attr |
 | `keydown(enter)` | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
-| `keydown(enter)` | Toggles `aria-expanded` of the `button part`      | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(enter)` | Toggles `aria-expanded` of the `button part`      | [aria-expanded](https://www.w3.org/TR/wai-aria-1.2/#aria-expanded) attr |
 
 ### part listbox
 
@@ -285,11 +309,6 @@ When the `<select>` is in its `open` state the `listbox` should
   Some frameworks allow a forced directionality with the default being an auto positioning as
   described above.
 </p>
-
-#### Use with Assistive Technology <a class="link" id="assistive-tech"></a>
-
-Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
-[HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
 
 ### Security <a class="link" href="#security" id="security"></a>
 
