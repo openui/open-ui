@@ -126,20 +126,34 @@ The different parts of the `<select>` element and its popup `<listbox>` must exp
 
 | Part       | Role                   | State/Property Attribute     | Usage                                                                               |
 | -----------| -----------------------| -----------------------------|------------------------------------------------------------------------------------ |
-| select     |                        |                              | Serves as a wrapper to its accessible parts                                         |
-| button     | `combobox`             |                              | Exposes the necessary `combobox` role                                                |
-|            |                        | `aria-controls=IDREF`        | Creates association with the `listbox`                                              |
-|            |                        | `aria-expanded=true / false` | Identifies if the `listbox` popup is displayed. Reflects the `open` attribute       |
-|            |                        | `aria-haspopup=listbox`      | Identifies that the control will invoke a listbox popup. *Note* the [value of this attribute may change](https://github.com/w3c/aria/issues/1024#issuecomment-1011303969).      |
-|            |                        | `aria-controls=IDREF`        | Creates association with the `listbox`                                              |
-| listbox    | `listbox`              |                              | Exposes the necessary `listbox` role                                              |
-| option     | `option`               |                              | Exposes the necessary `option` role                                             |
-| optgroup   | `group`                |                              | Exposes the necessary `group` role                                              |
-  
+| select     |                        |                              | Serves as a wrapper to its accessible parts.                                         |
+|            |                        | `disabled`                   | If specified, the `combobox` must be exposed as disabled and the element's popup listbox cannot be invoked. Remove the element from being in the document tab order. Expose the `combobox` as `aria-disabled=true`. |
+|            |                        | `required`                   | If specified, the element will require a user select a value (option) before submitting a form. Expose the `combobox` as `aria-required=true`.  If upon form submission a value has not been chosen, expose the `combobox` as `aria-invalid=true`. |
+| button     | `combobox`             |                              | Exposes the necessary `combobox` role.                                                |
+|            |                        | `aria-controls=IDREF`        | Creates association with the `listbox`.                                              |
+|            |                        | `aria-expanded=true / false` | Identifies if the `listbox` popup is displayed. Reflects the `open` attribute.       |
+|            |                        | `aria-haspopup=listbox`      | Identifies that the control will invoke a listbox popup. *Note* the [value of this attribute may change](https://github.com/w3c/aria/issues/1024#issuecomment-1011303969).   **Note:** if this element can invoke content beyond a `listbox`, e.g., a popup containing a `listbox` and a text field, then the `listbox` value would need to be `dialog` and the element containing the text field and `listbox` would need to be exposed as a non-modal dialog.   |
+|            |                        | `aria-controls=IDREF`        | Creates association with the `listbox`.                                              |
+| listbox    | `listbox`              |                              | Exposes the necessary `listbox` role.                                              |
+| option     | `option`               |                              | Exposes the necessary `option` role.                                             |
+|            |                        | `disabled`                   | The element is exposed as disabled and it cannot be selected by a user, or can a user use arrow keys to navigate to this option. Expose the `option` as `aria-disabled=true`.|
+|            |                        | `selected`                   | The element is exposed as being in the selected state for a single-select `listbox`. Exposed as `aria-selected=true`.  Other `option` elements within a single-select `listbox` must be exposed as `aria-selected=false`.|
+| optgroup   | `group`                |                              | Exposes the necessary `group` role.                                              |
+|            |                        | `disabled`                   | Identifies all `option` elements within the `optgroup` as being in the disabled state. All `option` elements must be treated as if they had been provided the `disabled` attribute themselves.  |
+
+**TODO:** add in accessibility considerations for `multiple` depending on resolution of [issue 447](https://github.com/openui/open-ui/issues/447).
+
+### Dismissal of the popup contnet
+
 **Note / open question:** the `<button>` part will need to use `aria-activedescendant` if keyboard focus is to remain on that element when the `<listbox>` popup is invoked. If keyboard focus is actually set to one of the `<option>` elements within the `<listbox>`, then this may not be necessary and focus management can be handled differently.
 
-**Question:** should all accessibile states and properties be covered here?  e.g., `disabled`, `selected`, etc.?  If `<select>` will retain multiselect functionality, it seems reasonable. If not, then it may be beyond what's necessary.
+If a `listbox` has been invoked by a user, then <kbd>Esc</kbd> must dismiss the `listbox` and keyboard focus must return to the invoking `combobox`.
 
+Similarly, if a user confirms selection of an `option` from a single-select popup `listbox`, then the `listbox` is dismissed and keyboard focus must return to the invoking `combobox`.
+
+If a user navigates away from the exposed `listbox` by use of the <kbd>Tab</kbd> or <kbd>Shift</kbd> + <kbd>Tab</kbd> keys, then focus must move to the next or previous focusable element, respectively. The `listbox` is dismissed via light dismiss behaviors.
+
+If a `listbox` is in the open state, and pointer event is detected on the parent `select` or the `combobox` which has invoked the popup `listbox`, then the `listbox` must return to the collapsed state.
 
 ## Events <a class="link" href="#events" id="events"></a>
 
