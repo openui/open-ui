@@ -17,6 +17,8 @@ import semantic from './semantic.json5'
 import stardust from './stardust.json5'
 import w3 from './w3.json5'
 import web from './web.json5'
+import radix from './radixui.json5'
+import reakit from './reakit.json5'
 
 // Sources
 export const sources = [
@@ -37,6 +39,8 @@ export const sources = [
   stardust,
   w3,
   web,
+  radix,
+  reakit,
 ].map((source) => ({
   ...source,
   components: source.components.map((component) => {
