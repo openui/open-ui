@@ -254,7 +254,82 @@ Using custom markup to wrap the list of options, the above example creates secti
 
 ### Replacing the default shadow DOM
 
-TODO
+Another way to extend the control's markup is to replace its default shadow DOM altogether
+by calling [`attachShadow()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow).
+For example, the demo in the [previous section](#extending-the-markup) could be modified as follows:
+
+```html
+<selectmenu id="my-custom-select"></selectmenu>
+<script>
+  const myCustomSelect = document.querySelector('#my-custom-select')
+  const shadow = myCustomSelect.attachShadow({ mode: 'closed' })
+  shadow.innerHTML = `
+    <style>
+    .button-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    button {
+      border: none;
+      margin: 0;
+      padding: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: grid;
+      place-content: center;
+    }
+    button::before {
+      content: '\\0025BC';
+    }
+    popup {
+      padding: 0;
+    }
+    .section {
+      padding: 1rem 0 0;
+      background: radial-gradient(ellipse 60% 50px at center top, #000a 0%, transparent 130%);
+    }
+    h3 {
+      margin: 0 0 1rem 0;
+      text-align: center;
+      color: white;
+    }
+    option {
+      text-align: center;
+      padding: 0.5rem;
+    }
+    option:hover {
+      background-color: lightgrey;
+    }
+  </style>
+  <div class="button-container">
+    <span class="label">Choose a plant</span>
+    <span behavior="selected-value" slot="selected-value"></span>
+    <button behavior="button"></button>
+  </div>
+  <popup behavior="listbox">
+    <div class="section">
+      <h3>Flowers</h3>
+      <option>Rose</option>
+      <option>Lily</option>
+      <option>Orchid</option>
+      <option>Tulip</option>
+    </div>
+    <div class="section">
+      <h3>Trees</h3>
+      <option>Weeping willow</option>
+      <option>Dragon tree</option>
+      <option>Giant sequoia</option>
+    </div>
+  </popup>
+  `
+</script>
+```
+
+Written this way, the `<selectmenu>`'s custom markup is fully encapsulated in its shadow DOM. The
+`<selectmenu>` can therefore be dropped into any page without risk of interference from the
+surrounding content's styles.
 
 ## Examples
 
