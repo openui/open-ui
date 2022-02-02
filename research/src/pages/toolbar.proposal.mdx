@@ -1,0 +1,72 @@
+---
+menu: Proposals
+name: Toolbar (Editor's Draft)
+path: /components/toolbar
+pathToResearch: /components/toolbar.research
+---
+
+import ToolbaAnatomy from '../components/toolbar-anatomy'
+
+## Overview
+
+A `toolbar` is a container for grouping a set of controls, such as buttons, menubuttons, or checkboxes.
+
+## Use Cases
+
+A `Toolbar` groups visually a set of controls semantically algined and it can also be ane effective way of reducing the number of tab stops
+
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+- [Stardust](https://fluentsite.z22.web.core.windows.net/0.59.0/components/toolbar/definition)
+- [Reakit](https://reakit.io/docs/toolbar/)
+- [Radix UI](https://www.radix-ui.com/docs/primitives/components/toolbar)
+
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
+
+<ToolbaAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<toolbar>` - The root element that that has the semantic value of a toolbar **[required]**
+- `<toolbar-item>` - The item to be rendered in the toolbar **[required]**
+
+Proposed HTML:
+
+```html
+<div>
+  <button />
+  <div>
+    <button />
+    <button />
+  </div>
+  <span />
+  <button />
+</div>
+```
+
+#### Accessibility <a class="link" href="#accessibility" id="accessibility"></a>
+
+- The element that serves as the toolbar container has role toolbar.
+- If the toolbar has a visible label, it is referenced by aria-labelledby on the toolbar element. Otherwise, the toolbar element has a label provided by aria-label.
+- If the controls are arranged vertically, the toolbar element has aria-orientation set to vertical. The default orientation is horizontal.
+- Implement focus management so the keyboard tab sequence includes one stop for the toolbar and arrow keys move focus among the controls in the toolbar.
+  - In horizontal toolbars, Left Arrow and Right Arrow navigate among controls. Up Arrow and Down Arrow can duplicate Left Arrow and Right Arrow, respectively, or can be reserved for operating controls, such as spin buttons that require vertical arrow keys to operate.
+  - In vertical toolbars, Up Arrow and Down Arrow navigate among controls. Left Arrow and Right Arrow can duplicate Up Arrow and Down Arrow, respectively, or can be reserved for operating controls, such as horizontal sliders that require horizontal arrow keys to operate.
+  - In toolbars with multiple rows of controls, Left Arrow and Right Arrow can provide navigation that wraps from row to row, leaving the option of reserving vertical arrow keys for operating controls.
+- Avoid including controls whose operation requires the pair of arrow keys used for toolbar navigation. If unavoidable, include only one such control and make it the last element in the toolbar. For example, in a horizontal toolbar, a textbox could be included as the last element.
+- Use toolbar as a grouping element only if the group contains 3 or more controls.
+
+#### Keyboard Navigation <a class="link" href="#keyboard" id="keyboard"></a>
+
+- Tab and Shift + Tab: Move focus into and out of the toolbar. When focus moves into a toolbar:
+  - If focus is moving into the toolbar for the first time, focus is set on the first control that is not disabled.
+  - If the toolbar has previously contained focus, focus is optionally set on the control that last had focus. Otherwise, it is set on the first control that is not disabled.
+- For a horizontal toolbar (the default):
+  - Left Arrow: Moves focus to the previous control. Optionally, focus movement may wrap from the first element to the last element.
+  - Right Arrow: Moves focus to the next control. Optionally, focus movement may wrap from the last element to the first element.
+- Home (Optional): Moves focus to first element.
+- End (Optional): Moves focus to last element.
+
+## Resources <a class="link" href="#resources" id="resources"></a>
+
+- [WAI-ARIA Toolbar](https://www.w3.org/TR/wai-aria-practices/#toolbar)
