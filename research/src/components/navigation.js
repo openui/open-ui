@@ -98,12 +98,10 @@ const Navigation = ({ opened, githubURL }) => (
               </Link>
             </div>
 
-            <ul style={{ margin: '0.25em 0 1.5em 0' }}>
-            {topLevelNodes.map(listItem)}
-            </ul>
+            <ul style={{ margin: '0.25em 0 1.5em 0' }}>{topLevelNodes.map(listItem)}</ul>
 
             <div style={{ margin: '1rem' }} />
-            
+
             {menu.map(([category, items]) => (
               <div key={category} style={{ margin: 0, listStyleType: 'none' }}>
                 <h3
