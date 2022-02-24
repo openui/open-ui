@@ -6,7 +6,7 @@ menu: Documentation
 
 # Getting Involved
 
-We welcome all types of contributions from attending a meeting, to giving feedback, to conducting research, facilitating input gathering, writing a spec and/or implementing a web component. Below is your guide to contributing.
+We welcome all types of contributions from attending a meeting, to giving feedback, to conducting research, facilitating input gathering, writing a spec and/or implementing a Web Component. Below is your guide to contributing.
 
 ## Getting Started
 
@@ -40,7 +40,7 @@ Research is a cornerstone of Open UI. Research enables us to not only ensure all
 - Includes a summary which incorporates and distills the themes from different sources.
 - Example research flow
   - Get input from n number of +1s from y sites with more than n users
-  - Create a web component
+  - Create a Web Component
   - Get feedback from authors
   - Get end user experience
 
@@ -92,7 +92,7 @@ In either case, we strive to write our specification prose in a way that is legi
 
 - Create Component Spec: component-spec-template.mdx which will involve specifying the anatomy, behavior and states of a component. Things you should consider in your Component spec:
   - are you creating a new selector? It should be defined in a similar fashion to the [selectors spec](https://drafts.csswg.org/selectors/) in CSS. If you are adding a pseudo class selector (e.g. :hover), or a pseudo-element selector (e.g. ::before) it should also be described.
-  - Are you adding a new element to html? If so it should
+  - Are you adding a new element to HTML? If so it should
     - be described in this spec with the same scope as the HTML spec, though feel free to make it more accessible to understand as a user or a web developer.
     - You’ll also need to add default rendering rules. You can use CSS for this.
     - Make sure to include a consideration for both the browser rendering, and the AT rendering. If you can’t represent your component in ARIA you should also add new ARIA prose to your spec. New elements should also have HTML Accessibility API Mappings (AAM) described, and document conformance requirements (for validators/conformance checkers) specified.
@@ -158,9 +158,9 @@ Once you have sign off on the spec from these stakeholders, you can advance your
 
 ### 3.1 Determine outcome: Open UI Component, Graduated Spec, or Both
 
-The first step of Stage 3 is to determine if this feature is going to be added to the platform directly by browser engine implementers, or implemented in JavaScript, HTML and CSS as a web Component. For implementation in a web browser, it's often the case that you might first implement a web component. So often the answer may be both.
+The first step of Stage 3 is to determine if this feature is going to be added to the platform directly by browser engine implementers, or implemented in JavaScript, HTML and CSS as a web Component. For implementation in a web browser, it's often the case that you might first implement a Web Component. So often the answer may be both.
 
-For the purposes of Open UI, we consider a Web Component to be an implementation. We still distinguish between a "web component" and a "graduated" component, because of the different work that goes into adding a component to a browser engine.
+For the purposes of Open UI, we consider a Web Component to be an implementation. We still distinguish between a "Web Component" and a "graduated" component, because of the different work that goes into adding a component to a browser engine.
 
 ### 3.2a Implementing a Web Component
 
@@ -175,7 +175,7 @@ If you have buy in from browser engines, HTML/CSS/ARIA editors to add the compon
 ##### CSS
 
 If you have a need to add a new selector, it should be defined in the [selectors spec](https://drafts.csswg.org/selectors/).
-If you are adding a pseudo class selector (e.g. :hover), or a pseudo-element selector (e.g. ::before) it should be added to the [pseudo spec](https://drafts.csswg.org/css-pseudo-4/), and the html semantics for that pseudo-class or pseudo-element selector should be in the html spec [pseudo-classes section](https://html.spec.whatwg.org/multipage/semantics-other.html#pseudo-classes).
+If you are adding a pseudo class selector (e.g. :hover), or a pseudo-element selector (e.g. ::before) it should be added to the [pseudo spec](https://drafts.csswg.org/css-pseudo-4/), and the HTML semantics for that pseudo-class or pseudo-element selector should be in the HTML spec [pseudo-classes section](https://html.spec.whatwg.org/multipage/semantics-other.html#pseudo-classes).
 
 For example, the `disabled` selector is defined in CSS here: https://drafts.csswg.org/selectors/#enableddisabled and in HTML here: https://html.spec.whatwg.org/multipage/semantics-other.html#selector-disabled .
 
@@ -209,7 +209,7 @@ For new elements, you’ll also need to add a new document that adheres to the c
 
 #### States
 
-There are two types of states in the html spec, internal and external. Internal states are stored in the browser’s internal data structure (“internal slot” in spec language), whereas external states (e.g. checkbox disabled, select open) are stored in HTML attributes only (e.g. details open).
+There are two types of states in the HTML spec, internal and external. Internal states are stored in the browser’s internal data structure (“internal slot” in spec language), whereas external states (e.g. checkbox disabled, select open) are stored in HTML attributes only (e.g. details open).
 
 ### 3.3 Write Tests
 
