@@ -1,5 +1,6 @@
 name: Add labels to stale issues
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
 
@@ -11,8 +12,8 @@ jobs:
         with:
           days-before-issue-stale: 180
           days-before-pr-stale: -1
-          days-before-issue-closed: -1
-          days-before-pr-closed: -1
+          days-before-issue-close: -1
+          days-before-pr-close: -1
           stale-issue-label: "stale"
           stale-issue-message: "There hasn't been any discussion on this issue for a while, so we'll marking this issue as stale. Kick the discussion off again and we'll remove the 'stale' label."
           stale-pr-message: "Message to comment on stale PRs. If none provided, will not mark PRs stale"
