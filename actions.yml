@@ -1,0 +1,18 @@
+name: Add labels to stale issues
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v4
+        with:
+          days-before-issue-stale: 180
+          days-before-pr-stale: -1
+          days-before-issue-closed: -1
+          days-before-pr-closed: -1
+          stale-issue-label: "stale"
+          stale-issue-message: "There hasn't been any discussion on this issue for a while, so we'll marking this issue as stale. Kick the discussion off again and we'll remove the 'stale' label."
+          stale-pr-message: "Message to comment on stale PRs. If none provided, will not mark PRs stale"
