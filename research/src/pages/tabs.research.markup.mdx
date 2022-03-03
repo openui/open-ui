@@ -1,0 +1,366 @@
+---
+name: Tabs Markup research
+path: /components/tabs.research.markup
+showInMenu: false
+---
+
+In this document we will discuss various APIs that we found regarding TabSets, attempt to describe them and, finally, offer our observations and recommendations on how to focus work in open-ui. Note that throughout this document we will use the [terminology as defined in our research](https://open-ui.org/components/tabs.research.parts#parts-and-terminology).
+
+# **Tab Set API and Markup Approaches**
+
+Different libraries approach APIs around creation and management of Tab Sets quite differently. While, broadly speaking, there are general similarities in basic features, the actual details beyond this differ a lot. There are numerous reasons for this, but one very significant reason seems to be the simple fact that different environments provide different programming models, constraints and abstractions that influence the shape of their API.
+
+Very broadly speaking, one can separate APIs into two major groups: “things that attempt to be expressed and programmed against in terms of DOM nodes” and “things that do not”. In the latter case, APIs are free to present pure abstractions and impose whatever arbitrary limits or features they choose. For example, a Tab Section in a pure abstraction form might require two pieces of data (the label and the content) at once in order to be created in the first place, or, it can be impossible to remove the last one from a set. In these cases, what they differ on is mostly which objects provide which APIs (i.e., does a Tab Set even expose its individual Tab Sections once created, or which reference provides the means of activation and how).
+
+We will focus here on reviewing things that have attempted to be expressed in terms of DOM nodes, and a complete control (that is, not only a Tab Bar), save for one note at the end that might be relevant.
+
+# Table of contents
+
+- [Survey of DOM Flavors and Elements Added](#survey-of-dom-flavors-and-elements-added)
+  - [5 Elements (collections of collections)](#5-elements-collections-of-collections)
+  - [3 Elements (container of pairs of parts)](#3-elements-container-of-pairs-of-parts)
+  - [2 Elements (attribute labelling)](#2-elements-attribute-labelling)
+  - [2 Elements (container of sections)](#2-elements-container-of-sections)
+  - [1 Element (wrapper)](#1-element-wrapper)
+    - [Reference based or Linked Relationships](#reference-based-or-linked-relationships)
+    - [Managed, explicit Sections](#managed-explicit-sections)
+    - [Managed, flat sections](#managed-flat-sections)
+    - [Managed disclosures](#managed-disclosures)
+  - [No elements / Tab Bars](#no-elements-tab-bars)
+- [Recommendations](#recommendations)
+- [Footnote: Why not TOC Style?](#footnote-why-not-toc-style)
+
+## Survey of DOM Flavors and Elements Added
+
+Components which use and serialize to markup into a DOM Tree vary a lot, again, for several reasons. There is a long history of attempting to serialize a tabset, and a lot of subtleties to their strengths, weaknesses and reasons for their choices. Mainly distinctions hinge upon these characteristics:
+
+- How many new elements or attributes are required
+- What new DOM APIs should these elements have
+- How is this experienced if your browser doesn’t support this/these element(s)?
+- Styling abilities or limits
+
+We’ll lay out the basic variations we identified, and then go into thought/observations and opinions.
+
+### 5 Elements (collections of collections)
+
+Rarely, some have added a separate container for tabs and panels too. [XUL Tabboxes](https://developer.mozilla.org/en-US/docs/Archive/Mozilla/XUL/Tutorial/Tabboxes) were an example of this. _Note that there are potentially many ways to associate or link the tabs and the tab panels and to provide the label, these are not the defining factor here_:
+
+_Variant 1: TOC style, relationship by index_
+
+```html
+<tabset>
+  <tablist>
+    <tablabel>Mail</tablabel>
+    <tablabel>News</tablabel>
+  </tablist>
+
+  <tabpanels>
+    <tabpanel id="mailtab">…Mail content…</tabpanel>
+    <tabpanel id="newstab">…News content…</tabpanel>
+  </tabpanels>
+</tabset>
+```
+
+_Variant 2: TOC style, relationship by idref_
+
+```html
+<tabset>
+  <tablist>
+    <tablabel for="mailtab">Mail</tablabel>
+    <tablabel for="mailtab">News</tablabel>
+  </tablist>
+
+  <tabpanels>
+    <tabpanel id="mailtab">…Mail content…</tabpanel>
+    <tabpanel id="newstab">…News content…</tabpanel>
+  </tabpanels>
+</tabset>
+```
+
+- Pros:
+  - XSD like
+- Cons:
+  - Verbose
+  - Creates two subcollections to deal with independently in different subtrees
+  - None of these have a great experience story when unsupported
+  - (in the case of variant 2) Idrefs are generally not bound to a particular spot in the tree
+  - Uncommon
+- Recommendations:
+  - We don’t think this has good redeeming qualities that require our consideration.
+
+### 3 Elements (container of pairs of parts)
+
+Several approaches introduce 3 new elements: 1 for the collection, another for the tab label and a third for the tab panel. Usually tab labels and tab panels are sibling children of the tabset element.
+
+_Note that there are potentially many sub variants here regarding the importance of order and relationship_:
+
+_Variant 1: order-specific pairs_
+
+```html
+<tabset>
+  <tablabel>Mail</tablabel>
+  <tabpanel>…Mail content…</tabpanel>
+
+  <tablabel>News</tablabel>
+  <tabpanel>…News content…</tabpanel>
+</tabset>
+```
+
+_Variant 2: TOC style_
+
+```html
+<tabset>
+  <tablabel>Mail</tablabel>
+  <tablabel>News</tablabel>
+
+  <tabpanel>…Mail content…</tabpanel>
+  <tabpanel>…News content…</tabpanel>
+</tabset>
+```
+
+_Variant 3: Index based, ungrouped pairs_
+
+```html
+<tabset>
+  <tablabel>Mail</tablabel>
+
+  <tabpanel>…Mail content…</tabpanel>
+
+  <tabpanel>…News content…</tabpanel>
+
+  <tablabel>News</tablabel>
+</tabset>
+```
+
+- Pros:
+  - The parent/child pattern is pretty common and works well with the shadow dom.
+- Cons:
+  - There is no single unit tab section to deal with at once
+  - To a lesser degree than the 5 element version, but none of these have a great experience story when unsupported - especially variant #2.
+- Recommendation:
+  - None of these have a great experience story when unsupported, but the order-based variant (1) is at least well ordered. _See natural reading order._
+
+### 2 Elements (attribute labelling)
+
+One of the most common and oldest patterns is a form used many years ago by [XAML tab controls in WPF](https://www.c-sharpcorner.com/UploadFile/mahesh/using-xaml-tabcontrol-in-wpf/) and either copied or independently invented many times thereafter which allows us to reduce the number of elements required by making the tab label an attribute of a tab element. In our survey, a few libraries (Ant, Carbon Angular, Lightning) use this form, which provides the tab label as an attribute of a simple “tab” child containing the actual content. Very frequently this introduces 2 new elements in parent/child relationship
+
+```html
+<tabset>
+  <tab heading="Mail">…Mail content…</tab>
+
+  <tab heading="News">…News content…</tab>
+</tabset>
+```
+
+- Pros:
+  - Terse
+  - Provides a “whole unit” (Tab Section) that one operates on at once (add a tab, remove a tab, move a tab in its DOM order)
+- Cons:
+  - Labelling is lost entirely if unsupported, all content becomes a giant run-on
+  - Very strict, not especially flexible, like many parts today. Not possible to add a span with a class attribute, ruby annotations, or something with its own dir value, for example. Adding inline elements such as icons and dismiss buttons couldn’t be done in user space.
+- Recommendations:
+  - Attribute based labeling can be incorporated into just about any of the patterns listed here, but due to the cons listed above we recommend against it and will not include these variations in others.
+
+### 2 Elements (container of sections)
+
+_Variant 1: simple sections_
+
+```html
+<tabset>
+  <tab>
+    <h2>Mail</h2>
+    …Mail content…
+  </tab>
+
+  <tab>
+    <h2>News</h2>
+    …News content…
+  </tab>
+</tabset>
+```
+
+- Pros:
+  - Provides a “whole unit” (Tab Section) that one operates on at once (add a tab, remove a tab, move a tab in its DOM order)
+  - Not complicated
+  - Good content and reading order if unsupported
+- Cons:
+  - We tab element is really just section, and the new element doesn't afford much that is worthwhile
+- Recommendations:
+  - We believe the pattern is ok, it's worth consideration - but the addition of the tab element doesn't afford much that is worthwhile and, depending on some other turns, might actually be undesirable. A 1 element wrapper can achive the same goals, perhaps better.
+
+### 1 Element (wrapper)
+
+There are _numerous_ potential variants which introduce a single wrapper element that provides enough context upon which we can interpret the intent of otherwise good and meaningful content to represent a tabbed interface. In 2006 there was even a variant of this in the HTML specification. Generally these have the following pros/cons:
+
+- Pros:
+  - Minimal new elements
+    - It’s very clear where additional programmatic DOM APIs belong
+  - Potentially much better experience story when unsupported
+    - Natural reading order
+  - Builds on several known/proven HTML patterns
+  - Potentially very flexible to styling
+- Cons:
+  - "Is the developer experience good enough?" needs more research
+
+Specific variants exist and have their own pros and cons.
+
+#### Reference based or Linked Relationships
+
+_Variant 1: TOC-style implied links/idrefs\* (Note there are variants here which use label or button or something else but the idea is ~ the same, there are just more cons)_
+
+```html
+<tabset>
+  <a href="#mail">Mail</a>
+  <a href="#news">News</a>
+
+  <div id="mail">…Mail content…</div>
+  <div id="news">…News content…</div>
+</tabset>
+```
+
+- Variant specific cons:
+  - See [Why not TOC style?](#_3xc5qyfb5d62)
+
+#### Managed, explicit Sections
+
+_Variant 2: The old HTML spec, allowed sections/headings and fieldsets/legends_
+
+```html
+<tabset>
+  <section>
+    <h2>Mail</h2>
+    <div>…Mail content…</div>
+  </section>
+
+  <section>
+    <h2>News</h2>
+    <div>…News content…</div>
+  </section>
+</tabset>
+```
+
+- Variant specific pros:
+  - Contains a single unit representing a TabSection which is potentially very useful for DOM API use, states, styling, etc. Conceptually we “think” of a tab being a whole construct, but most markups don’t reflect that.
+  - Potentially flexible toward different means of presentation/affordances (maybe the element isn’t tabset)
+- Variant specific cons:
+  - More verbose
+  - Lack of an generic heading/auto level in HTML makes this frustrating
+  - Creates a grandparent/grandchild relationship which is rare to non-existent in current standards and potentially more difficult with existing internals
+
+#### Managed, flat sections
+
+_Variant 3: The old HTML spec, but using flat content_
+
+```html
+<tabset>
+  <h2>Mail</h2>
+  <div>…Mail content…</div>
+
+  <h2>News</h2>
+  <div>…News content…</div>
+</tabset>
+```
+
+- Variant specific pros:
+  - Less verbose than the Managed, explicit sections version
+  - Uses parent/child relationships common in HTML
+- Variant specific cons:
+  - Lacks the single unit TabSection
+  - Lack of an generic heading/auto level in HTML makes this frustrating
+
+#### Managed disclosures
+
+_Variant 4: summary/details_
+
+```html
+<tabset>
+  <details>
+    <summary>Mail</summary>
+    …Mail content…
+  </details>
+
+  <details>
+    <summary>News</summary>
+    …News content…
+  </details>
+</tabset>
+```
+
+- Variant specific pros:
+
+  - Contains a single unit representing a TabSection which is potentially very useful for DOM API use, states, styling, etc. Conceptually we “think” of a tab being a whole construct, but most markups don’t reflect that.
+
+- Variant specific cons:
+  - Creates a grandparent/grandchild relationship which is rare to non-existent in current standards and potentially more difficult with existing internals
+  - Creates a different kind of potential confusion. It is one thing for non-interactive content to gain or potentially even enable/disable interactive behavior - it is another for it to change behaviors and opens lots of new questions
+
+### No elements / Tab Bars
+
+There are numerous articulations of desires to somehow just make it easier for developers to create their own tabs by granting some new powers to CSS or some mix-in like attributes, or even to provide some new control that could solve a _part_ of the problem, creating something like a tabbar. We will not recount them all here but will note that these two things are not necessarily at odds. The fact that several kits provide base classes and partial solutions which are used to provide more coarse grained/full components is, in fact, telling.
+
+For example, the following things are required by all of the controls that exist in ARIA, but have no HTML counterpart today (tabs, accordions, trees, etc):
+
+- Managing the focus/sequential focus concerns of controls;
+
+- Managing necessary keyboard handling;
+
+- Managing ARIA roles, states and relationships; and
+
+- Managing the showing and hiding of content.
+
+This last bullet in particular is trickier than one might imagine, as it isn’t entirely prescriptive nor are there available standard answers currently for some of the more common frustrations and challenges:
+
+- Find in page
+
+- Linking to content that is inside a hidden (inactive) area
+
+Note that these concerns were also challenges with summary/details, and it seems we haven’t quite addressed them satisfactorily. There are also concerns related to/prompted by responsive design that are interesting and evident and might be mistakes. Using summary/details as an example, there are numerous cases where authors only want a disclosure widget in some designs, where real estate is more at a premium. Otherwise, they’d just like it to be simple, non-interactive content. Because of implementation choices, this isn’t easily possible today.
+
+Additionally, many controls have common unique internationalization affordances.
+
+Thus, even if it is possible, desirable, or even inevitable that we can find some mid-level features (or missing low level ones) which can be defined and help advance many of components and use cases, none of them can give us complete controls - thus, we believe it is important to aim for an _actual_ control.
+
+## Recommendations
+
+| **Style**                                | **Pros**                                                                                                                                                                                      | **Cons**                                                                                                                                                           |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 5 Elements (container of containers)     | Explicit styling options                                                                                                                                                                      | Very verbose Education costs                                                                                                                                       |
+| 3 Elements (container of pairs of parts) | Most inline with WAI-ARIA authoring guidance and possibly developer expectations. Similar to `<details>`/`<summary>` combination of elements. Can be rearranged to inline style or TOC style. | TOC variants at top and bottom will lack context when elements are not supported. Inline variant `<tab>` would require extra semantics when element not supported. |
+| 2 Elements (attribute labelling)         | Most succinct option                                                                                                                                                                          | Content hidden in attribute leaves content unlabelled when element not supported (e.g. placeholder)                                                                |
+| 2 Elements (container of sections)       | Progressive enhancement built-in.                                                                                                                                                             | Headings pulled out of section may be an undesired effect                                                                                                          |
+| 1 Element (wrapper)                      | Progressive enhancement built-in. Lowest effort from a standardization standpoint?                                                                                                            | Education costs long-term?                                                                                                                                         |
+
+Given all of this, we feel that
+
+- We believe that we should consider pursuing a native control.
+- Regardless of how many elements we ultimately define, we believe that consideration should be given to what is required of new programmatic API in the DOM and keep that fairly centralized.
+- As nice as the terseness of attributes is, it is very limiting. Elements for labels add maximal flexibility for authors.
+- The relationship between labels and content should be **in a meaningful and natural document order, not tied to a particular visualization and evident without examining metadata that links them (idrefs’)**. This leads to a usable experience and unconfusing document even in the face of lack of support. Most interestingly we believe this could be
+  - in element pairs (like dd/dt) or
+  - through implied relationships (like flat, implied heading sections), or
+  - physically grouped (like section elements with headings and content and detail elements with summary and content).
+  - _See also "_[_Why not TOC Stye?_](#_3xc5qyfb5d62)_"_
+- Any proposal should address mainly the core functionality: keyboard handling, conveying roles and states and focus management, and exposing some pseudo states/elements, all with minimal visual opinion.
+- The component should allow styling of:
+  - The parent TabSet
+  - Individual TabLabels
+  - The states (active/inactive)
+  - Individual TabPanels
+  - The TabBar
+- Very probably the only visually related feature should be the ability to project the labels into a shadow DOM group slot (the TabList)
+  - This should still be in the author’s control to place and style in the light tree, with normal CSS.
+  - The component should export a :part that is the TabBar for the users to style as well.
+  - It should ideally allow the disabling of projection to functionally support [Ungrouped Tabs](https://open-ui.org/components/tabs.research.parts#ungrouped-vertical-block-sections)(especially the single item accordion with optional key bindings variant similar to the [Accordion to Tab](https://codepen.io/sturobson/pen/xgfeI) pattern found in many Responsive Web Design implementations) or other rare flavors that arise
+- Ideally, it would have a good rollout story and its shape verified through experimentation with custom elements and _some_ degree of input/verification from the developer community. We are particularly interested in exploring something very like the original HTML proposal, which is semantically good content/progressively enhanced even when the element is not supported for whatever reason. What remains to be seen about this is mostly whether the developer experience of it is acceptable enough.
+
+## Footnote: Why not TOC Style?
+
+It is clear that there have been various attempts at reasoning about how to express tabs in a markup/DOM tree model from various angles. They are inspired by analogies, attempting to model their programmatic forms, or even a relationship to how tabs _looked_ and realities of limitations they faced.
+
+**TOC style tabs** are probably the best example of this in that they are a combination of all reasons. The markup for TOC style tabs resembles that of their display: the list of tabs is a separate entity/collection at the top. They were some of the earliest models in the web browser, and this was at least partially because developers were only thinking “top tabs” and the limitations of CSS meant that this was very pragmatic. This was considerably boosted by an argument that this was actually very common in documents, as in a Table of Contents, and meaningful.
+
+However, as other arrangements of tabs became more common (predominantly on mobile), the idea that something _looks_ like tabs is no longer true. CSS is now powerful enough to visually reorder elements, which, while usually not recommended, is precisely the right behaviour in this case. So that isn’t much of a meaningful rationale any more.
+
+Finally, the seemingly compelling semantics/relationship to a document’s TOC and progressive enhancement is mostly untrue. TOCs in documents are themselves an enhancement built based on the clear identification of sections with labels (usually headers). A document is still readable without a table of contents, and sections are clearly delineated. Removing this critical piece of the model leaves a wall of unlabeled sections with no delineations. While it is possible to use ARIA to link these in both directions (as in the above code TOC style example in which tabs label and control panels which are in turn aria-labelledby the tab labels), this doesn’t do anything for readers in unsupported browsers, where it leaves the reading quite unnatural and could cause confusion.
+
+Consider, for example, a set of tabs that contained various quotes from or facts about leaders in any world conflicts. In a normal document, these would be displayed as sections identified by the tab labels such that all of the quotes and statistics had their relevant context. Without this, it would become difficult or impossible to differentiate which paragraph(s) were about which - a user with an unsupported browser (including a js polyfill failure) would read this an unbroken wall of content.

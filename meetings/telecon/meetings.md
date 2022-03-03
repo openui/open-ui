@@ -1,16 +1,54 @@
-# Minutes
+# Meetings
 
-Below is a list to our meeting minutes. If you'd like to stay up to date on upcoming
+We meet weekly to discuss progress on Open UI initiatives. Topics of
+conversation are determined beforehand, and listed in
+[telecon agenda documents](https://github.com/openui/open-ui/tree/main/meetings/telecon).
+
+Meetings are held on Thursdays from [19:00 PM UTC to 19:45 PM UTC](https://www.worldtimebuddy.com/).
+
+## Minutes
+
+The [`telecon/` directory](https://github.com/openui/open-ui/tree/main/meetings/telecon) contains meeting minutes. If you'd like to stay up to date on upcoming
 meetings, their agenda's and call in information please join the Open UI community group [here](https://www.w3.org/community/open-ui/).
 
------------
+## Discord
 
-## 2020
-- September 10: [Agenda & Minutes](https://github.com/WICG/open-ui/blob/master/meetings/telecon/2020-09-10.md)
-- August 27: [Agenda](https://github.com/WICG/open-ui/blob/master/meetings/telecon/2020-08-27.md) | [Minutes](https://www.w3.org/2020/08/27-openui-minutes.html)
-- August 18: CSSWG + Open UI ([Agenda](https://lists.w3.org/Archives/Public/www-style/2020Aug/0016.html) | [Minutes](https://www.w3.org/2020/08/18-css-minutes.html#t01))
-- July 2: ([Agenda](https://github.com/WICG/open-ui/blob/master/meetings/telecon/2020-07-02.md) | [Minutes](https://www.w3.org/2020/07/02-openui-minutes.html))
-- June 4: ([Agenda](https://lists.w3.org/Archives/Public/public-open-ui/2020Jun/0000.html) | [Minutes](https://www.w3.org/2020/06/04-openui-minutes.html))
-- May 22: ([Agenda](https://lists.w3.org/Archives/Public/public-open-ui/2020May/0001.html) | [Minutes](https://www.w3.org/2020/05/22-openui-minutes.html))
-- April 24: ([Agenda](https://lists.w3.org/Archives/Public/public-open-ui/2020Apr/0005.html) | [Minutes](https://www.w3.org/2020/04/24-openui-minutes.html))
-- April 10: ([Agenda](https://lists.w3.org/Archives/Public/public-open-ui/2020Apr/0002.html) | [Minutes](https://www.w3.org/2020/04/10-openui-minutes.html))
+Telecon agendas are announced in the #telecon-agendas channel in [our Discord
+server](https://discord.com/invite/DEWjhSw). If you join Discord, be sure to introduce
+yourself in the #introductions channel.
+
+## IRC
+
+We use IRC during the weekly telecon meetings. To join, #openui on
+[irc.w3.org](http://irc.w3.org/). If you are unfamiliar with IRC, here is a
+[quickstart guide](https://opensource.com/article/16/6/irc-quickstart-guide).
+
+### Commands
+
+We use the following commands to help run our meetings:
+
+- `q+`/`q-`: Add or remove a question from the queue. This helps the person
+running the meeting ensure nobody is overlooked who has a question.
+- `present+`/`present-`: Add or remove yourself from the presentation queue.
+- This signals to the person running the meeting that you have a presentation
+    you would like to give, as well as marking it completed or no longer
+    necessary.
+
+### Note-taking
+
+We have someone volunteer to take meeting notes every meeting. Notes help us
+keep a record of what was discussed. To take notes, post in #openui using the following format:
+
+```
+who: said what
+```
+
+An example of this is:
+
+```
+ gregwhitworth: I would not want to put that on authors to have every primitive, mix and match etc.
+```
+
+### Setting up and running a meeting
+
+Please refer to [`chair-meeting.md`](https://github.com/openui/open-ui/blob/main/meetings/telecon/chair-meeting.md).

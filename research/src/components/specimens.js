@@ -7,12 +7,12 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', border: '1px solid #ccc' }}>
-      {images.map((image) => {
+      {images.map((image, index) => {
         const hasOverrideName = image.name !== image.openUIName
 
         return (
           <div
-            key={image.image}
+            key={image.image + index}
             style={{
               display: 'flex',
               flex: '0 0 auto',
@@ -26,7 +26,7 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
               <Image
                 src={image.image}
                 title={image.image}
-                alt={`An image of the ${conceptName} concept on a ${component} component in ${image.sourceName}.`}
+                alt={`${conceptName} concept on a ${component} component in ${image.sourceName}.`}
               />
             </div>
             <div

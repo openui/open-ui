@@ -2,8 +2,9 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { StaticQuery, graphql, Link } from 'gatsby'
+import CommunityLinks from './community-links'
 
-const Navigation = ({ style }) => (
+const Navigation = ({ opened, githubURL }) => (
   <StaticQuery
     query={graphql`
       query NavigationQuery {
@@ -30,10 +31,11 @@ const Navigation = ({ style }) => (
         .filter(({ name, pathToProposal }) => !!name)
         .filter(({ showInMenu }) => showInMenu !== false)
 
-      const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
+      let [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
+      menuNodes = _.sortBy(menuNodes, ['name'])
 
       // get all frontmatter objects with a menu defined
-      const menu = _.sortBy(_.toPairs(_.groupBy(menuNodes, 'menu')), _.first)
+      let menu = _.sortBy(_.toPairs(_.groupBy(menuNodes, 'menu')), _.first)
 
       let listItem = (item) => (
         <li
@@ -65,9 +67,11 @@ const Navigation = ({ style }) => (
       )
 
       return (
-        <nav style={style}>
-          <ul style={{ position: 'sticky', top: '1em', margin: 0 }}>
-            <li
+        <nav id="site-nav" className={opened ? 'opened' : ''}>
+          <CommunityLinks githubURL={githubURL} className={'mobile'} />
+
+          <div style={{ top: '1em', margin: 0 }}>
+            <div
               key="Home"
               style={{
                 margin: 0,
@@ -92,26 +96,29 @@ const Navigation = ({ style }) => (
               >
                 Home
               </Link>
-            </li>
-            {topLevelNodes.map(listItem)}
+            </div>
+
+            <ul style={{ margin: '0.25em 0 1.5em 0' }}>{topLevelNodes.map(listItem)}</ul>
 
             <div style={{ margin: '1rem' }} />
 
             {menu.map(([category, items]) => (
-              <li key={category} style={{ margin: 0, listStyleType: 'none' }}>
-                <div
+              <div key={category} style={{ margin: 0, listStyleType: 'none' }}>
+                <h3
                   style={{
                     display: 'inline-block',
-                    opacity: 0.5,
-                    marginLeft: 'calc(2px + 0.5em)', // align with items
+                    opacity: 0.75,
+                    fontWeight: 'bold',
+                    fontSize: '1em',
+                    margin: '0 0 0 calc(2px + 0.5em)', // align with items
                   }}
                 >
                   {category}
-                </div>
+                </h3>
                 <ul style={{ margin: '0.25em 0 1.5em 0' }}>{items.map(listItem)}</ul>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </nav>
       )
     }}

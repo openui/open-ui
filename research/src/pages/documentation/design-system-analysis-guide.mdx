@@ -1,0 +1,202 @@
+---
+name: Adding a design system
+path: /design-system-analysis-guide
+menu: Documentation
+---
+
+import Image from '../../components/image'
+
+# Design Systems Analysis
+
+Open UI uses design systems as one of its forms of evidence for cataloging emergent UI standards.
+Design systems are documented in JSON5 format according a JSON schema.
+This provides us with a consistent and machine readable way of documenting the design system.
+
+## What's a Design System?
+
+A design system is a collection of assets and components used to create and maintain UIs on multiple platforms. Examples:
+
+- [Google's Material Design](https://material.io)
+- [IBM's Carbon Design](https://www.carbondesignsystem.com)
+- Read more [here](https://www.invisionapp.com/inside-design/guide-to-design-systems/)
+
+### Design System Criteria
+
+In order to succeed as an open standard, Open UI must collect the most useful ideas and patterns that exist.
+Because of this, not all design systems are suitable to use as Open UI sources.
+
+We believe the most useful ideas are those that:
+
+- :white_check_mark: **support** designers and developers
+- :white_check_mark: **support** multiple platforms and frameworks
+- :white_check_mark: **support** accessible users
+- :white_check_mark: **support** small and enterprise projects
+- :white_check_mark: **demonstrate** organic adoption in a wide community
+- :white_check_mark: **demonstrate** significant real-world usage
+- :white_check_mark: **demonstrate** deep thought and debate by many experienced minds
+
+A design system does not need to meet all of these criteria but it should meet many of them.
+The design systems we've launched with we believe are representative of these criteria.
+We may not accept PRs contributing design systems that are lacking by these criteria.
+
+## Adding a design system <a href="#add-a-design-system" id="add-a-design-system"></a>
+
+Create a JSON5 file in `/sources` for the design system, like `/antd.json5`.
+Add the `$schema` key pointing to our `design-system.schema.json5` schema and complete the required fields.
+
+```json5
+{
+  $schema: '../schemas/design-system.schema.json5',
+  name: 'Ant Design',
+  description: 'An enterprise-class UI design language and React UI library.',
+  url: 'http://ant.design',
+  by: 'AFX',
+}
+```
+
+### Adding your design system's component <a href="#add-design-system-component" id="add-design-system-component"></a>
+
+After you create the base schema file, add in each component for your design system into a `components` array that
+resides in the schema document. This information will populate the [Component Name Matrix](https://open-ui.org/research/component-matrix).
+
+Note: Do not document utility components. Only document components which render a user interface that can be
+experienced either visually, by keyboard, or narration.
+
+```json5
+{
+  $schema: '../schemas/design-system.schema.json5',
+  name: 'Ant Design',
+  description: 'An enterprise-class UI design language and React UI library.',
+  url: 'http://ant.design',
+  by: 'AFX',
+  components: [{ name: 'Button' }],
+}
+```
+
+### Concepts
+
+Component concepts are terms used to described the appearance and behavior of a component.
+Things like `primary` for a `Button`.
+
+A term is a concept if the component can "be" that concept.
+For example, no one says a Button can be `size` but it can be `small`.
+Put another way, record "is" relationships which denote _qualities_, like "that button is small".
+Ignore "has a" relationships which denote _properties_, like "that button has a size".
+
+```json5
+  components: [
+    {
+      name: 'Button',
+      concepts: [
+        { name: 'primary', category: 'type' },
+      ],
+    },
+  ],
+```
+
+:bulb: Always use kebab-case for concept names.
+
+### Adding images to a component
+
+An image of the concept should be included with each concept.
+This allows a visual aid to be shown when the concept might need to be clarified in the specifications.
+
+```json5
+  components: [
+    {
+      name: 'Button',
+      concepts: [
+        { name: 'primary', category: 'type', image: 'antd-button-primary.png' },
+      ],
+    },
+  ],
+```
+
+You can use a screenshot tool to capture these images directly from the design system.
+Here's an example image of the primary Button in Ant Design.
+
+<Image src="antd-button-primary.png" alt="Ant Design Primary Button" />
+
+If the image requires showing motion or interaction, considering using a gif tool.
+
+<Image src="sui-button-animated.gif" alt="Semantic UI Animated Button" />
+
+### Try it out
+
+You should now be able to `yarn start` the docs and see your component in the menu.
+You should also have a toggle on the component page to switch between the proposal page and research page.
+
+:smile: You're all set! We're looking forward to your contribution to Open UI!
+
+## Creating a component spec <a href="#document-component" id="document-component"></a>
+
+Adding a component to Open UI is a research process.
+Because of this, two pages are created for each component; a research page and a proposal page.
+You'll want to create both at the same time as Open UI leverages the research page to document anything
+for
+
+- Anatomy
+- States
+- Behaviors
+
+Utilize the [Component Spec Template](https://github.com/openui/open-ui/blob/main/research/src/pages/component-spec-template.mdx)
+to begin to tease the component apart.
+
+### Create your component pages like so:
+
+```
+/src
+  /components
+    your-component.proposal.mdx
+    your-component.research.mdx
+```
+
+Copy the content from the [Component Spec Template](https://github.com/openui/open-ui/blob/main/research/src/pages/component-spec-template.mdx)
+and paste it into your proposal document.
+
+:bulb: These pages will be displayed as a single page on Open UI.
+
+## Research Page <a href="#research-page" id="research-page"></a>
+
+The research page is a place to collect, analyse, and deeply understand the data available on the component.
+
+Define your research page front matter.
+The `pathToProposal` key tells your research page where its proposal page is hosted.
+
+Example:
+
+```markdown
+---
+name: Test
+path: /components/test.research
+pathToProposal: /components/test
+---
+```
+
+### Research page content
+
+After this front matter, copy in the content from the [Component Research Template](https://github.com/openui/open-ui/blob/main/research/src/pages/component-research-template.mdx).
+
+This template includes a few optional partials you can import into the research page.
+Each of these walks through the design system JSON5 files in `/sources` to finds components where the `openUIName` value matches the `Name` value of your research page front matter.
+
+- **Anatomy:** lists out component anatomy by part,
+  if any matching components have defined an anatomy.
+- **Concept Coverage:** lists matching components according to unique names,
+  as well as which design systems use that name.
+- **Concepts:** for each unique concept defined for matching components
+  (per the [concepts section of this documentation](#concepts))
+  the research page will display:
+  this concept name,
+  the various names used by different design systems for this concept,
+  and examples of this concept from the design systems.
+
+You may also collect and add research manually to this page.
+
+### Additional research pages
+
+For any other research that you believe will make more sense on its own, create a seperate research documents
+following `<component-name.research.<research-topic>.mdx`.
+
+Link to these documents within your research page under a section title accordingly. For example, the `<select>`
+control has research pages for behaviors.

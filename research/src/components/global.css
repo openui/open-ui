@@ -1,3 +1,84 @@
+/*       Header     */
+.header-menu-btn[type='button'] {
+  display: none;
+  padding: 0.25em 0.5em;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: white;
+  cursor: pointer;
+}
+
+.header-menu-btn[type='button']:hover {
+  background-color: #666;
+}
+
+@media (max-width: 640px) {
+  .header-menu-btn[type='button'] {
+    display: block;
+  }
+}
+
+/*    Page Wrapper  */
+
+.page-wrapper {
+  display: flex;
+  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+@media (max-width: 640px) {
+  .page-wrapper {
+    flex-direction: column;
+  }
+}
+
+/*      Community Links    */
+.community-links {
+  display: block;
+}
+
+.community-links.mobile {
+  display: none;
+  justify-content: space-around;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .community-links {
+    display: none;
+  }
+
+  .community-links.mobile {
+    display: flex;
+  }
+}
+
+/*      Site Nav    */
+#site-nav {
+  margin-right: 2em;
+}
+
+#site-nav > ul {
+  position: sticky;
+}
+
+@media (max-width: 640px) {
+  #site-nav {
+    display: none;
+    margin-right: 0;
+  }
+
+  #site-nav > ul {
+    position: static;
+  }
+
+  #site-nav.opened {
+    display: block;
+  }
+}
+
 /*      AnchorJS    */
 .anchorjs-link {
   color: #aaa;
@@ -37,7 +118,8 @@ table.nowrap-first-column td:nth-child(1) {
   white-space: nowrap;
 }
 
-table.research td.center, table.research th.center {
+table.research td.center,
+table.research th.center {
   text-align: center;
 }
 

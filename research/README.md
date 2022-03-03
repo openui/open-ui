@@ -4,8 +4,12 @@
 
 Prerequisites:
 
-1. [Install Node.js](https://nodejs.org), version v12 or later
+1. [Install Node.js](https://nodejs.org), (ensure the version of Node you use is specified in the .nvmrc file)
 2. [Install the yarn package manager](https://yarnpkg.com/getting-started/install)
+
+Other useful tools:
+
+1. [Install nvm](https://github.com/nvm-sh/nvm), to help manage your installed node versions.
 
 ## Useful Commands
 
@@ -16,8 +20,11 @@ yarn              # install dependencies
 
 yarn start        # run docs
 yarn build        # build docs
+
+nvm use           # use the correct version of `node`
+nvm install       # install the version of node specified in `.nvmrc`
 ```
 
 ## Deployments
 
-The site is deployed automatically on merge to `master`.
+The site is deployed automatically on merge to `main`.

@@ -1,3 +1,16 @@
+dl {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 1em;
+}
+
+dd {
+    margin: 0 0 0 1em;
+}
+
+dd + dt {
+    margin-top: .5em;
+}
+
 .question {
     background: #F7F781;
     position: relative;
@@ -24,6 +37,22 @@
     background: #007a3dd6;
     content: "NOTE";
     width: max-content;
+    padding: 0 .5em;
+    margin-right: .5em;
+    font-weight: bold;
+}
+
+.todo {
+    background: #F7F781;
+    position: relative;
+    display: flex;
+}
+
+.todo::before {
+    background: #c78f2c;
+    content: "TODO";
+    width: max-content;
+    color: white;
     padding: 0 .5em;
     margin-right: .5em;
     font-weight: bold;
