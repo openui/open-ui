@@ -18,7 +18,9 @@ A design system is a collection of assets and components used to create and main
 
 - [Google's Material Design](https://material.io)
 - [IBM's Carbon Design](https://www.carbondesignsystem.com)
-- Read more [here](https://www.invisionapp.com/inside-design/guide-to-design-systems/)
+- Read more at [InVision's Guide to Design Systems](https://www.invisionapp.com/inside-design/guide-to-design-systems/)
+
+During the research phase of the proposal, we analyse the UI practices from a variety different design systems. Our [design systems list](/design-systems) is a non-exhaustive list of the design systems we utilise for research purposes.
 
 ### Design System Criteria
 
@@ -36,7 +38,7 @@ We believe the most useful ideas are those that:
 - :white_check_mark: **demonstrate** deep thought and debate by many experienced minds
 
 A design system does not need to meet all of these criteria but it should meet many of them.
-The design systems we've launched with we believe are representative of these criteria.
+The design systems we've launched with, we believe are representative of these criteria.
 We may not accept PRs contributing design systems that are lacking by these criteria.
 
 ## Adding a design system <a href="#add-a-design-system" id="add-a-design-system"></a>
@@ -57,7 +59,7 @@ Add the `$schema` key pointing to our `design-system.schema.json5` schema and co
 ### Adding your design system's component <a href="#add-design-system-component" id="add-design-system-component"></a>
 
 After you create the base schema file, add in each component for your design system into a `components` array that
-resides in the schema document. This information will populate the [Component Name Matrix](https://open-ui.org/analysis/component-matrix).
+resides in the schema document. This information will populate the [Component Name Matrix](https://open-ui.org/research/component-matrix).
 
 Note: Do not document utility components. Only document components which render a user interface that can be
 experienced either visually, by keyboard, or narration.
@@ -117,9 +119,9 @@ Here's an example image of the primary Button in Ant Design.
 
 <Image src="antd-button-primary.png" alt="Ant Design Primary Button" />
 
-If the image requires showing motion or interaction, considering using a gif tool.
+If the image requires showing motion or interaction, consider using a gif tool.
 
-<Image src="sui-button-animated.gif" alt="Semantic UI Animated Button" />
+<Image src="sui-button-animated.gif" alt="Semantic UI Animated Button. The text of the button animates from 'Sign-up for a pro account' to '$12.99 a month' when hovered by a mouse" />
 
 ### Try it out
 
@@ -139,7 +141,7 @@ for
 - States
 - Behaviors
 
-Utilize the [Component Spec Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-spec-template.mdx)
+Utilize the [Component Spec Template](https://github.com/openui/open-ui/blob/main/research/src/pages/component-spec-template.mdx)
 to begin to tease the component apart.
 
 ### Create your component pages like so:
@@ -151,7 +153,7 @@ to begin to tease the component apart.
     your-component.research.mdx
 ```
 
-Copy the content from the [Component Spec Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-spec-template.mdx)
+Copy the content from the [Component Spec Template](https://github.com/openui/open-ui/blob/main/research/src/pages/component-spec-template.mdx)
 and paste it into your proposal document.
 
 :bulb: These pages will be displayed as a single page on Open UI.
@@ -175,7 +177,7 @@ pathToProposal: /components/test
 
 ### Research page content
 
-After this front matter, copy in the content from the [Component Research Template](https://github.com/WICG/open-ui/blob/master/research/src/pages/component-research-template.mdx).
+After this front matter, copy in the content from the [Component Research Template](https://github.com/openui/open-ui/blob/main/research/src/pages/component-research-template.mdx).
 
 This template includes a few optional partials you can import into the research page.
 Each of these walks through the design system JSON5 files in `/sources` to finds components where the `openUIName` value matches the `Name` value of your research page front matter.
@@ -195,7 +197,7 @@ You may also collect and add research manually to this page.
 
 ### Additional research pages
 
-For any other research that you believe will make more sense on its own, create a seperate research documents
+For any other research that you believe will make more sense on its own, create a seperate research document
 following `<component-name.research.<research-topic>.mdx`.
 
 Link to these documents within your research page under a section title accordingly. For example, the `<select>`

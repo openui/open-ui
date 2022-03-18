@@ -1,0 +1,75 @@
+---
+menu: Proposals
+name: Breadcrumb (Editor's Draft)
+path: /components/breadcrumb
+pathToResearch: /components/breadcrumb.research
+---
+
+import BreadcrumbAnatomy from '../components/breadcrumb-anatomy'
+
+## Overview
+
+Breadcrumbs are navigation landmarks used to show a user's location within a website or application.
+
+## Use Cases
+
+A `<breadcrumb />` trail consists of a list of links to the parent pages of the current page in hierarchical order. It helps users find their place within a website or web application. Breadcrumbs are often placed horizontally before or as the first component of a page's main content.
+
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+- [Ant Design](https://ant.design/components/breadcrumb/)
+- [Bootstrap](https://getbootstrap.com/docs/4.3/components/breadcrumb/)
+- [Auth0](https://styleguide.auth0.com/components/breadcrumb)
+- [Atlas Kit](https://atlassian.design/components/breadcrumbs/examples)
+- [Carbon](https://www.carbondesignsystem.com/components/breadcrumb/code/)
+- [Fabric](https://developer.microsoft.com/en-us/fluentui#/controls/web/breadcrumb)
+- [FAST](https://explore.fast.design/components/fast-breadcrumb)
+- [Lightning](https://www.lightningdesignsystem.com/components/breadcrumbs/)
+- [Semantic UI](https://semantic-ui.com/collections/breadcrumb.html)
+
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
+
+#### Diagram <a class="link" href="#diagram" id="diagram"></a>
+
+<BreadcrumbAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<breadcrumb>` - The root element that has the semantics of a navigation **[required]**
+- `<ordered-list>` - The list containing items and dividers **[required]**
+- `<list-item>` - The wrapper to items or divider content **[required]**
+
+Proposed HTML:
+
+```html
+<nav>
+  <ol>
+    <li><a>Item 1</a></li>
+    <li aria-hidden="true">/</li>
+    <li><a>Item 2</a></li>
+  </ol>
+</nav>
+```
+
+#### Accessibility <a class="link" href="#accessibility" id="accessibility"></a>
+
+The Breadcrumb is composed by:
+
+- A `nav` equivalent wrapper that should always have `aria-label` or `aria-labelledby`, though this may be redundant if we provide additional context to the `nav` element.
+- An ordered `list`
+- `li` items and dividers where the `li` represeting the item can contain anchor or other elements and the `li` represeting the divider should have `aria-hidden="true"`
+- The link or non-interactive element to the current page has `aria-current=page`.
+
+## Resources <a class="link" href="#resources" id="resources"></a>
+
+- [Breadcrumb design pattern example](https://www.w3.org/TR/wai-aria-practices/examples/breadcrumb/index.html)
+- [ARIA Best Practices for Breadcrumb](https://www.w3.org/TR/wai-aria-practices/#breadcrumb)
+- [MDN Breadcrumb Navigation](https://developer.mozilla.org/en-US/docs/Web/CSS/Layout_cookbook/Breadcrumb_Navigation)
+- [aria-current explainer](https://tink.uk/using-the-aria-current-attribute/)
+- [Accessible breadcrumb navigation pattern](https://scottaohara.github.io/a11y_breadcrumbs/)
+
+## Open Discussions
+
+- [What should the visual break between items be called?](https://github.com/openui/open-ui/issues/200)
+- [Should our default anatomy include hidden list elements?](https://github.com/openui/open-ui/issues/201)
+- [Do we want to apply apply a type of "breadcrumb" to the `nav` element?](https://github.com/openui/open-ui/pull/165#discussion_r819187985)

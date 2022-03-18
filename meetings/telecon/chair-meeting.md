@@ -1,6 +1,6 @@
 # How to setup a meeting
 
-1. Create a new MD file in the telecon [folder](https://github.com/WICG/open-ui/tree/master/meetings/telecon)
+1. Create a new MD file in the telecon [folder](https://github.com/openui/open-ui/tree/main/meetings/telecon)
 2. Go to Issues and search for the `Agenda+` label. If there are any take the oldest ones and add them to the
 list of the agenda. If you think the agenda is a little light review the issues and PRs to see if there are
 any that seem ready for review and add them. Place these into the file you created.
@@ -37,4 +37,4 @@ the RRSAgent will provide the URL where the generated minutes will end up (it de
 
 # Participating in a meeting
 
-Please see [`meetings.md`](https://github.com/WICG/open-ui/blob/master/meetings/telecon/meetings.md) for more information.
+Please see [`meetings.md`](https://github.com/openui/open-ui/blob/main/meetings/telecon/meetings.md) for more information.

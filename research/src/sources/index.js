@@ -14,6 +14,7 @@ import lion from './lion.json5'
 import materialComponentsWeb from './materialComponentsWeb.json5'
 import primer from './primer.json5'
 import semantic from './semantic.json5'
+import spectrum from './spectrum.json5'
 import stardust from './stardust.json5'
 import w3 from './w3.json5'
 import web from './web.json5'
@@ -34,6 +35,7 @@ export const sources = [
   materialComponentsWeb,
   primer,
   semantic,
+  spectrum,
   stardust,
   w3,
   web,
