@@ -6,7 +6,7 @@ module.exports = {
     title: 'Open UI',
     description: 'Open UI ',
     author: 'Open UI',
-    githubURL: 'https://github.com/WICG/open-ui',
+    githubURL: 'https://github.com/openui/open-ui',
     siteUrl: 'https://open-ui.org/',
   },
 

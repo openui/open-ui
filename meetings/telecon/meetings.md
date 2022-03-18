@@ -2,13 +2,13 @@
 
 We meet weekly to discuss progress on Open UI initiatives. Topics of
 conversation are determined beforehand, and listed in
-[telecon agenda documents](https://github.com/WICG/open-ui/tree/master/meetings/telecon).
+[telecon agenda documents](https://github.com/openui/open-ui/tree/main/meetings/telecon).
 
 Meetings are held on Thursdays from [19:00 PM UTC to 19:45 PM UTC](https://www.worldtimebuddy.com/).
 
 ## Minutes
 
-The [`telecon/` directory](https://github.com/WICG/open-ui/tree/master/meetings/telecon) contains meeting minutes. If you'd like to stay up to date on upcoming
+The [`telecon/` directory](https://github.com/openui/open-ui/tree/main/meetings/telecon) contains meeting minutes. If you'd like to stay up to date on upcoming
 meetings, their agenda's and call in information please join the Open UI community group [here](https://www.w3.org/community/open-ui/).
 
 ## Discord
@@ -51,4 +51,4 @@ An example of this is:
 
 ### Setting up and running a meeting
 
-Please refer to [`chair-meeting.md`](https://github.com/WICG/open-ui/blob/master/meetings/telecon/chair-meeting.md).
+Please refer to [`chair-meeting.md`](https://github.com/openui/open-ui/blob/main/meetings/telecon/chair-meeting.md).
