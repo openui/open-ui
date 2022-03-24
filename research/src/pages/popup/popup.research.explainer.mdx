@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- March 16, 2022
+- March 24, 2022
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -160,19 +160,30 @@ The rules the UA uses to manage these interactions depends on the element types,
 * Popup (**`popup=popup`**)
     * When opened, force-closes other popups and hints. An exception is ancestor popups, defined via DOM hierarchy, anchor attribute, or triggerpopup attribute.
     * It would generally be expected that a popup of this type would either receive focus, or a descendant element would receive focus when invoked.
-    * Dismisses on Esc, click outside, or blur.
+    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal), click outside, or blur.
 * Hint/Tooltip (**`popup=hint`**)
     * When opened, force-closes only other hints, but leaves all other popup types open.
-    * Dismisses on Esc, click outside, when no longer hovered (after a timeout), or when the anchor element loses focus.
+    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal), click outside, when no longer hovered (after a timeout), or when the anchor element loses focus.
 * Async (**`popup=async`**)
     * Does not force-close any other element type.
     * Does not light-dismiss - closes via timer or explicit close action.
 * Dialog (**`<dialog>.showModal()`**)
     * When opened, force-closes popup, hint, and async.
-    * Dismisses on Esc
+    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal)
 * Fullscreen (**`<div>.requestFullscreen()`**)
     * When opened, force-closes popup, hint, async, and (with spec changes) dialog
-    * Dismisses on Esc
+    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal)
+
+### Close signal
+
+The "close signal" [proposal](https://wicg.github.io/close-watcher/#close-signal) attempts to unify the concept of "closing" something. Most typically, the Escape key is the standard close signal, but there are others, including the Android back button, AT dismiss gestures, and the Playstation square button.
+
+### Clicking outside
+
+Several popup types above are dismissed when the user "clicks outside" the element. That needs a more concrete definition. At this point, the idea is that a click or touch event that
+occurs outside the bounds of the layout box for the element wearing the `popup` attribute will cause a light dismissal. Exceptions need to be made for both descendant popups and anchor/trigger elements.
+
+### One at a time behavior summary
 
 <table>
   <tr><td></td><td></td><td colspan="5">Second element</td></tr>
