@@ -2,7 +2,7 @@
 
 The purpose of [Open UI](https://open-ui.org/) to the web platform is to allow web developers to style and extend built-in web UI controls, such as <select> dropdowns, checkboxes, radio buttons, and date/color pickers.
   
-You can learn how to contribute, you can read our [getting involved](https://open-ui.org/get-involved) guide. Our guide runs through the entire standardization process, from research, to review, to completion
+You can learn how to contribute by reading our [getting involved](https://open-ui.org/get-involved) guide. Our guide runs through the entire standardization process, from research, to review, to completion
 
 ## Running the repo
 
