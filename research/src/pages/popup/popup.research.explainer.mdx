@@ -83,7 +83,7 @@ So this markup represents popup content:
 <div popup=popup>I am a popup</div>
 ```
 
-As written above, the `<div>` will be rendered `visibility:hidden` by the UA stylesheet, meaning it will not be shown when the page is loaded. To show the popup, one of several methods can be used:
+As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To show the popup, one of several methods can be used:
 
 1. Use [the `triggerpopup` attribute](#declarative-trigger-the-triggerpopup-attribute) on an activating element.
 2. Use [the `initiallyopen` attribute](#page-load-trigger-the-initiallyopen-attribute) on the popup element.
@@ -104,9 +104,9 @@ popup.showPopup(); // Show the popup
 popup.hidePopup(); // Hide a visible popup
 ```
 
-Calling `showPopup()` on an element that has a valid value for the `popup` attribute will cause the UA to remove the `visibility:hidden` rule from the `<div id=mypopup>` element and move it to the top layer. If this method is called on an element that does not have a valid value for `popup`, nothing will happen.
+Calling `showPopup()` on an element that has a valid value for the `popup` attribute will cause the UA to remove the `display:none` rule from the `<div id=mypopup>` element and move it to the top layer. If this method is called on an element that does not have a valid value for `popup`, nothing will happen.
 
-Calling `hidePopup()` on a showing popup will remove it from the top layer, and re-apply `visibility:hidden`.
+Calling `hidePopup()` on a showing popup will remove it from the top layer, and re-apply `display:none`.
 
 
 ## Declarative Trigger (the `triggerpopup` attribute)
@@ -133,10 +133,27 @@ As mentioned above, a `<div popup=popup>` will be hidden by default. If the popu
 In this case, the UA will immediately call `showPopup()` on the element, as it is parsed. If multiple such elements exist on the page, each subsequent popup will "one-at-a-time" close the prior popups, leaving only the last one showing in the end.
 
 
-## Visibility:hidden
+## Non-"shown" popups
 
-The `visibility:hidden` rule is applied by the UA, but it does **not** apply `visibility:hidden !important`. In other words, developer style rules can be used to override this behavior and make a non-top-layer popup visibility in the page. This can be used, for example, to animate the show/hide behavior of the popup, or make popup content "return to the page" instead of becoming hidden.
+When a popup is not being "shown", the UA applies a `display:none` UA stylesheet rule. However, it does **not** apply `display:none !important`. In other words, developer style rules can be used to override this UA style to make a not-showing popup visibile in the page. Note that in this case, the popup will **not** be displayed in the top layer, but rather at it's ordinary z-index position within the document. This can be used, for example, to animate the show/hide behavior of the popup, or make popup content "return to the page" instead of becoming hidden.
 
+## IDL Attribute and Feature Detection
+
+The `popup` content attribute will be [reflected](https://html.spec.whatwg.org/#reflect) as an IDL attribute:
+
+```webidl
+[Exposed=Window]
+partial interface Element {
+  attribute DOMString popup;
+```
+
+This not only allows developer ease-of-use from Javascript, but also allows for a feature detection mechanism:
+
+```javascript
+function supportsPopup() {
+  return Element.prototype.hasOwnProperty("popup");
+}
+```
 
 ## Dismiss Behavior
 
@@ -148,7 +165,7 @@ For elements that are displayed on the top layer via this API, there are a numbe
 * **Light Dismiss**. User action such as clicking outside the element, hitting Escape, or causing keyboard focus to leave the element. This is typically called “light dismiss”.
 * **Other Reasons**. Because the top layer is a UA-managed resource, it may have other reasons (for example a user preference) to forcibly remove elements from the top layer.
 
-In all such cases, the UA manages the removal of elements from the top layer, by forcibly removing the element from the top layer, and re-applying the `visibility:hidden` UA rule.
+In all such cases, the UA manages the removal of elements from the top layer, by forcibly removing the element from the top layer, and re-applying the `display:none` UA rule.
 
 The rules the UA uses to manage these interactions depends on the element types, and this is described in the following section.
 
