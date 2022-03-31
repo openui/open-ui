@@ -130,7 +130,7 @@ As mentioned above, a `<div popup=popup>` will be hidden by default. If the popu
 <div popup=popup initiallyopen>
 ```
 
-In this case, the UA will immediately call `showPopup()` on the element, as it is parsed. If multiple such elements exist on the page, each subsequent popup will "one-at-a-time" close the prior popups, leaving only the last one showing in the end.
+In this case, the UA will immediately call `showPopup()` on the element, as it is parsed. If multiple such elements exist on the page, only the first such element (in DOM order) will be shown.
 
 
 ## Non-"shown" popups
@@ -251,11 +251,6 @@ A new attribute, `anchor`, should be added for all elements, whose value is an i
 
 1. Establish the provided anchor element as an “ancestor” of this popup, for the purposes of light-dismiss behavior. In other words, when a popup is shown, typically all other popups are closed. An exception would be made for all popups in the ancestor chain formed by the anchor element.
 2. The referenced anchor element could be used by the [Anchor Positioning feature](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md).
-
-
-## Display Ordering
-
-It is possible for an HTML document to contain multiple elements with `popup=popup`. In this case, only the last such element on the page will remain open when the page is fully loaded. This is because each successive popup element will force the previous one closed via the “one at a time” behavior.
 
 
 ## Accessibility / Semantics
