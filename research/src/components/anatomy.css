@@ -1,5 +1,5 @@
 /* General */
-.component-anatomy slot {
+.component-anatomy .slot {
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -23,9 +23,9 @@
 
 /* Anatomy boxes */
 
-.component-anatomy host,
-.component-anatomy slot,
-.component-anatomy part,
+.component-anatomy .host,
+.component-anatomy .slot,
+.component-anatomy .part,
 .component-anatomy .element {
   background: rgba(12, 85, 87, 0.2);
   min-height: 25px;
@@ -36,14 +36,14 @@
   position: relative;
 }
 
-.component-anatomy part,
+.component-anatomy .part,
 .component-anatomy .element {
   border: 2px solid black;
 }
 
-.component-anatomy host::before,
-.component-anatomy slot::before,
-.component-anatomy part::before,
+.component-anatomy .host::before,
+.component-anatomy .slot::before,
+.component-anatomy .part::before,
 .anatomy-label::before {
   display: block;
   position: absolute;
@@ -55,36 +55,32 @@
   color: white;
   left: 0;
   top: 0;
-  content: attr(name);
+  content: attr(data-name);
 }
 
-.component-anatomy slot::before {
-  content: "slot";
+.component-anatomy .slot::before {
+  content: 'slot';
 }
 
-.component-anatomy slot:not([name=""])::before {
-  content:  attr(name) " [slot]";
+.component-anatomy .slot:not([data-name=''])::before {
+  content: attr(data-name) ' [slot]';
 }
 
-.component-anatomy host {
+.component-anatomy .host {
   border: 5px solid black;
 }
 
-.component-anatomy slot {
+.component-anatomy .slot {
   text-align: center;
   border: 1px dashed black;
   color: white;
 }
 
-#show-slots:not(:checked) ~ .component-anatomy [data-slot]::before {
-  content: attr(name) " [has slot]";
+#show-slots:not(:checked) ~ .component-anatomy .slot::before {
+display: none;
 }
 
-#show-slots:not(:checked) ~ .component-anatomy slot::before {
-  display: none;
-}
-
-#show-slots:not(:checked) ~ .component-anatomy slot {
+#show-slots:not(:checked) ~ .component-anatomy .slot {
   padding: 0;
   margin: 0;
   border: none;

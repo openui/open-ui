@@ -16,10 +16,84 @@
     },
     {
       "name": "ChoiceGroup",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/choicegroup"
+      "openUIName": "Radio Button",
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/choicegroup",
+      "anatomy": [
+        {
+          "name": "radio-button-group",
+          "implicit": true
+        },
+        {
+          "name": "radio-button-group-label",
+          "implicit": true
+        },
+        {
+          "name": "radio-button-group-required-indicator",
+          "implicit": true
+        },
+        {
+          "name": "checked-indicator",
+          "implicit": false
+        },
+        {
+          "name": "label",
+          "implicit": false
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "openUIName": "state",
+          "image": "fabric-radio-button-basic.png",
+          "description": "The simplest use, unchecked."
+        },
+        {
+          "name": "disabled",
+          "openUIName": "state",
+          "image": "fabric-radio-button-disabled.png",
+          "description": "Disabled for interaction."
+        },
+        {
+          "name": "checked",
+          "openUIName": "state",
+          "image": "fabric-radio-button-checked.png",
+          "description": "Selected option."
+        },
+        {
+          "name": "default",
+          "openUIName": "style",
+          "image": "fabric-radio-button-basic.png",
+          "description": "Default Style"
+        },
+        {
+          "name": "stacked",
+          "openUIName": "radio-button-group-orientation",
+          "image": "fabric-radio-button-group-stacked.png",
+          "description": "Vertically laid-out."
+        },
+        {
+          "name": "required",
+          "openUIName": "required-group",
+          "image": "fabric-radio-button-group-stacked.png",
+          "description": "Required group."
+        },
+        {
+          "name": "with-images",
+          "openUIName": "style",
+          "image": "fabric-radio-button-with-images.png",
+          "description": "Options illustrated by images"
+        },
+        {
+          "name": "with-icons",
+          "openUIName": "style",
+          "image": "fabric-radio-button-with-icons.png",
+          "description": "Options illustrated by icons"
+        }
+      ]
     },
     {
-      "name": "ComboBox",
+      "name": "Combobox",
+      "openUIName": "Select",
       "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/combobox",
       "concepts": [
         {
@@ -57,6 +131,20 @@
         {
           "name": "selectedOptions",
           "description": "All selected values"
+        }
+      ]
+    },
+    {
+      "name": "Combobox.Popup",
+      "openUIName": "Popup",
+      "description": "A combo box combines a text field and a dropdown giving people a way to select an option from a list or enter their own choice.",
+      "url": "",
+      "concepts": [
+        {
+          "name": "combobox",
+          "openUIName": "combobox",
+          "description": "A combo box combines a text field and a dropdown giving people a way to select an option from a list or enter their own choice.",
+          "image": "fluent-combobox.png"
         }
       ]
     },
@@ -221,12 +309,52 @@
       ]
     },
     {
-      "name": "PeoplePicker",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/peoplepicker"
+      "name": "DatePicker.Popup",
+      "openUIName": "Popup",
+      "description": "A date picker offers a drop-down control that’s optimized for picking a single date from a calendar view where contextual information like the day of the week or fullness of the calendar is important.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/datepicker",
+      "concepts": [
+        {
+          "name": "datepicker",
+          "openUIName": "date-time picker",
+          "description": "A date picker offers a drop-down control that’s optimized for picking a single date from a calendar view where contextual information like the day of the week or fullness of the calendar is important.",
+          "image": "fabric-datepicker-basic.gif"
+        }
+      ]
     },
     {
-      "name": "Pickers",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/pickers"
+      "name": "PeoplePicker.Popup",
+      "openUIName": "Popup",
+      "description": "The people picker is used to select one or more entities, such as people or groups, from a list.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/peoplepicker",
+      "concepts": [
+        {
+          "name": "people picker",
+          "openUIName": "autocomplete",
+          "description": "The people picker is used to select one or more entities, such as people or groups, from a list.",
+          "image": "fluent-people-picker.png"
+        }
+      ]
+    },
+    {
+      "name": "Picker",
+      "openUIName": "Select",
+      "description": "Pickers are used to select one or more items, such as tags or files, from a large list.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/pickers"
+    },
+    {
+      "name": "Pickers.Popup",
+      "openUIName": "Popup",
+      "description": "Pickers are used to select one or more items, such as tags or files, from a large list.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/pickers",
+      "concepts": [
+        {
+          "name": "picker",
+          "openUIName": "autocomplete",
+          "description": "Pickers are used to select one or more items, such as tags or files, from a large list.",
+          "image": "fluent-tag-picker.png"
+        }
+      ]
     },
     {
       "name": "SwatchColorPicker",
@@ -407,7 +535,17 @@
     },
     {
       "name": "TeachingBubble",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/teachingbubble"
+      "openUIName": "Popup",
+      "description": "A teaching bubble brings attention to a new or important feature, with the goal of increasing engagement with the feature. A teaching bubble typically follows a coach mark.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/teachingbubble",
+      "concepts": [
+        {
+          "name": "teaching bubble",
+          "openUIName": "misc",
+          "description": "A teaching bubble brings attention to a new or important feature, with the goal of increasing engagement with the feature. A teaching bubble typically follows a coach mark.",
+          "image": "fluent-teaching-bubble.png"
+        }
+      ]
     },
     {
       "name": "ProgressIndicator",
@@ -450,15 +588,45 @@
     },
     {
       "name": "Callout",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/callout"
+      "openUIName": "Popup",
+      "description": "A callout is an anchored tip that can be used to teach people or guide them through the app without blocking them.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/callout",
+      "concepts": [
+        {
+          "name": "callout",
+          "openUIName": "misc",
+          "description": "A callout is an anchored tip that can be used to teach people or guide them through the app without blocking them.",
+          "image": "fluent-callout.png"
+        }
+      ]
     },
     {
       "name": "Dialog",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/dialog"
+      "openUIName": "Dialog",
+      "description": "A dialog box is a temporary pop-up that takes focus from the page or app and requires people to interact with it. It’s primarily used for confirming actions, such as deleting a file, or asking people to make a choice.",
+      "url": "",
+      "concepts": [
+        {
+          "name": "dialog",
+          "openUIName": "basic",
+          "description": "A dialog box is a temporary pop-up that takes focus from the page or app and requires people to interact with it. It’s primarily used for confirming actions, such as deleting a file, or asking people to make a choice.",
+          "image": "fluent-dialog.png"
+        }
+      ]
     },
     {
       "name": "Modal",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/modal"
+      "openUIName": "Dialog",
+      "description": "Modals are temporary pop-ups that take focus from the page or app and require people to interact with them. Unlike a dialog box, a modal should be used for hosting lengthy content, such as privacy statements or license agreements, or for asking people to perform complex or multiple actions, such as changing settings.",
+      "url": "https://developer.microsoft.com/en-us/fluentui#/controls/web/modal",
+      "concepts": [
+        {
+          "name": "modal",
+          "openUIName": "basic",
+          "description": "Modals are temporary pop-ups that take focus from the page or app and require people to interact with them. Unlike a dialog box, a modal should be used for hosting lengthy content, such as privacy statements or license agreements, or for asking people to perform complex or multiple actions, such as changing settings.",
+          "image": "fluent-modal.png"
+        }
+      ]
     },
     {
       "name": "Panel",
@@ -470,7 +638,26 @@
     },
     {
       "name": "Tooltip",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/tooltip"
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/tooltip",
+      "description": "A good tooltip briefly describes unlabeled controls or provides a bit of additional information about labeled controls, when this is useful.",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "fabric-tooltip-basic.png"
+        },
+        {
+          "name": "directionalHint",
+          "openUIName": "position",
+          "description": "How the tooltip should be anchored to its targetElement.",
+          "image": "fabric-tooltip-directionalHint.png"
+        },
+        {
+          "name": "custom",
+          "openUIName": "rich",
+          "description": "Tooltip with custom content",
+          "image": "fabric-tooltip-custom.png"
+        }
+      ]
     },
     {
       "name": "Announced",
@@ -486,11 +673,78 @@
     },
     {
       "name": "Icon",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/icon"
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/icon",
+      "concepts": [
+        {
+          "name": "Icon - Default",
+          "image": "fabric-icon-basic.png",
+          "description": "It is recommended to use Fluent UI icons for command bars, navigation or status indicators."
+        },
+        {
+          "name": "Icon - File Type",
+          "image": "fabric-icon-file-type.png",
+          "description": "Use file type icons to indicate to users that they are creating a new file of that type."
+        }
+      ]
     },
     {
       "name": "Image",
-      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/image"
+      "url": "https://developer.microsoft.com/en-us/fabric#/controls/web/image",
+      "defition": "An image is a graphic representation of something (e.g photo or illustration).",
+      "concepts": [
+        {
+          "name": "default",
+          "description": "By default, frame remains at its natural size with no image scaling",
+          "image": "fabric-image-default.png"
+        },
+        {
+          "name": "contain",
+          "openUIName": "fit",
+          "description": "Causes the image to scale up or down proportionally",
+          "image": "fabric-image-fit-contain.png"
+        },
+        {
+          "name": "centerContain",
+          "openUIName": "fit",
+          "description": "Causes the image to scale up or down proportionally, centering images smaller than their frame",
+          "image": "fabric-image-fit-center-contain.png"
+        },
+        {
+          "name": "none",
+          "openUIName": "fit",
+          "description": "Causes the image to crop if the frame is smaller than the image",
+          "image": "fabric-image-fit-none.png"
+        },
+        {
+          "name": "center",
+          "openUIName": "fit",
+          "description": "Behaves as 'none' while centering the image within the frame",
+          "image": "fabric-image-fit-center.png"
+        },
+        {
+          "name": "cover",
+          "openUIName": "fit",
+          "description": "Causes the image to scale up or down proportionally",
+          "image": "fabric-image-fit-cover.png"
+        },
+        {
+          "name": "centerCover",
+          "openUIName": "fit",
+          "description": "Behaves as 'cover' with centering of the image within the frame",
+          "image": "fabric-image-fit-center-cover.png"
+        },
+        {
+          "name": "maximizeFrame",
+          "description": "Expands image to fill the container",
+          "image": "fabric-image-maximize-frame.png"
+        },
+        {
+          "name": "center",
+          "openUIName": "alignment",
+          "description": "Centers the image within the frame",
+          "image": "fabric-image-fit-center.png"
+        }
+      ]
     },
     {
       "name": "Keytips",

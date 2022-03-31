@@ -3,7 +3,7 @@ import React from 'react'
 const Image = ({ src, alt = src, style, ...rest }) => {
   let imageData
   try {
-    imageData = require(`../images/${src}`)
+    imageData = require(`../images/${src}`).default
   } catch (error) {}
 
   return (
