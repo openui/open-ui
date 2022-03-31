@@ -4,7 +4,7 @@ We meet weekly to discuss progress on Open UI initiatives. Topics of
 conversation are determined beforehand, and listed in
 [telecon agenda documents](https://github.com/openui/open-ui/tree/main/meetings/telecon).
 
-Meetings are held on Thursdays from [19:00 PM UTC to 19:45 PM UTC](https://www.worldtimebuddy.com/).
+Meetings are held on Thursdays from [11:00 AM US/Pacific to 11:45 AM US/Pacific](https://www.worldtimebuddy.com/).
 
 ## Minutes
 
