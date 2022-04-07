@@ -4,13 +4,13 @@
 2. Go to Issues and search for the `Agenda+` label. If there are any take the oldest ones and add them to the
 list of the agenda. If you think the agenda is a little light review the issues and PRs to see if there are
 any that seem ready for review and add them. Place these into the file you created.
-3. In the Open UI calendar invite the Google Meet URL is there, place that into the telecon below the agenda
+3. In the Open UI calendar invite, the Zoom URL is there; place that into the telecon below the agenda.
 4. Copy the Github URL to the markdown file you created and paste this into the `#telecon-agenda` channel of Discord
 5. Also paste in the meeting details into `#telecon-agenda` channel of Discord
 
 # Chairing the meeting
 
-1. Log into IRC
+1. Log into IRC (#openui)
 2. Invite Zakim & the RRSAgent (this will generate the logs). To do this, follow the directions [here](https://www.w3.org/2001/12/zakim-irc-bot)
 3. To start the meeting, type `Zakim, start meeting` - if you haven't set the meeting it will request you to
 4. Remember to tell the participants to the join IRC and type in `Present+ <Their Name>`
