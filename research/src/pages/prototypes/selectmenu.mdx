@@ -142,7 +142,7 @@ You can replace the default listbox part in a similar fashion:
 
 ```html
 <style>
-  .my-custom-select popup {
+  .my-custom-select [popup] {
     width: 300px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -156,18 +156,18 @@ You can replace the default listbox part in a similar fashion:
 </style>
 <selectmenu class="my-custom-select">
   <div slot="listbox">
-    <popup behavior="listbox">
+    <div popup="popup" behavior="listbox">
       <option>Option 1</option>
       <option>Option 2</option>
       <option>Option 3</option>
       <option>Option 4</option>
       <option>Option 5</option>
-    </popup>
+    </div>
   </div>
 </selectmenu>
 ```
 
-The `<popup>` used here is the element proposed at [Popup (Editor's Draft)](http://localhost:8000/components/popup). The element with `behavior="listbox"` is required to be a `<popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
+The `popup` attribute used in this example's `<div popup=popup>` is from the proposal at [Popup API (Explainer)](https://open-ui.org/components/popup.research.explainer). The element with `behavior="listbox"` is required to be a `<div popup=popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
 The above code snippet results in the following style:
 
@@ -202,7 +202,7 @@ Consider the following example:
   .my-custom-select button::before {
     content: '\25BC';
   }
-  .my-custom-select popup {
+  .my-custom-select [popup] {
     padding: 0;
   }
   .my-custom-select .section {
@@ -226,7 +226,7 @@ Consider the following example:
     <button behavior="button"></button>
   </div>
   <div slot="listbox">
-    <popup behavior="listbox">
+    <div popup="popup" behavior="listbox">
       <div class="section">
         <h3>Flowers</h3>
         <option>Rose</option>
@@ -240,7 +240,7 @@ Consider the following example:
         <option>Dragon tree</option>
         <option>Giant sequoia</option>
       </div>
-    </popup>
+    </div>
   </div>
 </selectmenu>
 ```
@@ -283,7 +283,7 @@ For example, the demo in the [previous section](#extending-the-markup) could be 
     button::before {
       content: '\\0025BC';
     }
-    popup {
+    [popup] {
       padding: 0;
     }
     .section {
@@ -308,7 +308,7 @@ For example, the demo in the [previous section](#extending-the-markup) could be 
     <span behavior="selected-value" slot="selected-value"></span>
     <button behavior="button"></button>
   </div>
-  <popup behavior="listbox">
+  <div popup="popup" behavior="listbox">
     <div class="section">
       <h3>Flowers</h3>
       <option>Rose</option>
@@ -322,7 +322,7 @@ For example, the demo in the [previous section](#extending-the-markup) could be 
       <option>Dragon tree</option>
       <option>Giant sequoia</option>
     </div>
-  </popup>
+  </div>
   `
 </script>
 ```
