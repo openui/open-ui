@@ -48,7 +48,7 @@ pathToResearch: /components/popup.research
 A very common UI pattern on the Web, for which there is no native API, is "popup UI" or "popups". Popups are a general class of UI that have three common behaviors:
  1. Popups always appear **on top of other page content**.
  2. Popups are **ephemeral**. When the user "moves on" to another part of the page (e.g. by clicking elsewhere, or hitting ESC), the popup closes.
- 3. Popups are **"one at a time"** - opening one popup closes others.
+ 3. Popups (of a particular type) are generally **"one at a time"** - opening one popup closes others.
 
 This document proposes a set of APIs to make this type of UI easy to build.
 
@@ -484,7 +484,7 @@ This section contains several HTML examples, showing how various UI elements mig
 
 ## Exceeding the Frame Bounds
 
-Allowing a popup/top-layer element to exceed the bounds of its containing frame poses a serious security risk: such an element could spoof browser UI or containing-page content. While the [original `<popup>` proposal](https://open-ui.org/components/popup.research.explainer#goals) did not discuss this issue, the [`<selectmenu>` proposal](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#security) does have a specific section at least mentioning this issue. Some top-layer APIs (e.g. the fullscreen API) make it possible for an element to exceed the frame bounds in some cases, great care must be taken in these cases to ensure user safety. Given the complete flexibility offered by the Popup API (any element, arbitrary content, etc.), there would be no way to ensure the safety of this feature if it were allowed to exceed frame bounds.
+Allowing a popup/top-layer element to exceed the bounds of its containing frame poses a serious security risk: such an element could spoof browser UI or containing-page content. While the [original `<popup>` proposal](https://open-ui.org/components/popup.research.explainer-v1) did not discuss this issue, the [`<selectmenu>` proposal](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#security) does have a specific section at least mentioning this issue. Some top-layer APIs (e.g. the fullscreen API) make it possible for an element to exceed the frame bounds in some cases, great care must be taken in these cases to ensure user safety. Given the complete flexibility offered by the Popup API (any element, arbitrary content, etc.), there would be no way to ensure the safety of this feature if it were allowed to exceed frame bounds.
 
 For completeness, several use counters were added to Chromium to measure how often this type of behavior (content exceeding the frame bounds) might be needed. These are approximations, as they merely measure the total number of times one of the built-in “popup” windows, which can exceed frame bounds because of their carefully-controlled content, is shown. The popups included in this count include the `<select>` popup, the `<input type=color>` color picker, and the `<input type=date/etc>` date/time picker. Data can be found here:
 
