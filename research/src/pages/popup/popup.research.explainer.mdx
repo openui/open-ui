@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- March 24, 2022
+- May 9, 2022
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -17,35 +17,47 @@ pathToResearch: /components/popup.research
   - [See Also](#see-also)
 - [API Shape](#api-shape)
   - [HTML Content Attribute](#html-content-attribute)
-  - [Declarative Trigger (the `triggerpopup` attribute)](#declarative-trigger-the-triggerpopup-attribute)
-  - [Dismiss Behavior](#dismiss-behavior)
-  - [Classes of UI - Dismiss Behavior and Interactions](#classes-of-ui---dismiss-behavior-and-interactions)
+  - [Showing and Hiding a Popup](#showing-and-hiding-a-popup)
+  - [IDL Attribute and Feature Detection](#idl-attribute-and-feature-detection)
   - [Events](#events)
   - [Focus Management](#focus-management)
-  - [Anchoring (the `anchor` Attribute)](#anchoring-the-anchor-attribute)
-  - [Display Ordering](#display-ordering)
+  - [Anchoring](#anchoring)
+  - [Backdrop](#backdrop)
+- [Behaviors](#behaviors)
+  - [Automatic Dismiss Behavior](#automatic-dismiss-behavior)
+  - [Classes of Top Layer UI](#classes-of-top-layer-ui)
   - [Accessibility / Semantics](#accessibility--semantics)
-  - [Example Use Cases](#example-use-cases)
-  - [Pros and Cons](#pros-and-cons)
+  - [Disallowed elements](#disallowed-elements)
+- [Example Use Cases](#example-use-cases)
+  - [Generic Popup (Date Picker)](#generic-popup-date-picker)
+  - [Generic popup (`<selectmenu>` listbox example)](#generic-popup-selectmenu-listbox-example)
+  - [Hint/Tooltip](#hinttooltip)
+  - [Async](#async)
 - [Additional Considerations](#additional-considerations)
-  - [Current Top Layer Behavior](#current-top-layer-behavior)
-  - [Shadow DOM](#shadow-dom)
   - [Exceeding the Frame Bounds](#exceeding-the-frame-bounds)
+  - [Shadow DOM](#shadow-dom)
   - [Eventual Single-Purpose Elements](#eventual-single-purpose-elements)
-- [Other Alternatives Considered](#other-alternatives-considered)
+- [The Choices Made in this API](#the-choices-made-in-this-api)
+  - [Alternatives Considered](#alternatives-considered)
+  - [Design decisions](#design-decisions)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Background
 
-There is a need in the Web Platform for an API to create "popup UI". This is a general class of UI that always appear on top of all other content, and have both one-at-a-time and "light-dismiss" behaviors. This document proposes a set of APIs to make this type of UI easy to build.
+A very common UI pattern on the Web, for which there is no native API, is "popup UI" or "popups". Popups are a general class of UI that have three common behaviors:
+ 1. Popups always appear **on top of other page content**.
+ 2. Popups are **ephemeral**. When the user "moves on" to another part of the page (e.g. by clicking elsewhere, or hitting ESC), the popup closes.
+ 3. Popups (of a particular type) are generally **"one at a time"** - opening one popup closes others.
+
+This document proposes a set of APIs to make this type of UI easy to build.
 
 
 ## Goals
 
-Here are the goals for this API (borrowed liberally from the [`<popup>` element explainer](https://open-ui.org/components/popup.research.explainer)):
+Here are the goals for this API:
 
-* Allow any* element and its (arbitrary) descendants to be rendered on top of **all other content** in the host web application.
+* Allow any element and its (arbitrary) descendants to be rendered on top of **all other content** in the host web application.
 * Include **“light dismiss” management functionality**, to remove the element/descendants from the top-layer upon certain actions such as hitting Esc (or any [close signal](https://wicg.github.io/close-watcher/#close-signal)) or clicking outside the element bounds.
 * Allow this “top layer” content to be fully styled, including properties which require compositing with other layers of the host web application (e.g. the box-shadow or backdrop-filter CSS properties).
 * Allow these top layer elements to reside at semantically-relevant positions in the DOM. I.e. it should not be required to re-parent a top layer element as the last child of the `document.body` simply to escape ancestor containment and transforms.
@@ -54,8 +66,6 @@ Here are the goals for this API (borrowed liberally from the [`<popup>` element 
 * **Accessible by default**, with the ability to further extend semantics/behaviors as needed for the author's specific use case.
 * Avoid developer footguns, such as improper stacking of dialogs and popups, and incorrect accessibility mappings.
 * Avoid the need for Javascript for the common cases.
-
-*There may need to be some limitations in some cases.
 
 
 ## See Also
@@ -83,20 +93,39 @@ So this markup represents popup content:
 <div popup=popup>I am a popup</div>
 ```
 
-As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To show the popup, one of several methods can be used:
+As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To show the popup, one of several methods can be used: [declarative triggering](#declarative-triggers), [Javascript triggering](#javascript-trigger), or [page load triggering](#page-load-trigger).
 
-1. Use [the `triggerpopup` attribute](#declarative-trigger-the-triggerpopup-attribute) on an activating element.
-2. Use [the `initiallyopen` attribute](#page-load-trigger-the-initiallyopen-attribute) on the popup element.
-3. Use [the `showPopup()` method](#javascript-trigger) on the popup element.
+## Showing and Hiding a Popup
 
+There are several ways to "show" a popup, and they are discussed in this section. When any of these methods are used to show a popup, it will be made visible and moved (by the UA) to the [top layer](https://fullscreen.spec.whatwg.org/#top-layer). The top layer is a layer that paints on top of all other page content, with the exception of other elements currently in the top layer. This allows, for example, a "stack" of popups to exist.
 
+### Declarative Triggers
 
-In addition to the three proposed values (`popup`, `hint`, `async`) for the `popup` attribute, it might also be possible to specify two additional values to be used for modal dialogs and fullscreen elements. In that case, this attribute could be used to control **all** top layer element types. This would need further exploration. If this approach is **not** taken, then there might need to be restrictions placed on when the `popup` attribute can be used. For example, it should be illegal to apply `popup=popup` to an already-modal `<dialog>`.
+A common design pattern is to have an activating element, such as a `<button>`, which makes a popup visible. To facilitate this pattern, and avoid the need for Javascript in this common case, three content attribute (`togglepopup`, `showpopup`, and `hidepopup`) allow the developer to declaratively toggle, show, or hide a popup. To do so, the attribute's value should be set to the idref of another element:
 
+```html
+<button togglepopup=foo>Toggle the popup</button>
+<div id=foo popup=popup>Popup content</div>
+```
 
-## Javascript Trigger
+When the button in this example is activated, the UA will call `.showPopup()` on the `<div id=mypopup>` element if it is currently hidden, or `hidePopup()` if it is showing. In this way, no Javascript will be necessary for this use case.
 
-To show (and hide) the popup via Javascript, two new methods will be added to HTMLElement:
+If the desire is to have a button that only shows or only hides a popup, the following markup can be used:
+
+```html
+<button togglepopup=foo>Toggle the popup</button>
+<button showpopup=foo>This button only shows the popup</button>
+<button hidepopup=foo>This button only hides the popup</button>
+<div id=foo popup=popup>Popup content</div>
+```
+
+Note that all three attributes can be used together like this, pointing to the same element. However, using more than one triggering attribute on **a single button** is not recommended.
+
+When the `togglepopup`, `showpopup`, or `hidepopup` attributes are applied to an activating element, the UA may automatically map this attribute appropriate `aria-*` attributes, such as `aria-haspopup`, `aria-describedby` and/or `aria-expanded`, in order to ensure accessibility. There will need to be further discussion with the ARIA working group to determine the exact ARIA semantics, if any, are necessary.
+
+### Javascript Trigger
+
+To show and hide the popup via Javascript, there are two methods on HTMLElement:
 
 ```javascript
 const popup = document.querySelector('[popup]');
@@ -104,38 +133,57 @@ popup.showPopup(); // Show the popup
 popup.hidePopup(); // Hide a visible popup
 ```
 
-Calling `showPopup()` on an element that has a valid value for the `popup` attribute will cause the UA to remove the `display:none` rule from the `<div id=mypopup>` element and move it to the top layer. If this method is called on an element that does not have a valid value for `popup`, nothing will happen.
+Calling `showPopup()` on an element that has a valid value for the `popup` attribute will cause the UA to remove the `display:none` rule from the element and move it to the top layer. Calling `hidePopup()` on a showing popup will remove it from the top layer, and re-apply `display:none`.
 
-Calling `hidePopup()` on a showing popup will remove it from the top layer, and re-apply `display:none`.
+There are several conditions that will cause `showPopup()` and/or `hidePopup()` to throw an exception:
+
+1. Calling `showPopup()` or `hidePopup()` on an element that does not contain a [valid value](#html-content-attribute) of the `popup` attribute. This will throw a `NotSupportedError` `DOMException`.
+2. Calling `showPopup()` on a valid popup that is already in the showing state. This will throw an `InvalidStateError` `DOMException`.
+3. Calling `showPopup()` on a valid popup that is not connected to a document. This will throw an `InvalidStateError` `DOMException`.
+4. Calling `hidePopup()` on a valid popup that is not currently showing. This will throw an `InvalidStateError` `DOMException`.
 
 
-## Declarative Trigger (the `triggerpopup` attribute)
+### Page Load Trigger
 
-A common design pattern is to have an activating element, such as a `<button>`, which makes a popup visible. To facilitate this pattern, and avoid the need for Javascript in this common case, another content attribute, `triggerpopup`, will also be added. This attribute's value should be the idref of another element:
-
-```html
-<button triggerpopup=mypopup>Click me</button>
-<div id=mypopup popup=popup>Popup content</div>
-```
-
-When the button in this example is activated, the UA will call `.showPopup()` on the `<div id=mypopup>` element. In this way, no Javascript will be necessary for this use case.
-
-When the `triggerpopup` attribute is applied to an activating element, the UA may automatically map this attribute to an appropriate `aria-*` attribute, such as `aria-haspopup`, `aria-describedby` or `aria-expanded`. There will need to be further discussion with the ARIA working group to determine the exact ARIA semantics, if any, are necessary.
-
-## Page Load Trigger (the `initiallyopen` attribute)
-
-As mentioned above, a `<div popup=popup>` will be hidden by default. If the popup should instead be shown upon page load, the `initallyopen` attribute can be applied:
+As mentioned above, a `<div popup=popup>` will be hidden by default. If it is desired that the popup should be shown automatically upon page load, the `defaultopen` attribute can be applied:
 
 ```html
-<div popup=popup initiallyopen>
+<div popup=popup defaultopen>
 ```
 
-In this case, the UA will immediately call `showPopup()` on the element, as it is parsed. If multiple such elements exist on the page, only the first such element (in DOM order) will be shown.
+In this case, the UA will immediately call `showPopup()` on the element, as it is parsed. If multiple such elements exist on the page, only the first such element (in DOM order) on the page will be shown.
+
+Note that `hint` popups cannot use the `defaultopen` attribute:
+
+```html
+<div popup=hint defaultopen>I will not be shown on page load</div>
+```
+
+Note also that more than one `async` popup can use `defaultopen` and all such popups will be shown on load, not just the first one:
+
+```html
+<div popup=async defaultopen>Shown on page load</div>
+<div popup=async defaultopen>Also shown on page load</div>
+```
 
 
-## Non-"shown" popups
+### Shown vs Hidden Popups
 
-When a popup is not being "shown", the UA applies a `display:none` UA stylesheet rule. However, it does **not** apply `display:none !important`. In other words, developer style rules can be used to override this UA style to make a not-showing popup visibile in the page. Note that in this case, the popup will **not** be displayed in the top layer, but rather at it's ordinary z-index position within the document. This can be used, for example, to animate the show/hide behavior of the popup, or make popup content "return to the page" instead of becoming hidden.
+The styling for a popup is provided by roughly the following UA stylesheet rules:
+
+```css
+[popup i]:not(:popup-open) {
+  display: none;
+}
+
+[popup i] {
+  position: fixed;
+}
+```
+
+The above rules mean that a popup, when not "shown", has `display:none` applied, and that style is removed when one of the methods above is used to show the popup. Note that the `display:none` UA stylesheet rule is **not** `!important`. In other words, developer style rules can be used to override this UA style to make a not-showing popup visible in the page. In this case, the popup will **not** be displayed in the top layer, but rather at it's ordinary `z-index` position within the document. This can be used, for example, to animate the show/hide behavior of the popup, or make popup content "return to the page" instead of becoming hidden.
+
+
 
 ## IDL Attribute and Feature Detection
 
@@ -155,27 +203,138 @@ function supportsPopup() {
 }
 ```
 
-## Dismiss Behavior
+Further, only [valid values](#html-content-attribute) of the content attribute will be reflected to the IDL property, with invalid values being reflected as the empty string `""`. For example:
 
-For elements that are displayed on the top layer via this API, there are a number of “triggers” that can cause the element to be removed from the top-layer. These fall into three main categories:
-
-
-
-* **One at a Time.** Another element being added to the top-layer causes others to be removed. This is typically used for “one at a time” type elements: when one popup opens, other popups should be closed, so that only one is on-screen at a time. This is also used when “more important” top layer elements get added. For example, fullscreen elements should close all open popups.
-* **Light Dismiss**. User action such as clicking outside the element, hitting Escape, or causing keyboard focus to leave the element. This is typically called “light dismiss”.
-* **Other Reasons**. Because the top layer is a UA-managed resource, it may have other reasons (for example a user preference) to forcibly remove elements from the top layer.
-
-In all such cases, the UA manages the removal of elements from the top layer, by forcibly removing the element from the top layer, and re-applying the `display:none` UA rule.
-
-The rules the UA uses to manage these interactions depends on the element types, and this is described in the following section.
+```javascript
+const div = document.createElement('div');
+div.setAttribute('popup','hint');
+div.popup === 'hint'; // true
+div.setAttribute('popup','invalid!');
+div.popup === ''; // true
+```
 
 
-## Classes of UI - Dismiss Behavior and Interactions
+
+## Events
+
+Events are fired (asynchronously) when a popup is shown (`show` event) and hidden (`hide` event). These events can be used, for example, to populate content for the popup just in time before it is shown, or update server data when it closes. The events are:
+
+```javascript
+const popup = Object.assign(document.createElement('div'), {popup: 'popup'});
+popup.addEventListener('show',() => console.log('Popup is being shown!'));
+popup.addEventListener('hide',() => console.log('Popup is being hidden!'));
+```
+
+Neither of these events are cancellable, and both are fired asynchronously.
 
 
+
+## Focus Management
+
+Elements that move into the top layer may require focus to be moved to that element, or a descendant element. However, not all elements in the top layer will require focus. For example, a modal `<dialog>` will have focus set to its first interactive element, if not the dialog element itself, because a modal dialog is something that requires immediate attention. On the other hand, a `<div popup=hint>` (which will more often than not represent a "tooltip") does not receive focus at all (nor is it expected to contain focusable elements). Similarly, a `<div popup=async>` should not immediately receive focus (even if it contains focusable elements) because it is meant for out-of-band communication of state, and is not meant to interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus. To provide control over these behaviors, two attributes can be used on popups:
+
+- `autofocus`. When present on a popup or one of its descendants, it will result in focus being moved to the specified element when the popup is rendered. Note that `autofocus` is [already a global attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute), but the existing behavior applies to element focus on **page load**. This proposal extends that definition to be used within popups, and the focus behavior happens **when they are shown**. Note that adding `autofocus` to a popup descendant does **not** cause the popup to be shown on page load, and therefore it does not cause focus to be moved into the popup **on page load**, unless the `defaultopen` attribute is also used.
+
+- `delegatesfocus`. When present on the popup element itself, this causes the **first focusable descendent** of the popup to be focused when the popup is shown. The purpose of this attribute is to handle the cases in which the popup content or ordering is not known prior to rendering, so that `autofocus` cannot be used effectively. (Eventually, the `delegatesfocus` attribute might be made applicable to any element, not just popups, to control focus behavior more generally.)
+
+If both `autofocus` and `delegatesfocus` are both present on the popup element, the popup element is focused when shown.
+
+
+## Anchoring
+
+A new attribute, `anchor`, can be used on a popup element to refer to the popup's "anchor". The value of the attribute is a string idref corresponding to the `id` of another element (the "anchor element"). This anchoring relationship is used for two things:
+
+1. Establish the provided anchor element as an [“ancestor”](#nearest-open-ancestral-popup) of this popup, for light-dismiss behaviors. In other words, the `anchor` attribute can be used to form nested popups.
+2. The referenced anchor element could be used by the [Anchor Positioning feature](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md).
+
+
+## Backdrop
+
+Akin to modal `<dialog>` and fullscreen elements, popups allow access to a `::backdrop` pseudo element, which is a full-screen element placed directly behind the popup in the top layer. This allows the developer to do things like blur out the background when a popup is showing:
+
+```html
+<div popup=popup>I'm a popup</div>
+<style>
+[popup]::backdrop {
+  backdrop-filter: blur(3px);
+}
+</style>
+```
+
+Note that in contrast to the `::backdrop` pseudo element for modal dialogs and fullscreen elements, the `::backdrop` for a popup is styled by a UA stylesheet rule `pointer-events: none !important`, which means it cannot trap clicks outside the popup. This ensures the "click outside" light dismiss behavior continues to function.
+
+# Behaviors
+
+
+
+## Automatic Dismiss Behavior
+
+For elements that are displayed on the top layer via this API, there are a number of things that can cause the element to be removed from the top-layer, besides the ones [described above](#showing-and-hiding-a-popup). These fall into three main categories:
+
+* **One at a Time.** Another element being added to the top-layer causes existing top layer elements to be removed. This is typically used for “one at a time” type elements: when one popup is shown, other popups should be hidden, so that only one is on-screen at a time. This is also used when “more important” top layer elements get added. For example, fullscreen elements should close all open popups.
+* **Light Dismiss.** User action such as clicking outside the element, hitting Escape, or causing keyboard focus to leave the element should all cause a displayed popup to be hidden. This is typically called “light dismiss”, and is discussed in more detail in [this section](#light-dismiss).
+* **Other Reasons.** Because the top layer is a UA-managed resource, it may have other reasons (for example a user preference) to forcibly remove elements from the top layer.
+
+In all such cases, the UA is allowed to forcibly remove an element from the top layer and re-apply the `display:none` popup UA rule. The rules the UA uses to manage these interactions depends on the element types, and this is described in more detail in [this section](#classes-of-top-layer-ui).
+
+### Light Dismiss
+
+The term "light dismiss" for a popup is used to describe the user "moving on" to another part of the page, or generally being done interacting with the popup. When this happens, the popup should be hidden. Several actions trigger light dismiss of a popup:
+
+1. Clicking or tapping outside the bounds of the popup. Any `mousedown` event will trigger **all open popups** to be hidden, starting from the top of [the popup stack](#the-popup-stack), and ending with the [nearest open ancestral popup](#nearest-open-ancestral-popup) of the `mousedown` event's `target` `Node`. This means clicking on a popup or its trigger or anchor elements will not hide that popup.
+2. Hitting the Escape key, or generally any ["close signal"](#close-signal). This will cause the topmost popup on [the popup stack](#the-popup-stack) to be hidden.
+3. Using keyboard or other navigation sources to move the focus off of the popup. When the focus changes, all popups up to the ["nearest open ancestral popup"](#nearest-open-ancestral-popup) for the newly-focused element will be hidden. Note that this includes subframes and the user changing windows (a window `blur`) - both will cause all open popups to be closed.
+
+
+### Nested Popups
+
+For at least `popup=popup`, it is possible to have "nested" popups. I.e. two popups that are allowed to both be open at the same time, due to their relationship with each other. A simple example where this would be desired is a popup menu that contains sub-menus: it should be possible to keep the main menu showing while the sub-menu is shown.
+
+Popup nesting is not posslbe/applicable to the other popup types, such as `popup=hint` and `popup=async`.
+
+### The Popup Stack
+
+The `Document` contains a "stack of open popups", which is initially empty. When a `popup=popup` element is shown, that popup is pushed onto the top of the stack, and when a `popup=popup` element is hidden, it is popped from the top of the stack.
+
+### Nearest Open Ancestral Popup
+
+The "nearest open ancestral popup" `P` to a given `Node` N is defined in this way:
+
+> `P` is the topmost popup in [the popup stack](#the-popup-stack) for which any one of the following is true:
+> 1. `P` is a flat-tree DOM ancestor of `N`.
+> 2. `P` has an `anchor` attribute whose value is equal to `N`'s `id` or any of `N`'s flat-tree descendent's `id`s.*
+> 3. `N` has an ancestor [triggering element](#declarative-triggers) whose target is `P`.
+> If none of the popups in [the popup stack](#the-popup-stack) match the above conditions, then `P` is `null`.
+
+The above description needs to be more crisply defined. The [implementation from Chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2577;drc=d164a7600a5f094d73a135c1f66f76139b525b48) should be a good starting point to describe the algorithm.
+
+### Close signal
+
+The "close signal" [proposal](https://wicg.github.io/close-watcher/#close-signal) attempts to unify the concept of "closing" something. Most typically, the Escape key is the standard close signal, but there are others, including the Android back button, Accessibility Tools dismiss gestures, and the Playstation square button. Any of these close signals is a light dismiss trigger for the topmost popup.
+
+
+
+The fact that only valid values are reflected allows feature detection of the values, for forward compatibility:
+
+```javascript
+function supportsAsyncPopups() {
+  if !Element.prototype.hasOwnProperty("popup")
+    return false;
+  const div = document.createElement('div');
+  div.setAttribute('popup','async');
+  return div.popup === 'async';
+}
+```
+
+
+
+
+## Classes of Top Layer UI
+
+As described in this section, the three popup types (`popup`, `hint`, and `async`) each have slightly different interactions with each other. For example, `popup`s hide other `hint`s, but the reverse is not true. Additionally, there are other (non-popup) elements that participate in the top layer. This section describes the general interactions between the various top layer element types, including the various flavors of popup:
 
 * Popup (**`popup=popup`**)
-    * When opened, force-closes other popups and hints. An exception is ancestor popups, defined via DOM hierarchy, anchor attribute, or triggerpopup attribute.
+    * When opened, force-closes other popups and hints, except for [ancestor popups](#nearest-open-ancestral-popup).
     * It would generally be expected that a popup of this type would either receive focus, or a descendant element would receive focus when invoked.
     * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal), click outside, or blur.
 * Hint/Tooltip (**`popup=hint`**)
@@ -185,107 +344,85 @@ The rules the UA uses to manage these interactions depends on the element types,
     * Does not force-close any other element type.
     * Does not light-dismiss - closes via timer or explicit close action.
 * Dialog (**`<dialog>.showModal()`**)
-    * When opened, force-closes popup, hint, and async.
+    * When opened, force-closes popup and hint.
     * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal)
 * Fullscreen (**`<div>.requestFullscreen()`**)
-    * When opened, force-closes popup, hint, async, and (with spec changes) dialog
+    * When opened, force-closes popup, hint, and (with spec changes) dialog
     * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal)
 
-### Close signal
-
-The "close signal" [proposal](https://wicg.github.io/close-watcher/#close-signal) attempts to unify the concept of "closing" something. Most typically, the Escape key is the standard close signal, but there are others, including the Android back button, AT dismiss gestures, and the Playstation square button.
-
-### Clicking outside
-
-Several popup types above are dismissed when the user "clicks outside" the element. That needs a more concrete definition. At this point, the idea is that a click or touch event that
-occurs outside the bounds of the layout box for the element wearing the `popup` attribute will cause a light dismissal. Exceptions need to be made for both descendant popups and anchor/trigger elements.
-
 ### One at a time behavior summary
+
+This table summarizes the interactions between a first top layer element (rows) and a second top layer element (columns), as the second element is shown:
 
 <table>
   <tr><td></td><td></td><td colspan="5">Second element</td></tr>
   <tr><td></td><td></td><td>Fullscreen</td><td>Modal Dialog</td><td>Popup</td><td>Hint</td><td>Async</td></tr>
-  <tr><td rowspan="5" >First Element</td><td>Fullscreen</td><td>Close</td><td>Leave</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
-  <tr><td>Modal Dialog</td><td>Close*</td><td>Leave</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
-  <tr><td>Popup</td><td>Close</td><td>Close</td><td>Close</td><td>Leave</td><td>Leave</td></tr>
-  <tr><td>Hint</td><td>Close</td><td>Close</td><td>Close</td><td>Close</td><td>Leave</td></tr>
-  <tr><td>Async</td><td>Close</td><td>Close</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
+  <tr><td rowspan="5" >First Element</td><td>Fullscreen</td><td>Hide</td><td>Leave</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
+  <tr><td>Modal Dialog</td><td>Hide*</td><td>Leave</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
+  <tr><td>Popup</td><td>Hide</td><td>Hide</td><td>Hide</td><td>Leave</td><td>Leave</td></tr>
+  <tr><td>Hint</td><td>Hide</td><td>Hide</td><td>Hide</td><td>Hide</td><td>Leave</td></tr>
+  <tr><td>Async</td><td>Hide</td><td>Hide</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
 </table>
 
 *Not current behavior
 
+In the table, "hide" means that when the second element is shown (enters the top layer), the first element is removed from the top layer. In contrast, "leave" means both elements will remain in the top layer together.
 
-## Events
+### Detailed description of interactions among popup types
 
-There is a [general desire](https://github.com/openui/open-ui/issues/342) to receive events indicating that an element has entered or left the top layer via this API. These events can be used, for example, to populate content for a popup just in time before it is shown, or update server data when it closes.
+This section details the interactions between the three popup types:
 
-It would seem most natural and powerful to define two events:
-
-
-
-* `entertoplayer`: fired on the element just after it is promoted to the top layer.
-* `exittoplayer`: fired on the element just after it is removed from the top layer.
-
-Neither of these events would be cancellable. Both events should be fired synchronously, so that these event handlers could be used to change rendering (such as adding or removing content) without any flashes of differently-styled content.
-
-It would also seem natural that these events would be fired for `<dialog>` elements and fullscreen elements, as they transition into and out of the top layer.
-
-
-## Focus Management
-
-Elements that “go” into the top layer sometimes need to move the focus to that element, and sometimes don't. For example, a modal `<dialog>` gets automatically focused because a dialog is something that requires immediate focus and attention. On the other hand, a `<div popup=hint>` doesn't receive focus at all (and is typically not expected to contain focusable elements). Similarly, a `<div popup=async>` should not receive focus (even if focusable) because it is meant for out-of-band communication of state, and should not interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus first. For these reasons, there need to be mechanisms available for elements to control focus in the appropriate ways. The `<popup>` element proposal provided two ways to modify focus behavior: the `delegatesfocus` and `autofocus` attributes. The `autofocus` attribute is [already a global attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus), so it'd just need to be updated to clarify that the autofocus behavior happens for top layer elements right when they're added to the top layer. The other attribute provided by the `<popup>` proposal,  `delegatesfocus`, either might not be necessary, or might need to be added as a global attribute:
+1. If a `popup=hint` is shown, it should hide **any** other open `popup=hint`s, including ancestral `popup=hint`s. (**"You can't nest `popup=hint`s".**)
+2. If a `popup=popup` is shown, it should hide **any** open `popup=hint`s, including if the `popup=hint` is an ancestral popup of the `popup=popup`. (**"You can't nest a popup inside a `popup=hint`".**)
+3. If you: **a)** show a `popup=popup` (call it D), then **b)** show an **ancestral** `popup=hint` of D (call it T) , then **c)** hide D, the `popup=hint` T should be hidden. (**"A `popup=hint` can be nested inside a popup."**)
+4. If you: **a)** show a `popup=popup` (call it D), then **b)** show an **non-ancestral** `popup=hint` (call it T) , then **c)** hide D, the `popup=hint` T should be left showing. (**"Non-nested `popup=hint`s can stay open when unrelated popups are hidden."**)
+5. The `defaultopen` attribute should have no effect on `popup=hint`s. I.e. this attribute cannot be used to cause a `popup=hint` to be shown upon page load.
+6. The `defaultopen` attribute can be used on as many `popup=async`s as desired, and all of them will be shown upon page load.
+7. Only the first `popup=popup` (in DOM order) containing the `defaultopen` attribute will be shown upon page load. (This is per-explainer, and included here for completeness.)
 
 
 
-* Applicable to any element.
-* When an element with `delegatesfocus` is focused, the first focusable descendent of that element is focused instead. This is regardless of the element's top-layer status. (This can be added using the [focus delegate spec](https://html.spec.whatwg.org/#focus-delegate).)
-
-The use cases for these attributes need to be better enumerated.
-
-
-## Anchoring (the `anchor` Attribute)
-
-A new attribute, `anchor`, should be added for all elements, whose value is an idref of an “anchoring” element. This anchor relationship is used for two behaviors:
-
-
-
-1. Establish the provided anchor element as an “ancestor” of this popup, for the purposes of light-dismiss behavior. In other words, when a popup is shown, typically all other popups are closed. An exception would be made for all popups in the ancestor chain formed by the anchor element.
-2. The referenced anchor element could be used by the [Anchor Positioning feature](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md).
 
 
 ## Accessibility / Semantics
 
-Since the `popup` content attribute can be applied to any element, and only impacts the element's presentation (top layer vs not top layer), this should not have **any semantic or accessibility impact**. I.e., the element with the `popup` attribute will keep its existing semantics and AOM representation. In the event an author needs to extend or modify a particular element's ARIA semantics, this may be done in accordance to existing allowances of [ARIA in HTML](https://w3c.github.io/html-aria/).
+Since the `popup` content attribute can be applied to any element, and this only impacts the element's presentation (top layer vs not top layer), this addition does not have any direct semantic or accessibility impact. The element with the `popup` attribute will keep its existing semantics and AOM representation. For example, `<article popup=popup>...</article>` will continue to be exposed as an implicit `role=article`, but will be able to be displayed on top of other content. Similarly, ARIA can be used to modify accessibility mappings in [the normal way](https://w3c.github.io/html-aria/), for example `<div popup=popup role=note>...</div>`.
+
+As mentioned in the [Declarative Triggers](#declarative-triggers) section, accessibility mappings will be automatically configured to associate the popup with its trigger element, as needed.
+
+## Disallowed elements
+
+While the popup API can be used on most elements, there are some limitations. For example, calling `showPopup()` on a modal (via `.showModal()`) `<dialog>` element will result in an exception being thrown, as will calling it on an [active fullscreen element](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen). All other element types are valid.
 
 
-## Example Use Cases
+# Example Use Cases
 
 This section contains several HTML examples, showing how various UI elements might be constructed using this API.
 
-**Note:** these examples are for demonstrative purposes of how to use the `triggerpopup` and `popup` attributes. They may not represent all necessary HTML, ARIA or JavaScript features needed to fully create such components.
+**Note:** these examples are for demonstrative purposes of how to use the `togglepopup` and `popup` attributes. They may not represent all necessary HTML, ARIA or JavaScript features needed to fully create such components.
 
 
-### Generic Popup (Date Picker)
+## Generic Popup (Date Picker)
 
 
 ```html
-<button id=picker-button triggerpopup=datepicker>Pick a date</button>
+<button togglepopup=datepicker>Pick a date</button>
 <my-date-picker role=dialog id=datepicker popup=popup>
   ...date picker implementation...
 </my-date-picker>
 
-<!-- No script - the triggerpopup attribute takes care of activation -->
+<!-- No script - the togglepopup attribute takes care of activation -->
 ```
 
 
 
-###  Generic popup (`<selectmenu>` listbox example)
+##  Generic popup (`<selectmenu>` listbox example)
 
 
 ```html
 <selectmenu>
   <template shadowroot=closed>
-    <button triggerpopup=listbox>Icon</button>
+    <button togglepopup=listbox>Icon</button>
     <div role=listbox id=listbox popup=popup>
       <slot></slot>
     </div>
@@ -294,16 +431,16 @@ This section contains several HTML examples, showing how various UI elements mig
   <option>Option 2</option>
 </selectmenu>
 
-<!-- No script - the triggerpopup attribute takes care of activation -->
+<!-- No script - the togglepopup attribute takes care of activation -->
 ```
 
 
 
-### Hint/Tooltip
+## Hint/Tooltip
 
 
 ```html
-<div id=hint-trigger aria-describedby=my-hint>
+<div id=hint-trigger aria-describedby=hint>
   Hover me
 </div>
 <my-hint id=hint role=tooltip popup=hint anchor=hint-trigger>
@@ -323,7 +460,7 @@ This section contains several HTML examples, showing how various UI elements mig
 
 
 
-### Async
+## Async
 
 
 ```html
@@ -342,80 +479,49 @@ This section contains several HTML examples, showing how various UI elements mig
 
 
 
-## Pros and Cons
-
-### Pros
-
-* Solves all of the goals of the popup effort.
-* Solves the [Accessibility/Semantics problem](/components/popup.proposal.alternatives#alternative-dedicated-popup-element).
-* Allows the UA to manage the top layer, removing popups when needed.
-* Works on **any element**.
-* Still good DX: it should be easy for developers to understand the meaning of an attribute on an element that is in the top layer.
-
-### Cons
-
-* In some use cases (as [articulated here](https://github.com/openui/open-ui/issues/417#issuecomment-996890656)), the use of a content attribute might cause some DX issues. For example, in the `<selectmenu>` application, we might want to make in-page vs. popup presentation an option. To achieve that via a `popup` HTML attribute, there might need to be some mirroring of attributes from the light-dom `<selectmenu>` element to internal shadow dom container elements, which makes the shadow dom replacement feature of `<selectmenu>` a bit more complicated to both use and implement.
-
-
 # Additional Considerations
 
 
-## Current Top Layer Behavior
-
-There are several “ways” that an element can currently make it to the top layer:
-
-* The full screen API (element.requestFullScreen()).
-* The `<dialog>` element, shown modally (dialog.showModal()).
-* Elements using the prototype `<popup>` element implementation in Chromium.
-
-This table documents what **currently happens** in the Chromium rendering engine, which is the only one to support any top-layer elements besides fullscreen. In particular, it documents the current `<popup>` element prototype, which is just one possibility for the general “popup” API being described here.
-
-**<span style="text-decoration:underline;">Chromium 99.x behavior</span>**
-
-
-<table>
-  <tr><td></td><td colspan="4" >Second Element</td></tr>
-  <tr><td rowspan="4" > First Element</td><td></td><td>Full screen</td><td>Modal dialog</td><td>`&lt;popup>` element</td></tr>
-  <tr><td>Full screen</td><td>The second fullscreen element kicks the first one out of the top layer. ESC closes the second fullscreen element.</td><td>Full screen stays visible, modal is displayed above fullscreen. ESC closes fullscreen <strong>first</strong>, second ESC closes dialog (<strong>backwards</strong>).</td><td>Full screen stays visible, popup is displayed above fullscreen. ESC closes fullscreen <strong>first</strong>, second ESC closes popup (<strong>backwards</strong>).</td></tr>
-  <tr><td>Modal dialog</td><td>Full screen is displayed on top of modal, both are in the top layer. ESC closes full screen, second ESC closes dialog.</td><td>Both dialogs are shown, first under second. First ESC closes second dialog, then first.</td><td>Both are shown, dialog is under popup. Hitting ESC once closes <strong>both</strong> of them.</td></tr>
-  <tr><td>`&lt;popup>` element</td><td>Full screen is displayed on top of popup, both are in the top layer. ESC closes full screen, second ESC closes popup.</td><td>The dialog opening dismisses the popup. Hitting ESC closes the dialog.</td><td>The second popup dismisses the first (assuming they're not “ancestors” via DOM tree or anchor/popup attributes). Hitting ESC closes the popup.</td></tr>
-</table>
-
-
-Note that the current fullscreen and `<dialog>` behavior does not prevent both types of elements from being in the top layer at once. In other words, there is currently no “one-at-a-time” managment of the top layer, other than the handling of the ESC key. In some cases the keyboard interaction pattern can be a bit confusing. For example, in several cases, hitting ESC first closes the element on the **bottom**, and a second ESC closes the element on the “top”. This is on purpose, for security reasons ([specified here](https://wicg.github.io/close-watcher/#close-signal-steps)): the ESC key must always close the fullscreen element and should not be cancellable.
-
-Generally, [per spec](https://fullscreen.spec.whatwg.org/#new-stacking-layer), when there are multiple elements in the top layer, they are rendered in the order they were added to the top layer set. Each of these elements forms a stacking context, meaning z-index cannot be used to change this painting order.
-
-
-
-## Shadow DOM
-
-Some thought needs to be given to what happens if an element within a shadow root uses this API to move a shadow-DOM-contained element to the top layer. One use case of such an element would be a custom element that wraps a popup type UI element, such as a `<my-tooltip>`. Should it be “ok” for a shadow element (potentially inside even a closed shadow root) to be promoted to the top layer like this? Or should it be a requirement that the light-DOM element (e.g. the `<my-tooltip>` element) itself be the one to get promoted to the top layer?
-
-Since the rendering output from a shadow host **is already** its shadow DOM content only, it would seem totally appropriate for shadow-contained elements to be allowed to move to the top layer, since the top layer is very similar to z-index and is just a layout convenience. It also seems considerably more ergonomic to allow this, rather than requiring the top-layer API be used at the highest light-DOM element containing the desired content. There are even cases where this wouldn't make sense or be possible, such as a web component containing the entire page, `<my-app>`. In that case, it wouldn't be possible for anything contained in the app to use the top layer API.
-
-It would seem, from the discussion above, that any element, including shadow-contained elements, **should be allowed to use this API**.
-
 ## Exceeding the Frame Bounds
 
-Allowing a popup/top-layer element to exceed the bounds of its containing frame poses a serious security risk: such an element could spoof browser UI or containing page content. While the [original `<popup>` proposal](https://open-ui.org/components/popup.research.explainer#goals) did not discuss this issue, the [`<selectmenu>` proposal](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#security) does have a specific section at least mentioning this issue. While it is possible to allow exceeding frame bounds in some cases, e.g. with the fullscreen API, great care must be taken in these cases to ensure user safety. It would seem difficult to allow an arbitrary element to exceed frame bounds using this (popup/top-layer) proposal. But perhaps there are safe ways to allow this behavior. More brainstorming is needed.
+Allowing a popup/top-layer element to exceed the bounds of its containing frame poses a serious security risk: such an element could spoof browser UI or containing-page content. While the [original `<popup>` proposal](https://open-ui.org/components/popup.research.explainer-v1) did not discuss this issue, the [`<selectmenu>` proposal](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#security) does have a specific section at least mentioning this issue. Some top-layer APIs (e.g. the fullscreen API) make it possible for an element to exceed the frame bounds in some cases, great care must be taken in these cases to ensure user safety. Given the complete flexibility offered by the Popup API (any element, arbitrary content, etc.), there would be no way to ensure the safety of this feature if it were allowed to exceed frame bounds.
 
-In the interim, two use counters were added to measure how often this type of behavior might be needed. They are approximations, as they merely measure the total number of times a “popup” is shown (including `<select>` popup, `<input type=color>` color picker, and `<input type=date/etc>` date/time picker), and the total number of times those popups exceed the owner frame bounds. Data can be found here:
-
-
+For completeness, several use counters were added to Chromium to measure how often this type of behavior (content exceeding the frame bounds) might be needed. These are approximations, as they merely measure the total number of times one of the built-in “popup” windows, which can exceed frame bounds because of their carefully-controlled content, is shown. The popups included in this count include the `<select>` popup, the `<input type=color>` color picker, and the `<input type=date/etc>` date/time picker. Data can be found here:
 
 * Total popups shown: [0.7% of page loads](https://chromestatus.com/metrics/feature/timeline/popularity/3298)
 * Popups appeared outside frame bounds: [0.08% of page loads](https://chromestatus.com/metrics/feature/timeline/popularity/3299)
 
 So about 11% of all popups currently exceed their owner frame bounds. That should be considered a rough upper bound, as it is possible that some of those popups **could** have fit within their frame if an attempt was made to do so, but they just happened to exceed the bounds anyway.
 
+In any case, it is important to note that this API cannot be used to render content outside the containing frame.
+
+## Shadow DOM
+
+Note that using the API described in this explainer, it is possible for elements contained within a shadow root to be popups. For example, it is possible to construct a custom element that wraps a popup type UI element, such as a `<my-tooltip>`, with this DOM structure:
+
+```html
+<my-tooltip>
+  <template shadowroot=closed>
+    <div popup=hint>This is a tooltip: <slot></slot></div>
+  </template>
+  Tooltip text here!
+</my-tooltip>
+```
+
+In this case, the (closed) shadow root contains a `<div>` that has `popup=hint` and that element will be shown on the top layer when the custom element calls `div.showPopup()`.
+
+This is "normal", and the only point of this section is to point out that even shadow dom children can be promoted to the top layer, in the same way that a shadow root can contain a `<dialog>` that can be `showModal()`'d, or a `<div>` that can be `requestFullscreen()`'d.
 
 ## Eventual Single-Purpose Elements
 
-There might come a time, sooner or later, where a new HTML element is desired which combines strong semantics and purpose-built behaviors. For example, a `<tooltip>` or `<listbox>` element. Those elements could be relatively easily built via the APIs proposed in this document. For example, a `<tooltip>` element could be defined to have `role=tooltip` and `popup=hint`, and therefore re-use this Popup API for always-on-top rendering, one-at-a-time management, and light dismiss. In other words, these new elements could be *explained* in terms of the lower-level primitives being proposed for this API.
+There might come a time, sooner or later, where a new popup-type HTML element is desired which combines strong semantics and purpose-built behaviors. For example, a `<tooltip>` or `<listbox>` element. Those elements could be relatively easily built via the APIs proposed in this document. For example, a `<tooltip>` element could be defined to have `role=tooltip` and `popup=hint`, and therefore re-use this Popup API for always-on-top rendering, one-at-a-time management, and light dismiss. In other words, these new elements could be *explained* in terms of the lower-level primitives being proposed for this API.
 
 
-# Other Alternatives Considered
+# The Choices Made in this API
+
+Many decisions and choices were made in the design of this API, and those decisions were made via numerous discussions (live and on issues) in [OpenUI](https://open-ui.org/), a WHATWG [Community Group](https://open-ui.org/working-mode).
+
+## Alternatives Considered
 
 To achieve the [goals](#goals) of this project, a number of approaches could have been used:
 
@@ -428,4 +534,20 @@ Each of these options is significantly different from the others. To properly ev
 
  * [Other Alternatives Considered](/components/popup.proposal.alternatives)
 
-That document discusses the pros and cons for each alternative. After exploring these options, the [HTML content attribute](#html-content-attribute) approach [was determined](https://github.com/openui/open-ui/issues/455#issuecomment-1050172067) to be the best overall.
+That document discusses the pros and cons for each alternative. After exploring these options, the [HTML content attribute](#html-content-attribute) approach [was resolved by OpenUI](https://github.com/openui/open-ui/issues/455#issuecomment-1050172067) to be the best overall.
+
+## Design decisions
+
+Many small (and large!) behavior questions were answered via discussions at OpenUI. This section contains links to some of those:
+
+- [Overall discussion of the content attribute based approach](https://github.com/openui/open-ui/issues/455)
+- [Why `show`/`hide` and not `open`/`close`, and why not parallel to `<dialog>`](https://github.com/openui/open-ui/issues/322)
+- [Rules for multiple triggering elements on a single button.](https://github.com/openui/open-ui/issues/523#issuecomment-1106686358)
+- [Should there be a `::backdrop` pseudo element](https://github.com/openui/open-ui/issues/519)
+- [Should `showPopup()` and `hidePopup()` throw](https://github.com/openui/open-ui/issues/511)
+- [Should `blur()` be a light dismiss trigger](https://github.com/openui/open-ui/issues/415)
+- [IDL reflects only valid values](https://github.com/openui/open-ui/issues/491#issuecomment-1118927375)
+- [Why `togglepopup` (bikeshed)](https://github.com/openui/open-ui/issues/508)
+- [Why `defaultopen` (bikeshed)](https://github.com/openui/open-ui/issues/500)
+- [Why `display:none` for hidden popups](https://github.com/openui/open-ui/issues/492)
+- [Why Close Signals and not just ESC](https://github.com/openui/open-ui/issues/320)
