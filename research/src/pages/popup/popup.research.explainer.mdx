@@ -231,11 +231,11 @@ Neither of these events are cancellable, and both are fired asynchronously.
 
 ## Focus Management
 
-Elements that move into the top layer sometimes need to move the focus to that element, and sometimes don't. For example, a modal `<dialog>` gets automatically focused because a dialog is something that requires immediate focus and attention. On the other hand, a `<div popup=hint>` doesn't receive focus at all (and is typically not expected to contain focusable elements). Similarly, a `<div popup=async>` should not receive focus (even if focusable) because it is meant for out-of-band communication of state, and should not interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus first. To provide control over these behaviors, two attributes can be used on popups:
+Elements that move into the top layer may require focus to be moved to that element, or a descendant element. However, not all elements in the top layer will require focus. For example, a modal `<dialog>` will have focus set to its first interactive element, if not the dialog element itself, because a modal dialog is something that requires immediate attention. On the other hand, a `<div popup=hint>` (which will more often than not represent a "tooltip") does not receive focus at all (nor is it expected to contain focusable elements). Similarly, a `<div popup=async>` should not immediately receive focus (even if it contains focusable elements) because it is meant for out-of-band communication of state, and is not meant to interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus. To provide control over these behaviors, two attributes can be used on popups:
 
-- `autofocus`. When present on a popup or the descendant of a popup, this causes focus to be moved to that element when the popup is shown. Note that `autofocus` is [already a global attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute), but the existing behavior applies to element focus on **page load**. This proposal extends that definition to be used within popups, and the focus behavior happens **when they are shown**. Note that adding `autofocus` to a popup descendant does **not** cause the popup to be shown on page load, and therefore it does not cause focus to be moved into the popup **on page load**, unless the `defaultopen` attribute is also used.
+- `autofocus`. When present on a popup or one of its descendants, it will result in focus being moved to the specified element when the popup is rendered. Note that `autofocus` is [already a global attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute), but the existing behavior applies to element focus on **page load**. This proposal extends that definition to be used within popups, and the focus behavior happens **when they are shown**. Note that adding `autofocus` to a popup descendant does **not** cause the popup to be shown on page load, and therefore it does not cause focus to be moved into the popup **on page load**, unless the `defaultopen` attribute is also used.
 
-- `delegatesfocus`. When present on the popup element itself, this causes the **first focusable descendent** of the popup to be focused when the popup is shown. (Eventually, this attribute might be made applicable to any element, not just popups, to control focus behavior more generally.)
+- `delegatesfocus`. When present on the popup element itself, this causes the **first focusable descendent** of the popup to be focused when the popup is shown. The purpose of this attribute is to handle the cases in which the popup content or ordering is not known prior to rendering, so that `autofocus` cannot be used effectively. (Eventually, the `delegatesfocus` attribute might be made applicable to any element, not just popups, to control focus behavior more generally.)
 
 If both `autofocus` and `delegatesfocus` are both present on the popup element, the popup element is focused when shown.
 
@@ -272,8 +272,8 @@ Note that in contrast to the `::backdrop` pseudo element for modal dialogs and f
 For elements that are displayed on the top layer via this API, there are a number of things that can cause the element to be removed from the top-layer, besides the ones [described above](#showing-and-hiding-a-popup). These fall into three main categories:
 
 * **One at a Time.** Another element being added to the top-layer causes existing top layer elements to be removed. This is typically used for “one at a time” type elements: when one popup is shown, other popups should be hidden, so that only one is on-screen at a time. This is also used when “more important” top layer elements get added. For example, fullscreen elements should close all open popups.
-* **Light Dismiss**. User action such as clicking outside the element, hitting Escape, or causing keyboard focus to leave the element should all cause a showing popup to be hidden. This is typically called “light dismiss”, and is discussed in more detail in [this section](#light-dismiss).
-* **Other Reasons**. Because the top layer is a UA-managed resource, it may have other reasons (for example a user preference) to forcibly remove elements from the top layer.
+* **Light Dismiss.** User action such as clicking outside the element, hitting Escape, or causing keyboard focus to leave the element should all cause a displayed popup to be hidden. This is typically called “light dismiss”, and is discussed in more detail in [this section](#light-dismiss).
+* **Other Reasons.** Because the top layer is a UA-managed resource, it may have other reasons (for example a user preference) to forcibly remove elements from the top layer.
 
 In all such cases, the UA is allowed to forcibly remove an element from the top layer and re-apply the `display:none` popup UA rule. The rules the UA uses to manage these interactions depends on the element types, and this is described in more detail in [this section](#classes-of-top-layer-ui).
 
@@ -282,7 +282,7 @@ In all such cases, the UA is allowed to forcibly remove an element from the top 
 The term "light dismiss" for a popup is used to describe the user "moving on" to another part of the page, or generally being done interacting with the popup. When this happens, the popup should be hidden. Several actions trigger light dismiss of a popup:
 
 1. Clicking or tapping outside the bounds of the popup. Any `mousedown` event will trigger **all open popups** to be hidden, starting from the top of [the popup stack](#the-popup-stack), and ending with the [nearest open ancestral popup](#nearest-open-ancestral-popup) of the `mousedown` event's `target` `Node`. This means clicking on a popup or its trigger or anchor elements will not hide that popup.
-2. Hitting the ESC key, or generally any ["close signal"](#close-signal). This will cause the topmost popup on [the popup stack](#the-popup-stack) to be hidden.
+2. Hitting the Escape key, or generally any ["close signal"](#close-signal). This will cause the topmost popup on [the popup stack](#the-popup-stack) to be hidden.
 3. Using keyboard or other navigation sources to move the focus off of the popup. When the focus changes, all popups up to the ["nearest open ancestral popup"](#nearest-open-ancestral-popup) for the newly-focused element will be hidden. Note that this includes subframes and the user changing windows (a window `blur`) - both will cause all open popups to be closed.
 
 
@@ -370,7 +370,7 @@ In the table, "hide" means that when the second element is shown (enters the top
 
 ### Detailed description of interactions among popup types
 
-This section describes, in detail, the interactions between the three popup types:
+This section details the interactions between the three popup types:
 
 1. If a `popup=hint` is shown, it should hide **any** other open `popup=hint`s, including ancestral `popup=hint`s. (**"You can't nest `popup=hint`s".**)
 2. If a `popup=popup` is shown, it should hide **any** open `popup=hint`s, including if the `popup=hint` is an ancestral popup of the `popup=popup`. (**"You can't nest a popup inside a `popup=hint`".**)
@@ -386,13 +386,13 @@ This section describes, in detail, the interactions between the three popup type
 
 ## Accessibility / Semantics
 
-Since the `popup` content attribute can be applied to any element, and this only impacts the element's presentation (top layer vs not top layer), this addition does not have any direct semantic or accessibility impact. The element with the `popup` attribute will keep its existing semantics and AOM representation. For example, `<img popup=popup>` will continue to have `role=img`, but will be able to be displayed on top of other content. Similarly, ARIA can be used to modify accessibility mappings in [the normal way](https://w3c.github.io/html-aria/), for example `<img popup=popup role=presentation>`.
+Since the `popup` content attribute can be applied to any element, and this only impacts the element's presentation (top layer vs not top layer), this addition does not have any direct semantic or accessibility impact. The element with the `popup` attribute will keep its existing semantics and AOM representation. For example, `<article popup=popup>...</article>` will continue to be exposed as an implicit `role=article`, but will be able to be displayed on top of other content. Similarly, ARIA can be used to modify accessibility mappings in [the normal way](https://w3c.github.io/html-aria/), for example `<div popup=popup role=note>...</div>`.
 
 As mentioned in the [Declarative Triggers](#declarative-triggers) section, accessibility mappings will be automatically configured to associate the popup with its trigger element, as needed.
 
 ## Disallowed elements
 
-While the popup API can be used on most elements, there are some limitations. For example, calling `showPopup()` on a `<dialog>` element will result in an exception being thrown, as will calling it on an [active fullscreen element](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen). All other element types are valid.
+While the popup API can be used on most elements, there are some limitations. For example, calling `showPopup()` on a modal (via `.showModal()`) `<dialog>` element will result in an exception being thrown, as will calling it on an [active fullscreen element](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen). All other element types are valid.
 
 
 # Example Use Cases
