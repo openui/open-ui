@@ -156,7 +156,7 @@ You can replace the default listbox part in a similar fashion:
 </style>
 <selectmenu class="my-custom-select">
   <div slot="listbox">
-    <div popup="popup" behavior="listbox">
+    <div popup behavior="listbox">
       <option>Option 1</option>
       <option>Option 2</option>
       <option>Option 3</option>
@@ -167,7 +167,7 @@ You can replace the default listbox part in a similar fashion:
 </selectmenu>
 ```
 
-The `popup` attribute used in this example's `<div popup=popup>` is from the proposal at [Popup API (Explainer)](https://open-ui.org/components/popup.research.explainer). The element with `behavior="listbox"` is required to be a `<div popup=popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
+The `popup` attribute used in this example's `<div popup>` is from the proposal at [Popup API (Explainer)](https://open-ui.org/components/popup.research.explainer). The element with `behavior="listbox"` is required to be a `<div popup=popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
 The above code snippet results in the following style:
 
@@ -226,7 +226,7 @@ Consider the following example:
     <button behavior="button"></button>
   </div>
   <div slot="listbox">
-    <div popup="popup" behavior="listbox">
+    <div popup behavior="listbox">
       <div class="section">
         <h3>Flowers</h3>
         <option>Rose</option>
@@ -308,7 +308,7 @@ For example, the demo in the [previous section](#extending-the-markup) could be 
     <span behavior="selected-value" slot="selected-value"></span>
     <button behavior="button"></button>
   </div>
-  <div popup="popup" behavior="listbox">
+  <div popup behavior="listbox">
     <div class="section">
       <h3>Flowers</h3>
       <option>Rose</option>
