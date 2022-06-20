@@ -234,16 +234,16 @@ the roving tabindex, but by adding `focusgroup`, no JavaScript is necessary to m
 Example 2:
 
 ```html
-<my-list focusgroup>
-  <my-listitem tabindex="0">...</mylistitem>
-  <my-listitem tabindex="-1">...</mylistitem>
-  <my-listitem tabindex="-1">...</mylistitem>
-  <my-listitem tabindex="-1">...</mylistitem>
-  <my-listitem tabindex="-1">...</mylistitem>
-</my-list>
+<ul focusgroup>
+  <li tabindex="0">...</li>
+  <li tabindex="-1">...</li>
+  <li tabindex="-1">...</li>
+  <li tabindex="-1">...</li>
+  <li tabindex="-1">...</li>
+</ul>
 ```
 
-From outside of the above markup, assume a Tab key press lands focus on the first `<my-listitem>`. From
+From outside of the above markup, assume a Tab key press lands focus on the first `<li>`. From
 this point, the user can use the arrow keys to move from the beginning of the list to the end, or press
 Tab again to move outside of this group. Alternatively, maybe you want to support both Tab _and_ Arrow
 key navigation in your scenario. No problem, just change the setup so that all the list items participate
@@ -252,13 +252,13 @@ in the tab order:
 Example 3:
 
 ```html
-<my-list focusgroup>
-  <my-listitem tabindex="0">...</mylistitem>
-  <my-listitem tabindex="0">...</mylistitem>
-  <my-listitem tabindex="0">...</mylistitem>
-  <my-listitem tabindex="0">...</mylistitem>
-  <my-listitem tabindex="0">...</mylistitem>
-</my-list>
+<ul focusgroup>
+  <li tabindex="0">...</li>
+  <li tabindex="0">...</li>
+  <li tabindex="0">...</li>
+  <li tabindex="0">...</li>
+  <li tabindex="0">...</li>
+</ul>
 ```
 
 The focusgroup doesn't "remember" the last element that was focused when focus leaves the group
