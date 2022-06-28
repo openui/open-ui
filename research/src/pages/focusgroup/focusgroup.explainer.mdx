@@ -18,7 +18,7 @@ When writing custom controls, authors need to implement the semantics of various
 controls (see [ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)) to
 enable proper (and expected) keyboard support. Control examples include tab widgets,
 comboboxes, accordion panels, carousels, focusable grid tables, etc. Many of these
-patterns expect or can benefit from arrow-key navigation, as well as support for 
+patterns expect or can benefit from arrow-key navigation, as well as support for
 page down/up, home/end, even "type ahead" behavior.
 
 The native web platform supports _some_ of these linear navigation behaviors in native
@@ -45,8 +45,8 @@ recognizers, touch-based ATs, etc.)
 ## 2. Goal
 
 The goal of this feature is to "pave the cow path" of an existing authoring practice
-(and accessibility best practice) implemented in nearly every Web UI library: the 
-"roving tabindex". Here's a few sources that explain roving tabindex in more detail 
+(and accessibility best practice) implemented in nearly every Web UI library: the
+"roving tabindex". Here's a few sources that explain roving tabindex in more detail
 as well as a selection of common libraries implementing the pattern:
 
 - [What's 'roving tabindex'?](https://www.stefanjudis.com/today-i-learned/roving-tabindex/)
@@ -234,29 +234,29 @@ the roving tabindex, but by adding `focusgroup`, no JavaScript is necessary to m
 Example 2:
 
 ```html
-<ul focusgroup role=menubar>
-  <li tabindex="0" role=menuitem>…</li>
-  <li tabindex="-1" role=menuitem>…</li>
-  <li tabindex="-1" role=menuitem>…</li>
-  <li tabindex="-1" role=menuitem>…</li>
-  <li tabindex="-1" role=menuitem>…</li>
+<ul focusgroup role="menubar">
+  <li tabindex="0" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
 </ul>
 ```
 
 From outside of the above markup, assume a Tab key press lands focus on the first `<li role=menuitem>`. From
 this point, the user can use the arrow keys to move from the beginning of the menubar to the end, or press
 Tab again to move outside of this grouping. Alternatively, maybe you have another instance of where
-support both Tab _and_ Arrow key navigation may be necessary. No problem, just change the setup so 
+support both Tab _and_ Arrow key navigation may be necessary. No problem, just change the setup so
 that all the focusable elements participate in the tab order:
 
 Example 3:
 
 ```html
-<ul focusgroup role=toolbar>
-  <li tabindex="0" role=button …>…</li>
-  <li tabindex="0" role=button …>…</li>
-  <li tabindex="0" role=checkbox …>…</li>
-  <li tabindex="0" role=checkbox …>…</li>
+<ul focusgroup role="toolbar">
+  <li tabindex="0" role="button" …>…</li>
+  <li tabindex="0" role="button" …>…</li>
+  <li tabindex="0" role="checkbox" …>…</li>
+  <li tabindex="0" role="checkbox" …>…</li>
 </ul>
 ```
 
@@ -360,16 +360,16 @@ When extending a focusgroup, traversal order is based on document order. Given t
 Example 6:
 
 ```html
-<div role=toolbar focusgroup>
-  <button id="A" type=button tabindex="0">…</button>
-  <button id="B" type=button tabindex="-1">…</button>
+<div role="toolbar" focusgroup>
+  <button id="A" type="button" tabindex="0">…</button>
+  <button id="B" type="button" tabindex="-1">…</button>
   <div>
-      <div role=radiogroup focusgroup="extend">
-        <div id="B1" role=radio tabindex="-1">…</div>
-        <div id="B2" role=radio tabindex="-1">…</div>
-      </div>
+    <div role="radiogroup" focusgroup="extend">
+      <div id="B1" role="radio" tabindex="-1">…</div>
+      <div id="B2" role="radio" tabindex="-1">…</div>
+    </div>
   </div>
-  <button id="C" type=button tabindex="-1">…</button>
+  <button id="C" type="button" tabindex="-1">…</button>
 </div>
 ```
 
@@ -387,17 +387,17 @@ Example 7:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<div role=toolbar focusgroup>
-  <button id="A" type=button tabindex="0">…</button>
-  <button id="B" type=button tabindex="-1">…</button>
+<div role="toolbar" focusgroup>
+  <button id="A" type="button" tabindex="0">…</button>
+  <button id="B" type="button" tabindex="-1">…</button>
   <div>
-      <div role=radiogroup focusgroup="extend wrap">
-        <!-- 'wrap' will not apply -->
-        <button id="B1" role=radio type=button tabindex="-1">…</button>
-        <button id="B2" role=radio type=button tabindex="-1">…</button>
-      </div>
+    <div role="radiogroup" focusgroup="extend wrap">
+      <!-- 'wrap' will not apply -->
+      <button id="B1" role="radio" type="button" tabindex="-1">…</button>
+      <button id="B2" role="radio" type="button" tabindex="-1">…</button>
+    </div>
   </div>
-  <button id="C" type=button tabindex="-1">…</button>
+  <button id="C" type="button" tabindex="-1">…</button>
 </div>
 ```
 
@@ -435,9 +435,9 @@ Example 8:
 </style>
 <!-- … -->
 <tab-group role="tablist">
-  <a-tab role="tab" tabindex="0" aria-selected=true aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected=false aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected=false aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
 </tab-group>
 ```
 
@@ -452,7 +452,7 @@ Example 9:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<radiobutton-group focusgroup="horizontal vertical wrap" role=radiogroup>
+<radiobutton-group focusgroup="horizontal vertical wrap" role="radiogroup">
   This focusgroup configuration is an error--neither constraint will be applied (which is actually
   what the author intended).
 </radiobutton-group>
@@ -481,14 +481,14 @@ linear group as described previously.
 Example 10:
 
 ```html
-<vertical-menu role=menu focusgroup="vertical wrap">
-  <menu-item role=menuitem tabindex="-1">Action 1</menu-item>
-  <menu-item role=menuitem tabindex="0">Action 2</menu-item>
-  <menu-group role=none focusgroup="vertical extend">
-    <menu-item role=menuitem tabindex="-1">Action 3</menu-item>
-    <menu-item role=menuitem tabindex="-1">Action 4</menu-item>
+<vertical-menu role="menu" focusgroup="vertical wrap">
+  <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
+  <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
+  <menu-group role="none" focusgroup="vertical extend">
+    <menu-item role="menuitem" tabindex="-1">Action 3</menu-item>
+    <menu-item role="menuitem" tabindex="-1">Action 4</menu-item>
   </menu-group>
-  <menu-item role=menuitem tabindex="-1">Action 5</menu-item>
+  <menu-item role="menuitem" tabindex="-1">Action 5</menu-item>
 </vertical-menu>
 ```
 
@@ -511,19 +511,19 @@ Example 11:
   }
 </style>
 <!-- … -->
-<horizontal-menu role=menubar>
-  <menu-item role=menuitem tabindex="-1">Action 1</menu-item>
-  <menu-item role=menuitem tabindex="0">Action 2</menu-item>
-  <div role=none>
-    <menu-item role=menuitem tabindex="-1" aria-haspopup=true aria-expanded=true>
+<horizontal-menu role="menubar">
+  <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
+  <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
+  <div role="none">
+    <menu-item role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">
       Action 3
     </menu-item>
-    <omni-menu role=menu>
-      <menu-item role=menuitem tabindex="-1">Sub-Action A</menu-item>
-      <menu-item role=menuitem tabindex="-1">Sub-Action B</menu-item>
+    <omni-menu role="menu">
+      <menu-item role="menuitem" tabindex="-1">Sub-Action A</menu-item>
+      <menu-item role="menuitem" tabindex="-1">Sub-Action B</menu-item>
     </omni-menu>
   </div>
-  <menu-item role=menuitem tabindex="-1">Action 4</menu-item>
+  <menu-item role="menuitem" tabindex="-1">Action 4</menu-item>
 </horizontal-menu>
 ```
 
@@ -565,16 +565,16 @@ linear focusgroups (and vice-versa) as a best practice. The following example is
 Example 12:
 
 ```html
-<horizontal-menu role=menubar focusgroup="horizontal wrap">
-  <menu-item role=menuitem tabindex="-1">Action 1</menu-item>
-  <menu-item role=menuitem tabindex="0">Action 2</menu-item>
-  <div role=none>
-    <menu-item role=menuitem tabindex="-1" aria-haspopup=true aria-expanded=true>
+<horizontal-menu role="menubar" focusgroup="horizontal wrap">
+  <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
+  <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
+  <div role="none">
+    <menu-item role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">
       Action 3
     </menu-item>
-    <vertical-menu role=menu tabindex="-1" focusgroup="vertical extend">
-      <menu-item role=menuitem tabindex="-1">Sub-Action A</menu-item>
-      <menu-item role=menuitem tabindex="-1">Sub-Action B</menu-item>
+    <vertical-menu role="menu" tabindex="-1" focusgroup="vertical extend">
+      <menu-item role="menuitem" tabindex="-1">Sub-Action A</menu-item>
+      <menu-item role="menuitem" tabindex="-1">Sub-Action B</menu-item>
     </vertical-menu>
   </div>
   <menu-item tabindex="-1">Action 4</menu-item>
@@ -727,17 +727,17 @@ Example 18:
   }
 </style>
 <!-- … -->
-<data-table role=treegrid focusgroup="vertical">
-  <table-row role=row tabindex="-1" aria-label="…">
-    <card-view role=gridcell tabindex="-1" aria-label="…">
-      <ul role=menu>
-        <li role=menuitem tabindex="-1">…</li>
-        <li role=menuitem tabindex="-1">…</li>
-        <li role=none>
-          <div role=menuitem tabindex="-1" aria-haspopup=true aria-expanded=true>…</div>
-          <div role=menu …>
-            <focusable-entry role=menuitemradio tabindex="-1" …>…</focusable-entry>
-            <focusable-entry role=menuitemradio tabindex="-1" …>…</focusable-entry>
+<data-table role="treegrid" focusgroup="vertical">
+  <table-row role="row" tabindex="-1" aria-label="…">
+    <card-view role="gridcell" tabindex="-1" aria-label="…">
+      <ul role="menu">
+        <li role="menuitem" tabindex="-1">…</li>
+        <li role="menuitem" tabindex="-1">…</li>
+        <li role="none">
+          <div role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">…</div>
+          <div role="menu" …>
+            <focusable-entry role="menuitemradio" tabindex="-1" …>…</focusable-entry>
+            <focusable-entry role="menuitemradio" tabindex="-1" …>…</focusable-entry>
           </div>
         </li>
       </ul>
@@ -755,7 +755,7 @@ around start-to-end) to cycle through the cards. If desired, while focused on an
 arrow will take them back to the parent `<table-row>` to move up/down to the next row.
 Alternatively, while looking at a card with a nested vertical list, they can press the
 down arrow to descend into the menu of items in the card and cycle
-through them (with wrapping). The menu contains a submenu structure of menu item radio buttons. 
+through them (with wrapping). The menu contains a submenu structure of menu item radio buttons.
 To "unify" the submenu and the menu items into one logical list for
 arrow navigation, the focusgroup on the `<div>` extends in the same direction as
 the focusgroup on the menu (and the wrapping value is also extended).
@@ -805,7 +805,7 @@ Example 19:
   }
 </style>
 <!-- … -->
-<control-row role=toolbar id="container">
+<control-row role="toolbar" id="container">
   <options-widget class="optout">…</options-widget>
   <action-button>…</action-button>
   <action-button>…</action-button>
@@ -972,7 +972,7 @@ the definition is ignored (i.e., there is no fallback to a linear grid).
 Example 22:
 
 ```html
-<table role=grid focusgroup="grid">
+<table role="grid" focusgroup="grid">
   <tr>…</tr>
   <tr>…</tr>
   <tr>…</tr>
@@ -1024,17 +1024,17 @@ Example 23:
   }
 </style>
 <!-- … -->
-<my-root role=grid>
-  <div role=none class="presentational_wrapper">…</div>
-  <my-row role=row>
-    <first-thing role=gridcell>…</first-thing>
-    <cell-container role=none>
-      <my-cell role=gridcell>…</my-cell>
-      <my-cell role=gridcell>…</my-cell>
+<my-root role="grid">
+  <div role="none" class="presentational_wrapper">…</div>
+  <my-row role="row">
+    <first-thing role="gridcell">…</first-thing>
+    <cell-container role="none">
+      <my-cell role="gridcell">…</my-cell>
+      <my-cell role="gridcell">…</my-cell>
     </cell-container>
-    <cell-container role=none>
-      <my-cell role=gridcell>…</my-cell>
-      <my-cell role=gridcell>…</my-cell>
+    <cell-container role="none">
+      <my-cell role="gridcell">…</my-cell>
+      <my-cell role="gridcell">…</my-cell>
     </cell-container>
   </my-row>
   <!-- repeat pattern of div/my-row pairs... -->
@@ -1048,20 +1048,20 @@ Example 24:
 
 ```html
 <style>
-  [role=grid] {
+  [role='grid'] {
     focus-group-name: manual-grid;
     focus-group-wrap: flow;
   }
-  [role=row] {
+  [role='row'] {
     focus-group-item: row;
   }
-  [role=gridcell] {
+  [role='gridcell'] {
     focus-group-item: cell;
   }
 </style>
 <!-- … -->
-<div role=grid>
-  <div role=row>
+<div role="grid">
+  <div role="row">
     <div>
       <div role="gridcell"></div>
       <div role="gridcell"></div>
@@ -1223,7 +1223,7 @@ be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=sp
 
 ## 10. Open Questions
 
-<b id="note1">1.</b> It may not make sense to support focusgroup on every HTML element, especially those
+It may not make sense to support focusgroup on every HTML element, especially those
 that already have platform-provide focusgroup-like internal behavior (e.g., `<select>`). Then again,
 if the key navigation behavior is explained by the presence of an external attribute on these elements,
 perhaps the internal behavior should defer to the external specified behavior (usage of the attribute
