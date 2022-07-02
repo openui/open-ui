@@ -15,15 +15,15 @@ Authors: [Travis Leithead](https://github.com/travisleithead),
 ## 1. Introduction
 
 When writing custom controls, authors need to implement the semantics of various known
-controls (see [ARIA authoring guide](https://www.w3.org/TR/wai-aria-practices-1.1/)) to
-enable proper (and expected) keyboard support. Control examples include tabs and tabsets,
-combo boxes, accordion panels, carousels, focusable grid tables, etc. Many of these
-patterns expect arrow-key navigation, as well as support for page down/up, home/end, even
-"type ahead" behavior.
+controls (see [ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)) to
+enable proper (and expected) keyboard support. Control examples include tab widgets,
+comboboxes, accordion panels, carousels, focusable grid tables, etc. Many of these
+patterns expect or can benefit from arrow-key navigation, as well as support for
+page down/up, home/end, even "type ahead" behavior.
 
 The native web platform supports _some_ of these linear navigation behaviors in native
 controls like radio button groups (wrap-around arrow key movement that changes both focus
-and linked selection), &lt;select&gt; element popups (up/down movement among options), and
+and linked selection), `<select>` element popups (up/down movement among options), and
 date-time controls (arrow key movement among the components of the date), but **does not
 expose a primitive** that can be used independently to get this behavior.
 
@@ -45,14 +45,14 @@ recognizers, touch-based ATs, etc.)
 ## 2. Goal
 
 The goal of this feature is to "pave the cow path" of an existing authoring practice
-(and [accessibility best-practice](https://www.w3.org/TR/wai-aria-practices-1.1/))
-implemented in nearly every Web UI library: the "roving tabindex". Here's a few sources
-that explain roving tabindex in more detail as well as a selection of common libraries
-implementing the pattern:
+(and accessibility best practice) implemented in nearly every Web UI library: the
+"roving tabindex". Here's a few sources that explain roving tabindex in more detail
+as well as a selection of common libraries implementing the pattern:
 
 - [What's 'roving tabindex'?](https://www.stefanjudis.com/today-i-learned/roving-tabindex/)
 - [Rob Dodson explains roving tabindex (YouTube)](https://www.youtube.com/watch?v=uCIC2LNt0bk)
-- [roving tabindex in React](https://js.coach/package/react-roving-tabindex)
+- [ARIA Authoring Practices using roving tabindex in radiogroup example](https://www.w3.org/WAI/ARIA/apg/example-index/radio/radio.html)
+- [Roving tabindex in React](https://js.coach/package/react-roving-tabindex)
 - [Angular's ListKeyManager in the Component Dev Kit](https://material.angular.io/cdk/a11y/overview#listkeymanager)
 - [FocusZone in Fluent UI](https://developer.microsoft.com/en-us/fluentui#/controls/web/focuszone)
 - [Elix component library's KeyboardDirectionMixin](https://component.kitchen/elix/KeyboardDirectionMixin)
@@ -116,7 +116,7 @@ focus tracking are unchanged with this proposal.
 7. (Multiple focusgroups) Multiple focusgroups can be established on a single element (advanced CSS
    scenario).
 8. (Opt-out) Individual elements can opt-out of focusgroup participation (advanced CSS scenario)
-9. (Grid) Focusgroups can be used for grid-type navigation (&lt;table&gt;-structured content or other
+9. (Grid) Focusgroups can be used for grid-type navigation (`<table>`-structured content or other
    grid-like structured content (advanced CSS scenario), but not "presentation" grids).
 
 ## 6. Focusgroup Concepts
@@ -178,11 +178,11 @@ of the tabindex sequential navigation ordering).
 
 Focusgroup definitions may include the following (in addition to a name):
 
-- extend -- applies to linear focusgroups only: a mechanism to join this linear focusgroup to an ancestor
+- `extend` -- applies to linear focusgroups only: a mechanism to join this linear focusgroup to an ancestor
   linear focusgroup.
-- direction -- applies to linear focusgroups only: constrains the keys used for arrow key navigation to
+- `direction` -- applies to linear focusgroups only: constrains the keys used for arrow key navigation to
   horizontal, vertical, or both (the default).
-- wrap -- what to do when the attempting to move past the end of a focusgroup. The default/initial value is
+- `wrap` -- what to do when the attempting to move past the end of a focusgroup. The default/initial value is
   nowrap which means that focus is not moved past the end of a focusgroup with the arrow keys.
 
 In HTML these focusgroup definitions are applied as space-separated token values to the `focusgroup`
@@ -234,30 +234,29 @@ the roving tabindex, but by adding `focusgroup`, no JavaScript is necessary to m
 Example 2:
 
 ```html
-<ul focusgroup>
-  <li tabindex="0">…</li>
-  <li tabindex="-1">…</li>
-  <li tabindex="-1">…</li>
-  <li tabindex="-1">…</li>
-  <li tabindex="-1">…</li>
+<ul focusgroup role="menubar">
+  <li tabindex="0" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
+  <li tabindex="-1" role="menuitem">…</li>
 </ul>
 ```
 
-From outside of the above markup, assume a Tab key press lands focus on the first `<li>`. From
-this point, the user can use the arrow keys to move from the beginning of the list to the end, or press
-Tab again to move outside of this group. Alternatively, maybe you want to support both Tab _and_ Arrow
-key navigation in your scenario. No problem, just change the setup so that all the list items participate
-in the tab order:
+From outside of the above markup, assume a Tab key press lands focus on the first `<li role=menuitem>`. From
+this point, the user can use the arrow keys to move from the beginning of the menubar to the end, or press
+Tab again to move outside of this grouping. Alternatively, maybe you have another instance of where
+support both Tab _and_ Arrow key navigation may be necessary. No problem, just change the setup so
+that all the focusable elements participate in the tab order:
 
 Example 3:
 
 ```html
-<ul focusgroup>
-  <li tabindex="0">…</li>
-  <li tabindex="0">…</li>
-  <li tabindex="0">…</li>
-  <li tabindex="0">…</li>
-  <li tabindex="0">…</li>
+<ul focusgroup role="toolbar">
+  <li tabindex="0" role="button" …>…</li>
+  <li tabindex="0" role="button" …>…</li>
+  <li tabindex="0" role="checkbox" …>…</li>
+  <li tabindex="0" role="checkbox" …>…</li>
 </ul>
 ```
 
@@ -361,16 +360,16 @@ When extending a focusgroup, traversal order is based on document order. Given t
 Example 6:
 
 ```html
-<div role=toolbar focusgroup>
-  <button id="A" type=button tabindex="0"></button>
-  <button id="B" type=button tabindex="-1"></button>
+<div role="toolbar" focusgroup>
+  <button id="A" type="button" tabindex="0">…</button>
+  <button id="B" type="button" tabindex="-1">…</button>
   <div>
-      <div role=radiogroup focusgroup="extend">
-        <div id="B1" role=radio tabindex="-1"></div>
-        <div id="B2" role=radio tabindex="-1"></div>
-      </div>
+    <div role="radiogroup" focusgroup="extend">
+      <div id="B1" role="radio" tabindex="-1">…</div>
+      <div id="B2" role="radio" tabindex="-1">…</div>
+    </div>
   </div>
-  <button id="C" type=button tabindex="-1"></button>
+  <button id="C" type="button" tabindex="-1">…</button>
 </div>
 ```
 
@@ -388,17 +387,17 @@ Example 7:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<div role=toolbar focusgroup>
-  <button id="A" type=button tabindex="0"></button>
-  <button id="B" type=button tabindex="-1"></button>
+<div role="toolbar" focusgroup>
+  <button id="A" type="button" tabindex="0">…</button>
+  <button id="B" type="button" tabindex="-1">…</button>
   <div>
-      <div role=radiogroup focusgroup="extend wrap">
-        <!-- 'wrap' will not apply -->
-        <button id="B1" role=radio type=button tabindex="-1"></button>
-        <button id="B2" role=radio type=button tabindex="-1"></button>
-      </div>
+    <div role="radiogroup" focusgroup="extend wrap">
+      <!-- 'wrap' will not apply -->
+      <button id="B1" role="radio" type="button" tabindex="-1">…</button>
+      <button id="B2" role="radio" type="button" tabindex="-1">…</button>
+    </div>
   </div>
-  <button id="C" type=button tabindex="-1"></button>
+  <button id="C" type="button" tabindex="-1">…</button>
 </div>
 ```
 
@@ -436,9 +435,9 @@ Example 8:
 </style>
 <!-- … -->
 <tab-group role="tablist">
-  <a-tab role="tab" tabindex="0" aria-selected=true aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected=false aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected=false aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
 </tab-group>
 ```
 
@@ -453,7 +452,7 @@ Example 9:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<radiobutton-group focusgroup="horizontal vertical wrap" role=radiogroup>
+<radiobutton-group focusgroup="horizontal vertical wrap" role="radiogroup">
   This focusgroup configuration is an error--neither constraint will be applied (which is actually
   what the author intended).
 </radiobutton-group>
@@ -482,14 +481,14 @@ linear group as described previously.
 Example 10:
 
 ```html
-<vertical-menu role=menu focusgroup="vertical wrap">
-  <menu-item role=menuitem tabindex="-1">Action 1</menu-item>
-  <menu-item role=menuitem tabindex="0">Action 2</menu-item>
-  <menu-group role=none focusgroup="vertical extend">
-    <menu-item role=menuitem tabindex="-1">Sub-Action 3</menu-item>
-    <menu-item role=menuitem tabindex="-1">Sub-Action 4</menu-item>
+<vertical-menu role="menu" focusgroup="vertical wrap">
+  <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
+  <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
+  <menu-group role="none" focusgroup="vertical extend">
+    <menu-item role="menuitem" tabindex="-1">Action 3</menu-item>
+    <menu-item role="menuitem" tabindex="-1">Action 4</menu-item>
   </menu-group>
-  <menu-item role=menuitem tabindex="-1">Action 5</menu-item>
+  <menu-item role="menuitem" tabindex="-1">Action 5</menu-item>
 </vertical-menu>
 ```
 
@@ -512,17 +511,19 @@ Example 11:
   }
 </style>
 <!-- … -->
-<horizontal-menu role=menubar>
-  <menu-item role=menuitem tabindex="-1">Action 1</menu-item>
-  <menu-item role=menuitem tabindex="0">Action 2</menu-item>
-  <menu-item role=menuitem tabindex="-1" aria-haspopup=true aria-expanded=true>
-    Action 3
-    <omni-menu role=menu>
-      <menu-item role=menuitem tabindex="-1">Sub-Action 3</menu-item>
-      <menu-item role=menuitem tabindex="-1">Sub-Action 4</menu-item>
+<horizontal-menu role="menubar">
+  <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
+  <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
+  <div role="none">
+    <menu-item role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">
+      Action 3
+    </menu-item>
+    <omni-menu role="menu">
+      <menu-item role="menuitem" tabindex="-1">Sub-Action A</menu-item>
+      <menu-item role="menuitem" tabindex="-1">Sub-Action B</menu-item>
     </omni-menu>
-  </menu-item>
-  <menu-item role=menuitem tabindex="-1">Action 5</menu-item>
+  </div>
+  <menu-item role="menuitem" tabindex="-1">Action 4</menu-item>
 </horizontal-menu>
 ```
 
@@ -530,27 +531,27 @@ The above is an example of a vertical menu nested inside of a horizontal menu (m
 "Action 2" is focused and a down arrow key is pressed, the `<horizontal-menu>` focusgroup
 ignores the key because it is configured to only handle `horizontal` keys. However, when
 focus moves to "Action 3" and a down arrow key is pressed, the
-`<omni-menu>`'s extending focusgroup (a child of the currently focused element) supports
+`<omni-menu>`'s extending focusgroup (a sibling of the currently focused element) supports
 the given axis ('both' axes is the initial value), and so the focus is moved "forward" to
-"Sub-Action 3". What was different in this case, is that the down arrow key which was not
+"Sub-Action A". What was different in this case, is that the down arrow key which was not
 supported by the `<horizontal-menu>`'s focusgroup definition, was handled by the
 `<omni-menu>`'s focusgroup.
 
 The above is a **descent** operation.
 
 Interestingly, this configuration is not bi-directional. Once focus has descended into the
-`<omni-menu>`'s focusgroup the down arrow key (when focus is on "Sub-Action 4") cannot be used
-to continue to the `<horizontal-menu>`'s "Action 5" because the `<horizontal-menu>`'s focusgroup
-will reject that axis. Conversely, with "Sub-Action 3" focused, the up arrow key will not move focus
+`<omni-menu>`'s focusgroup the down arrow key (when focus is on "Sub-Action B") cannot be used
+to continue to the `<horizontal-menu>`'s "Action 4" because the `<horizontal-menu>`'s focusgroup
+will reject that axis. Conversely, with "Sub-Action A" focused, the up arrow key will not move focus
 to the `<omni-menu>` element because the vertical axis arrow keys are rejected by the owning
 `<horizontal-menu>`'s focusgroup.
 
 Once descended into the `<omni-menu>`'s focusgroup, the way to **ascend** again is through an arrow
 keypress that is axis-aligned with the parent's focusgroup (when focus is at the start or end of the
 child's focusgroup since the child's focusgroup handles both axes). Continuing with Example 11 and
-"Sub-Action 3" focused, a left arrow key press (reverse direction) causes an ascension into the parent's
-focusgroup (focusing the "Action 3" menu item). Similarly, when "Sub-Action 4" is focused, a right
-arrow key will cause an ascension to the parent's focusgroup and focus "Action 5". The horizontal axis
+"Sub-Action A" focused, a left arrow key press (reverse direction) causes an ascension into the parent's
+focusgroup (focusing the "Action 3" menu item). Similarly, when "Sub-Action B" is focused, a right
+arrow key will cause an ascension to the parent's focusgroup and focus "Action 4". The horizontal axis
 is aligned between the focusgroups and so horizontal arrow key requests are extensions of the parent's
 focusgroup, while vertical arrow key presses stay "stuck" in the child focusgroup.
 
@@ -564,23 +565,25 @@ linear focusgroups (and vice-versa) as a best practice. The following example is
 Example 12:
 
 ```html
-<horizontal-menu role=menubar focusgroup="horizontal wrap">
-  <menu-item role=menuitem tabindex="-1">Action 1</menu-item>
-  <menu-item role=menuitem tabindex="0">Action 2</menu-item>
-  <menu-item role=menuitem tabindex="-1" aria-haspopup=true aria-expanded=true>
-    Action 3
-    <vertical-menu role=menu tabindex="-1" focusgroup="vertical extend">
-      <menu-item role=menuitem tabindex="-1">Sub-Action 3</menu-item>
-      <menu-item role=menuitem tabindex="-1">Sub-Action 4</menu-item>
+<horizontal-menu role="menubar" focusgroup="horizontal wrap">
+  <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
+  <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
+  <div role="none">
+    <menu-item role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">
+      Action 3
+    </menu-item>
+    <vertical-menu role="menu" tabindex="-1" focusgroup="vertical extend">
+      <menu-item role="menuitem" tabindex="-1">Sub-Action A</menu-item>
+      <menu-item role="menuitem" tabindex="-1">Sub-Action B</menu-item>
     </vertical-menu>
-  </menu-item>
-  <menu-item tabindex="-1">Action 5</menu-item>
+  </div>
+  <menu-item tabindex="-1">Action 4</menu-item>
 </horizontal-menu>
 ```
 
 When focus is on the "Action 3" menu item, only a down arrow key will descend into the
 nested focusgroup (not a right arrow key because this is disallowed by the vertical extending
-focusgroup). Similarly, only a left arrow key will ascend from "Sub-Action 3" focusgroup item back
+focusgroup). Similarly, only a left arrow key will ascend from "Sub-Action A" focusgroup item back
 to "Action 3". Using alternating directions in nested focusgroups ensures
 natural symmetry for users (cross-axis forward to descend, cross-axis reverse to ascend).
 
@@ -724,16 +727,17 @@ Example 18:
   }
 </style>
 <!-- … -->
-<data-table role=treegrid focusgroup="vertical">
-  <table-row role=row tabindex="-1" aria-label="…">
-    <card-view role=gridcell tabindex="-1" aria-label="…">
-      <ul role=menu>
-        <li role=menuitem tabindex="-1">…</li>
-        <li role=menuitem tabindex="-1">…</li>
-        <li role=menuitem tabindex="-1">…
-          <div role=radiogroup>
-            <focusable-entry role=radio tabindex="-1">…</focusable-entry>
-            <focusable-entry role=radio tabindex="-1">…</focusable-entry>
+<data-table role="treegrid" focusgroup="vertical">
+  <table-row role="row" tabindex="-1" aria-label="…">
+    <card-view role="gridcell" tabindex="-1" aria-label="…">
+      <ul role="menu">
+        <li role="menuitem" tabindex="-1">…</li>
+        <li role="menuitem" tabindex="-1">…</li>
+        <li role="none">
+          <div role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">…</div>
+          <div role="menu" …>
+            <focusable-entry role="menuitemradio" tabindex="-1" …>…</focusable-entry>
+            <focusable-entry role="menuitemradio" tabindex="-1" …>…</focusable-entry>
           </div>
         </li>
       </ul>
@@ -751,8 +755,8 @@ around start-to-end) to cycle through the cards. If desired, while focused on an
 arrow will take them back to the parent `<table-row>` to move up/down to the next row.
 Alternatively, while looking at a card with a nested vertical list, they can press the
 down arrow to descend into the menu of items in the card and cycle
-through them (with wrapping). The menu contains a `<div>` (radiogroup) structure. 
-To "unify" the radiogroup and the menu items into one logical list for
+through them (with wrapping). The menu contains a submenu structure of menu item radio buttons.
+To "unify" the submenu and the menu items into one logical list for
 arrow navigation, the focusgroup on the `<div>` extends in the same direction as
 the focusgroup on the menu (and the wrapping value is also extended).
 
@@ -801,7 +805,7 @@ Example 19:
   }
 </style>
 <!-- … -->
-<control-row role=toolbar id="container">
+<control-row role="toolbar" id="container">
   <options-widget class="optout">…</options-widget>
   <action-button>…</action-button>
   <action-button>…</action-button>
@@ -947,7 +951,7 @@ with computed table layout are suitable for an automatic grid (e.g.,
 `display: table-row` in place of using a `<tr>` elements).
 
 (We are evaluating the suitability for other grid-like patterns including CSS
-`display: grid` or ARIA role=grid.)
+`display: grid` or ARIA `role=grid`.)
 
 The automatic grid approach will be preferable when the grid contents are uniform
 and consistent and when re-using semantic elements for grids (typical). The manual
@@ -968,7 +972,7 @@ the definition is ignored (i.e., there is no fallback to a linear grid).
 Example 22:
 
 ```html
-<table role=grid focusgroup="grid">
+<table role="grid" focusgroup="grid">
   <tr>…</tr>
   <tr>…</tr>
   <tr>…</tr>
@@ -1020,17 +1024,17 @@ Example 23:
   }
 </style>
 <!-- … -->
-<my-root role=grid>
-  <div role=none class="presentational_wrapper">…</div>
-  <my-row role=row>
-    <first-thing role=gridcell>…</first-thing>
-    <cell-container role=group>
-      <my-cell role=gridcell>…</my-cell>
-      <my-cell role=gridcell>…</my-cell>
+<my-root role="grid">
+  <div role="none" class="presentational_wrapper">…</div>
+  <my-row role="row">
+    <first-thing role="gridcell">…</first-thing>
+    <cell-container role="none">
+      <my-cell role="gridcell">…</my-cell>
+      <my-cell role="gridcell">…</my-cell>
     </cell-container>
-    <cell-container role=group>
-      <my-cell role=gridcell>…</my-cell>
-      <my-cell role=gridcell>…</my-cell>
+    <cell-container role="none">
+      <my-cell role="gridcell">…</my-cell>
+      <my-cell role="gridcell">…</my-cell>
     </cell-container>
   </my-row>
   <!-- repeat pattern of div/my-row pairs... -->
@@ -1044,20 +1048,20 @@ Example 24:
 
 ```html
 <style>
-  [role=grid] {
+  [role="grid"] {
     focus-group-name: manual-grid;
     focus-group-wrap: flow;
   }
-  [role=row] {
+  [role="row"] {
     focus-group-item: row;
   }
-  [role=gridcell] {
+  [role="gridcell"] {
     focus-group-item: cell;
   }
 </style>
 <!-- … -->
-<div role=grid>
-  <div role=row>
+<div role="grid">
+  <div role="row">
     <div>
       <div role="gridcell"></div>
       <div role="gridcell"></div>
@@ -1219,8 +1223,8 @@ be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=sp
 
 ## 10. Open Questions
 
-<b id="note1">1.</b> It may not make sense to support focusgroup on every HTML element, especially those
-that already have platform-provide focusgroup-like internal behavior (e.g., &lt;select&gt;). Then again,
+It may not make sense to support focusgroup on every HTML element, especially those
+that already have platform-provide focusgroup-like internal behavior (e.g., `<select>`). Then again,
 if the key navigation behavior is explained by the presence of an external attribute on these elements,
 perhaps the internal behavior should defer to the external specified behavior (usage of the attribute
 would cancel the element's preexisting built-in behavior in favor of the new generic behavior). Implementation
