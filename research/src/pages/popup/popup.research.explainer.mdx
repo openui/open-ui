@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- June 1, 2022
+- July 8, 2022
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -47,7 +47,7 @@ pathToResearch: /components/popup.research
 
 A very common UI pattern on the Web, for which there is no native API, is "pop up UI" or "pop-ups". Pop-ups are a general class of UI that have three common behaviors:
  1. Pop-ups always appear **on top of other page content**.
- 2. Pop-ups are **ephemeral**. When the user "moves on" to another part of the page (e.g. by clicking elsewhere, or hitting ESC), the pop-up closes.
+ 2. Pop-ups are **ephemeral**. When the user "moves on" to another part of the page (e.g. by clicking elsewhere, or hitting ESC), the pop-up hides.
  3. Pop-ups (of a particular type) are generally **"one at a time"** - opening one pop-up closes others.
 
 This document proposes a set of APIs to make this type of UI easy to build.
@@ -59,14 +59,13 @@ Here are the goals for this API:
 
 * Allow any element and its (arbitrary) descendants to be rendered on top of **all other content** in the host web application.
 * Include **“light dismiss” management functionality**, to remove the element/descendants from the top-layer upon certain actions such as hitting Esc (or any [close signal](https://wicg.github.io/close-watcher/#close-signal)) or clicking outside the element bounds.
-* Allow this “top layer” content to be fully styled, including properties which require compositing with other layers of the host web application (e.g. the box-shadow or backdrop-filter CSS properties).
+* Allow this “top layer” content to be fully styled, sized, and positioned at the author's discretion, including properties which require compositing with other layers of the host web application (e.g. the box-shadow or backdrop-filter CSS properties).
 * Allow these top layer elements to reside at semantically-relevant positions in the DOM. I.e. it should not be required to re-parent a top layer element as the last child of the `document.body` simply to escape ancestor containment and transforms.
-* Allow this “top layer” content to be sized and positioned to the author's discretion.
 * Include an appropriate user input and focus management experience, with flexibility to modify behaviors such as initial focus.
 * **Accessible by default**, with the ability to further extend semantics/behaviors as needed for the author's specific use case.
 * Avoid developer footguns, such as improper stacking of dialogs and pop-ups, and incorrect accessibility mappings.
-* Avoid the need for Javascript for the common cases.
-
+* Avoid the need for any Javascript for most common cases.
+* Easy animation of show/hide operations.
 
 ## See Also
 
@@ -74,6 +73,7 @@ See the [original `<popup>` element explainer](https://open-ui.org/components/po
 
 This proposal was discussed on [Issue 455](https://github.com/openui/open-ui/issues/455), which was closed as [resolved](https://github.com/openui/open-ui/issues/455#issuecomment-1050172067).
 
+There have been **many** discussions and resolutions at OpenUI of various aspects of this proposal, and those are listed in the [Design Decisions](#design-decisions) section.
 
 # API Shape
 
@@ -111,14 +111,14 @@ There are several ways to "show" a pop-up, and they are discussed in this sectio
 
 ### Declarative Triggers
 
-A common design pattern is to have an activating element, such as a `<button>`, which makes a pop-up visible. To facilitate this pattern, and avoid the need for Javascript in this common case, three content attribute (`togglepopup`, `showpopup`, and `hidepopup`) allow the developer to declaratively toggle, show, or hide a pop-up. To do so, the attribute's value should be set to the idref of another element:
+A common design pattern is to have an activating element, such as a `<button>`, which makes a pop-up visible. To facilitate this pattern, and avoid the need for Javascript in this common case, three content attributes (`togglepopup`, `showpopup`, and `hidepopup`) allow the developer to declaratively toggle, show, or hide a pop-up. To do so, the attribute's value should be set to the idref of another element:
 
 ```html
 <button togglepopup=foo>Toggle the pop-up</button>
 <div id=foo popup>Pop-up content</div>
 ```
 
-When the button in this example is activated, the UA will call `.showPopUp()` on the `<div id=mypopup>` element if it is currently hidden, or `hidePopUp()` if it is showing. In this way, no Javascript will be necessary for this use case.
+When the button in this example is activated, the UA will call `.showPopUp()` on the `<div id=foo popup>` element if it is currently hidden, or `hidePopUp()` if it is showing. In this way, no Javascript will be necessary for this use case.
 
 If the desire is to have a button that only shows or only hides a pop-up, the following markup can be used:
 
@@ -203,7 +203,66 @@ The styling for a pop-up is provided by **roughly** the following UA stylesheet 
 }
 ```
 
-The above rules mean that a pop-up, when not "shown", has `display:none` applied, and that style is removed when one of the methods above is used to show the pop-up. Note that the `display:none` UA stylesheet rule is **not** `!important`. In other words, developer style rules can be used to override this UA style to make a not-showing pop-up visible in the page. In this case, the pop-up will **not** be displayed in the top layer, but rather at it's ordinary `z-index` position within the document. This can be used, for example, to animate the show/hide behavior of the pop-up, or make pop-up content "return to the page" instead of becoming hidden.
+The above rules mean that a pop-up, when not "shown", has `display:none` applied, and that style is removed when one of the methods above is used to show the pop-up. Note that the `display:none` UA stylesheet rule is not `!important`. In other words, developer style rules can be used to override this UA style to make a not-showing pop-up visible in the page. In this case, the pop-up will **not** be displayed in the top layer, but rather at its ordinary `z-index` position within the document. This can be used, for example, to make pop-up content "return to the page" instead of becoming hidden.
+
+
+### Animation of Pop-ups
+
+The show and hide behavior for pop-ups is designed to make animation of the show/hide trivially easy:
+
+```css
+[popup] {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+[popup]:top-layer {
+  opacity: 1;
+}
+```
+
+The above CSS will result in all pop-ups fading in and out when they show/hide. To make this work, a two-step procedure must be followed by the pop-up as it is shown and hidden:
+
+**`showPopUp()`:**
+
+1. Move the pop-up to the top layer, and remove the UA `display:none` style.
+2. Fire the `show` event, synchronously.
+3. Update style.  (Transition initial style can be specified in this state.)
+4. Set the `:top-layer` pseudo class.
+5. Update style. (Animations/transitions happen here.)
+6. Focus the first contained element with `autofocus`, if any.
+
+
+**`hidePopUp()`:**
+
+1. Capture any already-running animations on the `Element` via getAnimations(), including animations on descendent elements.
+2. Stop matching the `:top-layer` pseudo class.
+3. If the hidePopUp() call is the result of the pop-up being **"forced out"** of the top layer, e.g. by a modal dialog, fullscreen element, or the element being removed from the document:
+
+    a. Queue the `hide` event (asynchronous).
+
+    **Otherwise,**
+
+    a. Fire the `hide` event, synchronously.
+
+    b. Restore focus to the previously-focused element.
+
+    c. Update style. (Animations/transitions start here.)
+
+    d. Call getAnimations() again, remove any that were found in step <span>#</span>1, and then wait until all of the remaining animations finish or are cancelled.
+4. Remove the pop-up from the top layer, and add the UA `display:none` style.
+5. Update style.
+
+In addition to the above, if a "higher priority" top layer element later appears (such as a modal dialog or fullscreen element), step <span>#</span>4/5 of the `hidePopUp()` steps are immediately executed, to immediately hide any animating-hide pop-ups.
+
+Note that because the `hide` event is synchronous, animations can also be triggered from within the `hide` event listener:
+
+```javascript
+  popUp.addEventListener('hide', () => {
+    popUp.animate({transform: 'translateY(-50px)'}, 200);
+  });
+```
+
+Also note that **while animating**, a pop-up will be **a)** in the top layer, but **b)** not matching the `:top-layer` pseudo class. This is required in order that transitions can be triggered by matching `:top-layer` as seen in the CSS above. It will be important, generally, for developer tools to provide helpful information about the state of top-layer elements.
 
 
 ## IDL Attribute and Feature Detection
@@ -251,7 +310,7 @@ supportsPopUpType('invalid!') === false;
 
 ## Events
 
-Events are fired (asynchronously) when a pop-up is shown (`show` event) and hidden (`hide` event). These events can be used, for example, to populate content for the pop-up just in time before it is shown, or update server data when it closes. The events are:
+Events are fired synchronously when a pop-up is shown (`show` event) and hidden (`hide` event). These events can be used, for example, to populate content for the pop-up just in time before it is shown, or update server data when it closes. The events are:
 
 ```javascript
 const popUp = Object.assign(document.createElement('div'), {popUp: 'auto'});
@@ -259,15 +318,15 @@ popUp.addEventListener('show',() => console.log('Pop-up is being shown!'));
 popUp.addEventListener('hide',() => console.log('Pop-up is being hidden!'));
 ```
 
-Neither of these events are cancellable, and both are fired asynchronously.
+Neither of these events are cancellable, and both are fired synchronously.
 
 
 
 ## Focus Management
 
-Elements that move into the top layer may require focus to be moved to that element, or a descendant element. However, not all elements in the top layer will require focus. For example, a modal `<dialog>` will have focus set to its first interactive element, if not the dialog element itself, because a modal dialog is something that requires immediate attention. On the other hand, a `<div popup=hint>` (which will more often than not represent a "tooltip") does not receive focus at all (nor is it expected to contain focusable elements). Similarly, a `<div popup=manual>`, which may represent a dynamic notification message (commonly referred to as a toast), or potentially a persistent chat widget, should not immediately receive focus (even if it contains focusable elements). This is because such pop-ups are meant for out-of-band communication of state, and are not meant to interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus.
+Elements that move into the top layer may require focus to be moved to that element, or a descendant element. However, not all elements in the top layer will require focus. For example, a modal `<dialog>` will have focus set to its first interactive element, if not the dialog element itself, because a modal dialog is something that requires immediate attention. On the other hand, a `<div popup=hint>` (which will more often than not represent a "tooltip") does not receive focus at all (nor is it expected to contain focusable elements). Similarly, a `<div popup=manual>`, which may represent a dynamic notification message (commonly referred to as a "notification", "toast", or "alert"), or potentially a persistent chat widget, should not immediately receive focus (even if it contains focusable elements). This is because such pop-ups are meant for out-of-band communication of state, and are not meant to interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus.
 
-To provide control over these behaviors, the `autofocus` attribute can be used on or within pop-ups. When present on a pop-up or one of its descendants, it will result in focus being moved to the pop-up or the specified element when the pop-up is rendered. Note that `autofocus` is [already a global attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute), but the existing behavior applies to element focus on **page load**. This proposal extends that definition to be used within pop-ups, and the focus behavior happens **when they are shown**. Note that adding `autofocus` to a pop-up descendant does **not** cause the pop-up to be shown on page load, and therefore it does not cause focus to be moved into the pop-up **on page load**, unless the `defaultopen` attribute is also used.
+To provide control over these behaviors, the `autofocus` attribute can be used on or within pop-ups. When present on a pop-up or one of its descendants, it will result in focus being moved to the pop-up or the specified element when the pop-up is shown. Note that `autofocus` is [already a global attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute), but the existing behavior applies to element focus on **page load**. This proposal extends that definition to be used within pop-ups, and the focus behavior happens **when they are shown**. Note that adding `autofocus` to a pop-up descendant does **not** cause the pop-up to be shown on page load, and therefore it does not cause focus to be moved into the pop-up **on page load**, unless the `defaultopen` attribute is also used.
 
 The `autofocus` attribute allows control over the focus behavior when the pop-up is shown. When the pop-up is hidden, often the most user friendly thing to do is to return focus to the previously-focused element. The `<dialog>` element currently behaves this way. However, for pop-ups, there are some nuances. For example, if the pop-up is being hidden via light dismiss, because the user clicked on another element outside the pop-up, the focus should **not** be returned to another element, it should go to the clicked element (if focusable, or `<body>` if not). There are a number of other such considerations. The behavior on hiding the pop-up is:
 
@@ -339,7 +398,7 @@ The term "light dismiss" for a pop-up is used to describe the user "moving on" t
 
 ### Nested Pop-ups
 
-For at least `popup=auto`, it is possible to have "nested" pop-ups. I.e. two pop-ups that are allowed to both be open at the same time, due to their relationship with each other. A simple example where this would be desired is a pop-up menu that contains sub-menus: it is commonly expected to support this pattern, and keep the main menu showing while the sub-menu is shown.
+For `popup=auto` only, it is possible to have "nested" pop-ups. I.e. two pop-ups that are allowed to both be open at the same time, due to their relationship with each other. A simple example where this would be desired is a pop-up menu that contains sub-menus: it is commonly expected to support this pattern, and keep the main menu showing while the sub-menu is shown.
 
 Pop-up nesting is not possible/applicable to the other pop-up types, such as `popup=hint` and `popup=manual`.
 
@@ -357,7 +416,7 @@ The "nearest open ancestral pop-up" `P` to a given `Node` N is defined in this w
 > 3. `N` has an ancestor [triggering element](#declarative-triggers) whose target is `P`.
 > If none of the pop-ups in [the pop-up stack](#the-pop-up-stack) match the above conditions, then `P` is `null`.
 
-The above description needs to be more crisply defined. The [implementation from Chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2577;drc=d164a7600a5f094d73a135c1f66f76139b525b48) should be a good starting point to describe the algorithm.
+The above description needs to be more crisply defined. The [implementation from Chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2890;drc=dd91f9305abde436a2066a73b9b1fbaa79e6225b) should be a good starting point to describe the algorithm. The general idea is that an "ancestor popup" is one that is "related" via DOM hierarchy, the `anchor` attribute, or the invoking attributes (`togglepopup`, `showpopup`, or `hidepopup`).
 
 ### Close signal
 
@@ -441,10 +500,11 @@ This section contains several HTML examples, showing how various UI elements mig
 ```html
 <button togglepopup=datepicker>Pick a date</button>
 <my-date-picker role=dialog id=datepicker popup>
-  ...date picker implementation...
+  ...date picker contents...
 </my-date-picker>
 
-<!-- No script - the togglepopup attribute takes care of activation -->
+<!-- No script - the togglepopup attribute takes care of activation, and
+     the `popup` attribute takes care of the pop-up behavior. -->
 ```
 
 
@@ -454,17 +514,14 @@ This section contains several HTML examples, showing how various UI elements mig
 
 ```html
 <selectmenu>
-  <template shadowroot=closed>
-    <button togglepopup=listbox>Icon</button>
-    <div role=listbox id=listbox popup>
-      <slot></slot>
-    </div>
-  </template>
-  <option>Option 1</option>
-  <option>Option 2</option>
+  <div popup slot=listbox behavior=listbox>
+    <option>Option 1</option>
+    <option>Option 2</option>
+  </div>
 </selectmenu>
 
-<!-- No script - the togglepopup attribute takes care of activation -->
+<!-- No script - `<selectmenu>`'s listbox is provided by a `<div popup>` element,
+     which takes care of pop-up behavior -->
 ```
 
 
@@ -593,3 +650,8 @@ Many small (and large!) behavior questions were answered via discussions at Open
 - [Imperative API for content attributes](https://github.com/openui/open-ui/issues/382)
 - [`.popup` vs `.popUp`](https://github.com/openui/open-ui/issues/546#issuecomment-1158190204)
 - [Interactions between auto, hint, and manual](https://github.com/openui/open-ui/issues/525)
+- [Show and hide animation behavior](https://github.com/openui/open-ui/issues/335)
+
+Here are all non-spec-text related OpenUI pop-up issues, both open and closed:
+
+ https://github.com/openui/open-ui/issues?q=is%3Aissue+label%3Apopup+-label%3Apopup-spec
