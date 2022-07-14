@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- July 8, 2022
+- July 14, 2022
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -111,10 +111,10 @@ There are several ways to "show" a pop-up, and they are discussed in this sectio
 
 ### Declarative Triggers
 
-A common design pattern is to have an activating element, such as a `<button>`, which makes a pop-up visible. To facilitate this pattern, and avoid the need for Javascript in this common case, three content attributes (`togglepopup`, `showpopup`, and `hidepopup`) allow the developer to declaratively toggle, show, or hide a pop-up. To do so, the attribute's value should be set to the idref of another element:
+A common design pattern is to have a button which makes a pop-up visible. To facilitate this pattern, and avoid the need for Javascript in this common case, three content attributes (`popuptoggletarget`, `popupshowtarget`, and `popuphidetarget`) allow the developer to declaratively toggle, show, or hide a pop-up. To do so, the attribute's value should be set to the idref of another element:
 
 ```html
-<button togglepopup=foo>Toggle the pop-up</button>
+<button popuptoggletarget=foo>Toggle the pop-up</button>
 <div id=foo popup>Pop-up content</div>
 ```
 
@@ -123,15 +123,17 @@ When the button in this example is activated, the UA will call `.showPopUp()` on
 If the desire is to have a button that only shows or only hides a pop-up, the following markup can be used:
 
 ```html
-<button togglepopup=foo>Toggle the pop-up</button>
-<button showpopup=foo>This button only shows the pop-up</button>
-<button hidepopup=foo>This button only hides the pop-up</button>
+<button popuptoggletarget=foo>Toggle the pop-up</button>
+<button popupshowtarget=foo>This button only shows the pop-up</button>
+<button popuphidetarget=foo>This button only hides the pop-up</button>
 <div id=foo popup>Pop-up content</div>
 ```
 
 Note that all three attributes can be used together like this, pointing to the same element. However, using more than one triggering attribute on **a single button** is not recommended.
 
-When the `togglepopup`, `showpopup`, or `hidepopup` attributes are applied to an activating element, the UA may automatically map this attribute appropriate `aria-*` attributes, such as `aria-haspopup`, `aria-describedby` and/or `aria-expanded`, in order to ensure accessibility. There will need to be further discussion with the ARIA working group to determine the exact ARIA semantics, if any, are necessary.
+When the `popuptoggletarget`, `popupshowtarget`, or `popuphidetarget` attributes are applied to an activating element, the UA may automatically map this attribute appropriate `aria-*` attributes, such as `aria-haspopup`, `aria-describedby` and/or `aria-expanded`, in order to ensure accessibility. There will need to be further discussion with the ARIA working group to determine the exact ARIA semantics, if any, are necessary.
+
+These attributes are only supported on buttons (including `<button>`, `<input type=button>`, etc.) as long as the button would not otherwise submit a form. For example, this is not supported: `<form><input type=submit popuptoggletarget=foo></form>`. In that case, the form would be submitted, and the pop-up would **not** be toggled.
 
 ### Javascript Trigger
 
@@ -335,7 +337,7 @@ The `autofocus` attribute allows control over the focus behavior when the pop-up
 - When a pop-up is hidden, focus is set back to the **previously focused element**, if it is non-`null`, in the following cases:
     1. Light dismiss via [close signal](https://wicg.github.io/close-watcher/#close-signal) (e.g. Escape key pressed).
     2. Hide pop-up from Javascript via `hidePopUp()`.
-    3. Hide pop-up via a **pop-up-contained**\* triggering element with `hidepopup=pop_up_id` or `togglepopup=pop_up_id`. The triggering element must be pop-up-contained, otherwise the keyboard or mouse activation of the triggering element should have already moved focus to that element.
+    3. Hide pop-up via a **pop-up-contained**\* triggering element with `popuphidetarget=pop_up_id` or `popuptoggletarget=pop_up_id`. The triggering element must be pop-up-contained, otherwise the keyboard or mouse activation of the triggering element should have already moved focus to that element.
     4. Hide pop-up because its `popup` type changes (e.g. via `myPopUp.popUp='something else';`).
 
  - Any other actions which hide the pop-up will **not** cause the focus to be changed when the pop-up hides. In these cases, the "normal" behavior happens for each action. Some examples include:
@@ -416,7 +418,7 @@ The "nearest open ancestral pop-up" `P` to a given `Node` N is defined in this w
 > 3. `N` has an ancestor [triggering element](#declarative-triggers) whose target is `P`.
 > If none of the pop-ups in [the pop-up stack](#the-pop-up-stack) match the above conditions, then `P` is `null`.
 
-The above description needs to be more crisply defined. The [implementation from Chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2890;drc=dd91f9305abde436a2066a73b9b1fbaa79e6225b) should be a good starting point to describe the algorithm. The general idea is that an "ancestor popup" is one that is "related" via DOM hierarchy, the `anchor` attribute, or the invoking attributes (`togglepopup`, `showpopup`, or `hidepopup`).
+The above description needs to be more crisply defined. The [implementation from Chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2890;drc=dd91f9305abde436a2066a73b9b1fbaa79e6225b) should be a good starting point to describe the algorithm. The general idea is that an "ancestor popup" is one that is "related" via DOM hierarchy, the `anchor` attribute, or the invoking attributes (`popuptoggletarget`, `popupshowtarget`, or `popuphidetarget`).
 
 ### Close signal
 
@@ -491,19 +493,19 @@ While the pop-up API can be used on most elements, there are some limitations. F
 
 This section contains several HTML examples, showing how various UI elements might be constructed using this API.
 
-**Note:** these examples are for demonstrative purposes of how to use the `togglepopup` and `popup` attributes. They may not represent all necessary HTML, ARIA or JavaScript features needed to fully create such components.
+**Note:** these examples are for demonstrative purposes of how to use the `popuptoggletarget` and `popup` attributes. They may not represent all necessary HTML, ARIA or JavaScript features needed to fully create such components.
 
 
 ## Generic Pop-up (Date Picker)
 
 
 ```html
-<button togglepopup=datepicker>Pick a date</button>
+<button popuptoggletarget=datepicker>Pick a date</button>
 <my-date-picker role=dialog id=datepicker popup>
   ...date picker contents...
 </my-date-picker>
 
-<!-- No script - the togglepopup attribute takes care of activation, and
+<!-- No script - the popuptoggletarget attribute takes care of activation, and
      the `popup` attribute takes care of the pop-up behavior. -->
 ```
 
@@ -651,6 +653,7 @@ Many small (and large!) behavior questions were answered via discussions at Open
 - [`.popup` vs `.popUp`](https://github.com/openui/open-ui/issues/546#issuecomment-1158190204)
 - [Interactions between auto, hint, and manual](https://github.com/openui/open-ui/issues/525)
 - [Show and hide animation behavior](https://github.com/openui/open-ui/issues/335)
+- [`popuptoggletarget`, `popupshowtarget`, `popuphidetarget`](https://github.com/openui/open-ui/issues/382#issuecomment-1184773425)
 
 Here are all non-spec-text related OpenUI pop-up issues, both open and closed:
 
