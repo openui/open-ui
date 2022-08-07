@@ -28,8 +28,7 @@ const Navigation = ({ opened, githubURL }) => (
       const allFrontmatter = _.map(data.allMdx.edges, 'node.frontmatter')
 
       const frontmatterForNav = allFrontmatter
-        .filter(({ name, pathToProposal }) => !!name)
-        .filter(({ showInMenu }) => showInMenu !== false)
+        .filter(({ name, showInMenu }) => !!name && showInMenu)
 
       let [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, 'menu')
       menuNodes = _.sortBy(menuNodes, ['name'])
