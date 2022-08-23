@@ -75,6 +75,32 @@ This proposal was discussed on [Issue 455](https://github.com/openui/open-ui/iss
 
 There have been **many** discussions and resolutions at OpenUI of various aspects of this proposal, and those are listed in the [Design Decisions](#design-decisions) section.
 
+## Pop-Up vs. Dialog
+
+A natural question that [commonly arises](https://github.com/openui/open-ui/issues/581) is: what's the difference between a "pop-up" and a "dialog"? There are two ways to interpret this question:
+ 1. What are the difference between these general UX patterns and words?
+ 2. What are the technical implementation differences between `<div popup>` and `<dialog>`?
+
+In both cases, an important distinction needs to be made between **modal** and **non-modal** (or **modeless**) dialogs. With a **modal** dialog, the rest of the page (outside the dialog) is rendered **`inert`**, so that only the contents of the dialog are interactable. Importantly, a pop-up is **non-modal**. Almost by definition, a pop-up is "ephemeral" and goes away (via light dismiss) if the user changes their attention to something else, by clicking or tabbing to something else. For these reasons, if the dialog in question needs to be **modal**, then the `<dialog>` element is the way to go.
+
+Having said that, dialogs can also be **non-modal**, and pop-ups can be set to not light-dismiss (via **`popup=manual`**). There is a significant area of overlap between the two Web features. Some use cases that lie in this area of overlap include:
+
+1. "Toasts" or asynchronous notifications, which stay onscreen until dismissed manually or via a timer.
+2. Persistent UI, such as teaching-UI, that needs to stay on screen while the user interacts with the page.
+3. Custom components that need to "manually" control pop-up behavior.
+
+Given these use cases, it's important to call out the technical differences between a non-modal `<dialog>` and a `<div popup=manual>`:
+
+- A `<div popup=manual>` is **in the top layer**, so it draws on top of other content. The same is not true for a non-modal `<dialog>`. This is likely the most impactful difference, as it tends to be difficult to ensure that a non-modal `<dialog>` is painted on top of other page content.
+- A `<dialog>` element always has **`role=dialog`**, while the `popup` attribute can be applied to the **most-semantically-relevant HTML element**, including the `<dialog>` element itself: `<dialog popup>`.
+- The pop-up API comes with some **"nice to have's"**:
+    - pop-ups are easy to animate both the show and hide transitions. JS is required to animate `dialog.close()`.
+    - pop-ups fire both a "show" and a "hide" event. A `<dialog>` only fires `cancel` and `close`, but no event is fired when it is shown.
+    - pop-ups work with the invoking attributes (e.g. `popuptoggletarget`) to declaratively show/hide them. JS is required to show/close a `<dialog>`.
+
+For the above reasons, it seems clear that `<div popup=manual>` is superior to non-modal `<dialog>` in most cases, and should be preferred.
+
+
 # API Shape
 
 This section lays out the full details of this proposal. If you'd prefer, you can **[skip to the examples section](#example-use-cases) to see the code**.
@@ -263,8 +289,8 @@ The above CSS will result in all pop-ups fading in and out when they show/hide. 
 
 **`showPopUp()`:**
 
-1. Move the pop-up to the top layer, and remove the UA `display:none` style.
-2. Fire the `show` event, synchronously.
+1. Fire the `show` event, synchronously. If the event is cancelled, stop here.
+2. Move the pop-up to the top layer, and remove the UA `display:none` style.
 3. Update style.  (Transition initial style can be specified in this state.)
 4. Set the `:open` pseudo class.
 5. Update style. (Animations/transitions happen here.)
@@ -357,8 +383,7 @@ popUp.addEventListener('show',() => console.log('Pop-up is being shown!'));
 popUp.addEventListener('hide',() => console.log('Pop-up is being hidden!'));
 ```
 
-Neither of these events are cancellable, and both are fired synchronously.
-
+The `show` event is cancellable, and doing so keeps the pop-up from being shown. The `hide` event is not cancellable, to avoid interfering with the one-at-a-time and light-dismiss behaviors. Both `show` and `hide` are fired synchronously.
 
 
 ## Focus Management
@@ -394,7 +419,7 @@ The intention of the above set of behaviors is to return focus to the previously
 A new attribute, `anchor`, can be used on a pop-up element to refer to the pop-up's "anchor". The value of the attribute is a string idref corresponding to the `id` of another element (the "anchor element"). This anchoring relationship is used for two things:
 
 1. Establish the provided anchor element as an [“ancestor”](#nearest-open-ancestral-pop-up) of this pop-up, for light-dismiss behaviors. In other words, the `anchor` attribute can be used to form nested pop-ups.
-2. The referenced anchor element could be used by the [Anchor Positioning feature](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md).
+2. The referenced anchor element could be used by the **Anchor Positioning feature**. A (dated) explainer can be found [here](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md), or a more up-to-date draft spec [here](https://tabatkins.github.io/specs/css-anchor-position/).
 
 
 ## Backdrop
@@ -523,7 +548,7 @@ As mentioned in the [Declarative Triggers](#declarative-triggers) section, acces
 
 ## Disallowed elements
 
-While the pop-up API can be used on most elements, there are some limitations. For example, calling `showPopUp()` on a modal (via `.showModal()`) `<dialog>` element will result in an exception being thrown, as will calling it on an [active fullscreen element](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen). All other element types are valid.
+While the pop-up API can be used on most elements, there are some limitations. It is legal to apply the `popup` attribute to a `<dialog>` element, for example. However, doing so causes `dialog.showModal()` (the `<dialog>` API to show it modally) to throw an exception. This is because it is confusing that an element with `popup` can be shown in a modal fashion. Similarly, calling `element.requestFullscreen()` on an element that has the `popup` attribute will return a rejected promise.
 
 
 # Example Use Cases
@@ -683,7 +708,8 @@ Many small (and large!) behavior questions were answered via discussions at Open
 - [Naming of the `:top-layer`/`:open` pseudo class](https://github.com/openui/open-ui/issues/470)
 - [Support for "boolean-like" behavior for `popup` attribute](https://github.com/openui/open-ui/issues/533)
 - [Returning focus to previously-focused element](https://github.com/openui/open-ui/issues/327)
-- [The `show` and `hide` events should not be cancelable](https://github.com/openui/open-ui/issues/321)
+- [The `show` and `hide` events should not be cancellable](https://github.com/openui/open-ui/issues/321)
+- [The `show` event should be cancellable after all](https://github.com/openui/open-ui/issues/579)
 - [The `popup` attribute confers behavior and not semantics](https://github.com/openui/open-ui/issues/495#issuecomment-1164827851)
 - [Mouse down vs mouse up for light dismiss](https://github.com/openui/open-ui/issues/529)
 - [Imperative API for content attributes](https://github.com/openui/open-ui/issues/382)
@@ -692,6 +718,8 @@ Many small (and large!) behavior questions were answered via discussions at Open
 - [Show and hide animation behavior](https://github.com/openui/open-ui/issues/335)
 - [`popuptoggletarget`, `popupshowtarget`, `popuphidetarget`](https://github.com/openui/open-ui/issues/382#issuecomment-1184773425)
 - [Invoking attributes only supported on buttons](https://github.com/openui/open-ui/issues/420)
+- [Differences between dialog and pop-up](https://github.com/openui/open-ui/issues/581)
+- [Interactions between pop-up, dialog, and fullscreen](https://github.com/openui/open-ui/issues/520)
 
 Here are all non-spec-text related OpenUI pop-up issues, both open and closed:
 
