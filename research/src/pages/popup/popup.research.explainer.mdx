@@ -98,8 +98,7 @@ Given these use cases, it's important to call out the technical differences betw
     - pop-ups fire both a "show" and a "hide" event. A `<dialog>` only fires `cancel` and `close`, but no event is fired when it is shown.
     - pop-ups work with the invoking attributes (e.g. `popuptoggletarget`) to declaratively show/hide them. JS is required to show/close a `<dialog>`.
 
-For the above reasons, it seems clear that `<div popup=manual>` is superior to non-modal `<dialog>` in most cases, and should be preferred.
-
+For the above reasons, it seems clear that for use cases that need a **non-modal** dialog which has pop-up behavior, a `<dialog popup>` (with the most appropriate value for the `popup` attribute) should be preferred. Importantly, if the use case is **not** meant to be exposed as a "dialog", then another (non-`<dialog>`) element should be used with the `popup` attribute, or a generic `<div popup role=something>` should be used with the appropriate role added.
 
 # API Shape
 
