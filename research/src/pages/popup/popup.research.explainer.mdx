@@ -434,7 +434,7 @@ Akin to modal `<dialog>` and fullscreen elements, pop-ups allow access to a `::b
 </style>
 ```
 
-Note that in contrast to the `::backdrop` pseudo element for modal dialogs and fullscreen elements, the `::backdrop` for a pop-up is styled by a UA stylesheet rule `pointer-events: none !important`, which means it cannot trap clicks outside the pop-up. This ensures the "click outside" light dismiss behavior continues to function.
+Note that in contrast to the `::backdrop` pseudo element for modal dialogs and fullscreen elements, the `::backdrop` for a pop-up is styled by a UA stylesheet rule `pointer-events: none !important`, which means it cannot trap clicks outside the pop-up. This ensures the "click outside" light dismiss behavior continues to function. For this reason, and because `popup=manual` pop-ups do not have light-dismiss behavior, it is not recommended that the `::backdrop` be styled in a non-transparent way for `popup=manual` pop-ups. Doing so would obscure the rest of the page, while still allowing the user to click or keyboard navigate to obscured elements. In this case, a better approach might be to use a modal `<dialog>` element, which will trap focus within the `<dialog>`.
 
 # Behaviors
 
