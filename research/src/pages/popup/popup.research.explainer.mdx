@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- July 14, 2022
+- August 24, 2022
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -180,32 +180,69 @@ Note also that more than one `manual` pop-up can use `defaultopen` and all such 
 
 ### CSS Pseudo Class
 
-When a pop-up (or any element) is in the top layer, it will match the `:top-layer` pseudo class:
+When a pop-up is open, it will match the `:open` pseudo class:
 
 ```javascript
 const popUp = document.createElement('div');
 popUp.popUp = 'auto';
-popUp.matches(':top-layer') === false;
+popUp.matches(':open') === false;
 popUp.showPopUp();
-popUp.matches(':top-layer') === true;
+popUp.matches(':open') === true;
 ```
 
 
-### Shown vs Hidden Pop-ups
+### Rendering
 
-The styling for a pop-up is provided by **roughly** the following UA stylesheet rules:
+The UA stylesheet for pop-ups will look like this:
 
 ```css
-[popup]:not(:top-layer) {
-  display: none;
+[popup] {
+  position: fixed;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  border: solid;
+  padding: 0.25em;
+  overflow: auto;
+  color: CanvasText;
+  background-color: Canvas;
 }
 
+[popup]::backdrop {
+    pointer-events: none !important;
+}
+
+[popup]{match this when pop-up is hidden} {
+  display: none;
+}
+```
+
+### Shown vs Hidden Pop-ups
+
+As seen above, the styling rules manage "showing" vs. "hidden" via these UA stylesheet rules:
+
+```css
+[popup]{when hidden}: {
+  display: none;
+}
 [popup] {
   position: fixed;
 }
 ```
 
-The above rules mean that a pop-up, when not "shown", has `display:none` applied, and that style is removed when one of the methods above is used to show the pop-up. Note that the `display:none` UA stylesheet rule is not `!important`. In other words, developer style rules can be used to override this UA style to make a not-showing pop-up visible in the page. In this case, the pop-up will **not** be displayed in the top layer, but rather at its ordinary `z-index` position within the document. This can be used, for example, to make pop-up content "return to the page" instead of becoming hidden.
+The above rules mean that a pop-up, when not "shown", has `display:none` applied, and that style is removed when one of the methods above is used to show the pop-up. Note that the `display:none` UA stylesheet rule is not `!important`. In other words, developer style rules can be used to override this UA style to make a not-showing pop-up visible in the page. In this case, the pop-up will **not** be displayed in the top layer, but rather at its ordinary `z-index` position within the document. This can be used, for example, to make pop-up content "return to the page" instead of becoming hidden. Care must be taken, if the `display` property is set by developer CSS, to ensure the pop-up visibility isn't adversely affected. For example, developer CSS could do this:
+
+```css
+[popup] {
+  /* Make the pop-up a flexbox: */
+  display: flex;
+}
+[popup]:not(:open) {
+  /* But make sure not to show it unless it's open: */
+  display: none;
+}
+```
 
 
 ### Animation of Pop-ups
@@ -217,7 +254,7 @@ The show and hide behavior for pop-ups is designed to make animation of the show
   opacity: 0;
   transition: opacity 0.5s;
 }
-[popup]:top-layer {
+[popup]:open {
   opacity: 1;
 }
 ```
@@ -229,7 +266,7 @@ The above CSS will result in all pop-ups fading in and out when they show/hide. 
 1. Move the pop-up to the top layer, and remove the UA `display:none` style.
 2. Fire the `show` event, synchronously.
 3. Update style.  (Transition initial style can be specified in this state.)
-4. Set the `:top-layer` pseudo class.
+4. Set the `:open` pseudo class.
 5. Update style. (Animations/transitions happen here.)
 6. Focus the first contained element with `autofocus`, if any.
 
@@ -237,7 +274,7 @@ The above CSS will result in all pop-ups fading in and out when they show/hide. 
 **`hidePopUp()`:**
 
 1. Capture any already-running animations on the `Element` via getAnimations(), including animations on descendent elements.
-2. Stop matching the `:top-layer` pseudo class.
+2. Stop matching the `:open` pseudo class.
 3. If the hidePopUp() call is the result of the pop-up being **"forced out"** of the top layer, e.g. by a modal dialog, fullscreen element, or the element being removed from the document:
 
     a. Queue the `hide` event (asynchronous).
@@ -264,7 +301,7 @@ Note that because the `hide` event is synchronous, animations can also be trigge
   });
 ```
 
-Also note that **while animating**, a pop-up will be **a)** in the top layer, but **b)** not matching the `:top-layer` pseudo class. This is required in order that transitions can be triggered by matching `:top-layer` as seen in the CSS above. It will be important, generally, for developer tools to provide helpful information about the state of top-layer elements.
+Also note that **while animating**, a pop-up will be **a)** in the top layer, but **b)** not matching the `:open` pseudo class. This is required in order that transitions can be triggered by matching `:open` as seen in the CSS above. It will be important, generally, for developer tools to provide helpful information about the state of top-layer elements.
 
 
 ## IDL Attribute and Feature Detection
@@ -643,7 +680,7 @@ Many small (and large!) behavior questions were answered via discussions at Open
 - [Why `defaultopen` (bikeshed)](https://github.com/openui/open-ui/issues/500)
 - [Why `display:none` for hidden pop-ups](https://github.com/openui/open-ui/issues/492)
 - [Why Close Signals and not just ESC](https://github.com/openui/open-ui/issues/320)
-- [Naming of the `:top-layer` pseudo class](https://github.com/openui/open-ui/issues/470)
+- [Naming of the `:top-layer`/`:open` pseudo class](https://github.com/openui/open-ui/issues/470)
 - [Support for "boolean-like" behavior for `popup` attribute](https://github.com/openui/open-ui/issues/533)
 - [Returning focus to previously-focused element](https://github.com/openui/open-ui/issues/327)
 - [The `show` and `hide` events should not be cancelable](https://github.com/openui/open-ui/issues/321)
