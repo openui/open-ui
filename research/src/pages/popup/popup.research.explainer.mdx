@@ -81,7 +81,7 @@ A natural question that [commonly arises](https://github.com/openui/open-ui/issu
  1. What are the difference between these general UX patterns and words?
  2. What are the technical implementation differences between `<div popup>` and `<dialog>`?
 
-In both cases, an important distinction needs to be made between **modal** and **non-modal** (or **modeless**) dialogs. With a **modal** dialog, the rest of the page (outside the dialog) is rendered **`inert`**, so that only the contents of the dialog are interactable. Importantly, a pop-up is **non-modal**. Almost by definition, a pop-up is "ephemeral" and goes away (via light dismiss) if the user changes their attention to something else, by clicking or tabbing to something else. For these reasons, if the dialog in question needs to be **modal**, then the `<dialog>` element is the way to go.
+In both cases, an important distinction needs to be made between **modal** and **non-modal** (or **modeless**) dialogs. With a **modal** dialog, the rest of the page (outside the dialog) is rendered **`inert`**, so that only the contents of the dialog are interactable. Importantly, a pop-up is **non-modal**. Almost by definition, a pop-up is not permanent: it goes away (via light dismiss) when the user changes their attention to something else, by clicking or tabbing to something else. For these reasons, if the dialog in question needs to be **modal**, then the `<dialog>` element is the way to go.
 
 Having said that, dialogs can also be **non-modal**, and pop-ups can be set to not light-dismiss (via **`popup=manual`**). There is a significant area of overlap between the two Web features. Some use cases that lie in this area of overlap include:
 
@@ -94,9 +94,9 @@ Given these use cases, it's important to call out the technical differences betw
 - A `<div popup=manual>` is **in the top layer**, so it draws on top of other content. The same is not true for a non-modal `<dialog>`. This is likely the most impactful difference, as it tends to be difficult to ensure that a non-modal `<dialog>` is painted on top of other page content.
 - A `<dialog>` element always has **`role=dialog`**, while the `popup` attribute can be applied to the **most-semantically-relevant HTML element**, including the `<dialog>` element itself: `<dialog popup>`.
 - The pop-up API comes with some **"nice to have's"**:
-    - pop-ups are easy to animate both the show and hide transitions. JS is required to animate `dialog.close()`.
-    - pop-ups fire both a "show" and a "hide" event. A `<dialog>` only fires `cancel` and `close`, but no event is fired when it is shown.
-    - pop-ups work with the invoking attributes (e.g. `popuptoggletarget`) to declaratively show/hide them. JS is required to show/close a `<dialog>`.
+    - pop-ups are easy to animate both the show and hide transitions, via pure CSS. In contrast, JS is required in order to animate `dialog.close()`.
+    - pop-ups work with the invoking attributes (e.g. `popuptoggletarget`) to declaratively show/hide them with pure HTML. In contrast, JS is required to show/close a `<dialog>`.
+    - pop-ups fire both a "show" and a "hide" event. In contrast, a `<dialog>` only fires `cancel` and `close`, but no event is fired when it is shown.
 
 For the above reasons, it seems clear that for use cases that need a **non-modal** dialog which has pop-up behavior, a `<dialog popup>` (with the most appropriate value for the `popup` attribute) should be preferred. Importantly, if the use case is **not** meant to be exposed as a "dialog", then another (non-`<dialog>`) element should be used with the `popup` attribute, or a generic `<div popup role=something>` should be used with the appropriate role added.
 
@@ -418,7 +418,7 @@ The intention of the above set of behaviors is to return focus to the previously
 A new attribute, `anchor`, can be used on a pop-up element to refer to the pop-up's "anchor". The value of the attribute is a string idref corresponding to the `id` of another element (the "anchor element"). This anchoring relationship is used for two things:
 
 1. Establish the provided anchor element as an [“ancestor”](#nearest-open-ancestral-pop-up) of this pop-up, for light-dismiss behaviors. In other words, the `anchor` attribute can be used to form nested pop-ups.
-2. The referenced anchor element could be used by the **Anchor Positioning feature**. A (dated) explainer can be found [here](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md), or a more up-to-date draft spec [here](https://tabatkins.github.io/specs/css-anchor-position/).
+2. The referenced anchor element could be used by the **Anchor Positioning feature** ([(dated) explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md); [more up-to-date draft spec](https://tabatkins.github.io/specs/css-anchor-position/)).
 
 
 ## Backdrop
