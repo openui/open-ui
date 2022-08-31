@@ -2,7 +2,9 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons'
 
-export default function CommunityLinks({ githubURL, className = '' }) {
+const githubURL = ''
+
+export default function CommunityLinks({ className = '' }) {
   return (
     <div className={'community-links ' + className}>
       <a href={githubURL} target="_blank" rel="noreferrer noopener" style={{ color: 'inherit' }}>
