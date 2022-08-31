@@ -1048,14 +1048,14 @@ Example 24:
 
 ```html
 <style>
-  [role="grid"] {
+  [role='grid'] {
     focus-group-name: manual-grid;
     focus-group-wrap: flow;
   }
-  [role="row"] {
+  [role='row'] {
     focus-group-item: row;
   }
-  [role="gridcell"] {
+  [role='gridcell'] {
     focus-group-item: cell;
   }
 </style>

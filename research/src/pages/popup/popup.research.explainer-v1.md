@@ -17,7 +17,6 @@ Authors:
 - [Joey Arhar](https://github.com/josepharhar) (Google)
 - [Greg Whitworth](https://github.com/gregwhitworth) (Salesforce)
 
-
 # Note: This is an outdated proposal!
 
 Please see the updated version [here](/components/popup.research.explainer).

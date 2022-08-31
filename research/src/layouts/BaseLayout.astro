@@ -9,7 +9,7 @@ const { title } = Astro.props;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <!-- <link rel="stylesheet" href="/styles.css" /> -->
+  <link rel="stylesheet" href="../styles/global.css" />
   <title>{title}</title>
 </head>
 
@@ -37,6 +37,12 @@ const { title } = Astro.props;
   body {
     margin: 0;
   }
+
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+
   :global(h1) {
     font-size: var(--font-size-xl);
   }

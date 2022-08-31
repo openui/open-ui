@@ -5,7 +5,7 @@ path: /components/popup.proposal-v1
 pathToResearch: /components/popup.research
 ---
 
-import '../../styles/spec.css'
+// import '../../styles/spec.css'
 
 **Editors:**
 
@@ -252,7 +252,7 @@ moves to the `popup` element.
 ```html
 <popup autofocus>
   <p>The popup itself will receive focus.</p>
-  <button>A focusable element</p>
+  <button>A focusable element</button>
 </popup>
 ```
 
@@ -265,7 +265,7 @@ shown, focus will move to the descendent of the `popup` element where `autofocus
 <popup>
   <p>Text goes here</p>
   <button>Button one</button>
-  <button autofocus>Button two</p>
+  <button autofocus>Button two</button>
 </popup>
 ```
 

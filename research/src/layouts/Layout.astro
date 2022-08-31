@@ -1,14 +1,30 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import Header from "../components/header.jsx";
-// import Navigation from "../components/navigation.jsx";
+import Header from "../components/header.astro";
+import Navigation from "../components/navigation/navigation.astro";
 ---
+
+<style>
+  .page-wrapper {
+  display: flex;
+  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+@media (max-width: 640px) {
+  .page-wrapper {
+    flex-direction: column;
+  }
+}
+
+</style>
 
 <BaseLayout>
   <div>
     <Header />
     <div class="page-wrapper">
-      <!-- <Navigation /> -->
+      <Navigation />
       <main class="page-content">
         <slot />
       </main>

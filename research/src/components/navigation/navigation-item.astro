@@ -1,0 +1,30 @@
+---
+const { item } = Astro.props
+
+
+console.log(item)
+---
+
+<li>
+  <a href={item.path}>
+    {item.name}
+  </a>
+</li>
+
+
+<style>
+  li {
+    margin: 0;
+    list-style-type: none;
+  }
+
+  a {
+    display: block;
+    padding: 0.25em 1em 0.25em 0.5em;
+    margin: 0;
+    color: inherit;
+    border-left: 2px solid transparent;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+</style>

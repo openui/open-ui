@@ -9,6 +9,7 @@ showInMenu: false
 # Tabs Component Specification
 
 ## Overview <a href="#overview" id="overview"></a>
+
 Tabs are a set of layered sections of content, known as tab panels, that display one panel of content at a time. Each tab panel has an associated tab element, that when activated, displays the panel. Tabs allow one-at-a-time, non-sequential viewing over a series of thematically grouped, state independent and labelled sections.
 
 ### Background <a href="#background" id="background"></a>
@@ -35,7 +36,7 @@ _A list of use cases, features, or functionality which are **not** goals for the
 
 ### Risks and Challenges <a href="#risks" id="risks"></a>
 
-*Tabs* has specific guidance on DOM structure by the [WC3](https://w3c.github.io/aria-practices/examples/tabs/tabs-2/tabs.html). This structure lacks logical groupings by separating the tab from its content. Some component libraries compensate for this by creating some kind of intermediary grouping that makes it easier for app authors to implement. Even though the DOM structure disassociates that logical grouping. While other component libraries stick to the DOM structure model. 
+_Tabs_ has specific guidance on DOM structure by the [WC3](https://w3c.github.io/aria-practices/examples/tabs/tabs-2/tabs.html). This structure lacks logical groupings by separating the tab from its content. Some component libraries compensate for this by creating some kind of intermediary grouping that makes it easier for app authors to implement. Even though the DOM structure disassociates that logical grouping. While other component libraries stick to the DOM structure model.
 
 Some scenarios require an indicator that highlights the currently active tab then animates to the next activated tab. Most solutions rely on finding active tab's position on screen and then preforming some math to get the position. This works for most cases but if the tab list repositions itself either by window resizing or other layout changes the active indicator is no longer aligned properly.
 
@@ -73,23 +74,23 @@ _Outline the key elements of the component's public API surface, taking into con
 
 _Tabs_
 
-| Property Name | Attribute Name | Type     | Default Value  | Description                      |
-| ------------- | -------------- | -------- | -------------- | -------------------------------- |
-| `orientation`       | `orientation`        | `enum` | `horizontal` | `horizontal` or `vertical` |
-| `activeid`         | `activeid`          | `string` |   | id of the active element. |
-| `activeindicator`         | `activeindicator`          | `boolean` | `true`  | |
+| Property Name     | Attribute Name    | Type      | Default Value | Description                |
+| ----------------- | ----------------- | --------- | ------------- | -------------------------- |
+| `orientation`     | `orientation`     | `enum`    | `horizontal`  | `horizontal` or `vertical` |
+| `activeid`        | `activeid`        | `string`  |               | id of the active element.  |
+| `activeindicator` | `activeindicator` | `boolean` | `true`        |                            |
 
 _Tab_
 
-| Property Name | Attribute Name | Type     | Default Value  | Description                      |
-| ------------- | -------------- | -------- | -------------- | -------------------------------- |
-| `id`       | `id`        | `string` | |  |
+| Property Name | Attribute Name | Type     | Default Value | Description |
+| ------------- | -------------- | -------- | ------------- | ----------- |
+| `id`          | `id`           | `string` |               |             |
 
 _Tab Panel_
 
-| Property Name | Attribute Name | Type     | Default Value  | Description                      |
-| ------------- | -------------- | -------- | -------------- | -------------------------------- |
-| `id`       | `id`        | `string` | |  |
+| Property Name | Attribute Name | Type     | Default Value | Description |
+| ------------- | -------------- | -------- | ------------- | ----------- |
+| `id`          | `id`           | `string` |               |             |
 
 #### Methods <a href="#methods" id="methods"></a>
 
@@ -104,8 +105,8 @@ _Example Table_
 
 _Example Table_
 
-| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                        |
-| ---------- | ----------- | ------- | -------- | ----------- | ---------------------------------------- |
+| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                         |
+| ---------- | ----------- | ------- | -------- | ----------- | ----------------------------------------- |
 | `change`   | none        | `true`  | `true`   | `false`     | fires when component `activetab` updates. |
 
 ### Appearance <a href="#appearance" id="appearance"></a>
@@ -124,7 +125,8 @@ _Example_
 
 #### DOM Structure <a href="#dom-structure" id="dom-structure"></a>
 
-*Template:*
+_Template:_
+
 ```HTML
 <div class="tabs" class="tabs">
     <slot class="start" name="start" part="start"></slot>
@@ -157,17 +159,17 @@ _Example_
 
 _Tabs_
 
-| Slot Name | Description                                                        | Fallback Content                            |
-| --------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| `start`   |  |
-| `end`   |  |
+| Slot Name | Description | Fallback Content |
+| --------- | ----------- | ---------------- |
+| `start`   |             |
+| `end`     |             |
 
 _Tab_
 
-| Slot Name | Description                                                        | Fallback Content                            |
-| --------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| `start`   |  |
-| `end`   |  |
+| Slot Name | Description | Fallback Content |
+| --------- | ----------- | ---------------- |
+| `start`   |             |
+| `end`     |             |
 
 #### Host Classes <a href="#host-classes" id="host-classes"></a>
 
@@ -189,13 +191,13 @@ _What classes on slotted content does the component respond to?_
 
 _Tabs_
 
-| Part Name | Description                                                                                   |
-| --------- | --------------------------------------------------------------------------------------------- |
-| `tabs`   |  |
-| `tablist`   |  |
-| `tab`   |  |
-| `tabpanel`   |  |
-| `activeindicator`   |  |
+| Part Name         | Description |
+| ----------------- | ----------- |
+| `tabs`            |             |
+| `tablist`         |             |
+| `tab`             |             |
+| `tabpanel`        |             |
+| `activeindicator` |             |
 
 ---
 
@@ -203,7 +205,7 @@ _Tabs_
 
 ### States and Interactions <a href="#states-interactions" id="states-interactions"></a>
 
-*Tabs* can either be controlled or uncontrolled, meaning if `activeid` is passed the app author is taking control of the selected tab. When the `change` event fires it updates the `activeid` and pass a reference to the `activetab`.
+_Tabs_ can either be controlled or uncontrolled, meaning if `activeid` is passed the app author is taking control of the selected tab. When the `change` event fires it updates the `activeid` and pass a reference to the `activetab`.
 
 _List key component states, valid state transitions, and how interactions trigger state transitions._
 
@@ -248,7 +250,7 @@ _Are there any details about shadow dom, focus delegation, or aria attributes th
 
 ### Globalization <a href="#globalization" id="globalization"></a>
 
-*Tabs* should mirror in RTL languages, meaning the tabs and tab content should flip direction.
+_Tabs_ should mirror in RTL languages, meaning the tabs and tab content should flip direction.
 
 ### Security <a href="#security" id="security"></a>
 

@@ -1,0 +1,119 @@
+---
+import _, { curry } from 'lodash'
+import CommunityLinks from '../community-links'
+
+import NavigationItem from './navigation-item.astro'
+// import CommunityLinks from '../community-links';
+
+const posts = await Astro.glob('../../pages/**/*.md');
+const allFrontmatter = posts.map((post) => post.frontmatter);
+const frontmatterForNav = allFrontmatter.filter(({ name }) => !!name).filter(({ showInMenu }) => showInMenu !== false);
+const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, "menu");
+
+const menu = _.toPairs(_.groupBy(menuNodes, "menu"))
+
+console.log(menu)
+
+const { opened = true } = Astro.props;
+const githubURL = '';
+
+
+// activeStyle={{
+//             borderLeftColor: '#00a453',
+//             backgroundColor: '#f2f2f2',
+//           }}
+---
+
+
+
+
+<style>
+  .wrapper {
+    top: 1em;
+    margin: 0;
+  }
+
+  .home-wrapper {
+    margin: 0;
+    list-style-type: none;
+  }
+
+  a {
+    display: block;
+    padding: 0.25em 1em 0.25em 0.5em;
+    margin: 0;
+    color: inherit;
+    border-left: 2px solid transparent;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  ul {
+    margin: 0.25em 0 1.5em 0;
+  }
+  
+  .divider {
+    margin: 1rem;
+  }
+
+  h3 {
+    display: inline-block;
+    opacity: 0.75;
+    font-weight: bold;
+    font-size: 1em;
+    margin: 0 0 0 calc(2px + 0.5em); /* align with items */
+  }
+
+nav {
+  margin-right: 2em;
+}
+
+nav > ul {
+  position: sticky;
+}
+
+@media (max-width: 640px) {
+  nav {
+    display: none;
+    margin-right: 0;
+  }
+
+  nav > ul {
+    position: static;
+  }
+
+  nav.opened {
+    display: block;
+  }
+}
+
+</style>
+
+<nav id="site-nav" class={opened ? 'opened' : ''}>
+  <CommunityLinks className="mobile" />
+
+  <div class="wrapper">
+    <div class="home-wrapper">
+      <a href="/">
+        Home
+      </a>
+    </div>
+
+    <ul>{topLevelNodes.map(NavigationItem)}</ul>
+
+    <div class="divider" />
+
+    {menu.map(([category, items]) => {
+      return (
+      <div style={{ margin: 0, listStyleType: 'none' }}>
+        <h3 >
+          {category}
+        </h3>
+        <ul>{items.map(item => {
+          return <NavigationItem item={item} />
+        })}
+        </ul>
+      </div>
+    )})}
+  </div>
+</nav>
