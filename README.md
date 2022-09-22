@@ -36,4 +36,4 @@ To view the latest information on meetings and their minutes, please visit our [
 
 This repository is being used for work in the W3C Web Platform Incubator Community Group, governed by the [W3C Community License
 Agreement (CLA)](http://www.w3.org/community/about/agreements/cla/). To make substantive contributions,
-you must join the [WICG](https://www.w3.org/community/wicg/) prior to making a PR.
+you must join the [Open UI CG](https://www.w3.org/community/open-ui/) prior to making a PR.
