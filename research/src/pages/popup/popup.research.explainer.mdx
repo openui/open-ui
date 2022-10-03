@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- August 24, 2022
+- September 30, 2022
 
 Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
 
@@ -17,6 +17,7 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
 - [Background](#background)
   - [Goals](#goals)
   - [See Also](#see-also)
+  - [Pop-Up vs. Dialog](#pop-up-vs-dialog)
 - [API Shape](#api-shape)
   - [HTML Content Attribute](#html-content-attribute)
   - [Showing and Hiding a Pop-up](#showing-and-hiding-a-pop-up)
@@ -41,7 +42,8 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
   - [Eventual Single-Purpose Elements](#eventual-single-purpose-elements)
 - [The Choices Made in this API](#the-choices-made-in-this-api)
   - [Alternatives Considered](#alternatives-considered)
-  - [Design decisions](#design-decisions)
+  - [Why a content attribute?](#why-a-content-attribute)
+  - [Design decisions (via OpenUI)](#design-decisions-via-openui)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -73,9 +75,11 @@ Here are the goals for this API:
 
 See the [original `<popup>` element explainer](https://open-ui.org/components/popup.research.explainer), and also the comments on [Issue 410](https://github.com/openui/open-ui/issues/410) and [Issue 417](https://github.com/openui/open-ui/issues/417). See also [this CSSWG discussion](https://github.com/w3c/csswg-drafts/issues/6965) which has mostly been about a CSS alternative for top layer.
 
-This proposal was discussed on [Issue 455](https://github.com/openui/open-ui/issues/455), which was closed as [resolved](https://github.com/openui/open-ui/issues/455#issuecomment-1050172067).
+This proposal was discussed in OpenUI on [Issue 455](https://github.com/openui/open-ui/issues/455), which was closed as [resolved](https://github.com/openui/open-ui/issues/455#issuecomment-1050172067). In WHATWG/html, [Issue 7785](https://github.com/whatwg/html/issues/7785) tracks the addition of this feature.
 
-There have been **many** discussions and resolutions at OpenUI of various aspects of this proposal, and those are listed in the [Design Decisions](#design-decisions) section.
+There have been **many** discussions and resolutions at OpenUI of various aspects of this proposal, and those are listed in the [Design Decisions](#design-decisions-via-openui) section.
+
+There have been three TAG reviews for this set of functionality: [#599](https://github.com/w3ctag/design-reviews/issues/599) (closed waiting for anchor positioning), [#680](https://github.com/w3ctag/design-reviews/issues/680) (closed recommending change from `<popup>` to `popup` attribute), [#743](https://github.com/w3ctag/design-reviews/issues/743) (open).
 
 ## Pop-Up vs. Dialog
 
@@ -691,7 +695,46 @@ Each of these options is significantly different from the others. To properly ev
 
 That document discusses the pros and cons for each alternative. After exploring these options, the [HTML content attribute](#html-content-attribute) approach [was resolved by OpenUI](https://github.com/openui/open-ui/issues/455#issuecomment-1050172067) to be the best overall.
 
-## Design decisions
+## Why a content attribute?
+
+Again, refer to the [Other Alternatives Considered](/components/popup.proposal.alternatives) document for an exhaustive look at the other alternatives. That document runs through a fairly complete design of the other alternatives, to see what they would look like.
+
+This section simply tries to summarize the primary reason that a content attribute was chosen to enable the pop-up behavior: a content attribute allows *behavior* to be applied to *any element*. That is useful:
+
+```html
+<dialog popup=auto>
+  This is a "light dismiss" dialog
+  <button>Ok</button>
+  <button>Cancel</button>
+</dialog>
+```
+
+Here, the developer is building **a dialog**. Since HTML [strongly encourages](https://html.spec.whatwg.org/multipage/dom.html#semantics-2) the use of the correct element that properly represents the **semantics of the content**, the proper element in this case is a `<dialog>`.
+
+```html
+<menu popup=auto>
+  <li><button>Item 1</button></li>
+  <li><button>Item 2</button></li>
+  <li><button>Item 3</button></li>
+</menu>
+```
+
+Similarly here, the developer is building **a menu**, so they should use the `<menu>` element. This adheres to the semantic definition of a `<menu>` element, and allows the content to be programmatically exposed as a listing of buttons.
+
+In both cases, not only does the use of the semantically-correct element make it easier to understand the content, it also enforces the appropriate content rules and behaviors that are specific to each element. Further, using the correct element allows the UA to correctly represent the content in the accessibility tree, making assistive technologies better able to assist users in navigating the content.
+
+In an alternative proposal where the pop-up behavior is enabled via a special element, e.g. `<popup>`, all of the above would need to be carefully managed by the developer via ARIA roles and attributes, as there is no single role that can consistently be used to identify a `<popup>` element:
+```html
+<popup role=dialog>
+<popup role=list>
+...etc...
+```
+
+and that violates the [first rule of ARIA](https://www.w3.org/TR/using-aria/#firstrule), which is essentially that if there's an element that properly represents the content, use that, and don't use ARIA.
+
+By having `popup` be a content attribute that purely confers behavior to an existing element, the above problems are nicely resolved. Semantics are provided by elements, and behaviors are confered on those elements via attributes. This situation is exactly analogous to `contenteditable` or `tabindex`, which confer specific behaviors on any element. Imagine a Web in which those two attributes were instead elements: `<contenteditable>` and `<tabindex index=0>`. In that Web, many common patterns would either be very convoluted or simply not possible.
+
+## Design decisions (via [OpenUI](https://open-ui.org/))
 
 Many small (and large!) behavior questions were answered via discussions at OpenUI. This section contains links to some of those:
 
