@@ -719,14 +719,14 @@ Here, the developer is building **a dialog**. Since HTML [strongly encourages](h
 </menu>
 ```
 
-Similarly here, the developer is building **a menu**, so they should use the `<menu>` element. This is natural and expected.
+Similarly here, the developer is building **a menu**, so they should use the `<menu>` element. This adheres to the semantic definition of a `<menu>` element, and allows the content to be programmatically exposed as a listing of buttons.
 
 In both cases, not only does the use of the semantically-correct element make it easier to understand the content, it also enforces the appropriate content rules and behaviors that are specific to each element. Further, using the correct element allows the UA to correctly represent the content in the accessibility tree, making assistive technologies better able to assist users in navigating the content.
 
-In an alternative proposal where the pop-up behavior is enabled via a special element, e.g. `<popup>`, all of the above would need to be carefully managed by the developer via ARIA roles and attributes:
+In an alternative proposal where the pop-up behavior is enabled via a special element, e.g. `<popup>`, all of the above would need to be carefully managed by the developer via ARIA roles and attributes, as there is no single role that can consistently be used to identify a `<popup>` element:
 ```html
 <popup role=dialog>
-<popup role=menu>
+<popup role=list>
 ...etc...
 ```
 
