@@ -166,6 +166,15 @@ When the `popuptoggletarget`, `popupshowtarget`, or `popuphidetarget` attributes
 
 These attributes are only supported on buttons (including `<button>`, `<input type=button>`, etc.) as long as the button would not otherwise submit a form. For example, this is not supported: `<form><input type=submit popuptoggletarget=foo></form>`. In that case, the form would be submitted, and the pop-up would **not** be toggled.
 
+The declarative trigger attributes can also be accessed via IDL:
+
+```javascript
+// These set the IDREF for the target element, and not the element itself:
+myButton.popUpToggleTarget = idref;
+myButton.popUpShowTarget = idref;
+myButton.popUpHideTarget = idref;
+```
+
 ### Javascript Trigger
 
 To show and hide the pop-up via Javascript, there are two methods on HTMLElement:
@@ -207,6 +216,12 @@ Note also that more than one `manual` pop-up can use `defaultopen` and all such 
 ```html
 <div popup=manual defaultopen>Shown on page load</div>
 <div popup=manual defaultopen>Also shown on page load</div>
+```
+
+The `defaultopen` content attribute can also be accessed via IDL:
+
+```javascript
+myDiv.defaultOpen = true;
 ```
 
 ### CSS Pseudo Class
@@ -426,6 +441,13 @@ A new attribute, `anchor`, can be used on a pop-up element to refer to the pop-u
 1. Establish the provided anchor element as an [“ancestor”](#nearest-open-ancestral-pop-up) of this pop-up, for light-dismiss behaviors. In other words, the `anchor` attribute can be used to form nested pop-ups.
 2. The referenced anchor element could be used by the **Anchor Positioning feature** ([(dated) explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md); [more up-to-date draft spec](https://tabatkins.github.io/specs/css-anchor-position/)).
 
+
+The anchor attribute can also be accessed via IDL:
+
+```javascript
+// This sets the IDREF for the anchor element, and not the element itself:
+myPopUp.anchor = idref;
+```
 
 ## Backdrop
 
