@@ -435,7 +435,7 @@ The intention of the above set of behaviors is to return focus to the previously
 A new attribute, `anchor`, can be used on a pop-up element to refer to the pop-up's "anchor". The value of the attribute is a string idref corresponding to the `id` of another element (the "anchor element"). This anchoring relationship is used for two things:
 
 1. Establish the provided anchor element as an [“ancestor”](#nearest-open-ancestral-pop-up) of this pop-up, for light-dismiss behaviors. In other words, the `anchor` attribute can be used to form nested pop-ups.
-2. The referenced anchor element could be used by the **Anchor Positioning feature** ([(dated) explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/CSSAnchoredPositioning/explainer.md); [more up-to-date draft spec](https://tabatkins.github.io/specs/css-anchor-position/)).
+2. The referenced anchor element could be used by the [Anchor Positioning feature](https://tabatkins.github.io/specs/css-anchor-position/).
 
 
 The anchor attribute can also be accessed via IDL:
@@ -499,11 +499,17 @@ The "nearest open ancestral pop-up" `P` to a given `Node` N is defined in this w
 
 > `P` is the topmost pop-up in [the pop-up stack](#the-pop-up-stack) for which any one of the following is true:
 > 1. `P` is a flat-tree DOM ancestor of `N`.
-> 2. `P` has an `anchor` attribute whose value is equal to `N`'s `id` or any of `N`'s flat-tree descendent's `id`s.*
-> 3. `N` has an ancestor [triggering element](#declarative-triggers) whose target is `P`.
+> 2. `N` is a descendant of another pop-up `P2`, which has an `anchor` attribute whose value is equal to `P`'s `id` or any of `P`'s flat-tree descendent's `id`s.
+> 3. `P` contains a [triggering element](#declarative-triggers) whose target is another pop-up `P2`, which contains `N`.
+>
 > If none of the pop-ups in [the pop-up stack](#the-pop-up-stack) match the above conditions, then `P` is `null`.
 
-The above description needs to be more crisply defined. The [implementation from Chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2890;drc=dd91f9305abde436a2066a73b9b1fbaa79e6225b) should be a good starting point to describe the algorithm. The general idea is that an "ancestor popup" is one that is "related" via DOM hierarchy, the `anchor` attribute, or the invoking attributes (`popuptoggletarget`, `popupshowtarget`, or `popuphidetarget`).
+The purpose of the algorithm above is to allow "nesting" of `popup=auto` pop-ups in several natural ways:
+ 1. **Using traditional DOM tree descendants:** when one pop-up is a descendant of another pop-up, these two are "nested".
+ 2. **Using the `anchor` attribute:** when a pop-up has an `anchor` attribute that points to another pop-up (or descendant of another pop-up), these two are "nested". This allows the `anchor` attribute to be used with the [Anchor Positioning API](https://tabatkins.github.io/specs/css-anchor-position/), transparently defining a clear "nested" relationship between the pop-ups. It is not necessary to use the Anchor Positioning API.
+ 3. **Using a [declarative triggering element](#declarative-triggers) (e.g. `popuptoggletarget`):** when a triggering element is contained in a pop-up, and can therefore trigger another pop-up, the second pop-up is "nested" within the first.
+
+Note that because [the pop-up stack](#the-pop-up-stack) can only contain `popup=auto` pop-ups, it is only possible to "nest" pop-ups within `popup=auto` pop-ups. A `popup=hint` can be nested within a `popup=auto` pop-up, but not the other way around.
 
 ### Close signal
 
