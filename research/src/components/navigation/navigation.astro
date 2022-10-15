@@ -5,14 +5,34 @@ import CommunityLinks from '../community-links'
 import NavigationItem from './navigation-item.astro'
 // import CommunityLinks from '../community-links';
 
+const getFolderName = post => post.url.split('/')[1];
+
 const posts = await Astro.glob('../../pages/**/*.md');
+const home = await Astro.glob('../../pages/index.md');
+
+const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter(({ frontmatter}) => frontmatter.showInMenu !== false)
 const allFrontmatter = posts.map((post) => post.frontmatter);
-const frontmatterForNav = allFrontmatter.filter(({ name }) => !!name).filter(({ showInMenu }) => showInMenu !== false);
-const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, "menu");
 
-const menu = _.toPairs(_.groupBy(menuNodes, "menu"))
 
-console.log(menu)
+
+const sections = _.groupBy(postsForNav, getFolderName)
+const [menuNodes, topLevelNodes] = _.partition(postsForNav, x => {
+  console.log('val', x.frontmatter.menu)
+
+  return x
+})
+
+console.log(topLevelNodes)
+
+
+// const [menuNodes, topLevelNodes] = _.partition(frontmatterForNav, "menu");
+
+// const groupedSections = sortedSections.map((section) => {
+
+// })
+
+
+// const menu = _.toPairs(_.groupBy(menuNodes, "menu"))
 
 const { opened = true } = Astro.props;
 const githubURL = '';
@@ -103,7 +123,7 @@ nav > ul {
 
     <div class="divider" />
 
-    {menu.map(([category, items]) => {
+    <!-- {menu.map(([category, items]) => {
       return (
       <div style={{ margin: 0, listStyleType: 'none' }}>
         <h3 >
@@ -114,6 +134,6 @@ nav > ul {
         })}
         </ul>
       </div>
-    )})}
+    )})} -->
   </div>
 </nav>
