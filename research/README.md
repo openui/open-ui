@@ -32,3 +32,9 @@ nvm install       # install the version of node specified in `.nvmrc`
 ## Deployments
 
 The site is deployed automatically on merge to `main`.
+
+## Contributing
+
+### Uses Astro
+
+### Utilise the CUBE css methodology

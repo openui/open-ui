@@ -1,6 +1,6 @@
 import React from 'react'
 import { getImagesForComponentConcept } from '../sources'
-import Image from './image'
+import Image from './image.jsx'
 
 const Specimens = ({ component, conceptName, showDescriptions }) => {
   const images = getImagesForComponentConcept(component, conceptName)

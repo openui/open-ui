@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import { anatomiesByComponent } from '../sources'
@@ -24,10 +23,6 @@ const Anatomy = ({ component }) => {
       ))}
     </ul>
   )
-}
-
-Anatomy.propTypes = {
-  component: PropTypes.string,
 }
 
 export default Anatomy

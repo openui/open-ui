@@ -12,9 +12,9 @@ export default function Concept({
 }) {
   const [open, toggleOpen] = React.useState(initExpand)
 
-  React.useEffect(() => {
-    toggleOpen(initExpand)
-  }, [initExpand])
+  // React.useEffect(() => {
+  //   toggleOpen(initExpand)
+  // }, [initExpand])
   return (
     <div style={{ padding: '8px', marginBottom: '36px' }}>
       <h3
