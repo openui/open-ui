@@ -358,7 +358,7 @@ This not only allows developer ease-of-use from Javascript, but also allows for 
 
 ```javascript
 function supportsPopover() {
-  return Element.prototype.hasOwnProperty("popover");
+  return HTMLElement.prototype.hasOwnProperty("popover");
 }
 ```
 
@@ -378,7 +378,7 @@ This allows feature detection of the values, for forward compatibility:
 
 ```javascript
 function supportsPopoverType(type) {
-  if (!Element.prototype.hasOwnProperty("popover"))
+  if (!HTMLElement.prototype.hasOwnProperty("popover"))
     return false; // Popover API not supported
   const testElement = document.createElement('div');
   testElement.popover = type;
