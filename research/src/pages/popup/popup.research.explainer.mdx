@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
-- September 30, 2022
+- October 18, 2022
 
 Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
 
@@ -34,7 +34,6 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
 - [Example Use Cases](#example-use-cases)
   - [Generic Pop-up (Date Picker)](#generic-pop-up-date-picker)
   - [Generic Pop-up (`<selectmenu>` listbox example)](#generic-pop-up-selectmenu-listbox-example)
-  - [Hint/Tooltip](#hinttooltip)
   - [Manual](#manual)
 - [Additional Considerations](#additional-considerations)
   - [Exceeding the Frame Bounds](#exceeding-the-frame-bounds)
@@ -115,8 +114,9 @@ This section lays out the full details of this proposal. If you'd prefer, you ca
 A new content attribute, **`popup`**, controls both the top layer status and the dismiss behavior. There are several allowed values for this attribute:
 
 * **`popup=auto`** - A top layer element following "Auto" dismiss behaviors (see below).
-* **`popup=hint`** - A top layer element following “Hint” dismiss behaviors (see below).
 * **`popup=manual`** - A top layer element following “Manual” dismiss behaviors (see below).
+
+Additional values for the `popup` attribute may become available in the future.
 
 So this markup represents pop-up content:
 
@@ -205,13 +205,7 @@ As mentioned above, a `<div popup>` will be hidden by default. If it is desired 
 
 In this case, the UA will immediately call `showPopUp()` on the element, as it is parsed. If multiple such elements exist on the page, only the first such element (in DOM order) on the page will be shown.
 
-Note that `hint` pop-ups cannot use the `defaultopen` attribute:
-
-```html
-<div popup=hint defaultopen>I will not be shown on page load</div>
-```
-
-Note also that more than one `manual` pop-up can use `defaultopen` and all such pop-ups will be shown on load, not just the first one:
+Note that more than one `manual` pop-up can use `defaultopen` and all such pop-ups will be shown on load, not just the first one:
 
 ```html
 <div popup=manual defaultopen>Shown on page load</div>
@@ -368,13 +362,15 @@ function supportsPopUp() {
 }
 ```
 
-Further, only [valid values](#html-content-attribute) of the content attribute will be reflected to the IDL property, with invalid values being reflected as the value `null`. For example:
+Further, only [valid values](#html-content-attribute) of the content attribute will be reflected to the IDL property, with invalid values being reflected as the value `manual`. For example:
 
 ```javascript
 const div = document.createElement('div');
-div.setAttribute('popup','hint');
-div.popUp === 'hint'; // true
+div.setAttribute('popup','AUTO');
+div.popUp === 'auto'; // true (note lowercase)
 div.setAttribute('popup','invalid!');
+div.popUp === 'manual'; // true
+div.removeAttribute('popup');
 div.popUp === null; // true
 ```
 
@@ -382,15 +378,15 @@ This allows feature detection of the values, for forward compatibility:
 
 ```javascript
 function supportsPopUpType(type) {
-  if !Element.prototype.hasOwnProperty("popUp")
+  if (!Element.prototype.hasOwnProperty("popUp"))
     return false; // Pop-up API not supported
-  // If the assignment fails, it will return null:
-  return !!(document.createElement('div').popUp = type);
+  const testElement = document.createElement('div');
+  testElement.popUp = type;
+  return testElement.popUp == type.toLowerCase();
 }
 supportsPopUpType('manual') === true;
 supportsPopUpType('invalid!') === false;
 ```
-
 
 
 ## Events
@@ -408,13 +404,13 @@ The `show` event is cancellable, and doing so keeps the pop-up from being shown.
 
 ## Focus Management
 
-Elements that move into the top layer may require focus to be moved to that element, or a descendant element. However, not all elements in the top layer will require focus. For example, a modal `<dialog>` will have focus set to its first interactive element, if not the dialog element itself, because a modal dialog is something that requires immediate attention. On the other hand, a `<div popup=hint>` (which will more often than not represent a "tooltip") does not receive focus at all (nor is it expected to contain focusable elements). Similarly, a `<div popup=manual>`, which may represent a dynamic notification message (commonly referred to as a "notification", "toast", or "alert"), or potentially a persistent chat widget, should not immediately receive focus (even if it contains focusable elements). This is because such pop-ups are meant for out-of-band communication of state, and are not meant to interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus.
+Elements that move into the top layer may require focus to be moved to that element, or a descendant element. However, not all elements in the top layer will require focus. For example, a modal `<dialog>` will have focus set to its first interactive element, if not the dialog element itself, because a modal dialog is something that requires immediate attention. On the other hand, a `<div popup=manual>`, which may represent a dynamic notification message (commonly referred to as a "notification", "toast", or "alert"), or potentially a persistent chat widget, should not immediately receive focus, even if it contains focusable elements. This is because such pop-ups are meant for out-of-band communication of state, and are not meant to interrupt a user's current action. Additionally, if the top layer element **should** receive immediate focus, there is a question about **which** part of the element gets that initial focus. For example, the element itself could receive focus, or one of its focusable descendants could receive focus.
 
 To provide control over these behaviors, the `autofocus` attribute can be used on or within pop-ups. When present on a pop-up or one of its descendants, it will result in focus being moved to the pop-up or the specified element when the pop-up is shown. Note that `autofocus` is [already a global attribute](https://html.spec.whatwg.org/multipage/interaction.html#the-autofocus-attribute), but the existing behavior applies to element focus on **page load**. This proposal extends that definition to be used within pop-ups, and the focus behavior happens **when they are shown**. Note that adding `autofocus` to a pop-up descendant does **not** cause the pop-up to be shown on page load, and therefore it does not cause focus to be moved into the pop-up **on page load**, unless the `defaultopen` attribute is also used.
 
 The `autofocus` attribute allows control over the focus behavior when the pop-up is shown. When the pop-up is hidden, often the most user friendly thing to do is to return focus to the previously-focused element. The `<dialog>` element currently behaves this way. However, for pop-ups, there are some nuances. For example, if the pop-up is being hidden via light dismiss, because the user clicked on another element outside the pop-up, the focus should **not** be returned to another element, it should go to the clicked element (if focusable, or `<body>` if not). There are a number of other such considerations. The behavior on hiding the pop-up is:
 
-- A pop-up element has a **previously focused element**, initially `null`, which is set equal to `document.activeElement` when the pop-up is shown, if a) the pop-up is a `auto` or `hint` pop-up, and b) if the [pop-up stack](#the-pop-up-stack) is currently empty. The **previously focused element** is set back to `null` when a pop-up is hidden.
+- A pop-up element has a **previously focused element**, initially `null`, which is set equal to `document.activeElement` when the pop-up is shown, if a) the pop-up is a `auto` pop-up, and b) if the [pop-up stack](#the-pop-up-stack) is currently empty. The **previously focused element** is set back to `null` when a pop-up is hidden.
 
 - When a pop-up is hidden, focus is set back to the **previously focused element**, if it is non-`null`, in the following cases:
     1. Light dismiss via [close signal](https://wicg.github.io/close-watcher/#close-signal) (e.g. Escape key pressed).
@@ -491,7 +487,7 @@ The term "light dismiss" for a pop-up is used to describe the user "moving on" t
 
 For `popup=auto` only, it is possible to have "nested" pop-ups. I.e. two pop-ups that are allowed to both be open at the same time, due to their relationship with each other. A simple example where this would be desired is a pop-up menu that contains sub-menus: it is commonly expected to support this pattern, and keep the main menu showing while the sub-menu is shown.
 
-Pop-up nesting is not possible/applicable to the other pop-up types, such as `popup=hint` and `popup=manual`.
+Pop-up nesting is not possible/applicable to the other pop-up types, such as `popup=manual`.
 
 ### The Pop-up Stack
 
@@ -517,55 +513,21 @@ The "close signal" [proposal](https://wicg.github.io/close-watcher/#close-signal
 
 ## Classes of Top Layer UI
 
-As described in this section, the three pop-up types (`auto`, `hint`, and `manual`) each have slightly different interactions with each other. For example, `auto`s hide other `hint`s, but the reverse is not true. Additionally, there are other (non-pop-up) elements that participate in the top layer. This section describes the general interactions between the various top layer element types, including the various flavors of pop-up:
+As described in this section, the pop-up types (`auto` and `manual`) each have slightly different interactions with each other. For example, `auto`s hide other `auto`s, but `manual`s do not close each other. Additionally, there are other (non-pop-up) elements that participate in the top layer. This section describes the general interactions between the various top layer element types, including the various flavors of pop-up:
 
 * Pop-up (**`popup=auto`**)
-    * When opened, force-closes other pop-ups and hints, except for [ancestor pop-ups](#nearest-open-ancestral-pop-up).
+    * When opened, force-closes other `popup=auto`s, except for [ancestor pop-ups](#nearest-open-ancestral-pop-up).
     * It would generally be expected that a pop-up of this type would either receive focus, or a descendant element would receive focus when invoked.
     * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal), click outside, or blur.
-* Hint/Tooltip (**`popup=hint`**)
-    * When opened, force-closes only other hints, but leaves all other pop-up types open.
-    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal), click outside, when no longer hovered (after a timeout), or when the anchor element loses focus.
 * Manual (**`popup=manual`**)
     * Does not force-close any other element type.
     * Does not light-dismiss - closes via timer or explicit close action.
 * Dialog (**`<dialog>.showModal()`**)
-    * When opened, force-closes auto and hint.
+    * When opened, force-closes `popup=auto`.
     * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal)
 * Fullscreen (**`<div>.requestFullscreen()`**)
-    * When opened, force-closes auto, hint, and (with spec changes) dialog
+    * When opened, force-closes `popup=auto`, and (with spec changes) dialog
     * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal)
-
-### One at a time behavior summary
-
-This table summarizes the interactions between a first top layer element (rows) and a second top layer element (columns), as the second element is shown:
-
-<table>
-  <tr><td></td><td></td><td colspan="5">Second element</td></tr>
-  <tr><td></td><td></td><td>Fullscreen</td><td>Modal Dialog</td><td>Pop-up</td><td>Hint</td><td>Manual</td></tr>
-  <tr><td rowspan="5" >First Element</td><td>Fullscreen</td><td>Hide</td><td>Leave</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
-  <tr><td>Modal Dialog</td><td>Hide*</td><td>Leave</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
-  <tr><td>Pop-up</td><td>Hide</td><td>Hide</td><td>Hide</td><td>Leave</td><td>Leave</td></tr>
-  <tr><td>Hint</td><td>Hide</td><td>Hide</td><td>Hide</td><td>Hide</td><td>Leave</td></tr>
-  <tr><td>Manual</td><td>Hide</td><td>Hide</td><td>Leave</td><td>Leave</td><td>Leave</td></tr>
-</table>
-
-*Not current behavior
-
-In the table, "hide" means that when the second element is shown (enters the top layer), the first element is removed from the top layer. In contrast, "leave" means both elements will remain in the top layer together.
-
-### Detailed description of interactions among pop-up types
-
-This section details the interactions between the three pop-up types:
-
-1. If a `popup=hint` is shown, it should hide **any** other open `popup=hint`s, including ancestral `popup=hint`s. (**"You can't nest `popup=hint`s".**)
-2. If a `popup=auto` is shown, it should hide **any** open `popup=hint`s, including if the `popup=hint` is an ancestral pop-up of the `popup=auto`. (**"You can't nest a pop-up inside a `popup=hint`".**)
-3. If you: **a)** show a `popup=auto` (call it D), then **b)** show an **ancestral** `popup=hint` of D (call it T) , then **c)** hide D, the `popup=hint` T should be hidden. (**"A `popup=hint` can be nested inside a pop-up."**)
-4. If you: **a)** show a `popup=auto` (call it D), then **b)** show an **non-ancestral** `popup=hint` (call it T) , then **c)** hide D, the `popup=hint` T should be left showing. (**"Non-nested `popup=hint`s can stay open when unrelated pop-ups are hidden."**)
-5. The `defaultopen` attribute should have no effect on `popup=hint`s. I.e. this attribute cannot be used to cause a `popup=hint` to be shown upon page load.
-6. The `defaultopen` attribute can be used on as many `popup=manual`s as desired, and all of them will be shown upon page load.
-7. Only the first `popup=auto` (in DOM order) containing the `defaultopen` attribute will be shown upon page load.
-
 
 ## Accessibility / Semantics
 
@@ -617,30 +579,6 @@ This section contains several HTML examples, showing how various UI elements mig
 
 
 
-## Hint/Tooltip
-
-
-```html
-<div id=hint-trigger aria-describedby=hint>
-  Hover me
-</div>
-<my-hint id=hint role=tooltip popup=hint anchor=hint-trigger>
-  Hint text
-</my-hint>
-
-<script>
-  const trigger = document.getElementById('hint-trigger');
-  const hint = document.querySelector('my-hint');
-  trigger.addEventListener('mouseover',() => {
-    // This behavior could potentially be built into a new activation
-    // content attribute, like <div trigger-on-hover=my-hint>.
-    hint.showPopUp();
-  });
-</script>
-```
-
-
-
 ## Manual
 
 
@@ -678,24 +616,24 @@ In any case, it is important to note that this API cannot be used to render cont
 
 ## Shadow DOM
 
-Note that using the API described in this explainer, it is possible for elements contained within a shadow root to be pop-ups. For example, it is possible to construct a custom element that wraps a pop-up type UI element, such as a `<my-tooltip>`, with this DOM structure:
+Note that using the API described in this explainer, it is possible for elements contained within a shadow root to be pop-ups. For example, it is possible to construct a custom element that wraps a pop-up type UI element, such as a `<my-pop-up>`, with this DOM structure:
 
 ```html
-<my-tooltip>
+<my-pop-up>
   <template shadowroot=closed>
-    <div popup=hint>This is a tooltip: <slot></slot></div>
+    <div popup=auto>This is a pop-up: <slot></slot></div>
   </template>
-  Tooltip text here!
-</my-tooltip>
+  Pop-up text here!
+</my-pop-up>
 ```
 
-In this case, the (closed) shadow root contains a `<div>` that has `popup=hint` and that element will be shown on the top layer when the custom element calls `div.showPopUp()`.
+In this case, the (closed) shadow root contains a `<div>` that has `popup=auto` and that element will be shown on the top layer when the custom element calls `div.showPopUp()`.
 
 This is "normal", and the only point of this section is to point out that even shadow dom children can be promoted to the top layer, in the same way that a shadow root can contain a `<dialog>` that can be `showModal()`'d, or a `<div>` that can be `requestFullscreen()`'d.
 
 ## Eventual Single-Purpose Elements
 
-There might come a time, sooner or later, where a new pop-up-type HTML element is desired which combines strong semantics and purpose-built behaviors. For example, a `<tooltip>` or `<listbox>` element. Those elements could be relatively easily built via the APIs proposed in this document. For example, a `<tooltip>` element could be defined to have `role=tooltip` and `popup=hint`, and therefore re-use this pop-up API for always-on-top rendering, one-at-a-time management, and light dismiss. In other words, these new elements could be *explained* in terms of the lower-level primitives being proposed for this API.
+There might come a time, sooner or later, where a new pop-up-type HTML element is desired which combines strong semantics and purpose-built behaviors. For example, a `<notification>` or `<listbox>` element. Those elements could be relatively easily built via the APIs proposed in this document. For example, a `<notification>` element could be defined to have `role=alert` and `popup=manual`, and therefore re-use this pop-up API for always-on-top rendering. In other words, these new elements could be *explained* in terms of the lower-level primitives being proposed for this API.
 
 
 # The Choices Made in this API
