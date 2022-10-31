@@ -480,7 +480,6 @@ The term "light dismiss" for a popover is used to describe the user "moving on" 
 
 1. Clicking or tapping outside the bounds of the popover. Any `mousedown` event will trigger **all open popovers** to be hidden, starting from the top of [the popover stack](#the-popover-stack), and ending with the [nearest open ancestral popover](#nearest-open-ancestral-popover) of the `mousedown` event's `target` `Node`. This means clicking on a popover or its trigger or anchor elements will not hide that popover.
 2. Hitting the Escape key, or generally any ["close signal"](#close-signal). This will cause the topmost popover on [the popover stack](#the-popover-stack) to be hidden.
-3. Using keyboard or other navigation sources to move the focus off of the popover. When the focus changes, all popovers up to the ["nearest open ancestral popover"](#nearest-open-ancestral-popover) for the newly-focused element will be hidden. Note that this includes subframes and the user changing windows (a window `blur`) - both will cause all open popovers to be closed.
 
 
 ### Nested Popovers
@@ -524,7 +523,6 @@ As described in this section, the popover types (`auto` and `manual`) each have 
 * Popover (**`popover=auto`**)
     * When opened, force-closes other `popover=auto`s, except for [ancestor popovers](#nearest-open-ancestral-popover).
     * It would generally be expected that a popover of this type would either receive focus, or a descendant element would receive focus when invoked.
-    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal), click outside, or blur.
 * Manual (**`popover=manual`**)
     * Does not force-close any other element type.
     * Does not light-dismiss - closes via timer or explicit close action.
