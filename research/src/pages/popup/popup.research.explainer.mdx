@@ -523,6 +523,7 @@ As described in this section, the popover types (`auto` and `manual`) each have 
 * Popover (**`popover=auto`**)
     * When opened, force-closes other `popover=auto`s, except for [ancestor popovers](#nearest-open-ancestral-popover).
     * It would generally be expected that a popover of this type would either receive focus, or a descendant element would receive focus when invoked.
+    * Dismisses on [close signal](https://wicg.github.io/close-watcher/#close-signal) or a click outside the element.
 * Manual (**`popover=manual`**)
     * Does not force-close any other element type.
     * Does not light-dismiss - closes via timer or explicit close action.
