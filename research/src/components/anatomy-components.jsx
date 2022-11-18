@@ -1,5 +1,4 @@
 import React from 'react'
-import './anatomy.css'
 
 export const AnatomyWrapper = ({ children }) => (
   <div className="component-anatomy-wrapper">

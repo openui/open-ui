@@ -1,7 +1,6 @@
 /* eslint-disable */
 
 import React from 'react'
-import './anatomy.css'
 import './breadcrumb-anatomy.css'
 
 const BreadcrumbAnatomy = () => {

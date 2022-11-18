@@ -1,3 +1,74 @@
+/*      Community Links    */
+
+.community-links > a {
+  text-decoration: none;
+}
+
+.community-links.mobile {
+  display: none;
+  justify-content: space-around;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .community-links {
+    display: none;
+  }
+
+  .community-links.mobile {
+    display: flex;
+  }
+}
+
+/*      AnchorJS    */
+.anchorjs-link {
+  color: #aaa;
+  transition: margin-left 0.25s linear;
+}
+.anchorjs-link:hover {
+  color: #007a3d;
+}
+*:hover > .anchorjs-link {
+  transition: color 0.25s linear;
+  margin-left: -1.125em;
+}
+
+.false {
+  background: #d04747;
+  color: white;
+}
+
+.true {
+  background: #a3edac;
+}
+
+table.research td:not(.true):not(.false) {
+  background: #ffffca;
+}
+
+table.nowrap-first-column td:nth-child(1):not(.false):not(.true) {
+  background: initial;
+}
+
+/* Should be applied to a td/th 
+if you want to have it be the max-content
+width */
+table.research .nowrap,
+table.nowrap-first-column td:nth-child(1) {
+  width: 1%;
+  white-space: nowrap;
+}
+
+table.research td.center,
+table.research th.center {
+  text-align: center;
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+/* Component Anatomy */
 /* General */
 .component-anatomy .slot {
   font-family: 'Segoe UI', sans-serif;

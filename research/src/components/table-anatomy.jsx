@@ -1,5 +1,4 @@
 import React from 'react'
-import './anatomy.css'
 import './table-anatomy.css'
 
 const TableAnatomy = () => {
