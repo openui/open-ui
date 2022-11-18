@@ -1,23 +1,22 @@
 import React from 'react'
-import { Link } from 'gatsby'
 
 const ComponentLayout = ({ children, frontmatter }) => {
   return (
     <>
       <div style={{ float: 'right', marginLeft: 'auto', fontSize: '1rem' }}>
         {frontmatter.pathToResearch && (
-          <Link
+          <a
             activeStyle={{ fontWeight: 'bold' }}
             style={{ marginLeft: '0.5rem' }}
             to={frontmatter.pathToResearch}
           >
             View Research
-          </Link>
+          </a>
         )}
         {frontmatter.pathToProposal && (
-          <Link style={{ marginLeft: '0.5rem' }} to={frontmatter.pathToProposal}>
+          <a style={{ marginLeft: '0.5rem' }} to={frontmatter.pathToProposal}>
             View Proposal
-          </Link>
+          </a>
         )}
       </div>
       <h1>{frontmatter.name}</h1>
