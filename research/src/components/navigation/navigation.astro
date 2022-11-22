@@ -16,10 +16,7 @@ const menuHeadings = Object.keys(groupedNodes)
 
 const { opened = true } = Astro.props;
 // const githubURL = '';
-// activeStyle={{
-//             borderLeftColor: '#00a453',
-//             backgroundColor: '#f2f2f2',
-//           }}
+
 ---
 
 <style>
@@ -45,6 +42,7 @@ const { opened = true } = Astro.props;
 
   ul {
     margin: 0.25em 0 1.5em 0;
+    padding: 0
   }
   
   .divider {
@@ -89,9 +87,12 @@ nav > ul {
 
   <div class="wrapper">
     <div class="home-wrapper">
-      <a href="/">
-        Home
-      </a>
+      <NavigationItem item={{
+        url: '/',
+        frontmatter: {
+          name: 'Home'
+        }
+      }} />
     </div>
 
     <div class="divider" />

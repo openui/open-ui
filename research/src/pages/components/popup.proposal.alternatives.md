@@ -1,6 +1,5 @@
 ---
 name: Popup API Alternatives
-
 showInMenu: false
 layout: ../../layouts/Layout.astro
 ---

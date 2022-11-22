@@ -1,9 +1,11 @@
 ---
 const { item } = Astro.props
+const pathname = new URL(Astro.request.url).pathname;
+const isActivePath = pathname === item.url
 ---
 
 <li>
-  <a href={item.url}>
+  <a href={item.url} data-is-active={isActivePath}>
     {item.frontmatter.name}
   </a>
 </li>
@@ -24,4 +26,10 @@ const { item } = Astro.props
     border-radius: 2px;
     white-space: nowrap;
   }
+
+  a[data-is-active] {
+    border-left-color: #00a453;
+    background-color: #f2f2f2;
+  }
+
 </style>
