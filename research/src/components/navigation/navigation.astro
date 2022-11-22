@@ -1,21 +1,14 @@
 ---
 import _ from 'lodash'
 import CommunityLinks from '../community-links'
-
 import NavigationItem from './navigation-item.astro'
-// import CommunityLinks from '../community-links';
 
 const posts = await Astro.glob('../../pages/**/*.(md|mdx)');
-
-console.log("posts", posts[0].url)
-
 const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter(({ frontmatter }) => frontmatter.showInMenu !== false);  
 const [menuNodes] = _.partition(postsForNav, "frontmatter.menu");
 const groupedNodes = _.groupBy(menuNodes, "frontmatter.menu")
 const menuHeadings = Object.keys(groupedNodes)
-
 const { opened = true } = Astro.props;
-// const githubURL = '';
 
 ---
 
