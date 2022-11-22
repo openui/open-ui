@@ -1,9 +1,10 @@
 ---
 menu: Proposals
 name: Tabs (Editor's Draft)
-path: /components/tabs
+
 pathToResearch: /components/tabs.research
 showInMenu: false
+layout: ../../layouts/Layout.astro
 ---
 
 # Tabs Component Specification

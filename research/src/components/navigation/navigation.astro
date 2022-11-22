@@ -6,6 +6,9 @@ import NavigationItem from './navigation-item.astro'
 // import CommunityLinks from '../community-links';
 
 const posts = await Astro.glob('../../pages/**/*.(md|mdx)');
+
+console.log("posts", posts[0].url)
+
 const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter(({ frontmatter }) => frontmatter.showInMenu !== false);  
 const [menuNodes] = _.partition(postsForNav, "frontmatter.menu");
 const groupedNodes = _.groupBy(menuNodes, "frontmatter.menu")
@@ -100,7 +103,7 @@ nav > ul {
             {menu}
           </h3>
           <ul>{groupedNodes[menu].map(item => {
-            return <NavigationItem item={item.frontmatter} />
+            return <NavigationItem item={item} />
           })}
           </ul>
         </div>

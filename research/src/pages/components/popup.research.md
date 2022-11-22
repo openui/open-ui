@@ -1,7 +1,8 @@
 ---
 name: Popup
-path: /components/popup.research
+
 menu: Research
+layout: ../../layouts/Layout.astro
 ---
 
 A popup is a piece of transient UI that “pops up” over all other web app UI, i.e. “on the top layer”. A `popup` may be its own standalone element (such as a teaching bubble) or it may be part of a larger composited component (such as a combobox). Popups differ from other top-layer UI in that they are inherently transient: only one can be shown at a time unless chained by ancestry, and popups are dismissed upon “light dismiss” user interactions (e.g. sending focus out of the popup or hitting the ESC key). They can contain arbitrary content, including interactive descendents.

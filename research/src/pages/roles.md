@@ -1,7 +1,8 @@
 ---
 name: Roles
-path: /roles
+
 menu: Documentation
+layout: ../layouts/Layout.astro
 ---
 
 Here are the different ways folks contribute to Open UI, and the different skills/pieces of work.

@@ -1,7 +1,8 @@
 ---
 name: Glossary
-path: /glossary
+
 menu: Documentation
+layout: ../layouts/Layout.astro
 ---
 
 # Open UI Jargon

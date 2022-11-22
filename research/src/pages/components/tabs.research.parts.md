@@ -1,7 +1,8 @@
 ---
 name: Tabs Parts & Concepts
-path: /components/tabs.research.parts
+
 showInMenu: false
+layout: ../../layouts/Layout.astro
 ---
 
 This was created to begin to investigate how we can standardize (in both the OpenUI senses) a "tabs" control and/or supporting APIs that would empower their creation.

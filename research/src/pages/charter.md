@@ -1,7 +1,7 @@
 ---
 name: Charter
-path: /charter
 menu: Documentation
+layout: ../layouts/Layout.astro
 ---
 
 Most recent revision: April 1, 2020

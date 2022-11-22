@@ -1,7 +1,8 @@
 ---
 name: Working Mode
-path: /working-mode
+
 menu: Documentation
+layout: ../layouts/Layout.astro
 ---
 
 # Open UI Working Mode

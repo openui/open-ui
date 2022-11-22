@@ -1,7 +1,8 @@
 ---
 name: Popup API Alternatives
-path: /components/popup.proposal.alternatives
+
 showInMenu: false
+layout: ../../layouts/Layout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7)

@@ -1,7 +1,8 @@
 ---
 name: Select Behavior
-path: /components/select.research.behaviors
+
 showInMenu: false
+layout: ../../layouts/Layout.astro
 ---
 
 ## Overview

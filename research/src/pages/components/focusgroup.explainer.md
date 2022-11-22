@@ -1,7 +1,8 @@
 ---
 menu: Proposals
 name: focusgroup (Explainer)
-path: /components/focusgroup.explainer
+
+layout: ../../layouts/Layout.astro
 ---
 
 Authors: [Travis Leithead](https://github.com/travisleithead),

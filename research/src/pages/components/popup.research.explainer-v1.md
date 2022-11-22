@@ -1,7 +1,8 @@
 ---
 name: Popup Element (Abandoned)
-path: /components/popup.research.explainer-v1
+
 showInMenu: false
+layout: ../../layouts/Layout.astro
 ---
 
 _This proposal first appeared on [Microsoft Edge explainers](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Popup/explainer.md). Open UI has taken up `<popup>` and related APIs as work items for incubation. Further development of these ideas will be driven in a draft specification within Open UI. The following represents the state of the original proposal as of March 18, 2021._

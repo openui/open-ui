@@ -1,8 +1,9 @@
 ---
 menu: Proposals
 name: Pop Up API (Explainer)
-path: /components/popup.research.explainer
+
 pathToResearch: /components/popup.research
+layout: ../../layouts/Layout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal)
@@ -19,6 +20,12 @@ pathToResearch: /components/popup.research
 - [API Shape](#api-shape)
   - [HTML Content Attribute](#html-content-attribute)
   - [Showing and Hiding a Pop-up](#showing-and-hiding-a-pop-up)
+    - [Declarative Triggers](#declarative-triggers)
+    - [Javascript Trigger](#javascript-trigger)
+    - [Page Load Trigger](#page-load-trigger)
+    - [CSS Pseudo Class](#css-pseudo-class)
+    - [Shown vs Hidden Pop-ups](#shown-vs-hidden-pop-ups)
+    - [Animation of Pop-ups](#animation-of-pop-ups)
   - [IDL Attribute and Feature Detection](#idl-attribute-and-feature-detection)
   - [Events](#events)
   - [Focus Management](#focus-management)
@@ -26,7 +33,14 @@ pathToResearch: /components/popup.research
   - [Backdrop](#backdrop)
 - [Behaviors](#behaviors)
   - [Automatic Dismiss Behavior](#automatic-dismiss-behavior)
+    - [Light Dismiss](#light-dismiss)
+    - [Nested Pop-ups](#nested-pop-ups)
+    - [The Pop-up Stack](#the-pop-up-stack)
+    - [Nearest Open Ancestral Pop-up](#nearest-open-ancestral-pop-up)
+    - [Close signal](#close-signal)
   - [Classes of Top Layer UI](#classes-of-top-layer-ui)
+    - [One at a time behavior summary](#one-at-a-time-behavior-summary)
+    - [Detailed description of interactions among pop-up types](#detailed-description-of-interactions-among-pop-up-types)
   - [Accessibility / Semantics](#accessibility--semantics)
   - [Disallowed elements](#disallowed-elements)
 - [Example Use Cases](#example-use-cases)

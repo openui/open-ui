@@ -1,7 +1,8 @@
 ---
 name: Tabs Markup research
-path: /components/tabs.research.markup
+
 showInMenu: false
+layout: ../../layouts/Layout.astro
 ---
 
 In this document we will discuss various APIs that we found regarding TabSets, attempt to describe them and, finally, offer our observations and recommendations on how to focus work in open-ui. Note that throughout this document we will use the [terminology as defined in our research](https://open-ui.org/components/tabs.research.parts#parts-and-terminology).
@@ -16,19 +17,21 @@ We will focus here on reviewing things that have attempted to be expressed in te
 
 # Table of contents
 
-- [Survey of DOM Flavors and Elements Added](#survey-of-dom-flavors-and-elements-added)
-  - [5 Elements (collections of collections)](#5-elements-collections-of-collections)
-  - [3 Elements (container of pairs of parts)](#3-elements-container-of-pairs-of-parts)
-  - [2 Elements (attribute labelling)](#2-elements-attribute-labelling)
-  - [2 Elements (container of sections)](#2-elements-container-of-sections)
-  - [1 Element (wrapper)](#1-element-wrapper)
-    - [Reference based or Linked Relationships](#reference-based-or-linked-relationships)
-    - [Managed, explicit Sections](#managed-explicit-sections)
-    - [Managed, flat sections](#managed-flat-sections)
-    - [Managed disclosures](#managed-disclosures)
-  - [No elements / Tab Bars](#no-elements-tab-bars)
-- [Recommendations](#recommendations)
-- [Footnote: Why not TOC Style?](#footnote-why-not-toc-style)
+- [**Tab Set API and Markup Approaches**](#tab-set-api-and-markup-approaches)
+- [Table of contents](#table-of-contents)
+  - [Survey of DOM Flavors and Elements Added](#survey-of-dom-flavors-and-elements-added)
+    - [5 Elements (collections of collections)](#5-elements-collections-of-collections)
+    - [3 Elements (container of pairs of parts)](#3-elements-container-of-pairs-of-parts)
+    - [2 Elements (attribute labelling)](#2-elements-attribute-labelling)
+    - [2 Elements (container of sections)](#2-elements-container-of-sections)
+    - [1 Element (wrapper)](#1-element-wrapper)
+      - [Reference based or Linked Relationships](#reference-based-or-linked-relationships)
+      - [Managed, explicit Sections](#managed-explicit-sections)
+      - [Managed, flat sections](#managed-flat-sections)
+      - [Managed disclosures](#managed-disclosures)
+    - [No elements / Tab Bars](#no-elements--tab-bars)
+  - [Recommendations](#recommendations)
+  - [Footnote: Why not TOC Style?](#footnote-why-not-toc-style)
 
 ## Survey of DOM Flavors and Elements Added
 

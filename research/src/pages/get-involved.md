@@ -1,7 +1,7 @@
 ---
 name: Getting Involved
-path: /get-involved
 menu: Documentation
+layout: ../layouts/Layout.astro
 ---
 
 # Getting Involved

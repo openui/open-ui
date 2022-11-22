@@ -1,12 +1,10 @@
 ---
 const { item } = Astro.props
-
-console.log(item)
 ---
 
 <li>
-  <a href={item.path}>
-    {item.name}
+  <a href={item.url}>
+    {item.frontmatter.name}
   </a>
 </li>
 
