@@ -7,7 +7,8 @@ const posts = await Astro.glob('../../pages/**/*.(md|mdx)');
 const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter(({ frontmatter }) => frontmatter.showInMenu !== false);  
 const [menuNodes] = _.partition(postsForNav, "frontmatter.menu");
 const groupedNodes = _.groupBy(menuNodes, "frontmatter.menu")
-const menuHeadings = Object.keys(groupedNodes)
+const menuHeadings = ["Overview", "Documentation", "Proposals", "Research"]
+
 const { opened = true } = Astro.props;
 
 ---
