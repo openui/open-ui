@@ -24,7 +24,7 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
           >
             <div style={{ margin: 'auto auto 0 auto', padding: '8px' }}>
               <Image
-                src={image.image}
+                src={'../images/' + image.image}
                 title={image.image}
                 alt={`${conceptName} concept on a ${component} component in ${image.sourceName}.`}
               />
