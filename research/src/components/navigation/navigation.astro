@@ -1,6 +1,7 @@
 ---
 import _ from 'lodash'
 import CommunityLinks from '../community-links'
+import NavigationContainer from './navigation-container'
 import NavigationItem from './navigation-item.astro'
 
 const posts = await Astro.glob('../../pages/**/*.(md|mdx)');
@@ -8,8 +9,6 @@ const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter
 const [menuNodes] = _.partition(postsForNav, "frontmatter.menu");
 const groupedNodes = _.groupBy(menuNodes, "frontmatter.menu")
 const menuHeadings = ["Overview", "Documentation", "Proposals", "Research"]
-
-const { opened = true } = Astro.props;
 
 ---
 
@@ -51,32 +50,11 @@ const { opened = true } = Astro.props;
     margin: 0 0 0 calc(2px + 0.5em); /* align with items */
   }
 
-nav {
-  margin-right: 2em;
-}
 
-nav > ul {
-  position: sticky;
-}
-
-@media (max-width: 640px) {
-  nav {
-    display: none;
-    margin-right: 0;
-  }
-
-  nav > ul {
-    position: static;
-  }
-
-  nav.opened {
-    display: block;
-  }
-}
 
 </style>
 
-<nav id="site-nav" class={opened ? 'opened' : ''}>
+<NavigationContainer client:load>
   <CommunityLinks className="mobile" />
 
   <div class="wrapper">
@@ -105,4 +83,4 @@ nav > ul {
       )
     })}
   </div>
-</nav>
+</NavigationContainer>
