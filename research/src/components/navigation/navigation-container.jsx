@@ -6,7 +6,7 @@ function NavigationContainer(props) {
   const $isMenuOpen = useStore(isMenuOpen)
 
   return (
-    <nav id="site-nav" class={$isMenuOpen ? 'opened' : ''}>
+    <nav id="site-nav" className={$isMenuOpen ? 'opened' : ''}>
       {props.children}
     </nav>
   )
