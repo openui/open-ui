@@ -5,7 +5,7 @@ layout: ../../layouts/Layout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7)
-- March 16, 2022
+- October 11, 2022
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -232,6 +232,8 @@ This approach, on its face, seems very simple and elegant. However, there are tw
 - In this approach, light dismiss and one-at-a-time behavior cannot be built into a CSS property, and **must be implemented in JavaScript**.
 
 For these two reasons, this approach was abandoned in favor of the [current HTML attribute proposal](#html-content-attribute).
+
+Note that the CSS Property alternative was also discussed at some length by the CSSWG in [Issue 6965](https://github.com/w3c/csswg-drafts/issues/6965).
 
 ### API Shape
 

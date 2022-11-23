@@ -10,6 +10,9 @@ const SelectAnatomy = () => {
             <Slot name="selected-value">
               <Part name="selected-value">Currently selected value</Part>
             </Slot>
+            <Slot name="marker">
+              <Part name="marker">Dropdown indicator (e.g. icon)</Part>
+            </Slot>
           </Part>
         </Slot>
         <Slot name="listbox-container">
