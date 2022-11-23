@@ -2,6 +2,10 @@
 import BaseLayout from "./BaseLayout.astro";
 import Header from "../components/header.astro";
 import Navigation from "../components/navigation/navigation.astro";
+
+const { frontmatter = {} } = Astro.props
+const { name } = frontmatter
+const title = name ? `${name} | Open UI` : 'Open UI'
 ---
 
 <style>
@@ -20,7 +24,7 @@ import Navigation from "../components/navigation/navigation.astro";
 
 </style>
 
-<BaseLayout>
+<BaseLayout title={title}>
   <div>
     <Header />
     <div class="page-wrapper">
