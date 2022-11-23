@@ -7,7 +7,11 @@ import NavigationItem from './navigation-item.astro'
 const posts = await Astro.glob('../../pages/**/*.(md|mdx)');
 const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter(({ frontmatter }) => frontmatter.showInMenu !== false);  
 const [menuNodes] = _.partition(postsForNav, "frontmatter.menu");
-const groupedNodes = _.groupBy(menuNodes, "frontmatter.menu")
+const sortedMenuNodes = menuNodes.sort((a, b) => {
+  return a.frontmatter.name.localeCompare(b.frontmatter.name)
+})
+
+const groupedNodes = _.groupBy(sortedMenuNodes, "frontmatter.menu")
 const menuHeadings = ["Overview", "Documentation", "Proposals", "Research"]
 
 ---
