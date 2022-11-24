@@ -1,11 +1,22 @@
 ---
 const { item } = Astro.props
-const pathname = new URL(Astro.request.url).pathname;
-const isActivePath = pathname === item.url
+const currentPath = Astro.url.pathname
+
+const removeTrailingSlash = (str) => {
+  return str.replace(/\/+$/, '');
+}
+
+const removeLeadingSlash = (str) => {
+  return str.replace(/^\//, '');
+}
+
+const formattedPath = removeLeadingSlash(removeTrailingSlash(currentPath))
+const formattedUrl = removeLeadingSlash(removeTrailingSlash(item.url))
+const isCurrent = formattedPath === formattedUrl
 ---
 
 <li>
-  <a href={item.url} data-is-active={isActivePath}>
+  <a href={item.url} aria-current={`${isCurrent ? 'page' : 'false'}`}>
     {item.frontmatter.name}
   </a>
 </li>
@@ -27,7 +38,7 @@ const isActivePath = pathname === item.url
     white-space: nowrap;
   }
 
-  a[data-is-active] {
+  a[aria-current='page'] {
     border-left-color: #00a453;
     background-color: #f2f2f2;
   }
