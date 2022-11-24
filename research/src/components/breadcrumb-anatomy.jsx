@@ -5,10 +5,10 @@ import './breadcrumb-anatomy.css'
 
 const BreadcrumbAnatomy = () => {
   return (
-    <div class="component-anatomy-wrapper">
+    <div className=''="component-anatomy-wrapper">
       <input type="checkbox" id="show-slots" />
-      <label for="show-slots"> Show slots</label>
-      <div class="component-anatomy">
+      <label htmlFor="show-slots"> Show slots</label>
+      <div className="component-anatomy">
         <host name="breadcrumb" role="navigation">
           <slot name="breadcrumb-container">
             <part name="ol">
