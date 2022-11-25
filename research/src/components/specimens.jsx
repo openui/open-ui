@@ -15,7 +15,7 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
           <div key={image.image + index} className="specimen">
             <div className="image-wrapper">
               <Image
-                src={'../images/' + image.image}
+                src={'/../images/' + image.image}
                 title={image.image}
                 alt={`${conceptName} concept on a ${component} component in ${image.sourceName}.`}
               />
