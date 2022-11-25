@@ -7,7 +7,7 @@ import compress from 'astro-compress'
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), sitemap(), mdx(), compress()],
+  integrations: [react(), sitemap(), mdx(), prefetch()],
   site: 'https://open-ui.org',
   markdown: {
     shikiConfig: {
