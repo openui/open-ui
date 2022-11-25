@@ -128,31 +128,78 @@ _Example_
 
 _Template:_
 
-```HTML
+```html
 <div class="tabs" class="tabs">
-    <slot class="start" name="start" part="start"></slot>
-    <div class="tablist" part="tablist" role="tablist" aria-label="Sample Tabs">
-        <button class="tab" part="tab" role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1" tabindex="0">
-            Tab One
-        </button>
-        <button class="tab" part="tab" role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2" tabindex="-1">
-            Tab Two
-        </button>
-        <button class="tab" part="tab" role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3" tabindex="-1">
-            Tab Three
-        </button>
-        <div class="activeindicator" part="activeindicator"></div>
-    </div>
-    <slot class="end" name="end" part="end"></slot>
-    <div class="tabpanel" part="tabpanel" id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
-        Content of the first tab
-    </div>
-    <div class="tabpanel" part="tabpanel" id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" hidden>
-        Content of the second tab
-    </div>
-    <div class="tabpanel" part="tabpanel" id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden>
-        Content of the third tab
-    </div>
+  <slot class="start" name="start" part="start"></slot>
+  <div class="tablist" part="tablist" role="tablist" aria-label="Sample Tabs">
+    <button
+      class="tab"
+      part="tab"
+      role="tab"
+      aria-selected="true"
+      aria-controls="panel-1"
+      id="tab-1"
+      tabindex="0"
+    >
+      Tab One
+    </button>
+    <button
+      class="tab"
+      part="tab"
+      role="tab"
+      aria-selected="false"
+      aria-controls="panel-2"
+      id="tab-2"
+      tabindex="-1"
+    >
+      Tab Two
+    </button>
+    <button
+      class="tab"
+      part="tab"
+      role="tab"
+      aria-selected="false"
+      aria-controls="panel-3"
+      id="tab-3"
+      tabindex="-1"
+    >
+      Tab Three
+    </button>
+    <div class="activeindicator" part="activeindicator"></div>
+  </div>
+  <slot class="end" name="end" part="end"></slot>
+  <div
+    class="tabpanel"
+    part="tabpanel"
+    id="panel-1"
+    role="tabpanel"
+    tabindex="0"
+    aria-labelledby="tab-1"
+  >
+    Content of the first tab
+  </div>
+  <div
+    class="tabpanel"
+    part="tabpanel"
+    id="panel-2"
+    role="tabpanel"
+    tabindex="0"
+    aria-labelledby="tab-2"
+    hidden
+  >
+    Content of the second tab
+  </div>
+  <div
+    class="tabpanel"
+    part="tabpanel"
+    id="panel-3"
+    role="tabpanel"
+    tabindex="0"
+    aria-labelledby="tab-3"
+    hidden
+  >
+    Content of the third tab
+  </div>
 </div>
 ```
 
