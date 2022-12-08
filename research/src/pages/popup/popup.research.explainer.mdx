@@ -508,7 +508,7 @@ The purpose of the algorithm above is to allow "nesting" of `popover=auto` popov
  2. **Using the `anchor` attribute:** when a popover has an `anchor` attribute that points to another popover (or descendant of another popover), these two are "nested". This allows the `anchor` attribute to be used with the [Anchor Positioning API](https://tabatkins.github.io/specs/css-anchor-position/), transparently defining a clear "nested" relationship between the popovers. It is not necessary to use the Anchor Positioning API.
  3. **Using a [declarative triggering element](#declarative-triggers) (e.g. `popovertoggletarget`):** when a triggering element is contained in a popover, and can therefore trigger another popover, the second popover is "nested" within the first.
 
-Note that because [the popover stack](#the-popover-stack) can only contain `popover=auto` popovers, it is only possible to "nest" popovers within `popover=auto` popovers. A `popover=hint` can be nested within a `popover=auto` popover, but not the other way around.
+Note that because [the popover stack](#the-popover-stack) can only contain `popover=auto` popovers, it is only possible to "nest" popovers within `popover=auto` popovers.
 
 ### Close signal
 
