@@ -162,7 +162,7 @@ If the desire is to have a button that only shows or only hides a popover, the f
 
 Note that all three attributes can be used together like this, pointing to the same element. However, using more than one triggering attribute on **a single button** is not recommended.
 
-When the `popovertoggletarget`, `popovershowtarget`, or `popoverhidetarget` attributes are applied to an activating element, the UA may automatically map this attribute appropriate `aria-*` attributes, such as `aria-haspopup`, `aria-describedby` and/or `aria-expanded`, in order to ensure accessibility. There will need to be further discussion with the ARIA working group to determine the exact ARIA semantics, if any, are necessary.
+When the `popovertoggletarget`, `popovershowtarget`, or `popoverhidetarget` attributes are applied to an activating element, the UA will automatically map this attribute with the appropriate accessibility semantics. For instance, the initial implementation will expose the appropriate `aria-expanded` state based on whether the popover is shown or hidden. As the popover API matures, there may need to be further discussion with the ARIA working group to determine if additional ARIA semantics, if any, are necessary.
 
 These attributes are only supported on buttons (including `<button>`, `<input type=button>`, etc.) as long as the button would not otherwise submit a form. For example, this is not supported: `<form><input type=submit popovertoggletarget=foo></form>`. In that case, the form would be submitted, and the popover would **not** be toggled.
 
