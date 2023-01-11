@@ -9,6 +9,7 @@ import chromium from './chromium.json5'
 import evergreen from './evergreen.json5'
 import fabric from './fabric.json5'
 import fast from './fast.json5'
+import kolibri from './kolibri.json5'
 import lightning from './lightning.json5'
 import lion from './lion.json5'
 import materialComponentsWeb from './materialComponentsWeb.json5'
@@ -30,6 +31,7 @@ export const sources = [
   evergreen,
   fabric,
   fast,
+  kolibri,
   lightning,
   lion,
   materialComponentsWeb,
