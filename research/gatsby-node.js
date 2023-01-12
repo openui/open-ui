@@ -23,22 +23,3 @@ exports.onCreatePage = ({ page, actions }) => {
     createPage(page)
   }
 }
-
-exports.createPages = ({ graphql, actions }) => {
-  console.log('sup sup')
-
-  const redirects = [
-    {
-      fromPath: '/components/popup.research.explainer',
-      toPath: '/components/popover.research.explainer',
-    },
-  ]
-
-  const { createRedirect } = actions
-
-  redirects.forEach(({ fromPath, toPath }) => {
-    console.log(fromPath, toPath)
-
-    createRedirect({ fromPath, toPath, isPermanent: true })
-  })
-}
