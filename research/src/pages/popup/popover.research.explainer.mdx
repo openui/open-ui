@@ -6,7 +6,7 @@ pathToResearch: /components/popup.research
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal), [@jh3y](https://github.com/jh3y)
-- November 16, 2022
+- January 20, 2023
 
 Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
 
@@ -194,8 +194,8 @@ There are several conditions that will cause `showPopover()` and/or `hidePopover
 3. Calling `showPopover()` on a valid popover that is not connected to a document. This will throw an `InvalidStateError` `DOMException`.
 4. Calling `hidePopover()` on a valid popover that is not currently showing. This will throw an `InvalidStateError` `DOMException`.
 
-
-### Page Load Trigger
+<!-- Removing until it's back in action -->
+<!-- ### Page Load Trigger
 
 As mentioned above, a `<div popover>` will be hidden by default. If it is desired that the popover should be shown automatically upon page load, the `defaultopen` attribute can be applied:
 
@@ -216,7 +216,7 @@ The `defaultopen` content attribute can also be accessed via IDL:
 
 ```javascript
 myDiv.defaultOpen = true;
-```
+``` -->
 
 ### CSS Pseudo Class
 
@@ -284,6 +284,7 @@ The above rules mean that a popover, when not "shown", has `display:none` applie
 }
 ```
 
+Be mindful when using other stylesheets that you haven't authored. These may set the `display` value on your popover elements. For example, if you use a `menu` element as a `popover` and you use earlier versions of [normalize.css](https://necolas.github.io/normalize.css/). In this case, normalize.css has a rule that sets `display: flex` on `menu` elements.
 
 ### Animation of Popovers
 
@@ -391,15 +392,17 @@ supportsPopoverType('invalid!') === false;
 
 ## Events
 
-Events are fired synchronously when a popover is shown (`show` event) and hidden (`hide` event). These events can be used, for example, to populate content for the popover just in time before it is shown, or update server data when it closes. The events are:
+An event is fired synchronously when a popover is shown or hidden. This event can be used, for example, to populate content for the popover just in time before it is shown, or update server data when it closes. The event provides a `currentState` and `newState` for the popover. The value of these properties can either be "open" or "closed". The events looks like this:
 
 ```javascript
 const popover = Object.assign(document.createElement('div'), {popover: 'auto'});
-popover.addEventListener('popovershow',() => console.log('Popover is being shown!'));
-popover.addEventListener('popoverhide',() => console.log('Popover is being hidden!'));
+popover.addEventListener('beforetoggle',({ currentState, newState }) => {
+  if (currentState === "closed") console.info("Popover is closed")
+  if (newState === "open") console.info("Popover is being shown")
+});
 ```
 
-The `show` event is cancellable, and doing so keeps the popover from being shown. The `hide` event is not cancellable, to avoid interfering with the one-at-a-time and light-dismiss behaviors. Both `show` and `hide` are fired synchronously.
+The `beforetoggle` event is cancellable when the `newState` is equal to "open". Doing so keeps the popover from being shown. You can't cancel the hiding of a popover as that would interfere with the one-at-a-time and light-dismiss behaviors. The `beforetoggle` event is fired synchronously.
 
 
 ## Focus Management
@@ -435,7 +438,7 @@ The intention of the above set of behaviors is to return focus to the previously
 A new attribute, `anchor`, can be used on a popover element to refer to the popover's "anchor". The value of the attribute is a string idref corresponding to the `id` of another element (the "anchor element"). This anchoring relationship is used for two things:
 
 1. Establish the provided anchor element as an [“ancestor”](#nearest-open-ancestral-popover) of this popover, for light-dismiss behaviors. In other words, the `anchor` attribute can be used to form nested popovers.
-2. The referenced anchor element could be used by the [Anchor Positioning feature](https://tabatkins.github.io/specs/css-anchor-position/).
+2. The referenced anchor element could be used by the [Anchor Positioning feature](https://drafts.csswg.org/css-anchor-1/).
 
 
 The anchor attribute can also be accessed via IDL:
