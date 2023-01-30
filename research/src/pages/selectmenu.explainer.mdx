@@ -1,0 +1,299 @@
+---
+menu: Proposals
+name: Selectmenu Element Explainer
+path: /components/selectmenu.explainer
+pathToResearch: /components/select.research
+---
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+Authors:
+* [Joey Arhar](https://github.com/josepharhar)
+
+## Background
+
+The `<select>` element does not provide enough customization for web
+developers, which leads them to implement their own and likely miss out on the
+performance, reliability, and accessibility of built-in form control elements.
+More on that
+[here](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
+
+The `<selectmenu>` element addresses this by providing an alternative to
+`<select>` which provides a variety of ways to customize it.
+
+## Customizing with the `slot` and `behavior` attributes
+
+By using the `slot` attribute, these different parts of the selectmenu element
+can be replaced with custom content:
+* `slot=button`: The entire clickable area which opens the dropdown.
+* `slot=listbox`: The dropdown which gets open after clicking on the button.
+
+Because the slotted elements can't access the user-agent ShadowRoot and
+therefore can't do things like open the listbox, the `behavior` attribute can
+be set to make the browser give slotted elements similar behavior to the
+default elements:
+* `behavior=button`: Adds a click event handler to the button which makes it
+  open the selectmenu's dropdown.
+* `behavior=listbox`: Positions the listbox adjacent to the button.
+
+Here is an example which uses both the `slot` and `behavior` attributes:
+```html
+<selectmenu>
+  <div slot=button behavior=button>button</div>
+  <div slot=listbox behavior=listbox>listbox</div>
+  <option>one</option>
+  <option>two</option>
+</selectmenu>
+```
+
+## Customizing with `::part()` pseudo-selectors
+
+Some elements in the selectmenu element are exposed to CSS via custom
+`::part()` pseudo-selectors:
+* `::part(button)`: The entire clickable area which opens the dropdown.
+* `::part(listbox)`: The dropdown which gets opened after clicking on the
+  button.
+* `::part(selected-value)`: The element inside the button which displays the
+  currently selected value.
+
+Here is an example which colors each of these elements differently:
+```html
+<selectmenu>
+  <option>one</option>
+  <option>two</option>
+</selectmenu>
+<style>
+selectmenu::part(button) {
+  background-color: red;
+}
+selectmenu::part(listbox) {
+  background-color: blue;
+}
+selectmenu::part(selected-value) {
+  background-color: green;
+}
+</style>
+```
+
+## Events
+
+The selectmenu element dispatches `input` and `change` events when the selected
+option is changed, just like the `<select>` element.
+
+## Usage of the `popover` attribute
+
+The dropdown listbox is rendered by using the `popover` attribute, which means
+that the listbox has a set of [behaviors defined by the popover
+attribute](https://open-ui.org/components/popover.research.explainer#behaviors).
+
+## Feature detection
+
+Presence of the selectmenu element can be checked with the following script:
+```javascript
+if (window.HTMLSelectMenuElement) {
+  // <selectmenu> is available!
+} else {
+  // not available
+}
+```
+
+## Demos
+
+Here are a variety of demos which highlight the different ways that selectmenu
+can be customized: https://microsoftedge.github.io/Demos/selectmenu/
+
+## IDL interface
+
+Here is the IDL interface for the selectmenu element:
+```idl
+interface HTMLSelectMenuElement : HTMLElement {
+  readonly attribute boolean open;
+
+  [SameObject] readonly attribute HTMLOptionElement? selectedOption;
+  attribute DOMString value;
+  [CEReactions, Reflect] attribute boolean disabled;
+  readonly attribute HTMLFormElement? form;
+  [CEReactions, Reflect] attribute DOMString name;
+  readonly attribute DOMString type;
+  [CEReactions, Reflect] attribute boolean required;
+
+  readonly attribute boolean willValidate;
+  readonly attribute ValidityState validity;
+  readonly attribute DOMString validationMessage;
+  boolean checkValidity();
+  boolean reportValidity();
+  void setCustomValidity(DOMString error);
+
+  readonly attribute NodeList labels;
+};
+```
+
+The `open` attribute returns true if the dropdown listbox is open, otherwise false.
+
+The `selectedOption` attribute returns the currently selected `option` element.
+If nothing is selected or there is no `<option>` child element, then null is
+returned.
+
+The `value` attribute functions similarly to the `<select>` element's `value`
+attribute. Assigning to it changes the selected option to whichever option
+element matches the provided string. Getting it returns the selected option's
+value.
+
+The `disabled`, `form`, `name`, `type`, `required` attributes do the same
+thing as all other form control elements.
+
+The `willValidate`, `validity`, and `validationMessage` attributes do the same
+thing as the other form control elements. The `checkValidity()`,
+`reportValidity()`, and `setCustomValidity()` functions also behave the same as
+they do for other form control elements.
+
+## Rendering
+
+Here is the structure of the user-agent ShadowDOM that will be used to render
+the selectmenu element:
+```html
+<slot name="button">
+  <button part="button" behavior="button" pseudo="-internal-selectmenu-button">
+    <div part="selected-value" behavior="selected-value"></div>
+    <div pseudo="-internal-selectmenu-button-icon"></div>
+  </button>
+</slot>
+<slot name="listbox">
+  <div popover="auto" part="listbox" behavior="listbox" pseudo="-internal-selectmenu-listbox">
+    <slot></slot>
+  </div>
+</slot>
+```
+
+Because `<option>`s are slotted in using an unnamed slot rather than converted
+to a textual form for rendering like the `<select>` element does, they can have
+rich content such as images in them.
+
+Here is the user-agent stylesheet for the selectmenu element:
+```css
+selectmenu {
+  display: inline-block;
+}
+
+selectmenu::-internal-selectmenu-button {
+  display: inline-flex;
+  align-items: center;
+  background-color: -internal-light-dark(#ffffff, #3B3B3B);
+  padding: 0 0 0 3px;
+  border: 1px solid -internal-light-dark(#767676, #858585);
+  border-radius: 2px;
+  cursor: default;
+  appearance: none;
+}
+
+selectmenu::-internal-selectmenu-button-icon {
+  background-image: -internal-light-dark(-webkit-image-set(url(images/selectmenu_button_icon.svg) 1x), -webkit-image-set(url(images/selectmenu_button_icon_white.svg) 1x));
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 1.0em;
+  margin-inline-start: 4px;
+  opacity: 1;
+  outline: none;
+  padding-bottom: 2px;
+  padding-inline-start: 3px;
+  padding-inline-end: 3px;
+  padding-top: 2px;
+  width: 1.2em;
+}
+
+selectmenu:disabled::-internal-selectmenu-button {
+  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+  opacity: 0.7;
+}
+
+selectmenu option:hover {
+  background-color: lightgray;
+  cursor: default;
+  user-select: none;
+}
+
+selectmenu option:disabled {
+  background-color: initial;
+  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+}
+
+selectmenu option:checked:disabled {
+  background-color: -internal-light-dark(rgb(176, 176, 176), rgba(59, 59, 59, 0.3));
+}
+
+selectmenu::-internal-selectmenu-listbox {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 4px;
+}
+
+selectmenu [behavior=listbox],
+selectmenu::-internal-selectmenu-listbox {
+  margin: 0;
+  inset: auto;
+  min-inline-size: anchor-size(self-inline);
+  min-block-size: 1lh;
+  anchor-scroll: implicit;
+  position-fallback: -internal-selectmenu-listbox-default-fallbacks;
+}
+
+@position-fallback -internal-selectmenu-listbox-default-fallbacks {
+  /* Below the anchor, left-aligned, no vertical scrolling */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-block-end: calc(anchor(self-end) - 100vb);
+    inset-inline-start: anchor(self-start);
+    inset-inline-end: calc(anchor(self-end) - 100vi);
+  }
+  /* Below the anchor, right-aligned, no vertical scrolling */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-block-end: calc(anchor(self-end) - 100vb);
+    inset-inline-end: anchor(self-end);
+  }
+  /* Over the anchor, left-aligned, no vertical scrolling */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+    inset-inline-end: calc(anchor(self-end) - 100vi);
+  }
+  /* Over the anchor, right-aligned, no vertical scrolling */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
+  }
+  /* Below the anchor, left-aligned, fill up the available vertical space */
+  @try {
+    inset-block-start: anchor(self-end);
+    block-size: -webkit-fill-available;
+    inset-inline-start: anchor(self-start);
+    inset-inline-end: calc(anchor(self-end) - 100vi);
+  }
+  /* Below the anchor, right-aligned, fill up the available vertical space */
+  @try {
+    inset-block-start: anchor(self-end);
+    block-size: -webkit-fill-available;
+    inset-inline-end: anchor(self-end);
+  }
+  /* Over the anchor, left-aligned, fill up the available vertical space */
+  @try {
+    inset-block-end: anchor(self-start);
+    block-size: -webkit-fill-available;
+    inset-inline-start: anchor(self-start);
+    inset-inline-end: calc(anchor(self-end) - 100vi);
+  }
+  /* Over the anchor, right-aligned, fill up the available vertical space */
+  @try {
+    inset-block-end: anchor(self-start);
+    block-size: -webkit-fill-available;
+    inset-inline-end: anchor(self-end);
+  }
+}
+```
