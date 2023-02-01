@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ConceptCoverage from './concept-coverage'
 import Specimens from './specimens'
 
@@ -11,6 +11,10 @@ export default function Concept({
   initExpand,
 }) {
   const [open, toggleOpen] = React.useState(initExpand)
+
+  useEffect(() => {
+    toggleOpen(initExpand)
+  }, [initExpand])
 
   return (
     <div style={{ padding: '8px', marginBottom: '36px' }}>
