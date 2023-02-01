@@ -1,0 +1,1054 @@
+{
+  "$schema": "../schemas/design-system.schema.json5",
+  "lastUpdated": "2022-10-18",
+  "name": "KoliBri",
+  "description": "KoliBri builds directly on the web standards of the W3C (framework-agnostic), is a generic reference implementation of the WCAG standard and the BITV for accessibility and implemented as a multi-theming capable presentation layer. There is no technical reference and no data transmission functionalities. This means that KoliBri can be reused for the realization of static websites as well as dynamic web applications with different corporate designs and style guides and is therefore very interesting for open source.",
+  "url": "https://public-ui.github.io/",
+  "version": "1.1.9",
+  "by": "Informationstechnik Zentrum Bund",
+  "components": [
+    {
+      "name": "abbr",
+      "definition": "Die **Abbr**-Komponente implementiert den HTML-Tag `abbr`, wobei hier jedoch der Tooltip barrierefrei ist.\nDer Tooltip für die Beschreibung wird bei Focus oder Hover der **Abbr**-Komponente angezeigt und vorgelesen.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_title",
+          "description": "Dieses Property gibt die Beschreibung oder Erläuterung der Abkürzung an."
+        },
+        {
+          "name": "_tooltip-align",
+          "description": "Gibt an, ob der Tooltip entweder oben, rechts, unten oder links angezeigt werden soll."
+        }
+      ]
+    },
+    {
+      "name": "accordion",
+      "definition": "Die **Accordion**-Komponente ist ein Aufklapp-Menü. Klickt man auf den Kopfbereich, bestehend aus Icon und Überschrift, öffnet sich ein Textfeld mit zusätzlichen Informationen. Somit ist es ein interaktives Navigationselement, welches dazu dient, umfangreiche Inhalte platzsparend darzustellen.\n\nAccordions kommen immer dann zum Einsatz, wenn einem thematischen Oberbegriff zugeordnete Inhalte angezeigt oder verborgen werden sollen. Sie erlauben umfangreichere Detailinformationen zu einem Oberbegriff, als es aus Gründen der Übersichtlichkeit eigentlich sinnvoll wäre. Sie überlassen es den Besucher:innen selbst, ob sie sich diese Informationen anzeigen lassen möchten.",
+      "anatomy": [],
+      "concepts": [
+        { "name": "_heading", "description": "Gibt die Überschrift des Accordions an." },
+        {
+          "name": "_level",
+          "description": "Gibt an, welchen H-Level von 1 bis 6 die Überschrift hat."
+        },
+        { "name": "_open", "description": "Gibt an, ob das Accordion geöffnet ist." }
+      ]
+    },
+    {
+      "name": "alert",
+      "definition": "Die **Alert**-Komponente gibt ein optisches Feedback an die Nutzer:innen. Sie besteht aus einem farblich gestalteten Container, einer Überschrift, einem Inhaltstext sowie einem Icon. Das verwendete Icon und die farbliche Gestaltung sind abhängig vom Typ `_type` des Alert.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob der Screenreader die Meldung vorlesen soll."
+        },
+        { "name": "_has-closer", "description": "Gibt an, ob der Alert ein Schließen-Icon hat." },
+        { "name": "_heading", "description": "Gibt den Titel der Meldung an." },
+        {
+          "name": "_level",
+          "description": "Gibt an, welchen H-Level von 1 bis 6 die Überschrift hat."
+        },
+        {
+          "name": "_type",
+          "description": "Gibt an, ob es sich um eine Erfolgs-, Info-, Warnung- oder Fehlermeldung handelt."
+        },
+        {
+          "name": "_variant",
+          "description": "Gibt an, welche Benachrichtigungsvariante dargestellt wird."
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "definition": "Mit **Badges** können Sie bestimmte Informationen auf Ihrer Webseite optisch hervorheben.\nKoliBri bietet neben der Angabe der Hintergrundfarbe und automatischer Berechnung der Textfarbe auch die Möglichkeit, einem Badge ein Icon und/oder einen anderen Schriftschnitt mitzugeben.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_color",
+          "description": "Gibt die Farbe des Hintergrundes bzw. der Schrift an."
+        },
+        {
+          "name": "_icon",
+          "description": "Gibt einen Identifier eines Icons aus den Icofont's an. (https://icofont.com/)"
+        },
+        {
+          "name": "_icon-align",
+          "description": "Gibt an, ob das Icon entweder links oder rechts dargestellt werden soll."
+        },
+        { "name": "_icon-only", "description": "Gibt an, ob nur das Icon angezeigt wird." },
+        { "name": "_label", "description": "Gibt den Label-Text des Badges an." }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "definition": "Mit Hilfe der **Breadcrumb**-Komponente kann der Pfad zur aktuellen Position einer Webseite in einer hierarchischen Struktur dargestellt werden.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_aria-label",
+          "description": "Gibt den Text an, der die Navigation von anderen Navigationen differenziert."
+        },
+        {
+          "name": "_links",
+          "description": "Gibt die geordnete Liste der Seitenhierarchie in Links an."
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "definition": "**Buttons** dienen dazu, Benutzer:innen Auswahlmöglichkeiten für Aktionen anzuzeigen und diese in einer klaren Hierarchie anzuordnen. Sie helfen Nutzer:innen, die wichtigsten Aktionen einer Seite oder innerhalb eines Viewports zu finden und ermöglichen es ihm, diese Aktionen auszuführen. Die Beschriftung des Buttons wird verwendet, um Nutzer:innen klar anzuzeigen, welche Aktion ausgelöst wird. Buttons ermöglichen es Nutzer:innen, eine Änderung zu bestätigen, Schritte in einer Aufgabe abzuschließen oder Entscheidungen zu treffen.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man den Button auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_aria-controls",
+          "description": "Gibt an, welche Elemente kontrolliert werden.  (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
+        {
+          "name": "_aria-current",
+          "description": "Gibt an, welchen aktuellen Auswahlstatus der Button hat. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current)"
+        },
+        {
+          "name": "_aria-expanded",
+          "description": "Gibt an, ob durch den Button etwas aufgeklappt wurde. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-expanded)"
+        },
+        {
+          "name": "_aria-label",
+          "description": "Gibt einen beschreibenden Text des Buttons an.  (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label)"
+        },
+        {
+          "name": "_custom-class",
+          "description": "Gibt an, welche Custom-Class übergeben werden soll, wenn _variant=\"custom\" gesetzt ist."
+        },
+        { "name": "_disabled", "description": "Gibt an, ob der Button deaktiviert ist." },
+        {
+          "name": "_icon",
+          "description": "Gibt den Class-Identifier eines Icons eine eingebunden Icofont an. (z.B. https://icofont.com/)"
+        },
+        {
+          "name": "_icon-align",
+          "description": "Gibt an, ob das Icon links oder rechts dargestellt werden soll."
+        },
+        { "name": "_icon-only", "description": "Gibt an, ob nur das Icon angezeigt wird." },
+        { "name": "_id", "description": "Gibt die ID der Schaltfläche an. (Selection, Testing)" },
+        {
+          "name": "_label",
+          "description": "Gibt den Label für die Beschriftung der Schaltfläche an."
+        },
+        {
+          "name": "_show-as",
+          "description": "Gibt an, ob der Button als Button oder Link dargestellt werden soll."
+        },
+        {
+          "name": "_tooltip-align",
+          "description": "Gibt an, ob der Tooltip oben, rechts, unten oder links angezeigt werden soll."
+        },
+        { "name": "_type", "description": "Gibt an, welche Typ der Button hat." },
+        { "name": "_variant", "description": "Gibt an, welche Ausprägung der Button hat." }
+      ]
+    },
+    {
+      "name": "card",
+      "definition": "Um einzelne Bereiche Ihrer Webseite optisch hervorzuheben, bietet sich die **Card**-Komponente an. Mit ihrer Hilfe können Sie Ihre Inhalte sehr einfach strukturieren.\n\nDie **Card**-Komponente besteht aus einem **_Titel-Bereich_**, einem **_Inhalts-Bereich_** und einem **_Fuß-Bereich_**.\n\nDer **Titel-Bereich** wird in einer größeren Schrift dargestellt. Der **Inhalts-Bereich** ist optisch durch eine horizontale Trennlinie unterhalb des Titel-Bereichs abgetrennt und wird in der Standardschrift ausgegeben.\nDer **Fuß-Bereich** wird optional durch ein Attribut aktiviert und stellt dann Platz für weitere Inhalte, z.B. eine **Button**-Komponente bereit. Der Fuß-Bereich ist optisch durch eine horizontale Trennlinie vom Inhalts-Bereich abgetrennt.",
+      "anatomy": [],
+      "concepts": [
+        { "name": "_has-footer", "description": "Gibt an, ob die Card einen Footer-Bereich hat." },
+        { "name": "_heading", "description": "Gibt die Überschrift der Card an." },
+        { "name": "_headline", "description": "Gibt die Überschrift der Card an." },
+        {
+          "name": "_level",
+          "description": "Gibt an, welchen H-Level von 1 bis 6 die Überschrift hat."
+        }
+      ]
+    },
+    {
+      "name": "details",
+      "definition": "Mit Hilfe der **Detail**-Komponente können weiterführende Informationen zunächst mit einem kurzen Einleitungstext angezeigt werden, die erst nach Klick\ndurch die Nutzer:innen auf ein Pfeil-Icon in voller Größe aufgeklappt werden.\n\nDie **Detail**-Komponente stellt sich standardmäßig als einzeiliges Layout-Element dar, das aus einem Pfeil-Icon und einem nachfolgenden,\nkurzen Einleitungstext gebildet wird. Der eigentliche Inhalt der Komponente wird erst nach Klick auf das Icon nach unten hin geöffnet. Das Pfeil-Icon ändert dabei\nseine Ausrichtung von **_rechts_** nach **_unten_**.<br/>Analog lässt sich die Komponente auch wieder schließen und der Inhalt damit verbergen.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_open",
+          "description": "Gibt an, ob die Detailbeschreibung geöffnet oder geschlossen ist."
+        },
+        { "name": "_summary", "description": "Gibt die Zusammenfassung der Detailbeschreibung an." }
+      ]
+    },
+    {
+      "name": "form",
+      "definition": "",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_required-text",
+          "description": "Gibt an, ob der Pflichtfeld-Hinweis eingeblendet werden soll."
+        }
+      ]
+    },
+    {
+      "name": "heading",
+      "definition": "Die **Heading**-Komponente kann überall dort verwendet werden, wo eine Überschrift angezeigt werden soll. Durch die Verwendung der unterschiedlichen Größen, lassen sich Inhalte klar strukturieren und Seiten wirkungsvoll und abwechslungsreich präsentieren. Sie trennt Styling von Semantik und ermöglicht Flexibilität.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_level",
+          "description": "Gibt an, welchen H-Level von 1 bis 6 die Überschrift hat."
+        }
+      ]
+    },
+    {
+      "name": "icon",
+      "definition": "Mit Hilfe der **Icofont**-Komponente können Icons aus der Icofont-Bibliothek an beliebigen Positionen erzeugt werden. Die Ausgabe des Icon kann über Attribute gesteuert werden und erfolgt barrierefrei. Die Ausgabe erfolgt standardmäßig als **_inline_**-Element.",
+      "anatomy": [],
+      "concepts": [
+        { "name": "_aria-label", "description": "Gibt das Aria-Label am Icon an." },
+        { "name": "_icon", "description": "Gibt einen Identifier eines Icons aus den Icon's an." },
+        {
+          "name": "_part",
+          "description": "Gibt den Identifier für den CSS-Part an, um das Icon von Außen ändern zu können. (https://meowni.ca/posts/part-theme-explainer/)"
+        }
+      ]
+    },
+    {
+      "name": "indented-text",
+      "definition": "Heben Sie einzelne Informationen auf Ihrer Webseite optisch mit der **IndentedText**-Komponente hervor. Die Komponente eignet sich nicht nur für besondere Abschnitte auf der Webseite, sondern auch beispielsweise für Zitate.\n\nIn der Komponente kann beliebiger HTML-Code verwendet werden.",
+      "anatomy": [],
+      "concepts": []
+    },
+    {
+      "name": "input-checkbox",
+      "definition": "Der Input-Typ **_Checkbox_** generiert eine rechteckige Box, die durch Anklicken aktiviert und wieder deaktiviert wird. In aktiviertem Zustand befindet sich ein farbiger Haken in der Box.\n\nEine optische Alternative zur Standard-Checkbox stellt die Ausgabe als **_Switch_** dar. Hierbei wird die Checkbox zu einem Schieberegler gewandelt, der bei Anklicken nach rechts (aktiv) bzw. nach links (inaktiv) verschoben wird.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_checked",
+          "description": "Gibt an, ob die Checkbox ausgewählt ist oder nicht."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        {
+          "name": "_indeterminate",
+          "description": "Gibt an, ob die Checkbox weder ausgewählt noch nicht ausgewählt ist."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_required", "description": "Gibt an, ob die Checkbox ein Pflichtfeld ist." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_type", "description": "Gibt an, welchen Type das Input haben soll." },
+        { "name": "_value", "description": "Gibt den Wert der Checkbox an." }
+      ]
+    },
+    {
+      "name": "input-color",
+      "definition": "Der Input-Typ **Color** erzeugt ein Auswahlfeld für die Definition einer beliebigen Farbe. Die Angabe der Farbe kann in hexadezimaler Schreibweise, in RGB-Schreibweise oder in HSL-Schreibweise erfolgen. Möglich ist die Auswahl einer Farbe über einen Picker oder auch die exakte Eingabe von Farbwerten.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_auto-complete",
+          "description": "Gibt an, ob das Eingabefeld autovervollständigt werden kann."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt die Liste der Vorschlagswörter an." },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "input-email",
+      "definition": "Der Input-Typ **E-Mail** erzeugt ein Eingabefeld für E-Mails.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_auto-complete",
+          "description": "Gibt an, ob das Eingabefeld autovervollständigt werden kann."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt die Liste der Vorschlagswörter an." },
+        {
+          "name": "_max-length",
+          "description": "Gibt an, wie viele Zeichen man maximal eingeben kann."
+        },
+        {
+          "name": "_multiple",
+          "description": "Gibt an, ob mehrere Werte eingegeben werden können."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_pattern", "description": "Gibt ein Prüfpattern für das Eingabefeld an." },
+        {
+          "name": "_placeholder",
+          "description": "Gibt den Platzhalter des Eingabefeldes an, wenn es leer ist."
+        },
+        { "name": "_read-only", "description": "Gibt an, ob das Eingabefeld nur lesend ist." },
+        { "name": "_required", "description": "Gibt an, ob das Radio ein Pflichtfeld ist." },
+        { "name": "_size", "description": "Gibt an, wie viele Zeichen man eingeben kann." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "input-file",
+      "definition": "Der Input-Typ **File** erzeugt ein Eingabefeld für Uploads. Es können eine oder auch mehrere Dateien ausgewählt werden.",
+      "anatomy": [],
+      "concepts": [
+        { "name": "_accept", "description": "Gibt an, welche Dateiformate erlaubt sind." },
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        {
+          "name": "_multiple",
+          "description": "Gibt an, ob mehrere Werte eingegeben werden können."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_required", "description": "Gibt an, ob das Eingabefeld ein Pflichtfeld ist." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "input-number",
+      "definition": "Der Input-Typ **Number** erzeugt ein Eingabefeld für Zahlen, Datumswerte, Datums- und Zeitwerte, Wochen, Monate und Zeiten.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_auto-complete",
+          "description": "Gibt an, ob das Eingabefeld autovervollständigt werden kann."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt die Liste der Vorschlagszahlen an." },
+        { "name": "_max", "description": "Gibt den größtmöglichen Zahlenwert an." },
+        { "name": "_min", "description": "Gibt den kleinstmöglichen Zahlenwert an." },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        {
+          "name": "_placeholder",
+          "description": "Gibt den Platzhalter des Eingabefeldes an, wenn es leer ist."
+        },
+        { "name": "_read-only", "description": "Gibt an, ob das Eingabefeld nur lesend ist." },
+        { "name": "_required", "description": "Gibt an, ob das Eingabefeld ein Pflichtfeld ist." },
+        { "name": "_step", "description": "Gibt die Schrittweite der Wertveränderung an" },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        {
+          "name": "_type",
+          "description": "Gibt an, ob es ein DateTime-, Date-, Month-, Week-, Time-, DateTime-Local-, Number-Eingabefeld ist."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "input-password",
+      "definition": "Der Input-Typ **Password** erzeugt ein Eingabefeld für Passwörter. Die Eingabe wird über Punktsymbole maskiert.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_auto-complete",
+          "description": "Gibt an, ob das Eingabefeld autovervollständigt werden kann."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        {
+          "name": "_max-length",
+          "description": "Gibt an, wie viele Zeichen man maximal eingeben kann."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_pattern", "description": "Gibt ein Prüfpattern für das Eingabefeld an." },
+        {
+          "name": "_placeholder",
+          "description": "Gibt den Platzhalter des Eingabefeldes an, wenn es leer ist."
+        },
+        { "name": "_read-only", "description": "Gibt an, ob die Eingabefeld nur lesend ist." },
+        { "name": "_required", "description": "Gibt an, ob das Eingabefeld ein Pflichtfeld ist." },
+        { "name": "_size", "description": "Gibt an, wie viele Zeichen man eingeben kann." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "input-radio",
+      "definition": "Die Komponente ** InputRadio** besteht aus einer Sammlung von Radio-Elementen und stellt so eine Auswahlmöglichkeit zwischen verschiedenen Werten dar. Es kann immer nur ein einzelner Wert zur gleichen Zeit ausgewählt werden. Ausgewählte Radio-Elemente werden i.d.R. mit einem gefüllten und optisch hervorgehobenen Kreis dargestellt.\n\n<kol-alert _alert _heading=\"Hinweis\" _level=\"1\" _type=\"info\">\n  Das Input-Radio dient der Abbildung einer Auswahlmöglichkeit bei der mindestens und maximal eine Auswahl getroffen werden kann. Das bedeutet, dass ein Input-Radio nicht einzeln vorkommen kann. Aufgrund dessen haben wir die Komponente als Listen-Komponente umgesetzt.\n</kol-alert><br/>",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt die Liste der Optionen für das Eingabefeld an." },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_orientation", "description": "Gibt die Ausrichtung der LinkList an." },
+        { "name": "_required", "description": "Gibt an, ob das Eingabefeld ein Pflichtfeld ist." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert der Radio an." }
+      ]
+    },
+    {
+      "name": "input-range",
+      "definition": "Der Input-Typ **Range** erzeugt ein interaktives Element, mit dem Werte durch Verschieben eines Reglers verändert werden können.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_auto-complete",
+          "description": "Gibt an, ob das Eingabefeld autovervollständigt werden kann."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt die Liste der Vorschlagswörter an." },
+        { "name": "_max", "description": "Gibt den Maximalwert des Eingabefeldes an." },
+        { "name": "_min", "description": "Gibt den Minimalwert des Eingabefeldes an." },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_step", "description": "Gibt die Schrittweite der Wertveränderung an." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "input-text",
+      "definition": "Der Input-Typ **Text** erzeugt ein Eingabefeld für normalen Text, Suchbegriffe, URLs oder Telefonnummern.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_auto-complete",
+          "description": "Gibt an, ob das Eingabefeld autovervollständigt werden kann."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt die Liste der Vorschlagswörter an." },
+        {
+          "name": "_max-length",
+          "description": "Gibt an, wie viele Zeichen man maximal eingeben kann."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_pattern", "description": "Gibt ein Prüfpattern für das Eingabefeld an." },
+        {
+          "name": "_placeholder",
+          "description": "Gibt den Platzhalter des Eingabefeldes an, wenn es leer ist."
+        },
+        { "name": "_read-only", "description": "Gibt an, ob die Eingabefeld nur lesend ist." },
+        { "name": "_required", "description": "Gibt an, ob das Eingabefeld ein Pflichtfeld ist." },
+        { "name": "_size", "description": "Gibt an, wie viele Zeichen man eingeben kann." },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        {
+          "name": "_type",
+          "description": "Gibt an, ob es ein Text-, Suche-, URL- oder Telefon-Eingabefeld ist."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "link",
+      "definition": "Die **Link**-Komponente rendert einen auf Barrierefreiheit optimierten Link, der als Text, als Icon oder auch in Kombination ausgegeben werden kann.\nMöglich ist auch die Ausgabe eines versteckten Links.\n\nDer Link wird standardmäßig in klassischer Form mit Unterstrich ausgegeben, der jedoch über ein Attribut auch ohne CSS entfernt werden kann. Weitere Informationen zu Custom Styles finden Sie weiter unten.\n\nBeachten Sie, dass die Komponente automatisch ein Padding links und rechts zum umgebenden Text erzeugt. Sie kann daher im Fließtext ohne\nEingabe von Leerzeichen eingefügt werden. Zusätzliche Leerzeichen vergrößern den Abstand zum umgebenden Text.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_aria-controls",
+          "description": "Gibt an, welche Elemente kontrolliert werden.  (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
+        {
+          "name": "_aria-current",
+          "description": "Gibt an, welchen aktuellen Auswahlstatus der Link hat. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current)"
+        },
+        {
+          "name": "_aria-expanded",
+          "description": "Gibt an, ob durch den Link etwas aufgeklappt wurde. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-expanded)"
+        },
+        {
+          "name": "_aria-label",
+          "description": "Gibt einen beschreibenden Text des Links an.  (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label)"
+        },
+        {
+          "name": "_aria-selected",
+          "description": "Gibt an, ob der Link gerade ausgewählt ist. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-selected)"
+        },
+        { "name": "_disabled", "description": "Gibt an, ob der Link deaktiviert ist." },
+        {
+          "name": "_fill",
+          "description": "Gibt an, ob der Link die gesamte zur Verfügung stehende Breite ausfüllt."
+        },
+        { "name": "_href", "description": "Gibt die Ziel-Url des Links an." },
+        {
+          "name": "_icon",
+          "description": "Gibt den Class-Identifier eines Icons eine eingebunden Icofont an. (z.B. https://icofont.com/)"
+        },
+        {
+          "name": "_icon-align",
+          "description": "Gibt an, ob das Icon entweder links oder rechts dargestellt werden soll."
+        },
+        { "name": "_icon-only", "description": "Gibt an, ob nur das Icon angezeigt wird." },
+        {
+          "name": "_part",
+          "description": "Gibt den Identifier für den CSS-Part an, um das Icon von Außen ändern zu können. (https://meowni.ca/posts/part-theme-explainer/)"
+        },
+        {
+          "name": "_selector",
+          "description": "Gibt die ID eines DOM-Elements, zu dem gesprungen werden soll, aus."
+        },
+        {
+          "name": "_show-as",
+          "description": "Gibt an, ob der Link als Link oder Button dargestellt werden soll."
+        },
+        { "name": "_stealth", "description": "Gibt an, ob der Link nur beim Fokus sichtbar ist." },
+        {
+          "name": "_target",
+          "description": "Definiert das Verhalten, bei dem der Link geöffnet werden soll."
+        },
+        {
+          "name": "_target-description",
+          "description": "Gibt die Beschreibung an, wenn der Link in einem anderen Programm geöffnet wird."
+        },
+        {
+          "name": "_tooltip-align",
+          "description": "Gibt an, ob der Tooltip entweder oben, rechts, unten oder links angezeigt werden soll."
+        },
+        {
+          "name": "_underline",
+          "description": "Gibt an, ob die Links unterstrichen dargestellt werden."
+        },
+        { "name": "_use-case", "description": "Gibt den Verwendungsfall des Links an." }
+      ]
+    },
+    {
+      "name": "modal",
+      "definition": "Mit Hilfe der **Modal**-Komponente können zusätzliche Informationen oder auch Eingabeformulare in einem\nDialogfenster angezeigt werden. Sie wird nach Klick auf einen Button aufgerufen und über ein eigenes\nClose-Icon wieder geschlossen. Die **Modal**-Komponente basiert auf der **Card**-Komponente und ist standardmäßig versteckt. Sie wird i.d.R.\nerst nach Klick auf einen Button oder sonstigem Trigger angezeigt. Dabei wird der Hintergrund des Fensters deaktiviert und allein der Inhalt\ndes Modal-Fensters ist aktiv. Das **Modal**-Fenster wird über ein **Close-Icon** oben rechts im Kopfbereich wieder\ngeschlossen.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_aria-label",
+          "description": "Gibt den Text an, der die Navigation von anderen Navigationen differenziert."
+        },
+        { "name": "_show", "description": "Gibt an, ob das Modal angezeigt wird." },
+        {
+          "name": "_width",
+          "description": "Gibt an, wie breit der Anzeigebereich sein soll (<= max-width: 100%)."
+        }
+      ]
+    },
+    {
+      "name": "nav",
+      "definition": "Eine **Navigationsleiste** ist eine Gruppe von verwandten Links oder „Navigationselementen“, die durch Anklicken eine Aktion ausführen oder Inhalte anzeigen. Sie navigiert Nutzer:innen direkt zu bestimmten Inhalten der aktuellen Seite oder zu externen Seiten. Außerdem dient sie Nutzer:innen (ähnlich wie Registerkarten) als Steuerelement, um Inhalte anzuzeigen, auszublenden und zwischen ihnen zu wechseln. Dabei werden häufig animierte Übergänge verwendet.\n\nDie **Nav**-Komponente stellt eine vollwertige vertikale , bzw. horizontale **Navigationsleiste** bereit. Sie kann mehrere Ebenen enthalten und in verschiedenen Breiten ausgegeben werden. Die **Nav**-Komponente repräsentiert die Struktur der Webseite und hat so eine fundamentale Bedeutung sowohl für Nutzer:innen, als auch für Suchmaschinen.\n\n**KoliBri** stellt eine umfangreich konfigurierbare, vertikale oder horizontale **Navigationsleiste** zur Verfügung, die mehrere Ebenen darstellen und in der Breite variiert werden kann.\nMenüpunkte der obersten Ebene, wie z.B. die Startseite, werden stets über die ganze Breite der **Navigation** gestreckt. Nachfolgende Ebenen, als direkte Kindelemente, werden auf der linken Seite\netwas eingerückt ausgegeben. Übergeordnete Menüpunkte die Untermenüpunkte enthalten, werden mit einem **Plus-Icon** am linken Rand angezeigt. Wird der übergeordnete Menüpunkt mit dem Plus-Icon geöffnet, ändert sich\ndas Plus-Icon automatisch zu einem **Minus-Icon**, mit dem der Menüpunkt wieder geschlossen werden kann.\n\nAktive Menüpunkte werden mit einer farbigen Markierung dargestellt.\n\nÜber ein **Doppelpfeil-Icon** unterhalb der Navigation kann die Breite der **Nav**-Komponente verändert werden. In der kleinsten Breite werden die Menütitel ausgeblendet und nur\nnoch die Icons ausgegeben.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_aria-label",
+          "description": "Gibt den Text an, der die Navigation von anderen Navigationen differenziert."
+        },
+        {
+          "name": "_collapsible",
+          "description": "Gibt an, ob Knoten in der Navigation zusammengeklappt werden können. Ist standardmäßig aktiv."
+        },
+        { "name": "_compact", "description": "Gibt an, ob die Navigation kompakt angezeigt wird." },
+        {
+          "name": "_has-compact-button",
+          "description": "Gibt an, ob die Navigation eine zusätzliche Schaltfläche zum Aus- und Einklappen der Navigation anzeigen soll."
+        },
+        { "name": "_links", "description": "Gibt die geordnete Liste der Seitenhierarchie an." },
+        { "name": "_orientation", "description": "Gibt die Ausrichtung der Navigation an." },
+        { "name": "_variant", "description": "Gibt an, welche Ausprägung der Button hat." }
+      ]
+    },
+    {
+      "name": "pagination",
+      "definition": "Mit Hilfe der <b>Paginierung-Komponente</b> lassen sich umfangreiche Inhalte auf der Seite\nin handliche Abschnitte unterteilen. Diese können dann über die Paginierung der Reihe nach\ndurchlaufen werden.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_boundary-count",
+          "description": "Gibt an, wie viele Seiten neben den am Rand liegenden Pfeil-Schaltern angezeigt werden sollen."
+        },
+        {
+          "name": "_custom-class",
+          "description": "Gibt an, welche Custom-Class übergeben werden soll, wenn _variant=\"custom\" gesetzt ist."
+        },
+        {
+          "name": "_has-buttons",
+          "description": "Gibt an, welche Sprung-Schalter sichtbar sein sollen."
+        },
+        { "name": "_page", "description": "Gibt an, welche Seite aktuell ausgewählt ist." },
+        {
+          "name": "_page-size",
+          "description": "Gibt an, wie viele Einträge pro Seite angezeigt werden."
+        },
+        {
+          "name": "_page-size-options",
+          "description": "Gibt an, welche Optionen für die Seitenlänge angeboten werden."
+        },
+        {
+          "name": "_sibling-count",
+          "description": "Gibt an, wie viele Seiten neben dem aktuell ausgewählten Seite angezeigt werden."
+        },
+        {
+          "name": "_tooltip-align",
+          "description": "Gibt an, ob der Tooltip oben, rechts, unten oder links angezeigt werden."
+        },
+        {
+          "name": "_total",
+          "description": "Gibt an, wie viele Einträge mit der Pagination gehandelt werden."
+        },
+        {
+          "name": "_variant",
+          "description": "Gibt an, welche Button-Variante verwendet werden soll."
+        }
+      ]
+    },
+    {
+      "name": "progress",
+      "definition": "Die **Progress**-Komponente erzeugt einen Fortschrittsbalken, über den eine optische Rückmeldung gegeben werden kann.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_max",
+          "description": "Gibt an, bei welchem Wert die Fortschrittsanzeige abgeschlossen ist."
+        },
+        {
+          "name": "_type",
+          "description": "Gibt an, ob der Prozess als Balken oder Kreis dargestellt wird."
+        },
+        { "name": "_unit", "description": "Gibt die Einheit der Fortschrittswerte an." },
+        { "name": "_value", "description": "Gibt an, wie weit die Anzeige fortgeschritten ist." }
+      ]
+    },
+    {
+      "name": "select",
+      "definition": "Die **Select**-Komponente erzeugt eine Auswahlliste, aus der eine oder mehrere vorgegebene Möglichkeiten ausgewählt werden können.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_height",
+          "description": "Gibt an, ob eine individuelle Höhe übergeben werden soll."
+        },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        {
+          "name": "_icon",
+          "description": "Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes."
+        },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        { "name": "_list", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        {
+          "name": "_multiple",
+          "description": "Gibt an, ob mehrere Werte eingegeben werden können."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        { "name": "_required", "description": "Gibt an, ob die Selectbox ein Pflichtfeld ist." },
+        {
+          "name": "_size",
+          "description": "Gibt an, wie viele Optionen im Drop-Down-Menü sichtbar sein sollen."
+        },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "skip-nav",
+      "definition": "Mit Hilfe der **SkipNav**-Komponente kann eine versteckte Navigation erzeugt werden. Sie dient dazu, Sehbehinderten das Überspringen von Seitenbereichen zu ermöglichen. Sie wird nur nach Anspringen durch die **Tab-Taste** sichtbar.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_aria-label",
+          "description": "Gibt den Text an, der die Navigation von anderen Navigationen differenziert."
+        },
+        { "name": "_links", "description": "Ist die Liste der unsichtbaren Links." }
+      ]
+    },
+    {
+      "name": "spin",
+      "definition": "Lader, wie die **Spin**-Komponente, informieren die Nutzer:innen über Lade- oder Rechenvorgänge, die vom System ausgeführt werden. Der Fortschritt kann durch eine wiederholte Animation kommuniziert werden.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_show",
+          "description": "Gibt an, ob die Ladeanzeige eingeblendet wird oder nicht."
+        }
+      ]
+    },
+    {
+      "name": "symbol",
+      "definition": "Die **Symbol**-Komponente ermöglicht das Rendern beliebiger Symbole mit steuerbarer Ausgabe durch den Screenreader.",
+      "anatomy": [],
+      "concepts": [
+        { "name": "_aria-label", "description": "Gibt an, was der Screenreader ausgeben soll" },
+        {
+          "name": "_symbol",
+          "description": "Dieses Property gibt den String an der angezeigt werden soll."
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "definition": "Die **Table**-Komponente dient primär der übersichtlichen Darstellung von Datenmengen. Dabei ist sie so ausgelegt, dass sie alle von den Daten abhängige Werte automatisch ermittelt und die Tabelle entsprechend darstellt. Hierzu gehören beispielsweise die optionalen Funktionalitäten Spaltensortierung oder Pagination.\n\n<kol-indented-text _summary=\"Backend-seitige Pagination\">\n\tBei sehr großen Datenmengen ist auch eine manuelle Nutzung der Table-Komponente möglich. Das bedeutet, dass die Tabelle seitenweise \"manuell\" befüllt wird. Hierzu kann einfach anstatt der Table-Pagination eine \"eigene\" Pagination unter der Tabelle mittels der Pagination-Komponente verwendet werden.\n</kol-indented-text>",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_caption",
+          "description": "Gibt den  Titel oder eine Legende mit Erklärungen zur Tabelle an."
+        },
+        {
+          "name": "_data",
+          "description": "Gibt die Daten an, die für die Erstellung der Tabelle verwendet werden."
+        },
+        {
+          "name": "_headers",
+          "description": "Gibt die horizontalen und vertikalen Header für die Tabelle an."
+        },
+        { "name": "_min-width", "description": "Gibt an, die minimale Breite der Tabelle an." },
+        {
+          "name": "_pagination",
+          "description": "Gibt an, ob die Daten geteilt in Seiten angezeigt wird."
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "definition": "Die **Tabs**-Komponente wird verwendet, um verwandte Inhalte auf derselben Seite zu organisieren und zwischen ihnen zu navigieren. Tabs sorgen dafür, dass große Inhaltsmengen für Nutzer:innen leichter organisiert werden können. Tabs sind in Registerkartenleisten angeordnet, die als Registerkartengruppen bezeichnet werden, wobei die Registerkartenbeschriftung den Nutzer:innen einen Hinweis darauf gibt, welcher Inhalt angezeigt wird, wenn die Registerkarte ausgewählt wird.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_aria-label",
+          "description": "Gibt den Text an, der die Navigation von anderen Navigationen differenziert."
+        },
+        { "name": "_selected", "description": "Gibt an, welches Tab selektiert sein soll." },
+        {
+          "name": "_tabs",
+          "description": "Gibt die geordnete Liste der Seitenhierarchie in Links an."
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "definition": "Die Komponente **Textarea** stellt ein größeres Eingabefeld für Inhalte zur Verfügung. Im Gegensatz zum\nInputText können hier auch umfangreiche Inhalte eingegeben werden, die auch mit Zeilenumbrüchen versehen sein können.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_access-key",
+          "description": "Gibt an, mit welcher Tastenkombination man das Input auslösen oder fokussieren kann."
+        },
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob die Fehlermeldung vorgelesen werden soll, wenn es eine gibt."
+        },
+        {
+          "name": "_disabled",
+          "description": "Gibt an, ob das Eingabefeld aktiviert oder deaktiviert ist."
+        },
+        { "name": "_error", "description": "Gibt den Text für eine Fehlermeldung an." },
+        {
+          "name": "_has-counter",
+          "description": "Gibt an, ob am unteren Rand des Eingabefeldes die Anzahl der Zeichen angezeigt werden soll."
+        },
+        {
+          "name": "_hide-label",
+          "description": "Gibt an, ob das Eingabefeld kein sichtbares Label haben soll."
+        },
+        { "name": "_hint", "description": "Gibt den Text für eine Hinweistext an." },
+        { "name": "_id", "description": "Gibt die technische ID des Eingabefeldes an." },
+        {
+          "name": "_max-length",
+          "description": "Gibt an, wie viele Zeichen man maximal eingeben kann."
+        },
+        { "name": "_name", "description": "Gibt den technischen Namen des Eingabefeldes an." },
+        {
+          "name": "_placeholder",
+          "description": "Gibt den Platzhalter des Eingabefeldes an, wenn es leer ist."
+        },
+        { "name": "_read-only", "description": "Gibt an, ob das Eingabefeld nur lesend ist." },
+        { "name": "_required", "description": "Gibt an, ob das Eingabefeld ein Pflichtfeld ist." },
+        {
+          "name": "_resize",
+          "description": "Gibt an, ob die Größe des Eingabefeldes geändert werden kann. (https://developer.mozilla.org/de/docs/Web/CSS/resize)"
+        },
+        {
+          "name": "_rows",
+          "description": "Gibt die Anzahl der anzuzeigenden Zeilen des Eingabefeldes an."
+        },
+        { "name": "_tab-index", "description": "Gibt an, welchen Tab-Index dieses Input hat." },
+        {
+          "name": "_touched",
+          "description": "Gibt an, ob dieses Eingabefeld von Nutzer:innen einmal besucht/berührt wurde."
+        },
+        { "name": "_value", "description": "Gibt den Wert des Eingabefeldes an." }
+      ]
+    },
+    {
+      "name": "toast",
+      "definition": "Mit der **Toast**-Komponente geben Sie ein optisches Feedback an die Nutzer:innen. Sie wird nur für einen kurzen Zeitraum am Kopf des Browserfenster angezeigt und verschwindet danach automatisch.\n\nEin **Toast** wird nach dem Laden der Webseite am oberen Rand des Browserfenster für fünf Sekunden angezeigt. Mit Ausblenden des **Toasts** wird dieser automatisch aus dem DOM entfernt. Wird er erneut benötigt, muss er z.B. über eine JavaScript-Funktion nachgeladen werden.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_alert",
+          "description": "Gibt an, ob der Screenreader die Meldung vorlesen soll."
+        },
+        { "name": "_has-closer", "description": "Gibt an, ob der Toast ein Schließen-Icon hat." },
+        { "name": "_heading", "description": "Gibt den Titel der Meldung an." },
+        {
+          "name": "_level",
+          "description": "Gibt an, welchen H-Level von 1 bis 6 die Überschrift hat."
+        },
+        { "name": "_show", "description": "Gibt an, ob der Toast eingeblendet wird." },
+        {
+          "name": "_show-duration",
+          "description": "Gibt an, wie viele Millisekunden der Toast eingeblendet werden soll."
+        },
+        {
+          "name": "_type",
+          "description": "Gibt an, ob es sich um eine Erfolgs-, Info-, Warnung- oder Fehlermeldung handelt."
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "definition": "<kol-alert _type=\"warning\">Die **Tooltip**-Komponente wird innerhalb von KoliBri verwendet und ist nicht dafür vorgesehen in der Anwendungsentwicklung verwendet zu werden. Denn der Tooltip ist nur dann wirklich barrierefrei, wenn von einem Referenzelement auf das Tooltip verwiesen wird.</kol-alert>\n\nDie **Tooltip**-Komponente implementiert das Gegenstück zum `Aria-Label`. Es ist also explizit nur dafür vorgesehen, dem/der Nutzer:in ohne Screenreader die Beschriftung eines Elementes anzuzeigen.\n\nEin geöffneter Tooltip lässt sich mit der `Escape`-Taste schließen, um ggf. überlagerte Seiteninformationen wieder sichtbar zu machen.",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "_align",
+          "description": "Gibt an, ob der Tooltip oben, rechts, unten oder links angezeigt werden soll."
+        },
+        {
+          "name": "_id",
+          "description": "Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird."
+        },
+        {
+          "name": "_label",
+          "description": "Das Label gibt an, welcher Text in dem Tooltip beim Fokussieren oder Maus-drüberfahren angezeigt wird."
+        }
+      ]
+    }
+  ]
+}
