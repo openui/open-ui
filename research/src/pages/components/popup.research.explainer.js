@@ -1,4 +1,3 @@
-import { navigate } from 'gatsby'
 import { useEffect } from 'react'
 
 /**
@@ -10,7 +9,7 @@ import { useEffect } from 'react'
 
 function Page() {
   useEffect(() => {
-    return navigate('/components/popover.research.explainer', { replace: true })
+    return history.replace('/get-involved')
   })
 
   return null

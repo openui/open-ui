@@ -25,7 +25,6 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
   - [Showing and Hiding a Popover](#showing-and-hiding-a-popover)
     - [Declarative Triggers](#declarative-triggers)
     - [Javascript Trigger](#javascript-trigger)
-    - [Page Load Trigger](#page-load-trigger)
     - [CSS Pseudo Class](#css-pseudo-class)
     - [Rendering](#rendering)
     - [Shown vs Hidden Popovers](#shown-vs-hidden-popovers)
@@ -58,6 +57,7 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
   - [Why a content attribute?](#why-a-content-attribute)
   - [Design decisions (via OpenUI)](#design-decisions-via-openui)
   - [Articles](#articles)
+  <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Background
 
@@ -208,20 +208,13 @@ There are several conditions that will cause `showPopover()` and/or `hidePopover
 3. Calling `showPopover()` on a valid popover that is not connected to a document. This will throw an `InvalidStateError` `DOMException`.
 4. Calling `hidePopover()` on a valid popover that is not currently showing. This will throw an `InvalidStateError` `DOMException`.
 
-<<<<<<<< HEAD:research/src/pages/components/popup.research.explainer.md
-
-### Page Load Trigger
-
-========
-
 <!-- Removing until it's back in action -->
 <!-- ### Page Load Trigger
->>>>>>>> main:research/src/pages/components/popover.research.explainer.mdx
 
 As mentioned above, a `<div popover>` will be hidden by default. If it is desired that the popover should be shown automatically upon page load, the `defaultopen` attribute can be applied:
 
 ```html
-<div popover defaultopen></div>
+<div popover defaultopen>
 ```
 
 In this case, the UA will immediately call `showPopover()` on the element, as it is parsed. If multiple such elements exist on the page, only the first such element (in DOM order) on the page will be shown.
@@ -229,21 +222,15 @@ In this case, the UA will immediately call `showPopover()` on the element, as it
 Note that more than one `manual` popover can use `defaultopen` and all such popovers will be shown on load, not just the first one:
 
 ```html
-<div popover="manual" defaultopen>Shown on page load</div>
-<div popover="manual" defaultopen>Also shown on page load</div>
+<div popover=manual defaultopen>Shown on page load</div>
+<div popover=manual defaultopen>Also shown on page load</div>
 ```
 
 The `defaultopen` content attribute can also be accessed via IDL:
 
 ```javascript
-<<<<<<<< HEAD:research/src/pages/components/popup.research.explainer.md
-myDiv.defaultOpen = true
-```
-========
 myDiv.defaultOpen = true;
 ``` -->
-
-> > > > > > > > main:research/src/pages/components/popover.research.explainer.mdx
 
 ### CSS Pseudo Class
 
@@ -310,11 +297,7 @@ The above rules mean that a popover, when not "shown", has `display:none` applie
 }
 ```
 
-# <<<<<<<< HEAD:research/src/pages/components/popup.research.explainer.md
-
 Be mindful when using other stylesheets that you haven't authored. These may set the `display` value on your popover elements. For example, if you use a `menu` element as a `popover` and you use earlier versions of [normalize.css](https://necolas.github.io/normalize.css/). In this case, normalize.css has a rule that sets `display: flex` on `menu` elements.
-
-> > > > > > > > main:research/src/pages/components/popover.research.explainer.mdx
 
 ### Animation of Popovers
 
@@ -356,8 +339,6 @@ The above CSS will result in all popovers fading in and out when they show/hide.
    b. Restore focus to the previously-focused element.
 
    c. Update style. (Animations/transitions start here.)
-
-   d. Call getAnimations() again, remove any that were found in step <span>#</span>1, and then wait until all of the remaining animations finish or are cancelled.
 
    d. Call getAnimations() again, remove any that were found in step <span>#</span>1, and then wait until all of the remaining animations finish or are cancelled.
 
@@ -424,17 +405,11 @@ supportsPopoverType('invalid!') === false
 An event is fired synchronously when a popover is shown or hidden. This event can be used, for example, to populate content for the popover just in time before it is shown, or update server data when it closes. The event provides a `currentState` and `newState` for the popover. The value of these properties can either be "open" or "closed". The events looks like this:
 
 ```javascript
-<<<<<<<< HEAD:research/src/pages/components/popup.research.explainer.md
 const popover = Object.assign(document.createElement('div'), { popover: 'auto' })
-popover.addEventListener('popovershow', () => console.log('Popover is being shown!'))
-popover.addEventListener('popoverhide', () => console.log('Popover is being hidden!'))
-========
-const popover = Object.assign(document.createElement('div'), {popover: 'auto'});
-popover.addEventListener('beforetoggle',({ currentState, newState }) => {
-  if (currentState === "closed") console.info("Popover is closed")
-  if (newState === "open") console.info("Popover is being shown")
-});
->>>>>>>> main:research/src/pages/components/popover.research.explainer.mdx
+popover.addEventListener('beforetoggle', ({ currentState, newState }) => {
+  if (currentState === 'closed') console.info('Popover is closed')
+  if (newState === 'open') console.info('Popover is being shown')
+})
 ```
 
 The `beforetoggle` event is cancellable when the `newState` is equal to "open". Doing so keeps the popover from being shown. You can't cancel the hiding of a popover as that would interfere with the one-at-a-time and light-dismiss behaviors. The `beforetoggle` event is fired synchronously.
