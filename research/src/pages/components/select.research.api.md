@@ -2,7 +2,7 @@
 name: Select Behavior
 
 showInMenu: false
-layout: ../../layouts/Layout.astro
+layout: ../../layouts/ComponentLayout.astro
 ---
 
 ## Overview

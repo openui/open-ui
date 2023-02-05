@@ -3,7 +3,7 @@ menu: Proposals
 name: Popover API (Explainer)
 path: /components/popover.research.explainer
 pathToResearch: /components/popup.research
-layout: ../../layouts/Layout.astro
+layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal), [@jh3y](https://github.com/jh3y)

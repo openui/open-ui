@@ -4,7 +4,7 @@ name: Tabs (Editor's Draft)
 
 pathToResearch: /components/tabs.research
 showInMenu: false
-layout: ../../layouts/Layout.astro
+layout: ../../layouts/ComponentLayout.astro
 ---
 
 # Tabs Component Specification

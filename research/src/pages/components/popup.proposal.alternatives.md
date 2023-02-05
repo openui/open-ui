@@ -1,7 +1,7 @@
 ---
 name: Popup API Alternatives
 showInMenu: false
-layout: ../../layouts/Layout.astro
+layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7)

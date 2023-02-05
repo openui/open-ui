@@ -12,6 +12,7 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       langs: [],
+      wrap: true,
     },
   },
   vite: {

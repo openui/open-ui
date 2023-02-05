@@ -2,7 +2,7 @@
 name: Tabs Markup research
 
 showInMenu: false
-layout: ../../layouts/Layout.astro
+layout: ../../layouts/ComponentLayout.astro
 ---
 
 In this document we will discuss various APIs that we found regarding TabSets, attempt to describe them and, finally, offer our observations and recommendations on how to focus work in open-ui. Note that throughout this document we will use the [terminology as defined in our research](https://open-ui.org/components/tabs.research.parts#parts-and-terminology).
