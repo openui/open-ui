@@ -122,7 +122,7 @@ _Outline the component's structure with a diagram of its render tree. Enumerate 
 
 _Example_
 
-![Example Diagram](../images/spec-diagram-example.png)
+![Example Diagram](/images/spec-diagram-example.png)
 
 #### DOM Structure <a href="#dom-structure" id="dom-structure"></a>
 

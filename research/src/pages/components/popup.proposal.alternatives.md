@@ -418,7 +418,7 @@ The [Attribute solution for anchoring](#anchoring-the-anchor-attribute-1) would 
 
 #### Display Ordering and the `initiallyopen` Attribute
 
-The `<popup>` proposal had an `initiallyopen` attribute which could be used to show the `<popup>` upon page load. [That original proposal](https://open-ui.org/components/popup#the-initiallyopen-attribute) should still be usable in the context of a Javascript API, with very few changes.
+The `<popup>` proposal had an `initiallyopen` attribute which could be used to show the `<popup>` upon page load. [That original proposal](https://open-ui.org/components/popup.proposal-v1#the-initiallyopen-attribute) should still be usable in the context of a Javascript API, with very few changes.
 
 #### Accessibility / Semantics
 
