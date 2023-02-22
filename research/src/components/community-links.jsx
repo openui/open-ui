@@ -9,12 +9,10 @@ const iconStyle = {
   width: '16px',
 }
 
-const linkStyle = { color: 'inherit', display: 'flex', alignItems: 'center' }
-
 export default function CommunityLinks({ className = '' }) {
   return (
     <div className={'community-links ' + className}>
-      <a href={githubURL} target="_blank" rel="noreferrer noopener" style={linkStyle}>
+      <a href={githubURL} target="_blank" rel="noreferrer noopener">
         <FontAwesomeIcon style={iconStyle} icon={faGithub} /> GitHub
       </a>
 
@@ -22,9 +20,8 @@ export default function CommunityLinks({ className = '' }) {
         href="https://discord.gg/DEWjhSw"
         target="_blank"
         rel="noreferrer noopener"
-        style={linkStyle}
       >
-        <FontAwesomeIcon style={{ ...iconStyle, marginLeft: '1em' }} icon={faDiscord} /> Discord
+        <FontAwesomeIcon style={iconStyle} icon={faDiscord} /> Discord
       </a>
     </div>
   )

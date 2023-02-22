@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import './anatomy.css'
 
 import { anatomiesByComponent } from '../sources'
 
@@ -8,16 +9,16 @@ const Anatomy = ({ component }) => {
 
   if (_.isEmpty(anatomy)) {
     return (
-      <div style={{ padding: '1em', marginBottom: '1em', color: '#555', background: '#f2f2f2' }}>
+      <div className="empty-anatomy">
         None of the {component} JSON <code>/resources</code> define an anatomy.
       </div>
     )
   }
 
   return (
-    <ul style={{ marginLeft: 0 }}>
+    <ul className="anatomy">
       {_.map(anatomy, ({ name }) => (
-        <li key={name} style={{ listStyleType: 'none' }}>
+        <li key={name}>
           {name}
         </li>
       ))}

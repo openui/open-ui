@@ -1,8 +1,6 @@
 import React from 'react'
 
 const ComponentLayout = ({ children, frontmatter }) => {
-
-  console.log('',frontmatter.pathToResearch)
   return (
     <>
       <div style={{ float: 'right', marginLeft: 'auto', fontSize: '1rem' }}>

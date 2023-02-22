@@ -14,7 +14,7 @@ const ComponentCoverage = ({ component }) => {
   return (
     <div>
       <h2>Names</h2>
-      <ul style={{ marginLeft: 0 }}>
+      <ul>
         {_.map(withDifferentNamesUniq, (component, i) => {
           const components = withDifferentNamesGrouped[component.name]
           return (
