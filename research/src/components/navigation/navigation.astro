@@ -83,7 +83,7 @@ const routesToNotPrefetch = ['/research/component-matrix']
           <ul>{groupedNodes[menu].map(item => {
             const shouldPrefetch = !routesToNotPrefetch.includes(item.url)
 
-            return <NavigationItem item={item} shouldPrefetch={false} />
+            return <NavigationItem item={item} shouldPrefetch={shouldPrefetch} />
           })}
           </ul>
         </div>
