@@ -15,7 +15,7 @@ function ToggleMenuButton() {
       aria-label="Toggle menu"
       title="Toggle menu"
       onClick={onToggleMenu}
-      aria-expanded={isMenuOpen ? 'true' : 'false'}
+      aria-expanded={$isMenuOpen ? 'true' : 'false'}
       aria-controls="site-nav"
     >
       <FontAwesomeIcon icon={faBars} size="lg" />

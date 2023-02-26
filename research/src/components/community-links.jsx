@@ -12,13 +12,12 @@ const iconStyle = {
 export default function CommunityLinks({ className = '' }) {
   return (
     <div className={'community-links ' + className}>
-      <a href={githubURL} target="_blank" rel="noreferrer noopener">
+      <a href={githubURL} rel="noreferrer noopener">
         <FontAwesomeIcon style={iconStyle} icon={faGithub} /> GitHub
       </a>
 
       <a
         href="https://discord.gg/DEWjhSw"
-        target="_blank"
         rel="noreferrer noopener"
       >
         <FontAwesomeIcon style={iconStyle} icon={faDiscord} /> Discord
