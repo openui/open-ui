@@ -57,7 +57,6 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
   - [Why a content attribute?](#why-a-content-attribute)
   - [Design decisions (via OpenUI)](#design-decisions-via-openui)
   - [Articles](#articles)
-  <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Background
 
@@ -563,9 +562,7 @@ This section contains several HTML examples, showing how various UI elements mig
 
 ```html
 <button popovertoggletarget="datepicker">Pick a date</button>
-<my-date-picker role="dialog" id="datepicker" popover>
-  ...date picker contents...
-</my-date-picker>
+<my-date-picker role="dialog" id="datepicker" popover>...date picker contents...</my-date-picker>
 
 <!-- No script - the popovertoggletarget attribute takes care of activation, and
      the `popover` attribute takes care of the popover behavior. -->
@@ -691,9 +688,7 @@ In an alternative proposal where the popover behavior is enabled via a special e
 
 ```html
 <popup role="dialog">
-  <popup role="list">
-    ...etc...
-  </popup>
+  <popup role="list">...etc...</popup>
 </popup>
 ```
 
