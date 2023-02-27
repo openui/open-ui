@@ -1,0 +1,37 @@
+---
+import Layout from "./Layout.astro";
+
+const { frontmatter = {} } = Astro.props
+const { name, pathToProposal, pathToResearch } = frontmatter
+---
+
+<style>
+  .links {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .links > .link  {
+    margin-left: 0.5rem;
+  }
+</style>
+
+<Layout>
+  <div class="links">
+    {pathToResearch && (
+      <a
+        class="link"
+        href={pathToResearch}
+      >
+        View Research
+      </a>
+    )}
+    {pathToProposal && (
+      <a class="link" href={pathToProposal}>
+        View Proposal
+      </a>
+    )}
+  </div>
+  <h1>{name}</h1>
+  <slot />
+</Layout

@@ -1,0 +1,31 @@
+{
+  "$id": "https://example.com/address.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "An address similar to http://microformats.org/wiki/h-card",
+  "type": "object",
+  "lastUpdated": "string",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "This is the name of the design system."
+    },
+    "description": {
+      "type": "string",
+      "description": "This is the description the design system uses for itself, usually a tag line on a home page."
+    },
+    "url": {
+      "type": "string",
+      "description": "The entity funding the design system."
+    },
+    "by": {
+      "type": "string",
+      "description": "Use `development` if you're adding components from an engineering resource or `development` if from a design resource."
+    },
+    "components": {
+      "type": "array",
+      "description": "Exhaustive list of UI components (excluding utilities) in the design system.",
+      "items": { "$ref": "./component.schema.json" }
+    }
+  },
+  "required": ["name", "description", "url", "by", "components"]
+}

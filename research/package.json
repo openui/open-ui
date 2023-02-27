@@ -12,10 +12,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "gatsby build",
-    "clean": "gatsby clean",
-    "serve": "gatsby serve",
-    "start": "gatsby develop"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "husky": {
     "hooks": {
@@ -28,7 +28,7 @@
       "prettier --write",
       "git add"
     ],
-    "**/*.{json,json5}": [
+    "**/*.json": [
       "prettier --parser json --write",
       "git add"
     ],
@@ -41,40 +41,33 @@
       "git add"
     ]
   },
+  "devDependencies": {
+    "@astrojs/mdx": "^0.11.6",
+    "@astrojs/react": "^1.2.2",
+    "@astrojs/sitemap": "^0.2.6",
+    "astro": "^1.6.10",
+    "eslint": "^8.18.0",
+    "eslint-plugin-react": "^7.30.0",
+    "prettier-plugin-astro": "^0.5.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "dependencies": {
+    "@astrojs/prefetch": "^0.1.1",
     "@emotion/core": "^10.0.28",
+    "@fontsource/cabin": "^4.5.9",
+    "@fontsource/source-sans-pro": "^4.5.11",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.15",
-    "@mdx-js/mdx": "^1.6.22",
-    "@mdx-js/react": "^1.6.22",
-    "anchor-js": "^4.3.1",
-    "gatsby": "^3.11.1",
-    "gatsby-plugin-advanced-sitemap": "^2.0.0",
-    "gatsby-plugin-fontawesome-css": "^1.1.0",
-    "gatsby-plugin-manifest": "^3.11.0",
-    "gatsby-plugin-mdx": "^2.11.0",
-    "gatsby-plugin-offline": "^4.11.0",
-    "gatsby-plugin-react-helmet": "^4.11.0",
-    "gatsby-plugin-remove-trailing-slashes": "^3.11.0",
-    "gatsby-plugin-sharp": "3.11.0",
-    "gatsby-plugin-typography": "^3.11.0",
-    "gatsby-source-filesystem": "^3.11.0",
+    "@nanostores/react": "^0.4.0",
+    "astro-compress": "^1.1.10",
+    "astro-icon": "^0.7.3",
     "husky": "^4.2.3",
-    "json5-loader": "^4.0.1",
     "lint-staged": "^11.1.2",
     "lodash": "^4.17.21",
-    "prettier": "^2.0.4",
-    "prism-react-renderer": "^1.2.1",
-    "prismjs": "^1.27.0",
-    "prop-types": "^15.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-helmet": "^6.1.0",
-    "react-typography": "^0.16.20",
-    "remark-emoji": "^2.1.0",
-    "remark-images": "^2.0.0",
-    "typography": "^0.16.21"
+    "nanostores": "^0.7.1",
+    "prettier": "^2.0.4"
   }
 }

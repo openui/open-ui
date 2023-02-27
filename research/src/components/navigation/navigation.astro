@@ -1,0 +1,93 @@
+---
+import _ from 'lodash'
+import CommunityLinks from '../community-links'
+import NavigationContainer from './navigation-container'
+import NavigationItem from './navigation-item.astro'
+
+const posts = await Astro.glob('../../pages/**/*.(md|mdx)');
+const postsForNav = posts.filter(({ frontmatter }) => !!frontmatter.name).filter(({ frontmatter }) => frontmatter.showInMenu !== false);  
+const [menuNodes] = _.partition(postsForNav, "frontmatter.menu");
+const sortedMenuNodes = menuNodes.sort((a, b) => {
+  return a.frontmatter.name.localeCompare(b.frontmatter.name)
+})
+
+const groupedNodes = _.groupBy(sortedMenuNodes, "frontmatter.menu")
+const menuHeadings = ["Overview", "Documentation", "Proposals", "Research"]
+
+// This is due to the component matrix being 2.2mb page size
+const routesToNotPrefetch = ['/research/component-matrix']
+
+---
+
+<style>
+  .wrapper {
+    top: 1em;
+    margin: 0;
+  }
+
+  .home-wrapper {
+    margin: 0;
+    list-style-type: none;
+  }
+
+  a {
+    display: block;
+    padding: 0.25em 1em 0.25em 0.5em;
+    margin: 0;
+    color: inherit;
+    border-left: 2px solid transparent;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  ul {
+    margin: 0.25em 0 1.5em 0;
+    padding: 0
+  }
+  
+  .divider {
+    margin: 1rem;
+  }
+
+  h3 {
+    display: inline-block;
+    opacity: 0.75;
+    font-weight: bold;
+    font-size: 1em;
+    margin: 0 0 0 calc(2px + 0.5em); /* align with items */
+  }
+</style>
+
+<NavigationContainer client:load>
+  <CommunityLinks className="mobile" />
+
+  <div class="wrapper">
+    <ul class="home-wrapper">
+        <NavigationItem shouldPrefetch item={{
+          url: '/',
+          frontmatter: {
+            name: 'Home'
+          }
+        }} />
+        </ul>
+    
+
+    <div class="divider" />
+
+    {menuHeadings.map((menu) => {
+      return (  
+        <div>
+          <h3>
+            {menu}
+          </h3>
+          <ul>{groupedNodes[menu].map(item => {
+            const shouldPrefetch = !routesToNotPrefetch.includes(item.url)
+
+            return <NavigationItem item={item} shouldPrefetch={shouldPrefetch} />
+          })}
+          </ul>
+        </div>
+      )
+    })}
+  </div>
+</NavigationContainer>

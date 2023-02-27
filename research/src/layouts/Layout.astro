@@ -1,0 +1,37 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Header from "../components/header.astro";
+import Navigation from "../components/navigation/navigation.astro";
+
+const { frontmatter = {} } = Astro.props
+const { name } = frontmatter
+const title = name ? `${name} | Open UI` : 'Open UI'
+---
+
+<style>
+  .page-wrapper {
+  display: flex;
+  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+@media (max-width: 640px) {
+  .page-wrapper {
+    flex-direction: column;
+  }
+}
+
+</style>
+
+<BaseLayout title={title}>
+  <div>
+    <Header />
+    <div class="page-wrapper">
+      <Navigation />
+      <main class="page-content">
+        <slot />
+      </main>
+    </div>
+  </div>
+</BaseLayout>
