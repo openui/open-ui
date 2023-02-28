@@ -32,3 +32,20 @@ nvm install       # install the version of node specified in `.nvmrc`
 ## Deployments
 
 The site is deployed automatically on merge to `main`.
+
+## Contributing
+
+### Uses Astro
+
+### Utilise the CUBE css methodology
+
+## Routing
+
+In an older version of the repo we manually defined the routes of each page. As we're migrating to Astro, we can leverage file-based routing. To ensure that we don't break pre-existing routes, the folder heirarchy has been updated to match the pre-existing route hierarchy.
+
+You can learn more about routing in Astro using the [documentation](https://docs.astro.build/en/core-concepts/routing/)
+
+This means that there is some inconsistencies in the following areas:
+
+- The hierarchies displayed in the navigation bar don't match with the folder hierarchies in the repo. We have to manually specify the heading a page falls under within the navigation bar using the "menu" property in frontmatter.
+- The names for the research component files are inconsistent, to prevent broken links. The majority have the pattern `[component].research.md`, but there are a small handful that are simply `[component].md`.

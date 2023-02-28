@@ -1,0 +1,48 @@
+---
+const { item, shouldPrefetch } = Astro.props
+const currentPath = Astro.url.pathname
+
+const removeTrailingSlash = (str) => {
+  return str.replace(/\/+$/, '');
+}
+
+const removeLeadingSlash = (str) => {
+  return str.replace(/^\//, '');
+}
+
+const formattedPath = removeLeadingSlash(removeTrailingSlash(currentPath))
+const formattedUrl = removeLeadingSlash(removeTrailingSlash(item.url))
+const isCurrent = formattedPath === formattedUrl
+const relVal = shouldPrefetch ? 'prefetch' : ''
+---
+
+<li>
+  <a href={item.url} aria-current={`${isCurrent ? 'page' : 'false'}`} rel={relVal}>
+    {item.frontmatter.name}
+  </a>
+</li>
+
+
+<style>
+  li {
+    margin: 0;
+    list-style-type: none;
+  }
+
+  a {
+    display: block;
+    padding: 0.25em 1em 0.25em 0.5em;
+    text-decoration: none;
+    margin: 0;
+    color: inherit;
+    border-left: 2px solid transparent;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  a[aria-current='page'] {
+    border-left-color: #00a453;
+    background-color: #f2f2f2;
+  }
+
+</style>
