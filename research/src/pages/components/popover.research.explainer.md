@@ -300,7 +300,7 @@ Be mindful when using other stylesheets that you haven't authored. These may set
 
 ### Animation of Popovers
 
-An early version of the Popover API included custom behaviors to make animations and transitions of popovers trivially easy. During the standardization process, however, this functionality was removed, with the intention to replace it with a more general capability for the web platform that also applies to other top layer elements. This section describes how that new set of capabilities will work together to help animate popovers (and modal `<dialog>`s).
+An early version of the Popover API included custom behaviors to make animations and transitions of popovers trivially easy. During the standardization process, however, this functionality was removed, with the intention to replace it with a more general capability for the web platform that also applies to other top layer elements. This section describes how that new set of capabilities will work together to help animate popovers (and modal `<dialog>`s). There is also [a separate explainer](https://github.com/chrishtr/rendering/blob/master/entry-exit-animations.md) for this set of features.
 
 The new capabilities include the ones described in these five CSSWG issues:
 
