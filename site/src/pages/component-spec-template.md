@@ -108,14 +108,12 @@ _What classes does the component add to the host element?_
 | Class Name | Description |
 | ---------- | ----------- |
 
-
 #### Slotted Content Classes <a href="#slotted-content-classes" id="slotted-content-classes"></a>
 
 _What classes on slotted content does the component respond to?_
 
 | Class Name | Description |
 | ---------- | ----------- |
-
 
 #### CSS Parts <a href="#css-parts" id="css-parts"></a>
 
