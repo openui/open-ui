@@ -1,6 +1,7 @@
 import React from 'react'
 import { sources } from '../sources'
 import _ from 'lodash'
+import './design-systems-list.css'
 
 const DesignSystemsList = (props) => {
   const colStyle = { paddingTop: '1rem' }
@@ -13,7 +14,7 @@ const DesignSystemsList = (props) => {
             <a target="_blank" rel="noopener noreferrer" href={source.url}>
               {source.name}
             </a>
-          </strong>{' '}
+          </strong>
           by {source.by}
           <div style={descriptionStyle}>{source.description}</div>
         </div>
