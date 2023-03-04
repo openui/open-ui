@@ -1,0 +1,36 @@
+---
+import Logo from './logo.astro'
+import CommunityLinks from './community-links'
+import ToggleMenuButton from './toggle-menu-button'
+---
+<style>
+  header {
+    background: #333;
+    margin-bottom: 2rem;
+    color: #eee;
+  }
+
+  .logo-wrapper {
+    flex: 1;
+  }
+
+  .content {
+    display: flex;
+    padding: 1rem;
+    margin: 0 auto;
+    max-width: 1200px;
+    width: 100%;
+    align-items: center;
+  }
+</style>
+
+<header>
+  <div class="content">
+    <span class="logo-wrapper">
+      <Logo />
+    </span>
+
+    <CommunityLinks />
+    <ToggleMenuButton client:load />
+  </div>
+</header>
