@@ -1,53 +1,39 @@
 # Open UI
+> **Tip:** This repo is in development. Ideas and patterns you'll see here are in-progress. You are encouraged to join in and help shape the foundation of Open UI.
 
-> The purpose of [Open UI](https://open-ui.org/) to the web platform is to allow web developers to style and extend built-in web UI controls, such as \<select> dropdowns, checkboxes, radio buttons, and date/color pickers.
+**:rocket: Mission:** Maintain an open standard for UI and promote its adherence and adoption.
 
-You can learn how to contribute by reading our [getting involved](https://open-ui.org/get-involved) guide. Our guide runs through the entire standardization process, from research, to review, to completion
+**:busts_in_silhouette: Audience:** The broader UI community including designers, engineers, and managers.
 
-## Running the repo
+Learn more at https://open-ui.org.
 
-Prerequisites:
+## Why?
 
-1. [Install Node.js](https://nodejs.org), (ensure the version of Node you use is specified in the .nvmrc file)
-2. [Install the yarn package manager](https://yarnpkg.com/getting-started/install)
+We identify these issues in the UI community:
 
-Other useful tools:
+- **Effort** - Engineers waste countless hours of human effort duplicating work that could be shared.
+- **Support** - Accessible users are often left with subpar experiences, or are entirely unsupported.
+- **Consistency** - User experience is often inconsistent and compromised between UIs due to isolated development practices.
+- **Portability** - The lack of a shared language for UI limits our ability as a community to communicate, collaborate, and share.
+- **Timing** - UI's have existed long enough to observe and codify a shared standard; the time is right.
 
-1. [Install nvm](https://github.com/nvm-sh/nvm), to help manage your installed node versions.
+Open UI is a open source collective effort to standardize names and anatomies for common UI patterns.
 
-## Useful Commands
+## How?
 
-Run these commands from the context of this `research` directory, as opposed to the root directory. This list contains the most useful commands. You should run `yarn run` to see all scripts.
+There are two pillars of focus here:
+  - `/research` documenting UI as it has naturally emerged
+  - `/platform` representing browser testing for component support against common use cases using standards based approaches
 
-```sh
-yarn              # install dependencies
+These two will iterate in a cyclic collaboration to define and develop standardized UI.
+Refer to the resources in each effort for more information.
 
-yarn start        # run docs
-yarn build        # build docs
+## Meetings
 
-nvm use           # use the correct version of `node`
-nvm install       # install the version of node specified in `.nvmrc`
-```
-
-## Deployments
-
-The site is deployed automatically on merge to `main`.
+To view the latest information on meetings and their minutes, please visit our [meetings](meetings/telecon/meetings.md) page.
 
 ## Contributing
 
-### Uses Astro
-
-The Open UI site is built on top of [Astro](https://astro.build/).
-
-## Routing
-
-Before we migrated to Astro, we manually defined the routes of each page. Because Astro uses file-based routing, it was important to not break pre-existing routes so the folder heirarchy has been updated to match the pre-existing route hierarchy.
-
-This means that there is some inconsistencies in the following areas:
-
-- The hierarchies displayed in the navigation bar don't match with the folder hierarchies in the repo. We have to manually specify the heading a page falls under within the navigation bar using the "menu" property in frontmatter.
-- The names for the research component files are inconsistent, to prevent broken links. The majority have the pattern `[component].research.md`, but there are a small handful that are simply `[component].md`.
-
-We can fix this by migrating all pages to their rightful pages while adding any necessary redirects to the `_redirects` file.
-
-You can learn more about routing in Astro using the [documentation](https://docs.astro.build/en/core-concepts/routing/)
+This repository is being used for work in the W3C Open UI Community Group, governed by the [W3C Community License
+Agreement (CLA)](http://www.w3.org/community/about/agreements/cla/). To make substantive contributions,
+you must join the [Open UI CG](https://www.w3.org/community/open-ui/) prior to making a PR.
