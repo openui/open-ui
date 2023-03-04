@@ -1,0 +1,92 @@
+
+.component-anatomy {
+  font-weight: bold;
+}
+
+.component-anatomy .slot {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.component-anatomy li {
+  margin: 1em;
+}
+
+.component-anatomy code {
+  background: #eee;
+  border: 1px solid #ccc;
+  padding: 0.2em;
+}
+
+.component-anatomy .flex {
+  display: flex;
+}
+
+.component-anatomy .flex.grow > * {
+  flex: 1 1 auto;
+}
+
+/* Anatomy boxes */
+
+.component-anatomy .host,
+.component-anatomy .slot,
+.component-anatomy .part,
+.component-anatomy .element {
+  background: rgba(12, 85, 87, 0.2);
+  min-height: 25px;
+  border: 1px solid black;
+  display: block;
+  margin: 1em;
+  padding: 0.5em;
+  position: relative;
+}
+
+.component-anatomy .part,
+.component-anatomy .element {
+  border: 2px solid black;
+}
+
+.component-anatomy .host::before,
+.component-anatomy .slot::before,
+.component-anatomy .part::before,
+.anatomy-label::before {
+  display: block;
+  position: absolute;
+  top: 0.1em;
+  font-size: 0.7em;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 0.25em 0.5em;
+  background: rgba(25, 25, 25, 0.6);
+  color: white;
+  left: 0;
+  top: 0;
+  content: attr(data-name);
+}
+
+.component-anatomy .slot::before {
+  content: 'slot';
+}
+
+.component-anatomy .slot:not([data-name=''])::before {
+  content: attr(data-name) ' [slot]';
+}
+
+.component-anatomy .host {
+  border: 5px solid black;
+}
+
+.component-anatomy .slot {
+  text-align: center;
+  border: 1px dashed black;
+  color: black;
+}
+
+#show-slots:not(:checked) ~ .component-anatomy .slot::before {
+  display: none;
+}
+
+#show-slots:not(:checked) ~ .component-anatomy .slot {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
+}

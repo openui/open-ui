@@ -1,0 +1,34 @@
+.false {
+  background: #d04747;
+  color: white;
+}
+
+.true {
+  background: #a3edac;
+}
+
+table.research td:not(.true):not(.false) {
+  background: #ffffca;
+}
+
+table.nowrap-first-column td:nth-child(1):not(.false):not(.true) {
+  background: initial;
+}
+
+/* Should be applied to a td/th 
+if you want to have it be the max-content
+width */
+table.research .nowrap,
+table.nowrap-first-column td:nth-child(1) {
+  width: 1%;
+  white-space: nowrap;
+}
+
+table.research td.center,
+table.research th.center {
+  text-align: center;
+}
+
+.bold-text {
+  font-weight: bold;
+}
