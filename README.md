@@ -21,12 +21,7 @@ Open UI is a open source collective effort to standardize names and anatomies fo
 
 ## How?
 
-There are two pillars of focus here:
-  - `/research` documenting UI as it has naturally emerged
-  - `/platform` representing browser testing for component support against common use cases using standards based approaches
-
-These two will iterate in a cyclic collaboration to define and develop standardized UI.
-Refer to the resources in each effort for more information.
+- To be updated based on [the reoslution of the updated charter](https://github.com/openui/open-ui/issues/670)
 
 ## Meetings
 
@@ -37,3 +32,6 @@ To view the latest information on meetings and their minutes, please visit our [
 This repository is being used for work in the W3C Open UI Community Group, governed by the [W3C Community License
 Agreement (CLA)](http://www.w3.org/community/about/agreements/cla/). To make substantive contributions,
 you must join the [Open UI CG](https://www.w3.org/community/open-ui/) prior to making a PR.
+
+To make changes to the Open UI site, like a content change or a UI fix, you can get started by following the [site's instructions](site/README.md)
+
