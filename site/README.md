@@ -37,15 +37,17 @@ The site is deployed automatically on merge to `main`.
 
 ### Uses Astro
 
-### Utilise the CUBE css methodology
+The Open UI site is built on top of [Astro](https://astro.build/).
 
 ## Routing
 
-In an older version of the repo we manually defined the routes of each page. As we're migrating to Astro, we can leverage file-based routing. To ensure that we don't break pre-existing routes, the folder heirarchy has been updated to match the pre-existing route hierarchy.
-
-You can learn more about routing in Astro using the [documentation](https://docs.astro.build/en/core-concepts/routing/)
+Before we migrated to Astro, we manually defined the routes of each page. Because Astro uses file-based routing, it was important to not break pre-existing routes so the folder heirarchy has been updated to match the pre-existing route hierarchy.
 
 This means that there is some inconsistencies in the following areas:
 
 - The hierarchies displayed in the navigation bar don't match with the folder hierarchies in the repo. We have to manually specify the heading a page falls under within the navigation bar using the "menu" property in frontmatter.
 - The names for the research component files are inconsistent, to prevent broken links. The majority have the pattern `[component].research.md`, but there are a small handful that are simply `[component].md`.
+
+We can fix this by migrating all pages to their rightful pages while adding any necessary redirects to the `_redirects` file.
+
+You can learn more about routing in Astro using the [documentation](https://docs.astro.build/en/core-concepts/routing/)
