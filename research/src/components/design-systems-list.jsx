@@ -4,19 +4,17 @@ import _ from 'lodash'
 import './design-systems-list.css'
 
 const DesignSystemsList = (props) => {
-  const colStyle = { paddingTop: '1rem' }
-  const descriptionStyle = { paddingTop: '0.25rem', paddingBottom: '0.25rem' }
   return (
     <div>
       {_.map(sources, (source) => (
-        <div key={source.name} style={colStyle}>
+        <div key={source.name} className='design-system-item'>
           <strong>
             <a target="_blank" rel="noopener noreferrer" href={source.url}>
               {source.name}
             </a>
           </strong>
           by {source.by}
-          <div style={descriptionStyle}>{source.description}</div>
+          <div className='design-system-description'>{source.description}</div>
         </div>
       ))}
     </div>

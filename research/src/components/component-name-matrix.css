@@ -1,0 +1,61 @@
+.component-name-matrix {
+    display: flex;
+    text-align: center;
+    font-size: 12px;
+}
+
+.component-name-matrix .column {
+    flex: 1;
+    width: 2rem;
+}
+
+.component-name-matrix .header {
+    position: sticky;
+    display: block;
+    padding: 1rem 0 0.5rem 0;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.component-name-matrix .cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    height: 2rem;
+    line-height: 1.2;
+    -----border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.component-name-matrix .cell.found {
+    background: rgba(0, 255, 0, 0.1);
+    color: rgb(0, 64, 0);
+}
+.component-name-matrix .cell.not-found {
+    background: rgba(255, 0, 0, 0.1);
+    color: rgb(64, 0, 0);
+
+}
+.component-name-matrix a.cell {
+    text-decoration: none;
+}
+.component-name-matrix .cell.found span {
+    max-width: 55px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.percentage-bar {
+    display: block;
+    background: limegreen;
+    height: 4px;
+    float: left;
+}
