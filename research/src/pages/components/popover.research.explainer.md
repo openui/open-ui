@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal), [@jh3y](https://github.com/jh3y)
-- January 20, 2023
+- March 2, 2023
 
 Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
 
@@ -113,7 +113,7 @@ Given these use cases, it's important to call out the technical differences betw
 - A `<dialog>` element always has **`role=dialog`**, while the `popover` attribute can be applied to the **most-semantically-relevant HTML element**, including the `<dialog>` element itself: `<dialog popover>`.
 - The popover API comes with some **"nice to have's"**:
   - popovers are easy to animate both the show and hide transitions, via pure CSS. In contrast, JS is required in order to animate `dialog.close()`.
-  - popovers work with the invoking attributes (e.g. `popovertoggletarget`) to declaratively show/hide them with pure HTML. In contrast, JS is required to show/close a `<dialog>`.
+  - popovers work with the invoking attributes (e.g. `popovertarget`) to declaratively show/hide them with pure HTML. In contrast, JS is required to show/close a `<dialog>`.
   - popovers fire both a "popovershow" and a "popoverhide" event. In contrast, a `<dialog>` only fires `cancel` and `close`, but no event is fired when it is shown.
 
 For the above reasons, it seems clear that for use cases that need a **non-modal** dialog which has popover behavior, a `<dialog popover>` (with the most appropriate value for the `popover` attribute) should be preferred. Importantly, if the use case is **not** meant to be exposed as a "dialog", then another (non-`<dialog>`) element should be used with the `popover` attribute, or a generic `<div popover role=something>` should be used with the appropriate role added.
@@ -155,10 +155,10 @@ There are several ways to "show" a popover, and they are discussed in this secti
 
 ### Declarative Triggers
 
-A common design pattern is to have a button which makes a popover visible. To facilitate this pattern, and avoid the need for Javascript in this common case, three content attributes (`popovertoggletarget`, `popovershowtarget`, and `popoverhidetarget`) allow the developer to declaratively toggle, show, or hide a popover. To do so, the attribute's value should be set to the idref of another element:
+A common design pattern is to have a button which makes a popover visible. To facilitate this pattern, and avoid the need for Javascript in this common case, two content attributes (`popovertarget` and `popovertargetaction`) allow the developer to declaratively toggle, show, or hide a popover. To do so, the attribute's value should be set to the idref of another element:
 
 ```html
-<button popovertoggletarget="foo">Toggle the popover</button>
+<button popovertarget="foo">Toggle the popover</button>
 <div id="foo" popover>Popover content</div>
 ```
 
@@ -167,45 +167,45 @@ When the button in this example is activated, the UA will call `.showPopover()` 
 If the desire is to have a button that only shows or only hides a popover, the following markup can be used:
 
 ```html
-<button popovertoggletarget="foo">Toggle the popover</button>
-<button popovershowtarget="foo">This button only shows the popover</button>
-<button popoverhidetarget="foo">This button only hides the popover</button>
+<button popovertarget="foo">Toggle the popover</button>
+<button popovertarget="foo" popovertargetaction="show">This button only shows the popover</button>
+<button popovertarget="foo" popovertargetaction="hide">This button only hides the popover</button>
 <div id="foo" popover>Popover content</div>
 ```
 
-Note that all three attributes can be used together like this, pointing to the same element. However, using more than one triggering attribute on **a single button** is not recommended.
+Note that the default value for `popovertargetaction` is "toggle" which can also be explicitly specified.
 
-When the `popovertoggletarget`, `popovershowtarget`, or `popoverhidetarget` attributes are applied to an activating element, the UA will automatically map this attribute with the appropriate accessibility semantics. For instance, the initial implementation will expose the appropriate `aria-expanded` state based on whether the popover is shown or hidden. As the popover API matures, there may need to be further discussion with the ARIA working group to determine if additional ARIA semantics, if any, are necessary.
+When the `popovertarget` attribute is applied to an activating element, the UA will automatically map this element with the appropriate accessibility semantics. For instance, the initial implementation will expose the appropriate `aria-expanded` state based on whether the popover is shown or hidden. As the popover API matures, there may need to be further discussion with the ARIA working group to determine if additional ARIA semantics, if any, are necessary.
 
-These attributes are only supported on buttons (including `<button>`, `<input type=button>`, etc.) as long as the button would not otherwise submit a form. For example, this is not supported: `<form><input type=submit popovertoggletarget=foo></form>`. In that case, the form would be submitted, and the popover would **not** be toggled.
+These attributes are only supported on buttons (including `<button>`, `<input type=button>`, etc.) as long as the button would not otherwise submit a form. For example, this is not supported: `<form><input type=submit popovertarget=foo></form>`. In that case, the form would be submitted, and the popover would **not** be toggled.
 
 The declarative trigger attributes can also be accessed via IDL:
 
 ```javascript
-// These set the IDREF for the target element, and not the element itself:
-myButton.popoverToggleTarget = idref
-myButton.popoverShowTarget = idref
-myButton.popoverHideTarget = idref
+// Note that `popoverTargetElement` directly sets an element reference:
+myButton.popoverTargetElement = myElement;
+myButton.popoverTargetAction = "show";
 ```
 
 ### Javascript Trigger
 
-To show and hide the popover via Javascript, there are two methods on HTMLElement:
+To show and hide the popover via Javascript, there are three methods on HTMLElement:
 
 ```javascript
-const popover = document.querySelector('[popover]')
-popover.showPopover() // Show the popover
-popover.hidePopover() // Hide a visible popover
+const popover = document.querySelector('[popover]');
+popover.showPopover();   // Show the popover
+popover.hidePopover();   // Hide a visible popover
+popover.togglePopover(); // Toggle the open/closed state of a popover
 ```
 
 Calling `showPopover()` on an element that has a valid value for the `popover` attribute will cause the UA to remove the `display:none` rule from the element and move it to the top layer. Calling `hidePopover()` on a showing popover will remove it from the top layer, and re-apply `display:none`.
 
-There are several conditions that will cause `showPopover()` and/or `hidePopover()` to throw an exception:
+There are several conditions that will cause `showPopover()`, `hidePopover()`, and `togglePopover()` to throw an exception:
 
-1. Calling `showPopover()` or `hidePopover()` on an element that does not contain a [valid value](#html-content-attribute) of the `popover` attribute. This will throw a `NotSupportedError` `DOMException`.
-2. Calling `showPopover()` on a valid popover that is already in the showing state. This will throw an `InvalidStateError` `DOMException`.
-3. Calling `showPopover()` on a valid popover that is not connected to a document. This will throw an `InvalidStateError` `DOMException`.
-4. Calling `hidePopover()` on a valid popover that is not currently showing. This will throw an `InvalidStateError` `DOMException`.
+1. Calling `showPopover()` on a valid popover that is already in the showing state. This will throw an `InvalidStateError` `DOMException`.
+2. Calling `hidePopover()` on a valid popover that is not currently showing. This will throw an `InvalidStateError` `DOMException`.
+3. Calling any of the three methods on an element that does not contain a [valid value](#html-content-attribute) of the `popover` attribute. This will throw a `NotSupportedError` `DOMException`.
+4. Calling any of the three methods on a valid popover that is not connected to a document. This will throw an `InvalidStateError` `DOMException`.
 
 <!-- Removing until it's back in action -->
 <!-- ### Page Load Trigger
@@ -300,61 +300,56 @@ Be mindful when using other stylesheets that you haven't authored. These may set
 
 ### Animation of Popovers
 
-The show and hide behavior for popovers is designed to make animation of the show/hide trivially easy:
+An early version of the Popover API included custom behaviors to make animations and transitions of popovers trivially easy. During the standardization process, however, this functionality was removed, with the intention to replace it with a more general capability for the web platform that also applies to other top layer elements. This section describes how that new set of capabilities will work together to help animate popovers (and modal `<dialog>`s). There is also [a separate explainer](https://github.com/chrishtr/rendering/blob/master/entry-exit-animations.md) for this set of features.
+
+The new capabilities include the ones described in these five CSSWG issues:
+
+- https://github.com/w3c/csswg-drafts/issues/4441 (animation of discrete CSS properties)
+- https://github.com/w3c/csswg-drafts/issues/6429 (animating `display`)
+- https://github.com/w3c/csswg-drafts/issues/8189 (animating to and from the top layer)
+- https://github.com/w3c/csswg-drafts/issues/8174 (the "initial" frame issue)
+- https://github.com/w3c/csswg-drafts/issues/8389 (`inert`ing things that animate to `display:none`)
+
+Assuming all five of the above features land in specs and browsers in roughly the form they're currently being discussed, then to animate a popover's show/hide transitions you would use:
 
 ```css
 [popover] {
-  opacity: 0;
-  transition: opacity 0.5s;
+  --transition-time: 0.5s;
+  transition: display var(--transition-time), overlay-behavior var(--transition-time), opacity var(--transition-time);
+}
+@initial {
+  [popover] {
+    opacity: 0;
+  }
 }
 [popover]:open {
   opacity: 1;
 }
 ```
 
-The above CSS will result in all popovers fading in and out when they show/hide. To make this work, a two-step procedure must be followed by the popover as it is shown and hidden:
+The above CSS will result in the opacity (and also `display` and top-layer-ness) being transitioned during both show and hide transitions.
 
-**`showPopover()`:**
+This can also be achieved with the equivalent CSS animations:
 
-1. Fire the `show` event, synchronously. If the event is cancelled, stop here.
-2. Move the popover to the top layer, and remove the UA `display:none` style.
-3. Update style. (Transition initial style can be specified in this state.)
-4. Set the `:open` pseudo class.
-5. Update style. (Animations/transitions happen here.)
-6. Focus the first contained element with `autofocus`, if any.
-
-**`hidePopover()`:**
-
-1. Capture any already-running animations on the `Element` via getAnimations(), including animations on descendent elements.
-2. Stop matching the `:open` pseudo class.
-3. If the hidePopover() call is the result of the popover being **"forced out"** of the top layer, e.g. by a modal dialog, fullscreen element, or the element being removed from the document:
-
-   a. Queue the `hide` event (asynchronous).
-
-   **Otherwise,**
-
-   a. Fire the `hide` event, synchronously.
-
-   b. Restore focus to the previously-focused element.
-
-   c. Update style. (Animations/transitions start here.)
-
-   d. Call getAnimations() again, remove any that were found in step <span>#</span>1, and then wait until all of the remaining animations finish or are cancelled.
-
-4. Remove the popover from the top layer, and add the UA `display:none` style.
-5. Update style.
-
-In addition to the above, if a "higher priority" top layer element later appears (such as a modal dialog or fullscreen element), step <span>#</span>4/5 of the `hidePopover()` steps are immediately executed, to immediately hide any animating-hide popovers.
-
-Note that because the `popoverhide` event is synchronous, animations can also be triggered from within the `popoverhide` event listener:
-
-```javascript
-popover.addEventListener('popoverhide', () => {
-  popover.animate({ transform: 'translateY(-50px)' }, 200)
-})
+```css
+[popover]:open {
+  animation: fadein 0.5s;
+  transition: overlay-behavior 0.5s;
+  opacity: 1; /* UA default */
+}
+@keyframes fadein {
+  from { opacity: 0; }
+}
+[popover]:closed {
+  animation: fadeout 0.5s;
+}
+@keyframes fadeout {
+  from { display: block; }
+  to { opacity: 0; }
+}
 ```
 
-Also note that **while animating**, a popover will be **a)** in the top layer, but **b)** not matching the `:open` pseudo class. This is required in order that transitions can be triggered by matching `:open` as seen in the CSS above. It will be important, generally, for developer tools to provide helpful information about the state of top-layer elements.
+Again, the above descriptions depend on all five CSSWG issues above landing in standards and browsers.
 
 ## IDL Attribute and Feature Detection
 
@@ -427,7 +422,7 @@ The `autofocus` attribute allows control over the focus behavior when the popove
 
   1. Light dismiss via [close signal](https://wicg.github.io/close-watcher/#close-signal) (e.g. Escape key pressed).
   2. Hide popover from Javascript via `hidePopover()`.
-  3. Hide popover via a **popover-contained**\* triggering element with `popoverhidetarget=pop_up_id` or `popovertoggletarget=pop_up_id`. The triggering element must be popover-contained, otherwise the keyboard or mouse activation of the triggering element should have already moved focus to that element.
+  3. Hide popover via a **popover-contained**\* triggering element with `popovertargetaction="hide" or "toggle". The triggering element must be popover-contained, otherwise the keyboard or mouse activation of the triggering element should have already moved focus to that element.
   4. Hide popover because its `popover` type changes (e.g. via `myPopover.popover='something else';`).
 
 - Any other actions which hide the popover will **not** cause the focus to be changed when the popover hides. In these cases, the "normal" behavior happens for each action. Some examples include:
@@ -516,7 +511,7 @@ The purpose of the algorithm above is to allow "nesting" of `popover=auto` popov
 
 1.  **Using traditional DOM tree descendants:** when one popover is a descendant of another popover, these two are "nested".
 2.  **Using the `anchor` attribute:** when a popover has an `anchor` attribute that points to another popover (or descendant of another popover), these two are "nested". This allows the `anchor` attribute to be used with the [Anchor Positioning API](https://tabatkins.github.io/specs/css-anchor-position/), transparently defining a clear "nested" relationship between the popovers. It is not necessary to use the Anchor Positioning API.
-3.  **Using a [declarative triggering element](#declarative-triggers) (e.g. `popovertoggletarget`):** when a triggering element is contained in a popover, and can therefore trigger another popover, the second popover is "nested" within the first.
+3.  **Using a [declarative triggering element](#declarative-triggers) (i.e. one using the `popovertarget` attribute):** when a triggering element is contained in a popover, and can therefore trigger another popover, the second popover is "nested" within the first.
 
 Note that because [the popover stack](#the-popover-stack) can only contain `popover=auto` popovers, it is only possible to "nest" popovers within `popover=auto` popovers.
 
@@ -556,15 +551,15 @@ While the popover API can be used on most elements, there are some limitations. 
 
 This section contains several HTML examples, showing how various UI elements might be constructed using this API.
 
-**Note:** these examples are for demonstrative purposes of how to use the `popovertoggletarget` and `popover` attributes. They may not represent all necessary HTML, ARIA or JavaScript features needed to fully create such components.
+**Note:** these examples are for demonstrative purposes of how to use the `popovertarget` and `popover` attributes. They may not represent all necessary HTML, ARIA or JavaScript features needed to fully create such components.
 
 ## Generic Popover (Date Picker)
 
 ```html
-<button popovertoggletarget="datepicker">Pick a date</button>
+<button popovertarget="datepicker">Pick a date</button>
 <my-date-picker role="dialog" id="datepicker" popover>...date picker contents...</my-date-picker>
 
-<!-- No script - the popovertoggletarget attribute takes care of activation, and
+<!-- No script - the popovertarget attribute takes care of activation, and
      the `popover` attribute takes care of the popover behavior. -->
 ```
 
