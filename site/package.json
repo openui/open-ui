@@ -3,6 +3,7 @@
   "description": "Open UI documentation.",
   "version": "1.0.0",
   "author": "Open UI",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/openui/open-ui"
@@ -28,6 +29,10 @@
       "prettier --write",
       "git add"
     ],
+    "**/*.mjs": [
+      "prettier --write",
+      "git add"
+    ],
     "**/*.json": [
       "prettier --parser json --write",
       "git add"
@@ -50,12 +55,15 @@
     "astro-compress": "^1.1.10",
     "eslint": "^8.18.0",
     "eslint-plugin-react": "^7.30.0",
+    "hast-util-to-string": "^2.0.0",
+    "hastscript": "^7.2.0",
     "husky": "^4.2.3",
     "lint-staged": "^11.1.2",
     "prettier": "^2.0.4",
     "prettier-plugin-astro": "^0.5.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "rehype-autolink-headings": "^6.1.1"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
