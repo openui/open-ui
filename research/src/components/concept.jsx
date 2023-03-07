@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import ConceptCoverage from './concept-coverage'
 import Specimens from './specimens'
+import './concept.css'
 
 export default function Concept({
   conceptOpenUIName,
@@ -17,37 +18,16 @@ export default function Concept({
   }, [initExpand])
 
   return (
-    <div style={{ padding: '8px', marginBottom: '36px' }}>
-      <h3
-        style={{
-          flex: '0 0 auto',
-          width: '100%',
-          textAlign: 'left',
-          marginBottom: hasOtherNames ? 0 : '.5em',
-          lineHeight: 1,
-        }}
-      >
+    <div className='concept'>
+      <h3 className={hasOtherNames ? 'with-other-names' : null}>
         <button
-          style={{
-            textDecoration: 'none',
-            color: 'inherit',
-            cursor: 'pointer',
-            marginRight: '8px',
-            background: 'none',
-            border: 'none',
-          }}
+          type='button'
           onClick={(e) => {
             e.preventDefault()
             toggleOpen((isOpen) => !isOpen)
           }}
         >
-          <span
-            style={{
-              fontSize: '12px',
-              verticalAlign: 'middle',
-              textAlign: 'center',
-            }}
-          >
+          <span>
             {open ? <>&#9660;</> : <>&#9650;</>}
           </span>{' '}
           {conceptOpenUIName}
@@ -61,7 +41,7 @@ export default function Concept({
         )}
       </h3>
       {hasOtherNames && (
-        <div style={{ color: '#777', lineHeight: 1, marginBottom: '.5em' }}>
+        <div className='other-names-wrapper'>
           {uniqueNames.map((otherName) => (
             <div key={otherName}>
               <ConceptCoverage
