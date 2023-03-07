@@ -1,4 +1,5 @@
 import React from 'react'
+import './anatomy-component.css'
 
 export const AnatomyWrapper = ({ children }) => (
   <div className="component-anatomy-wrapper">
@@ -8,8 +9,8 @@ export const AnatomyWrapper = ({ children }) => (
   </div>
 )
 
-export const Host = ({ children, name }) => (
-  <div className="host" data-name={name}>
+export const Host = ({ children, name, role }) => (
+  <div className="host" data-name={name} role={role}>
     {children}
   </div>
 )

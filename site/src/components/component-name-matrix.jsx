@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { componentOriginalNames, sources, sourcesCount } from '../sources'
 import _ from 'lodash'
+import './component-name-matrix.css'
 
 const SORT_OPTIONS = {
   COMPONENT_NAME: 'COMPONENT_NAME',
@@ -36,54 +37,18 @@ const ComponentNameMatrix = (props) => {
       : matchName,
   )
 
-  const colStyle = { flex: 1, width: '2rem' }
-  const headerStyle = {
-    position: 'sticky',
-    display: 'block',
-    padding: '1rem 0 0.5rem 0',
-    top: 0,
-    width: '100%',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    background: 'white',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.5)',
-  }
-  const cellStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    height: '2rem',
-    lineHeight: 1.2,
-    // borderLeft: '1px solid rgba(0, 0, 0, 0.1)',
-    borderRight: '1px solid rgba(0, 0, 0, 0.1)',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-  }
-
   return (
     <div>
       <button onClick={() => setSort(SORT_NEXT[sort])}>Sort By: {sort}</button>
-      <div
-        style={{
-          display: 'flex',
-          textAlign: 'center',
-          fontSize: '12px',
-        }}
-      >
-        <div style={colStyle}>
-          <strong style={headerStyle}>Match</strong>
+      <div className='component-name-matrix'>
+        <div className='column'>
+          <strong className='header'>Match</strong>
           {_.map(matchNameToCount, ([matchName, count]) => {
             return (
-              <div key={matchName} style={cellStyle}>
+              <div key={matchName} className='cell'>
                 {Math.round((count / sourcesCount) * 100)}%
-                <div
+                <div className='percentage-bar'
                   style={{
-                    display: 'block',
-                    background: 'limegreen',
-                    height: '4px',
-                    float: 'left',
                     width: Math.round((count / sourcesCount) * 100) + '%',
                   }}
                 />
@@ -93,8 +58,8 @@ const ComponentNameMatrix = (props) => {
         </div>
 
         {_.map(sources, (source) => (
-          <div key={source.name} style={colStyle}>
-            <strong style={headerStyle}>
+          <div key={source.name} className='column'>
+            <strong className='header'>
               <a target="_blank" rel="noopener noreferrer" href={source.url}>
                 {source.name}
               </a>
@@ -105,34 +70,20 @@ const ComponentNameMatrix = (props) => {
                 ({ name }) => getMatchName(name) === matchName,
               )
 
-              const style = {
-                ...cellStyle,
-                background: foundComponent ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
-                color: foundComponent ? 'rgb(0, 64, 0)' : 'rgb(64, 0, 0)',
-                textDecoration: 'none',
-              }
-
               return foundComponent ? (
                 <a
                   title={foundComponent.name}
                   target="_blank"
                   rel="noopener noreferrer"
                   href={foundComponent.url}
-                  style={style}
+                  className='cell found'
                 >
-                  <span
-                    style={{
-                      maxWidth: '55px',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
+                  <span>
                     {foundComponent.name}
                   </span>
                 </a>
               ) : (
-                <div key={matchName} style={style} />
+                <div key={matchName} className='cell not-found' />
               )
             })}
           </div>

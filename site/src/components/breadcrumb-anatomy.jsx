@@ -1,25 +1,20 @@
-/* eslint-disable */
-
 import React from 'react'
+import { AnatomyWrapper, Host, Slot, Part } from './anatomy-components'
 import './breadcrumb-anatomy.css'
 
 const BreadcrumbAnatomy = () => {
   return (
-    <div className="component-anatomy-wrapper">
-      <input type="checkbox" id="show-slots" />
-      <label htmlFor="show-slots"> Show slots</label>
-      <div className="component-anatomy">
-        <host name="breadcrumb" role="navigation">
-          <slot name="breadcrumb-container">
-            <part name="ol">
-              <part name="li [part=item]" data-slot>
-                item
-              </part>
-            </part>
-          </slot>
-        </host>
-      </div>
-    </div>
+    <AnatomyWrapper>
+      <Host name="breadcrumb" role="navigation">
+        <Slot name="breadcrumb-container">
+          <Part name="ol">
+            <Part name="li [part=item]" data-slot>
+              item
+            </Part>
+          </Part>
+        </Slot>
+      </Host>
+    </AnatomyWrapper>
   )
 }
 
