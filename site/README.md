@@ -35,6 +35,29 @@ The site is deployed automatically on merge to `main`.
 
 ## Contributing
 
+### Adding a New Markdown Page
+
+#### Should I Use `md` or `mdx`?
+
+Opt for `md` by default, and use `mdx` only if you need it.
+
+Because `mdx` has support for rendering JSX components, it requires additional JavaScript. As a result, it can be a useful tool but should only be used if necessary.
+
+#### What Metadata Do I Need to Add to My Markdown Page?
+
+All `md` or `mdx` pages have _frontmatter_ at the top of the page. We use this data to adjust the behavior of the page at build time.
+
+The various fields are as follows:
+
+| Name           | Description                                                                  | Is Required ? |
+| -------------- | ---------------------------------------------------------------------------- | ------------- |
+| menu           | The menu in the navigation bar that the link to this page should live under. | Yes           |
+| name           | Title of the page.                                                           | Yes           |
+| layout         | Link to the layout component, which provides the base styling for the page.  | Yes           |
+| pathToResearch | The link to a corresponding research page.                                   | No            |
+| pathToProposal | The link to a corresponding proposal page.                                   | No            |
+| showInMenu     | Whether we show the menu in the navigation bar. Defaults to true.            | No            |
+
 ### Uses Astro
 
 The Open UI site is built on top of [Astro](https://astro.build/).
