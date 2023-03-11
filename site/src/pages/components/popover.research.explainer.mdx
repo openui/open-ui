@@ -11,8 +11,8 @@ layout: ../../layouts/ComponentLayout.astro
 
 Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
 
 ## Table of Contents
 
@@ -207,13 +207,13 @@ There are several conditions that will cause `showPopover()`, `hidePopover()`, a
 3. Calling any of the three methods on an element that does not contain a [valid value](#html-content-attribute) of the `popover` attribute. This will throw a `NotSupportedError` `DOMException`.
 4. Calling any of the three methods on a valid popover that is not connected to a document. This will throw an `InvalidStateError` `DOMException`.
 
-<!-- Removing until it's back in action -->
-<!-- ### Page Load Trigger
+{/* Removing until it's back in action */}
+{/\* ### Page Load Trigger
 
 As mentioned above, a `<div popover>` will be hidden by default. If it is desired that the popover should be shown automatically upon page load, the `defaultopen` attribute can be applied:
 
 ```html
-<div popover defaultopen>
+<div popover defaultopen></div>
 ```
 
 In this case, the UA will immediately call `showPopover()` on the element, as it is parsed. If multiple such elements exist on the page, only the first such element (in DOM order) on the page will be shown.
@@ -221,15 +221,15 @@ In this case, the UA will immediately call `showPopover()` on the element, as it
 Note that more than one `manual` popover can use `defaultopen` and all such popovers will be shown on load, not just the first one:
 
 ```html
-<div popover=manual defaultopen>Shown on page load</div>
-<div popover=manual defaultopen>Also shown on page load</div>
+<div popover="manual" defaultopen>Shown on page load</div>
+<div popover="manual" defaultopen>Also shown on page load</div>
 ```
 
 The `defaultopen` content attribute can also be accessed via IDL:
 
-```javascript
+````javascript
 myDiv.defaultOpen = true;
-``` -->
+``` */}
 
 ### CSS Pseudo Class
 
@@ -241,7 +241,7 @@ popover.popover = 'auto'
 popover.matches(':open') === false
 popover.showPopover()
 popover.matches(':open') === true
-```
+````
 
 ### Rendering
 

@@ -8,9 +8,9 @@ Authors: [Travis Leithead](https://github.com/travisleithead),
 [David Zearing](https://github.com/dzearing),
 [Chris Holt](https://github.com/chrisdholt/)
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+{/* END doctoc generated TOC please keep comment here to allow auto update */}
 
 ## 1. Introduction
 
@@ -290,7 +290,7 @@ By default, focusgroup traversal with arrow keys ends at boundaries of the focus
 end of a linear focusgroup, and the start and end of both rows and columns in a grid focusgroup). The
 following focusgroup definition values can configure this:
 
-| HTML attribute value        | CSS property & value                      | Explanation                                                                                                                                                                                                                                        |
+| HTML attribute value        | CSS property &amp; value                  | Explanation                                                                                                                                                                                                                                        |
 | --------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | focusgroup="wrap"           | focus&#8209;group&#8209;wrap:&nbsp;wrap   | **linear focusgroup**: causes movement beyond the ends of the focusgroup to wrap around to the other side; **grid focusgroup**: causes focus movement at the ends of the rows/columns to wrap around to the opposite side of the same rows/columns |
 | focusgroup="" (unspecified) | focus&#8209;group&#8209;wrap:&nbsp;nowrap | Disables any kind of wrapping (the initial/default value)                                                                                                                                                                                          |
@@ -299,7 +299,7 @@ The following are only applicable to grid focusgroups. Note, row and column-spec
 and flowing can be specified together: `focus-group-wrap` supports two-token specifiers for
 this purpose.
 
-| HTML attribute value                           | CSS property & value                                                  | Explanation                                                                                                                                                                                                                                                     |
+| HTML attribute value                           | CSS property &amp; value                                              | Explanation                                                                                                                                                                                                                                                     |
 | ---------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | focusgroup="row&#8209;wrap"                    | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;wrap                     | Rows wrap around, column wrapping [and flowing as described below] is disabled.                                                                                                                                                                                 |
 | focusgroup="col&#8209;wrap"                    | focus&#8209;group&#8209;wrap:&nbsp;col&#8209;wrap                     | Columns wrap around, but row wrapping [and flowing as described below] is disabled.                                                                                                                                                                             |
@@ -417,7 +417,7 @@ the linear focusgroup to one-axis traversal.
 Note that the following only apply to linear focusgroup definitions (they have no effect on grid
 focusgroups).
 
-| HTML attribute value        | CSS property & value                               | Explanation                                                                                                                                   |
+| HTML attribute value        | CSS property &amp; value                           | Explanation                                                                                                                                   |
 | --------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | focusgroup="horizontal"     | focus&#8209;group&#8209;direction:&nbsp;horizontal | The focusgroup items will respond to forward and backward movement only with the "horizontal" arrow keys (left and right).                    |
 | focusgroup="vertical"       | focus&#8209;group&#8209;direction:&nbsp;vertical   | The focusgroup items will respond to forward and backward movement only with the "vertical" arrow keys (up and down).                         |
@@ -760,7 +760,7 @@ To "unify" the submenu and the menu items into one logical list for
 arrow navigation, the focusgroup on the `<div>` extends in the same direction as
 the focusgroup on the menu (and the wrapping value is also extended).
 
-### 6.7. Opting-in & opting-out
+### 6.7. Opting-in &amp; opting-out
 
 Focusgroup definitions are assigned to an element in order to set the behavior for
 their _child elements_ which become focusgroup candidates. Because all _child elements_
@@ -786,7 +786,7 @@ and opt-in or opt-out scenarios are considered edge-cases).
 To opt-in or opt-out, a CSS property is used, which applies only to focusgroup candidates (not
 focusgroup definitions):
 
-| CSS property & value                    | Explanation                                                                                                                                                                                                                                                                                                                                                                                        |
+| CSS property &amp; value                | Explanation                                                                                                                                                                                                                                                                                                                                                                                        |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | focus&#8209;group&#8209;item:&nbsp;auto | Opt-in to a focusgroup: this element becomes a focusgroup candidate for the **nearest ancestor** that defines a linear focusgroup matching `auto`. The element will "search" its parent nodes looking for a matching focusgroup definition and will become an "extension" of that group (i.e., similar to using `extend`, but without the opportunity to re-establish a new focusgroup definition) |
 | focus&#8209;group&#8209;item:&nbsp;none | Opt-out of a focusgroup: this element will not participate in **any** focusgroup. (`none` is the initial value when there is no focusgroup definition on a parent element; `auto` is the initial value when there is a parent focusgroup definition.)                                                                                                                                              |
@@ -860,10 +860,10 @@ focusgroup candidates can opt-into.
 **Note**: a focusgroup candidate can **only** be in one focusgroup at a time, and the
 focusgroup it belongs to is the one specified by its `focus-group-item` value.
 
-| CSS property & value                                                                              | Explanation                                                                                                                                                                                                                                                                                                                                      |
+| CSS property &amp; value                                                                          | Explanation                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| focus&#8209;group&#8209;name:&nbsp;<custom&nbsp;ident>                                            | Gives the focusgroup a custom identifiers. Only focusgroup candidates that opt-in to this named identifier will belong to this focusgroup.                                                                                                                                                                                                       |
-| focus&#8209;group&#8209;item:&nbsp;<custom&nbsp;ident>                                            | Declares this focusgroup candidate's intention to belong to a focusgroup definition with the given identifier. If there is no matching focusgroup definition with this name in its ancestry, then this is an error and this item will revert to focus-group-item: `none` (or `auto` if it is a child of an element defining a linear focusgroup. |
+| focus&#8209;group&#8209;name:&nbsp;&lt;custom&nbsp;ident>                                         | Gives the focusgroup a custom identifiers. Only focusgroup candidates that opt-in to this named identifier will belong to this focusgroup.                                                                                                                                                                                                       |
+| focus&#8209;group&#8209;item:&nbsp;&lt;custom&nbsp;ident>                                         | Declares this focusgroup candidate's intention to belong to a focusgroup definition with the given identifier. If there is no matching focusgroup definition with this name in its ancestry, then this is an error and this item will revert to focus-group-item: `none` (or `auto` if it is a child of an element defining a linear focusgroup. |
 | focus&#8209;group&#8209;name, focus&#8209;group&#8209;direction, and focus&#8209;group&#8209;wrap | Each allows comma-separated list to accommodate multiple definitions.                                                                                                                                                                                                                                                                            |
 
 The following example shows one parent element that has two focusgroups defined, and
@@ -965,7 +965,7 @@ the structure of the grid to ensure it has appropriate row and cell structures. 
 event that the implementation cannot automatically determine the grid structure, then
 the definition is ignored (i.e., there is no fallback to a linear grid).
 
-| HTML attribute value | CSS property & value                    | Explanation                                                                                                                                                                                                         |
+| HTML attribute value | CSS property &amp; value                | Explanation                                                                                                                                                                                                         |
 | -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | focusgroup="grid"    | focus&#8209;group&#8209;name:&nbsp;grid | Establishes the root of an automatic grid focusgroup. Descendants of the automatic grid are identified and assigned `focus-group-item: row` and `focus-group-item: cell` focusgroup candidate status automatically. |
 
@@ -992,7 +992,7 @@ A manual grid is declared in a focusgroup definition with the name `manual-grid`
 With a manual grid, the rows and cells must be explicitly indicated using
 `focus-group-item: row` and `focus-group-item: cell`.
 
-| HTML attribute value | CSS property & value                           | Explanation                                                                                                                                                                     |
+| HTML attribute value | CSS property &amp; value                       | Explanation                                                                                                                                                                     |
 | -------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | n/a                  | focus&#8209;group&#8209;name:&nbsp;manual-grid | Establishes the root of a manual grid focusgroup. Descendants of the manual grid must be identified with `focus-group-item: row` and `focus-group-item: cell` explicitly.       |
 | n/a                  | focus&#8209;group&#8209;item:&nbsp;row         | Must be a descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element).                                                                              |
