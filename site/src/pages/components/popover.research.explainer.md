@@ -183,8 +183,8 @@ The declarative trigger attributes can also be accessed via IDL:
 
 ```javascript
 // Note that `popoverTargetElement` directly sets an element reference:
-myButton.popoverTargetElement = myElement;
-myButton.popoverTargetAction = "show";
+myButton.popoverTargetElement = myElement
+myButton.popoverTargetAction = 'show'
 ```
 
 ### Javascript Trigger
@@ -192,10 +192,10 @@ myButton.popoverTargetAction = "show";
 To show and hide the popover via Javascript, there are three methods on HTMLElement:
 
 ```javascript
-const popover = document.querySelector('[popover]');
-popover.showPopover();   // Show the popover
-popover.hidePopover();   // Hide a visible popover
-popover.togglePopover(); // Toggle the open/closed state of a popover
+const popover = document.querySelector('[popover]')
+popover.showPopover() // Show the popover
+popover.hidePopover() // Hide a visible popover
+popover.togglePopover() // Toggle the open/closed state of a popover
 ```
 
 Calling `showPopover()` on an element that has a valid value for the `popover` attribute will cause the UA to remove the `display:none` rule from the element and move it to the top layer. Calling `hidePopover()` on a showing popover will remove it from the top layer, and re-apply `display:none`.
@@ -315,7 +315,8 @@ Assuming all five of the above features land in specs and browsers in roughly th
 ```css
 [popover] {
   --transition-time: 0.5s;
-  transition: display var(--transition-time), overlay-behavior var(--transition-time), opacity var(--transition-time);
+  transition: display var(--transition-time), overlay-behavior var(--transition-time),
+    opacity var(--transition-time);
 }
 @initial {
   [popover] {
@@ -338,14 +339,20 @@ This can also be achieved with the equivalent CSS animations:
   opacity: 1; /* UA default */
 }
 @keyframes fadein {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 [popover]:closed {
   animation: fadeout 0.5s;
 }
 @keyframes fadeout {
-  from { display: block; }
-  to { opacity: 0; }
+  from {
+    display: block;
+  }
+  to {
+    opacity: 0;
+  }
 }
 ```
 
