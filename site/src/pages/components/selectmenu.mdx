@@ -7,8 +7,6 @@ layout: ../../layouts/ComponentLayout.astro
 import SelectAnatomy from '../../components/select-anatomy'
 import Image from '../../components/image.astro'
 
-# &lt;selectmenu&gt; element explainer
-
 ## Background
 
 The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in the [select proposal](../components/select) and [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
@@ -255,3 +253,20 @@ Using custom markup to wrap the list of options, the above example creates secti
 ## Examples
 
 You can find multiple examples of `<selectmenu>` on our [demo page](https://microsoftedge.github.io/Demos/selectmenu/).
+
+## Keyboard Behavior
+
+The selectmenu element has keyboard behavior inspried by both the existing `<select>` element and the [Aria Authoring Practices Guide Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). This behavior was decided in [issue 386](https://github.com/openui/open-ui/issues/386) and [issue 433](https://github.com/openui/open-ui/issues/433).
+
+When the listbox is closed and the button is focused:
+* Spacebar opens the listbox.
+* Enter submits the form associated with the selectmenu if one exists. Otherwise, enter does nothing.
+* The up, down, left, and right arrow keys all open the listbox without changing the selcted value.
+
+When the listbox is open:
+* Escape closes the listbox without changing the selected value.
+* Spacebar is used for typeahead.
+* Enter changes the selected value to the currently focused option and closes the listbox.
+* The up arrow key moves focus backwards in the list of options and changes the selected value to the newly selected option.
+* The down arrow key moves focus forwards int the list of options and changes the selected value to the newly selected option.
+# The left and right arrow keys do nothing.
