@@ -15,7 +15,7 @@ const ComponentCoverage = ({ component }) => {
   return (
     <div>
       <h2>Names</h2>
-      <ul className='component-coverage'>
+      <ul className="component-coverage">
         {_.map(withDifferentNamesUniq, (component, i) => {
           const components = withDifferentNamesGrouped[component.name]
           return (
