@@ -277,3 +277,38 @@ nav > ul {
     display: block;
   }
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.anchor-icon {
+  color: rgb(82 82 82 / var(--tw-text-opacity));
+  transition-property: color,background-color,border-color,text-decoration-color,fill,stroke;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+  transition-duration: .15s;
+  padding-inline-start: 6px;
+  opacity: 0;
+}
+
+.anchor-icon svg {
+  vertical-align: bottom;
+}
+
+.anchor-icon:hover {
+  opacity: 1;
+}
+
+h1:hover .anchor-icon,
+h2:hover .anchor-icon,
+h3:hover .anchor-icon {
+  opacity: 1;
+}

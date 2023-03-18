@@ -4,10 +4,19 @@ import sitemap from '@astrojs/sitemap'
 import mdx from '@astrojs/mdx'
 import prefetch from '@astrojs/prefetch'
 import compress from 'astro-compress'
+import { rehypeHeadingIds } from '@astrojs/markdown-remark'
+import { autolinkHeadingsPlugin } from './src/plugins/rehypeHeadings'
 
-// https://astro.build/config
 export default defineConfig({
-  integrations: [react(), sitemap(), mdx(), prefetch(), compress()],
+  integrations: [
+    react(),
+    sitemap(),
+    mdx({
+      rehypePlugins: [rehypeHeadingIds, autolinkHeadingsPlugin],
+    }),
+    prefetch(),
+    compress(),
+  ],
   site: 'https://open-ui.org',
   markdown: {
     shikiConfig: {
