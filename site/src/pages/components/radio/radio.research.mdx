@@ -1,0 +1,141 @@
+---
+menu: Research
+<<<<<<< HEAD:site/src/pages/components/radio/radio.research.mdx
+name: Radio
+path: /components/radio.research
+pathToProposal: /components/radio
+---
+
+# import Image from '../../components/image'
+
+name: Radio Button
+
+## layout: ../../layouts/ComponentLayout.astro
+
+import Image from '../../components/image.astro'
+>>>>>>> ab24d33de61b968cc700e03fddafe5cd81d930de:site/src/pages/components/radio-button.research.mdx
+import Anatomy from '../../components/anatomy'
+import Concepts from '../../components/concepts'
+import ComponentCoverage from '../../components/component-coverage'
+
+<ComponentCoverage component="Radio" />
+
+## Introduction
+
+<<<<<<< HEAD:site/src/pages/components/radio/radio.research.mdx
+_(For a lengthier discussion, on which this page was based, please refer to the [original radio issue](https://github.com/WICG/open-ui/issues/251))_
+=======
+_(For a lengthier discussion, on which this page was based, please refer to the [original radio button issue](https://github.com/openui/open-ui/issues/251))_
+
+> > > > > > > ab24d33de61b968cc700e03fddafe5cd81d930de:site/src/pages/components/radio-button.research.mdx
+
+The research showed that different design systems treat radios in one of two ways, i.e.:
+
+- as a standalone component, that could be hosted on a “**radio group**” component;
+- as an invariably non-independent part of a “**radio group**” component (just like `<option>` tags are dependent on `<select>` tags).
+
+The two approaches seem very similar at first, but the former seems to indicate that single “radios” could exist, to probably indicate a binary state (on or off). The latter, however, shifts the scope up to the “radio group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
+
+> “A document must not contain an input element whose radio group contains only that element.”
+>
+> -- <cite>[W3 HTML Specification](https://www.w3.org/TR/html52/sec-forms.html#radio-button-state-typeradio)</cite>
+
+Besides, the mere existence of both approaches made elaboration of a concept table rather difficult, because it was not always clear whether a concept should apply to the radio or the radio group. In any case, this research shows that most concepts apply to the radios, while only some apply to the groups, eg:
+
+- radio-group-orientation
+- required-group
+- disabled / readonly (for the whole group)
+- group-label
+
+After the research there are still [discussions to be made](#discussion), where any help would be welcome.
+
+## Anatomy
+
+<Anatomy component="Radio" />
+
+## Concepts
+
+<<<<<<< HEAD:site/src/pages/components/radio/radio.research.mdx
+
+# <Concepts component="Radio" />
+
+<Concepts client:load component="Radio Button" />
+>>>>>>> ab24d33de61b968cc700e03fddafe5cd81d930de:site/src/pages/components/radio-button.research.mdx
+
+## Discussion
+
+At a point during the research, the scope of this study os shifted from the “radio” to the “radio group”, because there is no particular strong use case for a standalone “radio”, and also because this use case is against the W3 Specification, the actual component to be considered is the “radio group”, being composed of two or more radios.
+
+Also based on this fact and on the current state of the design systems, a more final anatomy was proposed.
+
+### Proposed Anatomy - by Tag Hierarchy
+
+This section shows the proposed visual constituents for the _Radio Group_, which is here considered to be the actual component, while the radios are a part of the group.
+
+- Radio Group (the actual component)
+  - Group Label (functions as a label for the whole group)
+  - Required Indicator
+  - Radio (at least two required)
+    - Checked Indicator (input)
+    - Label (optional)
+  - Radio
+    - and so on...
+  - and so on...
+
+#### The problem
+
+The above anatomy is regular enough to be assembled in a way similar to (but more complex than) a `<select>`. Attributes set on the group would allow the developer to set the whole group as "disabled", "readonly", vertically or horizontally laid out, types of display (like buttons, radios, combobox, etc), and attributes set on the radios would set their specific states, as we do with `<option>` tags. It is important to understand that the function of radios is almost the same as a `<select>` tag, and this is why the comparison makes sense.
+
+However, by being so regular and requiring a specific HTML structure, we would lose structural flexibility. For this, here is another proposal.
+
+### Proposed Anatomy - by Attribute Binding
+
+If the above proposal would accept other nodes as valid children, or at least a set of attributes that could replace some of the nodes (eg. an `aria-label` to replace the "Group Label"), the flexibility could be reestablished, by allowing the construction of more complex layouts, eg. semantic differential scales, such as:
+
+<Image
+  src="/images/semantic-differential-scale.jpg"
+  alt="An horizontal table with a question in a row and the answers in each of its columns"
+  style="width: 100%"
+/>
+
+This could be achieved by combining table elements with radio inputs and grouping attributes.
+
+#### The problem
+
+One could say it’s exactly the same behavior we have nowadays, because the radios are bound together by the `name` attribute. However, the current structure still depends on a `fieldset` tag to visually group and label the collective of radios, and this requirement prevents us from doing that exact table layout with actual tables, because we can’t use the fieldsets to group rows and put a `legend` inside it as well.
+
+Today, the structure of such semantic differential scale could be represented like this:
+
+| Question     | Answer 1              | Answer 2              | ... |
+| ------------ | --------------------- | --------------------- | --- |
+| (table cell) | (input name=1)(label) | (input name=1)(label) | ... |
+| (table cell) | (input name=2)(label) | (input name=2)(label) | ... |
+
+Each field has its `label` (or could have an `aria-label`), but the group itself has no formal label. This could be solved by having a way of binding a label to a group by using attributes, like this:
+
+| Question              | Answer 1              | Answer 2              | ... |
+| --------------------- | --------------------- | --------------------- | --- |
+| (groupLabel labels=1) | (input name=1)(label) | (input name=1)(label) | ... |
+| (groupLabel labels=1) | (input name=2)(label) | (input name=2)(label) | ... |
+
+The above case creates a new tag (or an unsemantic tag with a new aria-attribute) that labels the whole group by referring to its name.
+
+Another alternative would be:
+
+| Question       | Answer 1         | Answer 2         | ... |
+| -------------- | ---------------- | ---------------- | --- |
+| (input name=1) | (option group=1) | (option group=1) | ... |
+| (input name=1) | (option group=3) | (option group=2) | ... |
+
+In this case the label is the actual input, and it could have an appearance of a simple text. The answers, on the othter hand, could be an alternative use for the `<option>` tag, with an attribute to reference the name of the input. Selecting an option would change the value of the input.
+
+### To be discussed
+
+The two main approaches presented above should be analysed in order to decide
+
+- In the first case:
+  - whether the first, more rigid proposal should be developed;
+  - or maybe even create an attribute to the `<select>` tag that would make it behave visually like radios
+- Or, in the second case, strive for flexibility and:
+  - propose modifications to the labeling of the current radios;
+  - or change the tags used to create them, like in the last example.

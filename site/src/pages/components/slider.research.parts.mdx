@@ -1,0 +1,528 @@
+---
+name: Slider Parts & Part Concepts
+
+showInMenu: false
+layout: ../../layouts/ComponentLayout.astro
+---
+
+import '../../styles/research.css'
+
+This was created to begin to investigate the anatomy of the Slider/Range control. This was spurred on
+by [this CSSWG Psuedo issue](https://github.com/w3c/csswg-drafts/issues/4410).
+
+**Legend:**
+
+- True: part or concept exists
+- False: Part or concept does not exist
+- Depends: It does exist but it depends on certain functionality existing. This does not contribute
+  to the total below but should be considered when reviewing the totals.
+- NA: This part or concept doesn't apply
+- Browser Parts: This component library leverages the currently available parts so reference
+  the browser columns for support. These columns do _not_ contribute to the total.
+
+## Part Concepts
+
+These are general concepts that may exist for the Slider control. This does not attempt to show what the
+names should be called but the top utilized concepts should be prioritized for having a part defined.
+
+<table class="table table-bordered table-hover table-condensed nowrap-first-column research">
+  <col style="width: 1%; white-space: nowrap"></col>
+  <thead>
+    <tr>
+      <th class="nowrap" title="Field #1">
+        Concept
+      </th>
+      <th class="nowrap" title="Field #2">
+        Ant Design
+      </th>
+      <th class="nowrap" title="Field #3">
+        Carbon
+      </th>
+      <th class="nowrap" title="Field #4">
+        UI Fabric
+      </th>
+      <th class="nowrap" title="Field #5">
+        FAST
+      </th>
+      <th class="nowrap" title="Field #6">
+        Lightning
+      </th>
+      <th class="nowrap" title="Field #7">
+        Stardust
+      </th>
+      <th class="nowrap" title="Field #8">
+        WAI-ARIA
+      </th>
+      <th class="nowrap" title="Field #9">
+        Material
+      </th>
+      <th class="nowrap" title="Field #10">
+        AtlasKit
+      </th>
+      <th class="nowrap" title="Field #11">
+        -Webkit
+      </th>
+      <th class="nowrap" title="Field #12">
+        Firefox
+      </th>
+      <th class="nowrap" title="Field #13">
+        TOTAL
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Thumb</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text bg-transparent">11</td>
+    </tr>
+    <tr>
+      <td>Track</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text bg-transparent">11</td>
+    </tr>
+    <tr>
+      <td>Filled Selected Track</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="center">N/A</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text bg-transparent">7</td>
+    </tr>
+    <tr>
+      <td>Content End</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">6</td>
+    </tr>
+    <tr>
+      <td>Content Start</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">5</td>
+    </tr>
+    <tr>
+      <td>Number Output</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">4</td>
+    </tr>
+    <tr>
+      <td>Marks</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">2</td>
+    </tr>
+    <tr>
+      <td>Step</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">2</td>
+    </tr>
+    <tr>
+      <td>Tooltip</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">2</td>
+    </tr>
+    <tr>
+      <td>Two Handles</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">2</td>
+    </tr>
+    <tr>
+      <td>Mark Content</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+  </tbody>
+</table>
+
+### Notes for some items:
+
+- **Step:** This does not reference if the step attribute is supported but that they
+  provide a part/denotion to the UI of the steps for styling
+- **Mark content:** This denotes whether you can put content into the mark. This is
+  already a [standard](https://www.w3.org/TR/html51/sec-forms.html#range-state-typerange) by assinging a datalist to a range input.
+  This is not fully supported by any browser.
+
+## Parts
+
+These are names for the parts that may be used in a part concept.
+
+<table class="table table-bordered table-hover table-condensed nowrap-first-column research">
+  <col class="nowrap"></col>
+  <thead>
+    <tr>
+      <th class="nowrap" title="Field #1">
+        PART
+      </th>
+      <th class="nowrap" title="Field #1">
+        PART Concept
+      </th>
+      <th class="nowrap" title="Field #2">
+        Ant Design
+      </th>
+      <th class="nowrap" title="Field #3">
+        Carbon
+      </th>
+      <th class="nowrap" title="Field #4">
+        UI Fabric
+      </th>
+      <th class="nowrap" title="Field #5">
+        FAST
+      </th>
+      <th class="nowrap" title="Field #6">
+        Lightning
+      </th>
+      <th class="nowrap" title="Field #7">
+        Stardust
+      </th>
+      <th class="nowrap" title="Field #8">
+        WAI-ARIA
+      </th>
+      <th class="nowrap" title="Field #9">
+        Material
+      </th>
+      <th class="nowrap" title="Field #10">
+        AtlasKit
+      </th>
+      <th class="nowrap" title="Field #11">
+        -Webkit
+      </th>
+      <th class="nowrap" title="Field #12">
+        Firefox
+      </th>
+      <th class="nowrap" title="Field #13">
+        TOTAL
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>thumb</td>
+      <td class="center bg-transparent">Thumb</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td>Browser Parts</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td>Browser Parts</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text bg-transparent">8</td>
+    </tr>
+    <tr>
+      <td>track</td>
+      <td class="center bg-transparent">Track</td>
+      <td>DEPENDS</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td>Browser Parts</td>
+      <td>DEPENDS</td>
+      <td class="center">N/A</td>
+      <td class="true center">TRUE</td>
+      <td>Browser Parts</td>
+      <td class="true center">TRUE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text bg-transparent">5</td>
+    </tr>
+    <tr>
+      <td>value-label</td>
+      <td class="center bg-transparent">Number Output</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="true center">TRUE</td>
+      <td class="center">N/A</td>
+      <td class="true center">TRUE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">3</td>
+    </tr>
+    <tr>
+      <td>rail</td>
+      <td class="center bg-transparent">Filled Selected Track</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="true center">TRUE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">2</td>
+    </tr>
+    <tr>
+      <td>line</td>
+      <td class="center bg-transparent">Track</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>progress</td>
+      <td class="center bg-transparent">Filled Selected Track</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>handle-one</td>
+      <td class="center bg-transparent">Two Handles</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>handle-two</td>
+      <td class="center bg-transparent">Two Handles</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>tickmarks</td>
+      <td class="center bg-transparent">Marks</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>mark</td>
+      <td class="center bg-transparent">Marksk</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>mark text</td>
+      <td class="center bg-transparent">Mark Content</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>step</td>
+      <td class="center bg-transparent">Step</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>input-for-slider</td>
+      <td class="center bg-transparent">Number Output</td>
+      <td class="false center">FALSE</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+    <tr>
+      <td>input-number</td>
+      <td class="center bg-transparent">Number Output</td>
+      <td class="true center">TRUE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="center">N/A</td>
+      <td class="false center">FALSE</td>
+      <td>Browser Parts</td>
+      <td class="false center">FALSE</td>
+      <td class="false center">FALSE</td>
+      <td class="center bold-text bg-transparent">1</td>
+    </tr>
+  </tbody>
+</table>

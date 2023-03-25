@@ -1,0 +1,332 @@
+---
+menu: Proposals
+name: Select (Editor's Draft)
+
+pathToResearch: /components/select.research
+layout: ../../layouts/ComponentLayout.astro
+---
+
+import '../../styles/spec.css'
+import SelectAnatomy from '../../components/select-anatomy'
+
+## Overview
+
+The `<select>` is a control that provides a list of options for the user to select
+from.
+
+## Use Cases
+
+The `<select>` control is primarily leveraged to select an option for within a form. For example
+when your buying a shirt you may be provided with a `<select>` that has options for sizes that you
+then select the appropriate one for you.
+
+## Prior Art/Examples <a href="#prior-art" id="prior-art"></a>
+
+- [Ant Design](https://ant.design/components/select/)
+- [Atlas Kit](https://atlassian.design/components/select/)
+- [Carbon Design System](https://www.carbondesignsystem.com/components/select/code/)
+- [FAST DNA](https://explore.fast.design/components/fast-select)
+- [KoliBri](https://public-ui.github.io/docs/components/select)
+
+## &lt;select&gt; Properties <a href="#select-properties" id="select-properties"></a>
+
+| Property Name                                                                                           | Type                    | Default Value                         | Description                                                                                                                                              |     |
+| ------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| `autocomplete`                                                                                          | `string`                | `off`                                 | Allows the developer to provide a hint on how to search the content within the `<option>`(s)                                                             |     |
+| [`autofocus`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/autofocus)             | `bool`                  | `false`                               | If set to `true` the `<select>` will have focus set on page load                                                                                         |     |
+| [`disabled`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/disabled)               | `bool`                  | inherited from containing element     | If set to `true` the user will not be able to interact with the control                                                                                  |     |
+| [`form`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/form)                       | `string`                | the form that contains the `<select>` | Represents the form owner, via the `form` attribute being the same as the `id` of the `<form>`                                                           |     |
+| [`labels`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/labels)                   | `NodeList`              |                                       | A NodeList containing the `<label>` elements associated with the `<select>` element                                                                      |     |
+| `length`                                                                                                | `int`                   | `0`                                   | The number of `<option>` elements in the `<select>` element                                                                                              |     |
+| `multiple`                                                                                              | `bool`                  | `false`                               | If set to true this will allow more than one `<option>` to be selectable                                                                                 |     |
+| `name`                                                                                                  | `string`                | `null`                                | Represents the name of the control                                                                                                                       |     |
+| `open`                                                                                                  | `bool`                  | `false`                               | A `boolean` that indicates whether the `<select>` is in the [`open`](#open-state) state                                                                  |     |
+| [`options`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/options)                 | `HTMLOptionsCollection` |                                       | Returns a `HTMLOptionsCollection` of the `<option>` elements contained by the `<select>` element                                                         |     |
+| `required`                                                                                              | `bool`                  | `false`                               | A value must be provided for the control if set to `true`                                                                                                |     |
+| [`selectedIndex`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedIndex)     | `int`                   | `-1`                                  | The index of the first or last selected `<option>` element, depending on the value of `multiple`                                                         |     |
+| [`selectedOptions`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedOptions) | `HTMLCollection`        |                                       | An `HTMLCollection` of the selected `<option>` elements                                                                                                  |     |
+| `size`                                                                                                  | `int`                   | `0`                                   | If the `<select>` is shown with a scrollbar, this represents how many `<option>`s are visible.                                                           |     |
+| [`type`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/type)                       | `string`                | `"select-one"`                        | Returns either `"select-multiple"` or `"select-one"`                                                                                                     |     |
+| `validationMessage`                                                                                     | `string`                | `""`                                  | Represents the message that describes the validation constraints that the control does not satisfy                                                       |     |
+| `validity`                                                                                              | `ValidityState`         |                                       | Represents the current validity state of the control                                                                                                     |     |
+| `value` <a id="value"></a>                                                                              | `string`                | `""`                                  | Returns the `value` property of the first selected `<option>` if there is one, otherwise an empty string                                                 |     |
+| `willValidate`                                                                                          | `bool`                  | `true`                                | A `boolean` that indicates whether the button is a candidate for constraint validation. It is false if any conditions bar it from constraint validation. |     |
+
+## &lt;select&gt; Methods <a href="#select-methods" id="select-methods"></a>
+
+| Name                                                                                                        | Description                                                                                                                               |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`add`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/add)                             | Adds an `<option>` to the `<select>`'s collection of `<option>` elements                                                                  |
+| [`checkValidity`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/checkValidity)         | Checks whether the element violates any of its validity constraints. If so, fires `invalid` and returns false                             |
+| [`item`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/item)                           | Returns the `<option>` at the specified index in the `<select>`'s `<option>` collection                                                   |
+| [`namedItem`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/namedItem)                 | Returns the `<option>` in the `<select>`'s `<option>` collection with the specified name                                                  |
+| [`remove`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/remove)                       | Removes the `<option>` at the specified index in the `<select>`'s `<option>` collection                                                   |
+| `reportValidity`                                                                                            | If the `<select>` violates any of its validity constraints, shows a visual indicator to the user, fires `invalid`, and returns `false`    |
+| [`setCustomValidity`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/setCustomValidity) | Sets the custom validity message of the `<select>` to the specified string, or clears any custom validity error if passed an empty string |
+
+## &lt;optgroup&gt; Properties <a href="#optgroup-properties" id="optgroup-properties"></a>
+
+| Property Name | Type     | Default Value                     | Description                                                                                       |
+| ------------- | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `disabled`    | `bool`   | inherited from containing element | If set to `true` the user will not be able to interact with any of the `<option>`(s) in the group |
+| `label`       | `string` |                                   | The name of the group of `<option>`s. Required if element is used.                                |
+
+## &lt;option&gt; Properties <a href="#option-properties" id="option-properties"></a>
+
+| Property Name                    | Type                                                                                | Default Value                     | Description                                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `defaultSelected`                | `bool`                                                                              | `false`                           | The initial value of the `selected` attribute                                                                     |
+| `disabled`                       | `bool`                                                                              | inherited from containing element | If set to `true` the user will not be able to interact with the `<option>`                                        |
+| `form`                           | [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement) |                                   | Returns the form element that the `<option>` is associated with, the association is inherited from the `<select>` |
+| `index`                          | `long`                                                                              |                                   | The position of the `<option>` in the list of options it belongs to, in tree order                                |
+| `label`                          | `string`                                                                            |                                   | Reflects the value of the `value` attribute if it exists; else reflects `Node.textContent`                        |
+| `selected` <a id="selected"></a> | `bool`                                                                              | `false`                           | If set to `true` then the `<option>` is selected                                                                  |
+| `text`                           | `string`                                                                            |                                   | Contains the text content of the element                                                                          |
+| `value`                          | `string`                                                                            |                                   | Reflects the value of the `value` attribute if it exists; else reflects `Node.textContent`                        |
+
+### Anatomy <a class="link" href="#anatomy" id="anatomy"></a>
+
+#### Diagram <a class="link" href="#diagram" id="diagram"></a>
+
+<SelectAnatomy />
+
+#### Structure <a class="link" href="#structure" id="structure"></a>
+
+- `<select>` - The root element that contains the button and listbox **[required]**
+- `<button>` - The button element that contains the selected value and triggers the visibility of the listbox **[required]**
+- `<selected-value>` - The element that displays the value of the currently selected option **[optional]**
+- `<marker>` - Something that indicates this button opens a listbox, e.g. an icon. **[optional]**
+- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s) **[required]**
+- `<optgroup>` - Groups `<option>`(s) together with a label **[optional]**
+- `<option>` - Can have one or more and represents the potential values that can be chosen by the user **[required]**
+
+### Content not allowed within the anatomy
+
+The following interactive elements are **NOT** permitted within a `<select>` or its
+children:
+
+- button (outside of the pre-defined one)
+- datalist
+- input (all [types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input))
+- meter
+- progress
+- select
+- textarea
+- anchor
+- iframe
+- object
+
+<p class="question">Should &lt;a&gt; and &lt;output&gt; be included?</p>
+<div class="question">
+  Should this apply to the entire anatomy or solely the &lt;option&gt; and &lt;optgroup&gt; element
+</div>
+
+## Events <a class="link" href="#events" id="events"></a>
+
+### select
+
+| Event    | Behavior                                                                                         | Impacts          |
+| -------- | ------------------------------------------------------------------------------------------------ | ---------------- |
+| `change` | Updates the textContent property of the selected-value slot with the value property text content | textContent prop |
+
+### part button
+
+| Event            | Behavior                                          | Impacts                                                                 |
+| ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `click`          | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
+| `click`          | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)` | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
+| `keydown(space)` | Toggles `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(enter)` | Toggles the `open` state of the `<select>`        | [open](#open-state) state                                               |
+| `keydown(enter)` | Toggles `aria-expanded` of the `button part`      | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+
+### part listbox
+
+| Event                                                                  | Behavior                                                                                                               | Impacts                                                                 |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `keydown(down key)`                                                    | Moves focus to the next `<option>` in the `listbox`                                                                    | focus                                                                   |
+| `keydown(up key)`                                                      | Moves focus to the previous `<option>` in the `listbox`                                                                | focus                                                                   |
+| `keydown(enter)`                                                       | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `keydown(space)`                                                       | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `keydown(enter)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `keydown(enter)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(space)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `keydown(space)`                                                       | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+| `keydown(escape)`                                                      | Toggles the `open` state of the `<select>`                                                                             | [open](#open-state) state                                               |
+| `keydown(any single character that no other listbox event listens to)` | Run the [typeahead steps](#typeahead-steps) given `<select>` and `event.key`                                           | focus                                                                   |
+
+### part option
+
+| Event   | Behavior                                                                                                               | Impacts                                                                 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `click` | Changes the `selected` state of the current `<option>` and updates the `<select>` value property                       | [selected](#selected) prop <br/> [value](#value) prop                   |
+| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the state of `open` of the `<select>`         | [open](#open-state) state                                               |
+| `click` | If the `<select>` does **not** have the `multiple` attribute then toggle the `aria-expanded` attribute of the `button` | [aria-expanded](https://www.w3.org/TR/wai-aria-1.1/#aria-expanded) attr |
+
+## Behavior
+
+### States <a class="link" href="#states" id="states"></a>
+
+#### open <a href="#open" class="link" id="open-state"></a>
+
+This state is applied to the `<select>` when the listbox is visible to the user.
+
+#### required
+
+An `<option>` from the `<select>` must be selected when the `required` attribute is set to `true`
+
+#### valid
+
+The `<select>` meets all its validation constraints,
+and is therefore considered to be valid.
+
+#### invalid
+
+The `<select>` does not meet its validation constraints,
+and is therefore considered to be invalid.
+
+### Interaction &amp; transition of states
+
+**Default State**
+
+- The `selected-value` part should show the currently selected `<option>` or the first `<option>`.
+- The `listbox` part is not visible to the user.
+- The state of the `<select>` is set to `open` when the user invokes the `button` by:
+  - a [pointerup](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerup_event) or
+    [click](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) event is fired
+  - the user presses the `space` or `enter` key
+
+<p class="note">
+  If an author wants a &lt;select&gt; to be open by default, they can set the &lt;select&gt;'s
+  `open` property to true in the JavaScript responsible for initializing the component, or in HTML
+  set the &lt;select&gt;'s `open` boolean content attribute, which reflects the `open` property.
+</p>
+
+**Open State**
+
+- The currently selected `<option>`, or the first if one isn't selected, should be
+  visible within the listbox. This may require moving the list to accomodate listbox positioning
+  and available space.
+- The user can dismiss the listbox and remove the state of `open` from the `<select>` in either of the
+  following manners:
+  - Triggering any of the listbox's <a href="#light-dismiss">light dismiss</a> behaviors
+  - Selecting one, or more (if `multiple` is true), options by clicking or hitting the `enter` or `space` key
+
+### Light dismiss
+
+The listbox part has "light dismiss", behavior, defined as being dismissed (removing
+the `open` state of the `<select>`, in this case) by either of the following things:
+
+- The user presses the escape key.
+- A focus change occurs (because of either user interaction or script), where the focus
+  target is outside of the subtree of the listbox. This includes the case where the user
+  invokes a non-focusable element, which causes focus to switch to the `<body>`.
+  - There is one exception to this: if a user invokes a non-focusable element
+    in the subtree of the listbox, focus still moves to the `<body>`, but "light
+    dismiss" does not occur.
+
+### Typeahead
+
+#### The <a class="link" href="#typeahead-steps" id="typeahead-steps">typeahead steps</a> given a `<select>` and a `typed character` are as follows:
+
+1. Let `start new search` be false.
+1. If longer than the <a href="#typeahead-search-timeout">typeahead search timeout</a>
+   has elapsed since the previous invocation of the [typeahead steps](#typeahead-steps)
+   for `listbox`, then set `start new search` to true and set `buffer` to an empty string.
+1. Let `buffer` be `<select>`'s [`typeahead buffer`](#typeahead-buffer)
+1. Append `typed character` to `buffer`.
+1. Let `options` be the `<select>`'s list of options.
+1. If `start new search` is true, then let `starting option` be the option after
+   the currently focused option (this is the first option if the currently
+   focused option is the last option). Otherwise let `starting option` be the
+   currently focused option.
+   <p class="note">
+     The point is that if we're in the middle of a search, we should keep trying to match on the
+     currently selected &lt;option&gt;. If this is a new search, we should start searching at the
+     &lt;option&gt; after the currently selected &lt;option&gt;. If the user wanted the current
+     &lt;option&gt;, then presumably they wouldn't still be typing search text.
+   </p>
+1. Let `newly focused option` be the result of [finding the first matching
+   option](#find-the-first-matching-option) given `buffer`, `options`, and `starting option`.
+1. If `newly focused option` is not null, move focus to `newly focused option`.
+
+#### To <a class="link" href="#find-the-first-matching-option" id="find-the-first-matching-option">find the first matching option</a> given a character buffer `buffer` and a list of options `options`, and a `starting option`, run these steps:
+
+1. For each `option` in `options`, starting with `starting option`, proceeding
+   until the last option, then starting from the first option and proceeding to
+   the option before `starting option`:
+   1. Let `match text` be `option.label` with whitespace at the beginning and
+      end removed (whitespace characters between non-whitespace characters are
+      not removed).
+   1. If `buffer` is a case-insensitive prefix of `match text`, then return `option`.
+1. Return null.
+
+#### The <a class="link" href="#typeahead-buffer" id="typeahead-buffer">`typeahead buffer`</a> of a `<select>`
+
+A buffer containing the characters typed by the user for typeahead. Initially an empty string.
+
+#### <a class="link" href="#typeahead-search-timeout" id="typeahead-search-timeout">Typeahead search timeout</a>
+
+This is the maximum time that may elapse between keystrokes without the typeahead
+search being reset. The value is left to implementations to determine. Typically
+it will be somewhere around 0.5-1s.
+
+### Listbox positioning <a class="link" href="#listbox-positioning" id="listbox-positioning"></a>
+
+When the `<select>` is in its `open` state the `listbox` should
+
+- Be positioned allow for the greatest visibility of the `listbox` as possible.
+- Let currentBox equal the `button`'s `getBoundingClientRect`
+- Let viewportHeight equal document.innerWidth
+- Let availableTop equal `viewportHeight - currentBox.top`
+- Let availableBottom equal `viewportHeight - currentBox.bottom`
+- If availableTop is greater than availableBottom:
+  - Position the `listbox`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) bottom edge with the `button`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) top edge
+- else
+  - Position the `listbox`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) top edge with the `button`'s [border-box](https://drafts.csswg.org/css-ui-3/#valdef-box-sizing-border-box) bottom edge
+
+<div class="question">
+  Some frameworks allow a forced directionality with the default being an auto positioning as
+  described above.
+</div>
+
+#### Use with Assistive Technology <a class="link" id="assistive-tech"></a>
+
+Implements the [combobox role](https://www.w3.org/TR/core-aam-1.1/#role-map-combobox) per the
+[HTML AAM spec](https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings).
+
+### Security <a class="link" href="#security" id="security"></a>
+
+#### Avoiding UI spoofing
+
+If a listbox is rendered outside of the viewport, then it is highly recommended to limit control over the possible
+adjustments that an author can make. This is due to the developer being able to overlay their content with the
+application's UI, of which the user trusts and can result in [clickjacking](https://en.wikipedia.org/wiki/Clickjacking) due to UI spoofing.
+If the application enables the author to have complete control over its appearance,
+the implementor **MUST** render the listbox within the viewport.
+
+This also **MUST** apply to embedded content, such as an `<iframe>` as it may try to mimick the appearance of the
+site it is being embedded on.
+
+### Open Questions <a class="link" href="#open-questions" id="open-questions"></a>
+
+- Provide arbitrary HTML into `<option>` elements
+  - What is the value of an option with complex content? [[Issue 69](https://github.com/openui/open-ui/issues/69)]
+  - How does focus work with focusable children within the control?
+  - How does form validation work?
+
+## Resources <a class="link" href="#resources" id="resources"></a>
+
+- [MDN Reference on Current &ltSelect&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
+- [MDN Reference of HTMLSelectElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement)
+- [WHATWG Living Standard on &ltSelect&gt](https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element)
+
+## How to use this component <a class="link" href="#how-to" id="how-to"></a>
+
+To learn how to use the experimental `<selectmenu>` component based on this Open UI proposal, go to [our documentation](/prototypes/selectmenu).
+
+<br />
+
+##### Acknowledgements
+
+Some method and attribute definitions were sourced from the [MDN definitions](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)

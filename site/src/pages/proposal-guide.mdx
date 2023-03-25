@@ -1,0 +1,88 @@
+---
+name: Creating a proposal
+
+menu: Documentation
+layout: ../layouts/Layout.astro
+---
+
+import Image from '../components/image.astro'
+
+## Proposal Page <a href="#proposal-page" id="proposal-page"></a>
+
+The proposal page will summarize your findings, conclusions, and unresolved points.
+
+Define your proposal page front matter.
+The `pathToResearch` key tells your proposal page where its research page is hosted.
+
+```markdown
+---
+menu: Proposals
+name: Your Component
+
+pathToResearch: /components/your-component.research
+---
+```
+
+### Working through the proposal template
+
+Beginning to spec a control can feel daunting and it's hard to know where to start.
+The spec template headings should be used as a guide to ensure that all aspects of creating
+a high quality control that is inclusive for all users is covered. Not all sections are required for
+every control. If you remove them, make sure to denote that you removed them and why in a PR.
+
+### Gaining consensus on a change
+
+Of course, merely documenting what exists does not necessarily make something a good design.
+For each normative change that you make to your spec proposal, open an issue to outline the change
+that you're proposing. You should provide any research to support the change(s) that you're proposing.
+
+### Do **NOT** deviate from already standardized content
+
+Open UI is trying to define an entire control in a single location. Currently, in order to
+build a complete control you'll need to refer to specifications in WHATWG, CSSWG, and WAI-ARIA.
+Open UI will enable an author to build a control referencing a single location.
+
+While this will be helpful, Open UI should not re-define aspects of other specifications.
+If you identity an aspect of a control that exists in the majority of design systems but is
+_not_ currently in a web platform specification, you **should** define it in the Open UI spec proposal.
+Upon getting resolution of this proposal a subsequent issue should be filed against the necessary specification
+to get its addition. To make it a bit more clear, let's take a concrete example:
+
+The Open UI `<select>` proposal has a definition for an `open` state. This is currently _not_ defined
+in a web platform specification. In order for this to make it into the web platform an issue will need
+to be filed again the WHATWG HTML specification.
+
+**Note:** In order to understand how Open UI achieves consensus, please review to our [charter](https://open-ui.org/charter)
+
+### Denoting Questions
+
+There is an expectation that your proposal will have open questions. Leverage the following HTML to
+denote them, they'll be incremented automatically and pre-pended with 'Question'.
+
+`<p class="question">QUESTION</p>`
+
+# Definitions <a href="#definitions" id="definitions"></a>
+
+Since Open UI is about doing research across design systems to understand their components
+and controls it's important to have clear definitions. For the purposes of Open UI here are
+some common terms used in specifications and their definitions.
+
+## Component <a href="#definition-component" id="definition-component"></a>
+
+The dictionary defines a component as, "a part or element of a larger whole" and this is
+true for components in a design system's component library. Components normally have a meaning,
+although this meaning may not be presented to the user (such as a utility component). The _meaning_ is
+defined by the component's model, defined [parts](https://drafts.csswg.org/css-shadow-parts-1/#part-attr) and
+[slots](https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element), and states.
+
+## Control <a href="#definition-control" id="definition-control"></a>
+
+A control is a type of component that allows some form of user interaction. The control has controller code
+that manages the transition of the component's states and the model based on end-user interaction with the
+defined parts.
+
+## Composite Component
+
+It is often necessary to produce a component that contains other components. For example, the `<file>`
+control is a component that normally contains an `<input>` component and a `<button>` component.
+These types of components are commonly referred to as composite components.
