@@ -32,25 +32,29 @@ Also differently from a `<select>`, there is currently no `multiple` attribute t
 
 ## Radio Design
 
-This section relates to a single `<oui-radio>`. Because it cannot stand on its own, without being part of and either explicit or implicit `<oui-radio-group>`, it does not have attributes such `required` or `readonly`, those being attributes of the group. A single `required` option is a group makes the other choices pointless, while a `readonly` option makes itself pointles.
+This section relates to a single `<oui-radio>`.
 
-The radio has, however a `disabled` attribute, meaning it's a possible choice, but that is currently unavailable.
+The radio can have a `disabled` attribute, meaning it's a possible choice, but that is currently unavailable.
 
 If used inside a `<oui-radio-group>`, it gets implicitly bound to the group, becoming one of the choices. If declared outside of it, it should contain a `group` attribute equal to the group's `name` attribute.
+
+It can also have a `required` or a `readonly` attribute. Because standalone radios with such attributes would not make much sense, by placing these attributes on a single `<oui-radio>`, the whole radio group would be understood as `required` or `readonly`, be it either an explicit or implicit group.
 
 ### API
 
 #### Properties
 
-| Attribute Name   | Type     | Default Value | Description                                                                             |
-| ---------------- | -------- | ------------- | --------------------------------------------------------------------------------------- |
-| `checked`        | `bool`   | `false`       | Controls whether the radio is checked or unchecked.                                     |
-| `defaultChecked` | `bool`   | `false`       | The initial value for `checked`. Defaults to false.                                     |
-| `value`          | `string` | `null`        | The value of the radio (this is the value of a single possible choice).                 |
-| `autofocus`      | `bool`   | `false`       | Get focus by default.                                                                   |
-| `disabled`       | `bool`   | `false`       | Prevents the user from interacting with the control. Defaults to false.                 |
-| `group`          | `string` | `null`        | Binds the radio to a radio group. While inside a radio group, it is implicitly defined. |
-| `form`           | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.            |
+| Attribute Name   | Type     | Default Value | Description                                                                                          |
+| ---------------- | -------- | ------------- | ---------------------------------------------------------------------------------------------------- |
+| `checked`        | `bool`   | `false`       | Controls whether the radio is checked or unchecked.                                                  |
+| `defaultChecked` | `bool`   | `false`       | The initial value for `checked`. Defaults to false.                                                  |
+| `value`          | `string` | `null`        | The value of the radio (this is the value of a single possible choice).                              |
+| `autofocus`      | `bool`   | `false`       | Get focus by default.                                                                                |
+| `disabled`       | `bool`   | `false`       | Prevents the user from interacting with the control. Defaults to false.                              |
+| `group`          | `string` | `null`        | Binds the radio to a radio group. While inside a radio group, it is implicitly defined.              |
+| `form`           | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.                         |
+| `readonly`       | `bool`   | `false`       | Makes its group unavailable for user interaction, but the selected choice should still be submitted. |
+| `required`       | `bool`   | `false`       | Makes its group required to have a selected choice.                                                  |
 
 #### Events
 
