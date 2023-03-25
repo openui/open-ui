@@ -1,6 +1,6 @@
 ---
 menu: Research
-name: Radio Button
+name: Radio
 path: /components/radio-button.research
 pathToProposal: /components/radio-button
 ---
@@ -10,26 +10,26 @@ import Anatomy from '../../components/anatomy'
 import Concepts from '../../components/concepts'
 import ComponentCoverage from '../../components/component-coverage'
 
-<ComponentCoverage component="Radio Button" />
+<ComponentCoverage component="Radio" />
 
 ## Introduction
 
-_(For a lengthier discussion, on which this page was based, please refer to the [original radio button issue](https://github.com/WICG/open-ui/issues/251))_
+_(For a lengthier discussion, on which this page was based, please refer to the [original radio issue](https://github.com/WICG/open-ui/issues/251))_
 
-The research showed that different design systems treat radio buttons in one of two ways, i.e.:
+The research showed that different design systems treat radios in one of two ways, i.e.:
 
-- as a standalone component, that could be hosted on a “**radio button group**” component;
-- as an invariably non-independent part of a “**radio button group**” component (just like `<option>` tags are dependent on `<select>` tags).
+- as a standalone component, that could be hosted on a “**radio group**” component;
+- as an invariably non-independent part of a “**radio group**” component (just like `<option>` tags are dependent on `<select>` tags).
 
-The two approaches seem very similar at first, but the former seems to indicate that single “radio buttons” could exist, to probably indicate a binary state (on or off). The latter, however, shifts the scope up to the “radio button group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
+The two approaches seem very similar at first, but the former seems to indicate that single “radios” could exist, to probably indicate a binary state (on or off). The latter, however, shifts the scope up to the “radio group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
 
-> “A document must not contain an input element whose radio button group contains only that element.”
+> “A document must not contain an input element whose radio group contains only that element.”
 >
 > -- <cite>[W3 HTML Specification](https://www.w3.org/TR/html52/sec-forms.html#radio-button-state-typeradio)</cite>
 
-Besides, the mere existence of both approaches made elaboration of a concept table rather difficult, because it was not always clear whether a concept should apply to the radio button or the radio group. In any case, this research shows that most concepts apply to the radio buttons, while only some apply to the groups, eg:
+Besides, the mere existence of both approaches made elaboration of a concept table rather difficult, because it was not always clear whether a concept should apply to the radio or the radio group. In any case, this research shows that most concepts apply to the radios, while only some apply to the groups, eg:
 
-- radio-button-group-orientation
+- radio-group-orientation
 - required-group
 - disabled / readonly (for the whole group)
 - group-label
@@ -38,35 +38,35 @@ After the research there are still [discussions to be made](#discussion), where 
 
 ## Anatomy
 
-<Anatomy component="Radio Button" />
+<Anatomy component="Radio" />
 
 ## Concepts
 
-<Concepts component="Radio Button" />
+<Concepts component="Radio" />
 
 ## Discussion
 
-At a point during the research, the scope of this study os shifted from the “radio button” to the “radio button group”, because there is no particular strong use case for a standalone “radio button”, and also because this use case is against the W3 Specification, the actual component to be considered is the “radio button group”, being composed of two or more radio buttons.
+At a point during the research, the scope of this study os shifted from the “radio” to the “radio group”, because there is no particular strong use case for a standalone “radio”, and also because this use case is against the W3 Specification, the actual component to be considered is the “radio group”, being composed of two or more radios.
 
 Also based on this fact and on the current state of the design systems, a more final anatomy was proposed.
 
 ### Proposed Anatomy - by Tag Hierarchy
 
-This section shows the proposed visual constituents for the _Radio Button Group_, which is here considered to be the actual component, while the radio buttons are a part of the group.
+This section shows the proposed visual constituents for the _Radio Group_, which is here considered to be the actual component, while the radios are a part of the group.
 
-- Radio Button Group (the actual component)
+- Radio Group (the actual component)
   - Group Label (functions as a label for the whole group)
   - Required Indicator
-  - Radio Button (at least two required)
+  - Radio (at least two required)
     - Checked Indicator (input)
     - Label (optional)
-  - Radio Button
+  - Radio
     - and so on...
   - and so on...
 
 #### The problem
 
-The above anatomy is regular enough to be assembled in a way similar to (but more complex than) a `<select>`. Attributes set on the group would allow the developer to set the whole group as "disabled", "readonly", vertically or horizontally laid out, types of display (like buttons, radio buttons, combobox, etc), and attributes set on the radio buttons would set their specific states, as we do with `<option>` tags. It is important to understand that the function of radio buttons is almost the same as a `<select>` tag, and this is why the comparison makes sense.
+The above anatomy is regular enough to be assembled in a way similar to (but more complex than) a `<select>`. Attributes set on the group would allow the developer to set the whole group as "disabled", "readonly", vertically or horizontally laid out, types of display (like buttons, radios, combobox, etc), and attributes set on the radios would set their specific states, as we do with `<option>` tags. It is important to understand that the function of radios is almost the same as a `<select>` tag, and this is why the comparison makes sense.
 
 However, by being so regular and requiring a specific HTML structure, we would lose structural flexibility. For this, here is another proposal.
 
@@ -80,11 +80,11 @@ If the above proposal would accept other nodes as valid children, or at least a 
   style="width: 100%"
 />
 
-This could be achieved by combining table elements with radio button inputs and grouping attributes.
+This could be achieved by combining table elements with radio inputs and grouping attributes.
 
 #### The problem
 
-One could say it’s exactly the same behavior we have nowadays, because the radio buttons are bound together by the `name` attribute. However, the current structure still depends on a `fieldset` tag to visually group and label the collective of radio buttons, and this requirement prevents us from doing that exact table layout with actual tables, because we can’t use the fieldsets to group rows and put a `legend` inside it as well.
+One could say it’s exactly the same behavior we have nowadays, because the radios are bound together by the `name` attribute. However, the current structure still depends on a `fieldset` tag to visually group and label the collective of radios, and this requirement prevents us from doing that exact table layout with actual tables, because we can’t use the fieldsets to group rows and put a `legend` inside it as well.
 
 Today, the structure of such semantic differential scale could be represented like this:
 
@@ -117,7 +117,7 @@ The two main approaches presented above should be analysed in order to decide
 
 - In the first case:
   - whether the first, more rigid proposal should be developed;
-  - or maybe even create an attribute to the `<select>` tag that would make it behave visually like radio buttons
+  - or maybe even create an attribute to the `<select>` tag that would make it behave visually like radios
 - Or, in the second case, strive for flexibility and:
-  - propose modifications to the labeling of the current radio buttons;
+  - propose modifications to the labeling of the current radios;
   - or change the tags used to create them, like in the last example.

@@ -1,10 +1,10 @@
 import React from 'react'
 import { AnatomyWrapper, Host, Part, Slot } from './anatomy-components'
 
-const RadioButtonGroup = () => {
+const RadioGroup = () => {
   return (
-    <AnatomyWrapper name="radio-button-group">
-      <Host name="openui-radio-button-group">
+    <AnatomyWrapper name="radio-group">
+      <Host name="openui-radio-group">
         <Slot name="label">
           <Part name="label" />
         </Slot>
@@ -22,4 +22,4 @@ const RadioButtonGroup = () => {
   )
 }
 
-export default RadioButtonGroup
+export default RadioGroup
