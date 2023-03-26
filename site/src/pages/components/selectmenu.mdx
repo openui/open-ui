@@ -81,6 +81,29 @@ The above example results in the following style:
 
 `::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
 
+### `:open` and `:closed` pseudo-selectors
+
+The selectmenu element supports the `:open` and `:closed` pseudo selectors as specified by CSS here: https://drafts.csswg.org/selectors/#open-state
+
+When the selectmenu's listbox is showing, the selectmenu element will match `:open`, and when it is not showing, it will match `:closed`. Here is an example which makes the button red when the listbox is closed and green when it is open:
+```html
+<selectmenu>
+  <button id=custombutton slot=button behavior=button>
+    <span behavior=selected-value></span>
+  </button>
+  <option>one</option>
+  <option>two</option>
+</selectmenu>
+<style>
+selectmenu:open #custombutton {
+  background-color: green;
+}
+selectmenu:closed #custombutton {
+  background-color: red;
+}
+</style>
+```
+
 ## Use your own markup
 
 You can further customize the control to fit your needs by providing your own markup to replace the default one, and extend and re-order the parts.

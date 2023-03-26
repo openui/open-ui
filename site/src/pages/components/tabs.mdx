@@ -48,6 +48,7 @@ Some scenarios require an indicator that highlights the currently active tab the
 - [Material Design](https://material.io/components/tabs/#anatomy)
 - [Windows (UWP)](https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/tab-view)
 - [Ant Design](https://ant.design/components/tabs/)
+- [KoliBri](https://public-ui.github.io/docs/components/tabs)
 - [Lightning Design](https://www.lightningdesignsystem.com/components/tabs/)
 
 #### Tabs Implementations
