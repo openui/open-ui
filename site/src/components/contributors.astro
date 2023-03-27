@@ -1,0 +1,35 @@
+---
+const CONTRIBUTORS_URL = `https://api.github.com/repos/openui/open-ui/contributors`
+const CONTRIBUTORS = await (await fetch(CONTRIBUTORS_URL)).json()
+---
+<ul>
+  {CONTRIBUTORS.filter(c => !c.login.includes('dependabot')).map(({ login, avatar_url, html_url }) => (
+    <li>
+      <a href={html_url} title={login}>
+        <img src={avatar_url} alt={`Github user ${login}`} width="48" height="48" loading="lazy"/>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  ul {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  ul, li {
+    margin: 0;
+  }
+  li {
+    inline-size: 48px;
+    aspect-ratio: 1;
+  }
+  img {
+    border-radius: 50%;
+    object-fit: cover;
+    scale: 1.2;
+    border: 2px solid #007a3d;
+    background: #ffffff;
+  }
+</style>
