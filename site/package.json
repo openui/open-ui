@@ -1,0 +1,62 @@
+{
+  "name": "open-ui-docs",
+  "description": "Open UI documentation.",
+  "version": "1.0.0",
+  "author": "Open UI",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openui/open-ui"
+  },
+  "keywords": [
+    "open ui"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "sync-contributors": "node src/data/sync.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "post-commit": "git update-index --again"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{jsx,js,md,mjs,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^0.11.6",
+    "@astrojs/prefetch": "^0.1.1",
+    "@astrojs/react": "^1.2.2",
+    "@astrojs/sitemap": "^0.2.6",
+    "astro": "^1.6.10",
+    "astro-compress": "^1.1.10",
+    "eslint": "^8.18.0",
+    "eslint-plugin-react": "^7.30.0",
+    "hast-util-to-string": "^2.0.0",
+    "hastscript": "^7.2.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.0.4",
+    "prettier-plugin-astro": "^0.5.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rehype-autolink-headings": "^6.1.1"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.15",
+    "@nanostores/react": "^0.4.0",
+    "lodash": "^4.17.21",
+    "nanostores": "^0.7.1"
+  }
+}

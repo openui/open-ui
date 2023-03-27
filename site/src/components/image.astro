@@ -1,0 +1,17 @@
+---
+const { src, alt = src, style } = Astro.props
+---
+
+<img
+  alt={alt}
+  srcset={src + ' 2x'}
+  style={style}
+/>
+
+<style>
+  img {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+  }
+</style>

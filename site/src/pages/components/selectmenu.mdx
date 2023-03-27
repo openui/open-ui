@@ -1,0 +1,295 @@
+---
+menu: Proposals
+name: Selectmenu Element (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+---
+
+import SelectAnatomy from '../../components/select-anatomy'
+import Image from '../../components/image.astro'
+
+## Background
+
+The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in the [select proposal](../components/select) and [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
+
+## Testing out the &lt;selectmenu&gt; element
+
+`<selectmenu>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
+
+If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select). Here is a list of [open selectmenu bugs in open-ui](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Aselect).
+
+## Anatomy of the selectmenu
+
+Because the various parts of the selectmenu can be styled, it's important to understand the anatomy of this UI control.
+
+<SelectAnatomy />
+
+- `<select>` - The root element that contains the button and listbox.
+- `<button>` - The button element that triggers the visibility of the listbox.
+- `<selected-value>` - The element that displays the value of the currently selected option (optional). Note that this part does not necessarily have to be places inside the `<button>` part (read on for more information about how to slot your own markup).
+- `<marker>` - Something that indicates this button opens a listbox, e.g. an icon.
+- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
+- `<optgroup>` - Groups `<option>`(s) together with a label (optional).
+- `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
+
+## Default behavior
+
+The default behavior of the `<selectmenu>` control mimics the behavior of the `<select>` control. You can use it just like a native `<select>`, with the following minimal markup:
+
+```html
+<selectmenu>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
+```
+
+When doing so, the default button, select-value, and listbox are created for you.
+
+## Styling parts of the control
+
+One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
+
+```html
+<style>
+  .my-select-menu::part(button) {
+    color: white;
+    background-color: #f00;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .my-select-menu::part(listbox) {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid red;
+    border-radius: 5px;
+  }
+</style>
+<selectmenu class="my-select-menu">
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
+```
+
+The above example results in the following style:
+
+<Image
+  src="/images/selectmenu-styling-parts.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
+
+`::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
+
+### `:open` and `:closed` pseudo-selectors
+
+The selectmenu element supports the `:open` and `:closed` pseudo selectors as specified by CSS here: https://drafts.csswg.org/selectors/#open-state
+
+When the selectmenu's listbox is showing, the selectmenu element will match `:open`, and when it is not showing, it will match `:closed`. Here is an example which makes the button red when the listbox is closed and green when it is open:
+```html
+<selectmenu>
+  <button id=custombutton slot=button behavior=button>
+    <span behavior=selected-value></span>
+  </button>
+  <option>one</option>
+  <option>two</option>
+</selectmenu>
+<style>
+selectmenu:open #custombutton {
+  background-color: green;
+}
+selectmenu:closed #custombutton {
+  background-color: red;
+}
+</style>
+```
+
+## Use your own markup
+
+You can further customize the control to fit your needs by providing your own markup to replace the default one, and extend and re-order the parts.
+
+### Slotting your own content
+
+A `<selectmenu>` has named [slots](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots#adding_flexibility_with_slots)
+that can be referenced to replace the default parts.
+
+For example, to replace the default button with your own, you can do the following:
+
+```html
+<style>
+  .my-custom-select [slot='button'] {
+    display: flex;
+    align-content: center;
+  }
+  .my-custom-select button {
+    padding: 5px;
+    border: none;
+    background: #f06;
+    border-radius: 5px 0 0 5px;
+    color: white;
+    font-weight: bold;
+  }
+  .my-custom-select .label {
+    padding: 5px;
+    border: 1px solid #f06;
+    border-radius: 0 5px 5px 0;
+  }
+</style>
+<selectmenu class="my-custom-select">
+  <div slot="button">
+    <button behavior="button">Open</button>
+    <span class="label">Choose an option</span>
+  </div>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
+```
+
+The `slot="button"` attribute on the outer `<div>` tells the `<selectmenu>` to replace its default button with the contents of that `<div>`.
+
+The `behavior="button"` attribute on the inner `<button>` tells the browser that this element is what we want to use as the new button. The browser will automatically apply all the click and keyboard handling behavior to this element as well as the appropriate accessibility semantics.
+
+The above code snippet results in the following style:
+
+<Image
+  src="/images/selectmenu-replacing-button-part.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
+
+Note that the `slot` and `behavior` attributes can be used on the same element too.
+
+You can replace the default listbox part in a similar fashion:
+
+```html
+<style>
+  .my-custom-select [popup] {
+    width: 300px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    box-shadow: none;
+    margin: 10px 0;
+    border: 1px solid;
+    background: #f7f7f7;
+  }
+</style>
+<selectmenu class="my-custom-select">
+  <div slot="listbox">
+    <div popup behavior="listbox">
+      <option>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+      <option>Option 4</option>
+      <option>Option 5</option>
+    </div>
+  </div>
+</selectmenu>
+```
+
+The `popup` attribute used in this example's `<div popup>` is from the proposal at [Popup API (Explainer)](https://open-ui.org/components/popup.research.explainer). The element with `behavior="listbox"` is required to be a `<div popup=popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
+
+The above code snippet results in the following style:
+
+<Image
+  src="/images/selectmenu-replacing-listbox-part.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
+
+### Extending the markup
+
+Not only can you replace the default parts with your own, you can also extend the control's markup by adding new elements. This can be useful to augment the listbox or button with extra information, or to add new functionality.
+
+Consider the following example:
+
+```html
+<style>
+  .my-custom-select [slot='button'] {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .my-custom-select button {
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+  }
+  .my-custom-select button::before {
+    content: '\25BC';
+  }
+  .my-custom-select [popup] {
+    padding: 0;
+  }
+  .my-custom-select .section {
+    padding: 1rem 0 0;
+    background: radial-gradient(ellipse 60% 50px at center top, #000a 0%, transparent 130%);
+  }
+  .my-custom-select h3 {
+    margin: 0 0 1rem 0;
+    text-align: center;
+    color: white;
+  }
+  .my-custom-select option {
+    text-align: center;
+    padding: 0.5rem;
+  }
+</style>
+<selectmenu class="my-custom-select">
+  <div slot="button">
+    <span class="label">Choose a plant</span>
+    <span behavior="selected-value" slot="selected-value"></span>
+    <button behavior="button"></button>
+  </div>
+  <div slot="listbox">
+    <div popup behavior="listbox">
+      <div class="section">
+        <h3>Flowers</h3>
+        <option>Rose</option>
+        <option>Lily</option>
+        <option>Orchid</option>
+        <option>Tulip</option>
+      </div>
+      <div class="section">
+        <h3>Trees</h3>
+        <option>Weeping willow</option>
+        <option>Dragon tree</option>
+        <option>Giant sequoia</option>
+      </div>
+    </div>
+  </div>
+</selectmenu>
+```
+
+Using custom markup to wrap the list of options, the above example creates sections with their own styles and content as seen below:
+
+<Image
+  src="/images/selectmenu-using-custom-markup.png"
+  alt="The rendering of a selectmenu control with the above HTML and CSS code"
+/>
+
+## Examples
+
+You can find multiple examples of `<selectmenu>` on our [demo page](https://microsoftedge.github.io/Demos/selectmenu/).
+
+## Keyboard Behavior
+
+The selectmenu element has keyboard behavior inspried by both the existing `<select>` element and the [Aria Authoring Practices Guide Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). This behavior was decided in [issue 386](https://github.com/openui/open-ui/issues/386) and [issue 433](https://github.com/openui/open-ui/issues/433).
+
+When the listbox is closed and the button is focused:
+* Spacebar opens the listbox.
+* Enter submits the form associated with the selectmenu if one exists. Otherwise, enter does nothing.
+* The up, down, left, and right arrow keys all open the listbox without changing the selcted value.
+
+When the listbox is open:
+* Escape closes the listbox without changing the selected value.
+* Spacebar is used for typeahead.
+* Enter changes the selected value to the currently focused option and closes the listbox.
+* The up arrow key moves focus backwards in the list of options and changes the selected value to the newly selected option.
+* The down arrow key moves focus forwards in the list of options and changes the selected value to the newly selected option.
+* The left and right arrow keys do nothing.
