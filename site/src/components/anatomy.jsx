@@ -18,9 +18,7 @@ const Anatomy = ({ component }) => {
   return (
     <ul className="anatomy">
       {_.map(anatomy, ({ name }) => (
-        <li key={name}>
-          {name}
-        </li>
+        <li key={name}>{name}</li>
       ))}
     </ul>
   )

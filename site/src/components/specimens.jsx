@@ -33,13 +33,14 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
                 {hasOverrideName && ' '}
                 {hasOverrideName && <strong>{image.name}</strong>}
                 {showDescriptions && <br />}
-                {showDescriptions && <div className="description">{image.description || '...'}</div>}
+                {showDescriptions && (
+                  <div className="description">{image.description || '...'}</div>
+                )}
               </div>
             </div>
           )
         })}
-        <div>
-        </div>
+        <div></div>
       </div>
       {missingImages.length ? <MissingImages images={missingImages} /> : null}
     </div>

@@ -40,14 +40,15 @@ const ComponentNameMatrix = (props) => {
   return (
     <div>
       <button onClick={() => setSort(SORT_NEXT[sort])}>Sort By: {sort}</button>
-      <div className='component-name-matrix'>
-        <div className='column'>
-          <strong className='header'>Match</strong>
+      <div className="component-name-matrix">
+        <div className="column">
+          <strong className="header">Match</strong>
           {_.map(matchNameToCount, ([matchName, count]) => {
             return (
-              <div key={matchName} className='cell'>
+              <div key={matchName} className="cell">
                 {Math.round((count / sourcesCount) * 100)}%
-                <div className='percentage-bar'
+                <div
+                  className="percentage-bar"
                   style={{
                     width: Math.round((count / sourcesCount) * 100) + '%',
                   }}
@@ -58,8 +59,8 @@ const ComponentNameMatrix = (props) => {
         </div>
 
         {_.map(sources, (source) => (
-          <div key={source.name} className='column'>
-            <strong className='header'>
+          <div key={source.name} className="column">
+            <strong className="header">
               <a target="_blank" rel="noopener noreferrer" href={source.url}>
                 {source.name}
               </a>
@@ -76,14 +77,12 @@ const ComponentNameMatrix = (props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   href={foundComponent.url}
-                  className='cell found'
+                  className="cell found"
                 >
-                  <span>
-                    {foundComponent.name}
-                  </span>
+                  <span>{foundComponent.name}</span>
                 </a>
               ) : (
-                <div key={matchName} className='cell not-found' />
+                <div key={matchName} className="cell not-found" />
               )
             })}
           </div>

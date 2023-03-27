@@ -16,7 +16,7 @@ const Concepts = ({ component }) => {
 
   return (
     <>
-      <div className='concepts'>
+      <div className="concepts">
         <label htmlFor="descriptions">
           <input
             type="checkbox"

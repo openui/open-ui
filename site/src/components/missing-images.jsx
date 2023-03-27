@@ -2,7 +2,7 @@ import React from 'react'
 import './missing-images.css'
 
 export function MissingImages(props) {
-  const { images } = props;
+  const { images } = props
 
   return (
     <div className="missing-images">
@@ -16,6 +16,6 @@ export function MissingImages(props) {
           )
         })}
       </ul>
-    </div >
+    </div>
   )
 }
