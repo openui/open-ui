@@ -6,13 +6,14 @@ import prefetch from '@astrojs/prefetch'
 import compress from 'astro-compress'
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import { autolinkHeadingsPlugin } from './src/plugins/rehypeHeadings'
+import rehypeResponsiveTables from './src/plugins/rehypeResponsiveTable'
 
 export default defineConfig({
   integrations: [
     react(),
     sitemap(),
     mdx({
-      rehypePlugins: [rehypeHeadingIds, autolinkHeadingsPlugin],
+      rehypePlugins: [rehypeHeadingIds, autolinkHeadingsPlugin, rehypeResponsiveTables],
     }),
     prefetch(),
     compress(),
