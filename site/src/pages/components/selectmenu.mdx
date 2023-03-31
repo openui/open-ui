@@ -7,17 +7,32 @@ layout: ../../layouts/ComponentLayout.astro
 import SelectAnatomy from '../../components/select-anatomy'
 import Image from '../../components/image.astro'
 
-## Background
+## Table of Contents
+
+- [Background](#background)
+- [Testing out the selectmenu element](#testing-out-the-selectmenu-element)
+- [Anatomy of the selectmenu element](#anatomy-of-the-selectmenu-element)
+- [Styling selectmenu](#styling-selectmenu)
+  - [Styling parts of the control](#styling-parts-of-the-control)
+  - [`:open` and `:closed` pseudo-selectors](#open-and-closed-pseudo-selectors)
+- [Using your own markup](#using-your-own-markup)
+  - [Default behavior](#default-behavior)
+  - [Slotting your own content](#slotting-your-own-content)
+  - [Extending the markup](#extending-the-markup)
+- [Examples](#examples)
+- [Keyboard Behavior](#keyboard-behavior)
+
+# Background
 
 The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in the [select proposal](../components/select) and [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
 
-## Testing out the &lt;selectmenu&gt; element
+## Testing out the selectmenu element
 
 `<selectmenu>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
 
 If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select). Here is a list of [open selectmenu bugs in open-ui](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Aselect).
 
-## Anatomy of the selectmenu
+## Anatomy of the selectmenu element
 
 Because the various parts of the selectmenu can be styled, it's important to understand the anatomy of this UI control.
 
@@ -31,21 +46,11 @@ Because the various parts of the selectmenu can be styled, it's important to und
 - `<optgroup>` - Groups `<option>`(s) together with a label (optional).
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
-## Default behavior
+## Styling selectmenu
 
-The default behavior of the `<selectmenu>` control mimics the behavior of the `<select>` control. You can use it just like a native `<select>`, with the following minimal markup:
+Selectmenu provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
 
-```html
-<selectmenu>
-  <option>Option 1</option>
-  <option>Option 2</option>
-  <option>Option 3</option>
-</selectmenu>
-```
-
-When doing so, the default button, select-value, and listbox are created for you.
-
-## Styling parts of the control
+### Styling parts of the control
 
 One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
 
@@ -104,9 +109,23 @@ selectmenu:closed #custombutton {
 </style>
 ```
 
-## Use your own markup
+## Using your own markup
 
 You can further customize the control to fit your needs by providing your own markup to replace the default one, and extend and re-order the parts.
+
+### Default behavior
+
+The default behavior of the `<selectmenu>` control mimics the behavior of the `<select>` control. You can use it just like a native `<select>`, with the following minimal markup:
+
+```html
+<selectmenu>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</selectmenu>
+```
+
+When doing so, the default button, select-value, and listbox are created for you.
 
 ### Slotting your own content
 
@@ -163,7 +182,7 @@ You can replace the default listbox part in a similar fashion:
 
 ```html
 <style>
-  .my-custom-select [popup] {
+  .my-custom-select [popover] {
     width: 300px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -177,7 +196,7 @@ You can replace the default listbox part in a similar fashion:
 </style>
 <selectmenu class="my-custom-select">
   <div slot="listbox">
-    <div popup behavior="listbox">
+    <div popover="auto" behavior="listbox">
       <option>Option 1</option>
       <option>Option 2</option>
       <option>Option 3</option>
@@ -188,7 +207,7 @@ You can replace the default listbox part in a similar fashion:
 </selectmenu>
 ```
 
-The `popup` attribute used in this example's `<div popup>` is from the proposal at [Popup API (Explainer)](https://open-ui.org/components/popup.research.explainer). The element with `behavior="listbox"` is required to be a `<div popup=popup>`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
+The `popover` attribute used in this example's `<div popover>` is from the proposal at [Popover API (Explainer)](https://open-ui.org/components/popover.research.explainer). The element with `behavior="listbox"` is required to be a `<div popover="auto">`. Applying `behavior="listbox"` tells the browser to apply select menu listbox behavior to that element: it will be opened when the `<selectmenu>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
 The above code snippet results in the following style:
 
@@ -223,7 +242,7 @@ Consider the following example:
   .my-custom-select button::before {
     content: '\25BC';
   }
-  .my-custom-select [popup] {
+  .my-custom-select [popover] {
     padding: 0;
   }
   .my-custom-select .section {
@@ -247,7 +266,7 @@ Consider the following example:
     <button behavior="button"></button>
   </div>
   <div slot="listbox">
-    <div popup behavior="listbox">
+    <div popover="auto" behavior="listbox">
       <div class="section">
         <h3>Flowers</h3>
         <option>Rose</option>
