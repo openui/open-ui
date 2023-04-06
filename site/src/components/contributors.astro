@@ -1,9 +1,12 @@
 ---
 const CONTRIBUTORS_URL = `https://api.github.com/repos/openui/open-ui/contributors`
 const CONTRIBUTORS = await (await fetch(CONTRIBUTORS_URL)).json()
+// This is needed if call to CONTRIBUTORS_URL fails for some reasons.
+// I see this a lot when inspect local website on a11y issues.
+const CONTRIBUTORS_SAFE = CONTRIBUTORS.filter ? CONTRIBUTORS : [];
 ---
 <ul>
-  {CONTRIBUTORS.filter(c => !c.login.includes('dependabot')).map(({ login, avatar_url, html_url }) => (
+  {CONTRIBUTORS_SAFE.filter(c => !c.login.includes('dependabot')).map(({ login, avatar_url, html_url }) => (
     <li>
       <a href={html_url} title={login}>
         <img src={avatar_url} alt={`Github user ${login}`} width="48" height="48" loading="lazy"/>
