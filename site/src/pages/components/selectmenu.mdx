@@ -52,18 +52,18 @@ Selectmenu provides a variety of tools to help with styling, including pseudo-se
 
 ### Styling parts of the control
 
-One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
+One way to style the control to match your requirements is to use the CSS `::behavior()` pseudo-element, newly introduced for the selectmenu element, to select the different parts within the control's anatomy that you wish to style.
 
 ```html
 <style>
-  .my-select-menu::part(button) {
+  .my-select-menu::behavior(button) {
     color: white;
     background-color: #f00;
     padding: 5px;
     border-radius: 5px;
   }
 
-  .my-select-menu::part(listbox) {
+  .my-select-menu::behavior(listbox) {
     padding: 10px;
     margin-top: 5px;
     border: 1px solid red;
@@ -84,7 +84,9 @@ The above example results in the following style:
   alt="The rendering of a selectmenu control with the above HTML and CSS code"
 />
 
-`::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
+`::behavior()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
+
+Note that the `::part()` pseudo-element selector only matches elements in the user-agent shadow tree, and hence, fails to match any author-provided part (as in [slotting your own content](#slotting-your-own-content)).
 
 ### `:open` and `:closed` pseudo-selectors
 
