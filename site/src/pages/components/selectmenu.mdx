@@ -38,12 +38,12 @@ Because the various parts of the selectmenu can be styled, it's important to und
 
 <SelectAnatomy />
 
-- `<select>` - The root element that contains the button and listbox.
-- `<button>` - The button element that triggers the visibility of the listbox.
-- `<selected-value>` - The element that displays the value of the currently selected option (optional). Note that this part does not necessarily have to be places inside the `<button>` part (read on for more information about how to slot your own markup).
-- `<marker>` - Something that indicates this button opens a listbox, e.g. an icon.
-- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
-- `<optgroup>` - Groups `<option>`(s) together with a label (optional).
+- `<selectmenu>` - The root element that contains the button and listbox.
+- `slot=button` - The button element that triggers the visibility of the listbox. If this part is not provided by the author, then selectmenu will automatically create one.
+- `slot=selected-value` - The element that displays the value of the currently selected option. If this part is not provided by the author, then selectmenu will automatically create one. Note that this part does not necessarily have to be placed inside the `slot=button` part (read on for more information about how to slot your own markup).
+- `slot=marker` - Something that indicates this button opens a listbox, e.g. an icon. If this part is not provided by the author, then selectmenu will automatically create one.
+- `slot=listbox` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part is not provided by the author, then selectmenu will automatically create one.
+- `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
 ## Styling selectmenu

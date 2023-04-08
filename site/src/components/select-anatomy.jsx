@@ -5,7 +5,7 @@ const SelectAnatomy = () => {
   return (
     <AnatomyWrapper>
       <Host name="select">
-        <Slot name="button-container">
+        <Slot name="button">
           <Part name="button">
             <Slot name="selected-value">
               <Part name="selected-value">Currently selected value</Part>
@@ -15,11 +15,11 @@ const SelectAnatomy = () => {
             </Slot>
           </Part>
         </Slot>
-        <Slot name="listbox-container">
+        <Slot name="listbox">
           <Part name="listbox">
             <Slot>
-              <Part name="opt-group">
-                <Part name="option"></Part>
+              <Part name="optgroup (optional)">
+                <Part name="option">Option text</Part>
               </Part>
             </Slot>
           </Part>
