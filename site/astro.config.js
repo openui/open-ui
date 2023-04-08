@@ -11,7 +11,10 @@ import rehypeResponsiveTables from './src/plugins/rehypeResponsiveTable'
 export default defineConfig({
   integrations: [
     react(),
-    sitemap(),
+    sitemap({
+      filter: (page) =>
+        !page.endsWith() !== "/component-spec-template/",
+    }),
     mdx({
       rehypePlugins: [rehypeHeadingIds, autolinkHeadingsPlugin, rehypeResponsiveTables],
     }),
