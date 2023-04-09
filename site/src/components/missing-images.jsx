@@ -9,11 +9,7 @@ export function MissingImages(props) {
       <h4>No images for the following design systems:</h4>
       <ul className="image-list">
         {images.map((image) => {
-          return (
-            <li key={image.sourceName}>
-              <p>{image.sourceName}</p>
-            </li>
-          )
+          return <li key={image.sourceName}>{image.sourceName}</li>
         })}
       </ul>
     </div>
