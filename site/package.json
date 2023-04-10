@@ -16,7 +16,8 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "sync-contributors": "node src/data/sync.js"
   },
   "husky": {
     "hooks": {
@@ -25,24 +26,8 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
+    "src/**/*.{jsx,js,md,mjs,json}": [
       "prettier --write",
-      "git add"
-    ],
-    "**/*.mjs": [
-      "prettier --write",
-      "git add"
-    ],
-    "**/*.json": [
-      "prettier --parser json --write",
-      "git add"
-    ],
-    "**/*.md": [
-      "prettier --parser markdown --write",
-      "git add"
-    ],
-    "**/*.mdx": [
-      "prettier --parser mdx --write",
       "git add"
     ]
   },

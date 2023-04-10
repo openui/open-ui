@@ -17,10 +17,7 @@ export default function CommunityLinks({ className = '' }) {
         <FontAwesomeIcon style={iconStyle} icon={faGithub} /> GitHub
       </a>
 
-      <a
-        href="https://discord.gg/DEWjhSw"
-        rel="noreferrer noopener"
-      >
+      <a href="https://discord.gg/DEWjhSw" rel="noreferrer noopener">
         <FontAwesomeIcon style={iconStyle} icon={faDiscord} /> Discord
       </a>
     </div>
