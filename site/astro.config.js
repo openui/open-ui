@@ -13,7 +13,7 @@ export default defineConfig({
     react(),
     sitemap({
       filter: (page) =>
-        !page.endsWith() !== "/component-spec-template/",
+        !page.endsWith("/component-spec-template/"),
     }),
     mdx({
       rehypePlugins: [rehypeHeadingIds, autolinkHeadingsPlugin, rehypeResponsiveTables],
