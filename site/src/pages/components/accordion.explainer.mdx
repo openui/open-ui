@@ -41,7 +41,7 @@ which means that at most one of the disclosures in that accordion
 can be open at the same time.
 
 The existing HTML
-[`details` element](https://html.spec.whatwg.org/multipage/C#the-details-element).
+[`details` element](https://html.spec.whatwg.org/multipage/C#the-details-element)
 represents a disclosure widget.
 A sequence of `details` elements can be used for a non-exclusive accordion.
 However, there is not a current web platform feature
@@ -76,8 +76,7 @@ I propose to add an attribute to
 All `details` elements in the same tree
 that have the same value for this attribute
 would form an exclusive accordion.
-The syntax of this attribute and the rules for matching its values
-would align with
+The syntax of this attribute and the rules for matching its values would match
 [the `name` attribute](https://html.spec.whatwg.org/multipage/C#naming-form-controls:-the-name-attribute)
 and its use in defining
 [radio button groups](https://html.spec.whatwg.org/multipage/C#radio-button-group).
@@ -111,9 +110,12 @@ If so, is such attribute removal on insertion acceptable
 If not, is it ok that we allow developers a loophole to
 violate the exclusivity semantics?
 
+(This applies both to insertion by the parser
+and insertion through other methods like setting `innerHTML`.)
+
 ### Use case for non-exclusive accordion semantic?
 
-This design somewhat assumes that there isn't a use case for
+This design assumes that there isn't a use case for
 the semantic of a non-exclusive accordion,
 since a non-exclusive accordion is largely indistinguishable
 from a sequence of disclosures (`details` elements).
@@ -124,9 +126,9 @@ between the `details` elements
 in a non-exclusive accordion.
 
 If such connection is valuable,
-then that would favor a design that separated
-what connected the `details` elements into a group
-from what made the group exclusive.
+then that would favor a design that separates the ideas
+of connecting the `details` elements into a group
+and making the group exclusive.
 
 ## Possibly-resolved design questions
 
