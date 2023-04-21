@@ -18,24 +18,30 @@ layout: ../../layouts/ComponentLayout.astro
 
 # Background
 
-A **disclosure** widget is a UI that shows a summary or heading along
+A **disclosure** widget
+([research](/components/disclosure.research))
+is a UI that shows a summary or heading along
 with an indicator (sometimes a triangle or a plus sign) that allows the
 widget to be expanded to show additional details.
-An **accordion** is a sequence of related disclosure widgets.
+An **accordion**
+([research](/components/accordion.research))
+is a sequence of related disclosure widgets.
 Some accordions are **exclusive accordions**,
 which means that at most one of the disclosures in that accordion
 can be open at the same time.
 
-The existing HTML `<details>` element represents a disclosure widget.
-A sequence of `<details>` elements can be used for a non-exclusive accordion.
+The existing HTML
+[`details` element](https://html.spec.whatwg.org/multipage/C#the-details-element).
+represents a disclosure widget.
+A sequence of `details` elements can be used for a non-exclusive accordion.
 However, there is not a current web platform feature
 for exclusive accordions.
 
-It is worth noting that the HTML `<details>` element
+It is worth noting that the HTML `details` element
 is not currently as styleable as it needs to be to meet many use cases.
-Improving styleability of `<details>` will be addressed in a separate proposal,
+Improving styleability of `details` will be addressed in a separate proposal,
 intended to address both better ability to style/replace the disclosure triangle,
-and (maybe separately) to fit the parts of a `<details>`
+and (maybe separately) to fit the parts of a `details`
 into different types of layout (such as grid).
 
 # Developer Demand for Exclusive Accordion
