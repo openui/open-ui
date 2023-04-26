@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal), [@jh3y](https://github.com/jh3y)
-- March 2, 2023
+- April 26, 2023
 
 Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
 
@@ -233,14 +233,14 @@ myDiv.defaultOpen = true
 
 ### CSS Pseudo Class
 
-When a popover is open, it will match the `:open` pseudo class:
+When a popover is open, it will match the `:popover-open` pseudo class:
 
 ```javascript
 const popover = document.createElement('div')
 popover.popover = 'auto'
-popover.matches(':open') === false
+popover.matches(':popover-open') === false
 popover.showPopover()
-popover.matches(':open') === true
+popover.matches(':popover-open') === true
 ```
 
 ### Rendering
@@ -290,7 +290,7 @@ The above rules mean that a popover, when not "shown", has `display:none` applie
   /* Make the popover a flexbox: */
   display: flex;
 }
-[popover]:not(:open) {
+[popover]:not(:popover-open) {
   /* But make sure not to show it unless it's open: */
   display: none;
 }
@@ -318,12 +318,10 @@ Assuming all five of the above features land in specs and browsers in roughly th
   transition: display var(--transition-time), overlay-behavior var(--transition-time),
     opacity var(--transition-time);
 }
-@initial {
-  [popover] {
+[popover]:popover-open {
+  @initial {
     opacity: 0;
   }
-}
-[popover]:open {
   opacity: 1;
 }
 ```
@@ -333,7 +331,7 @@ The above CSS will result in the opacity (and also `display` and top-layer-ness)
 This can also be achieved with the equivalent CSS animations:
 
 ```css
-[popover]:open {
+[popover]:popover-open {
   animation: fadein 0.5s;
   transition: overlay-behavior 0.5s;
   opacity: 1; /* UA default */
