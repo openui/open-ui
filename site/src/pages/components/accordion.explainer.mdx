@@ -1,0 +1,199 @@
+---
+menu: Proposals
+name: Exclusive Accordion (Explainer)
+path: /components/accordion.explainer
+pathToResearch: /components/accordion.research
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- [@dbaron](https://github.com/dbaron)
+- Last updated: April 26, 2023
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+## Table of Contents
+
+- [Background](#background)
+- [Developer Demand for Exclusive Accordion](#developer-demand-for-exclusive-accordion)
+- [User Needs](#user-needs)
+- [Proposal](#proposal)
+  - [Open design questions](#open-design-questions)
+    - [Name](#name)
+    - [Interaction with `open` attribute](#interaction-with-open-attribute)
+    - [Changes to ARIA roles or keyboard behavior](#changes-to-aria-roles-or-keyboard-behavior)
+    - [Use case for non-exclusive accordion semantic?](#use-case-for-non-exclusive-accordion-semantic)
+  - [Possibly-resolved design questions](#possibly-resolved-design-questions)
+    - [Scope](#scope)
+- [Alternatives considered](#alternatives-considered)
+  - [CSS Toggles](#css-toggles)
+
+# Background
+
+A **disclosure** widget
+([research](/components/disclosure.research))
+is a UI that shows a summary or heading along
+with an indicator (sometimes a triangle or a plus sign) that allows the
+widget to be expanded to show additional details.
+An **accordion**
+([research](/components/accordion.research))
+is a sequence of related disclosure widgets.
+Some accordions are **exclusive accordions**,
+which means that at most one of the disclosures in that accordion
+can be open at the same time.
+
+The existing HTML
+[`details` element](https://html.spec.whatwg.org/multipage/C#the-details-element)
+represents a disclosure widget.
+A sequence of `details` elements can be used for a non-exclusive accordion.
+However, there is not a current web platform feature
+for exclusive accordions.
+
+It is worth noting that the HTML `details` element
+is not currently as styleable as it needs to be to meet many use cases.
+Improving styleability of `details` will be addressed in a separate proposal,
+intended to address both better ability to style/replace the disclosure triangle,
+and (maybe separately) to fit the parts of a `details`
+into different types of layout (such as grid).
+For example, there is no standardized or interoperable way to
+replace the disclosure triangle's image or to change its placement
+relative to the summary or the rest of the content of the details.
+
+# Developer Demand for Exclusive Accordion
+
+Design systems that offer accordion widgets vary
+as to whether those widgets are exclusive or not.
+Based on the systems documented in the
+[accordion research](/components/accordion.research),
+it seems more common for them not to be exclusive,
+however, some systems offer an option for being exclusive,
+and some systems offer only exclusive accordions.
+
+Some examples of exclusive accordions on live sites:
+* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio)
+* [Parsons Table product page](https://www.roomandboard.com/catalog/dining-and-kitchen/tables/parsons-tables) at Room and Board (Style/Size/Top/Base accordion on right side of page)
+* ...
+
+# User Needs
+
+Developers regularly use exclusive accordions on the Web.
+Today, that generally means that they build their own widget
+rather than using a widget provided by the platform,
+because there is no such widget.
+
+This proposal is suggesting that we add features for exclusive accordions
+to the platform.
+Doing so would help users because
+it would make (or at least would enable making)
+the user experience
+more consistent, and generally better, in a number of areas:
+* keyboard shortcuts and focus handling,
+* exposure via ARIA to assistive technology, and
+* integration with browser features such as find-in-page.
+
+Reducing the need for developers to build their own widgets
+should also reduce the size of pages that use such widgets,
+which reduces the time and bandwidth needed
+for users to load those pages.
+
+# Proposal
+
+I propose to add an attribute to
+[the `details` element](https://html.spec.whatwg.org/multipage/C#the-details-element).
+All `details` elements in the same tree
+that have the same value for this attribute
+would form an exclusive accordion.
+The syntax of this attribute and the rules for matching its values would match
+[the `name` attribute](https://html.spec.whatwg.org/multipage/C#naming-form-controls:-the-name-attribute)
+and its use in defining
+[radio button groups](https://html.spec.whatwg.org/multipage/C#radio-button-group).
+
+When these attributes are used to form a group, it means that
+any user action or API that causes one of the `details` elements
+in the group to open causes all other elements in the group to close.
+
+## Open design questions
+
+### Name
+
+There are many options for naming this attribute,
+and they differ as to how well they:
+* are concise,
+* indicate that something happens when multiple elements use the same value, and
+* indicate that the attribute causes the grouped elements
+  to become exclusive (so that only one can be open).
+
+Choices for its name also differ as to whether they're already used
+for other things in HTML.
+(This could be either an advantage or a disadvantage.)
+In particular, `name` is used for grouping related form controls.
+
+Some possibilities for the attribute's name are
+`name`, `group`, or `exclusive`.
+
+### Interaction with `open` attribute
+
+Should this grouping cause the insertion of a `details` element with
+the `open` attribute already set to have the `open` attribute removed
+if it would violate the grouping constraint?
+If so, is such attribute removal on insertion acceptable
+(both for its complexity and for conformance with architectural principles)?
+If not, is it ok that we allow developers a loophole to
+violate the exclusivity semantics?
+
+(This applies both to insertion by the parser
+and insertion through other methods like setting `innerHTML`.)
+
+### Changes to ARIA roles or keyboard behavior
+
+It's possible that the presence of a group should
+change the ARIA roles for the `details` or its `summary`
+or change their default keyboard behavior.
+
+If this is the case,
+it seems likely that such changes
+may also be desirable for non-exclusive accordions (see next question).
+
+### Use case for non-exclusive accordion semantic?
+
+This design assumes that there isn't a use case for
+the semantic of a non-exclusive accordion,
+since a non-exclusive accordion is largely indistinguishable
+from a sequence of disclosures (`details` elements).
+
+However, it's possible there may be value in
+establishing such a semantic connection
+between the `details` elements
+in a non-exclusive accordion.
+(See previous question for one possible reason.)
+
+If such connection is valuable,
+then that would favor a design that separates the ideas
+of connecting the `details` elements into a group
+and making the group exclusive.
+
+## Possibly-resolved design questions
+
+### Scope
+
+Should the name be scoped
+to something smaller than the document (for example, only to siblings)
+or to something larger than the document (such as the flat tree)?
+
+I think scoping only to siblings would be problematic
+because there are valid use cases
+for putting each `details` element into some sort of sectioning markup,
+and that scoping on the flat tree would be problematic because
+having names cross shadow root boundaries would break encapsulation.
+
+# Alternatives considered
+
+## CSS Toggles
+
+The [CSS Toggles](https://tabatkins.github.io/css-toggle/) proposal
+is a much more complex proposal that would be able to describe
+exclusive accordions and many other things.
+However, it has a number of issues related to developer experience,
+accessibility, and other things, and it's not clear whether the proposal
+is viable.
+
