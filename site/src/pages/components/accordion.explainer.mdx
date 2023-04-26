@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@dbaron](https://github.com/dbaron)
-- Last updated: April 21, 2023
+- Last updated: April 26, 2023
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -16,6 +16,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 - [Background](#background)
 - [Developer Demand for Exclusive Accordion](#developer-demand-for-exclusive-accordion)
+- [User Needs](#user-needs)
 - [Proposal](#proposal)
   - [Open design questions](#open-design-questions)
     - [Name](#name)
@@ -72,6 +73,28 @@ Some examples of exclusive accordions on live sites:
 * [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio)
 * [Parsons Table product page](https://www.roomandboard.com/catalog/dining-and-kitchen/tables/parsons-tables) at Room and Board (Style/Size/Top/Base accordion on right side of page)
 * ...
+
+# User Needs
+
+Developers regularly use exclusive accordions on the Web.
+Today, that generally means that they build their own widget
+rather than using a widget provided by the platform,
+because there is no such widget.
+
+This proposal is suggesting that we add features for exclusive accordions
+to the platform.
+Doing so would help users because
+it would make (or at least would enable making)
+the user experience
+more consistent, and generally better, in a number of areas:
+* keyboard shortcuts and focus handling,
+* exposure via ARIA to assistive technology, and
+* integration with browser features such as find-in-page.
+
+Reducing the need for developers to build their own widgets
+should also reduce the size of pages that use such widgets,
+which reduces the time and bandwidth needed
+for users to load those pages.
 
 # Proposal
 
