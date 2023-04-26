@@ -13,10 +13,12 @@ import kolibri from './kolibri.json'
 import lightning from './lightning.json'
 import lion from './lion.json'
 import materialComponentsWeb from './materialComponentsWeb.json'
+import materialUI from './materialUI.json'
 import primer from './primer.json'
 import semantic from './semantic.json'
 import spectrum from './spectrum.json'
 import stardust from './stardust.json'
+import tailwind from './tailwind.json'
 import w3 from './w3.json'
 import web from './web.json'
 
@@ -35,10 +37,12 @@ export const sources = [
   lightning,
   lion,
   materialComponentsWeb,
+  materialUI,
   primer,
   semantic,
   spectrum,
   stardust,
+  tailwind,
   w3,
   web,
 ].map((source) => ({
