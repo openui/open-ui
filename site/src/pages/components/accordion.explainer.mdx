@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@dbaron](https://github.com/dbaron)
-- Last updated: April 26, 2023
+- Last updated: April 27, 2023
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -21,9 +21,10 @@ layout: ../../layouts/ComponentLayout.astro
   - [Open design questions](#open-design-questions)
     - [Name](#name)
     - [Interaction with `open` attribute](#interaction-with-open-attribute)
+    - [Printing](#printing)
+  - [Possibly-resolved design questions](#possibly-resolved-design-questions)
     - [Changes to ARIA roles or keyboard behavior](#changes-to-aria-roles-or-keyboard-behavior)
     - [Use case for non-exclusive accordion semantic?](#use-case-for-non-exclusive-accordion-semantic)
-  - [Possibly-resolved design questions](#possibly-resolved-design-questions)
     - [Scope](#scope)
 - [Alternatives considered](#alternatives-considered)
   - [CSS Toggles](#css-toggles)
@@ -51,9 +52,10 @@ for exclusive accordions.
 
 It is worth noting that the HTML `details` element
 is not currently as styleable as it needs to be to meet many use cases.
-Improving styleability of `details` will be addressed in a separate proposal,
+Improving styleability of `details` will be addressed in a
+[separate proposal](https://github.com/dbaron/details-styling),
 intended to address both better ability to style/replace the disclosure triangle,
-and (maybe separately) to fit the parts of a `details`
+and to fit the parts of a `details`
 into different types of layout (such as grid).
 For example, there is no standardized or interoperable way to
 replace the disclosure triangle's image or to change its placement
@@ -144,6 +146,24 @@ violate the exclusivity semantics?
 (This applies both to insertion by the parser
 and insertion through other methods like setting `innerHTML`.)
 
+### Printing
+
+For many accordions, it is desirable for the print layout of the page
+to have all items opened.
+This is currently not possible to do from a style sheet,
+but it probably should be possible.
+The presence of exclusive accordion semantics make this more difficult,
+because of the rule that only one item can be open.
+
+In theory this could be addressed with a model
+where details elements were implemented on top of developer-exposed CSS Toggles,
+and developers could disable the effects of those CSS Toggles when printing.
+However, this would be a relatively major change, worthy of its own explainer.
+
+We should find and consider alternative approaches for addressing this issue.
+
+## Possibly-resolved design questions
+
 ### Changes to ARIA roles or keyboard behavior
 
 It's possible that the presence of a group should
@@ -153,6 +173,12 @@ or change their default keyboard behavior.
 If this is the case,
 it seems likely that such changes
 may also be desirable for non-exclusive accordions (see next question).
+
+Based on the [discussion on 2023 April 27](https://github.com/openui/open-ui/issues/725#issuecomment-1525924478),
+it seems like at least default keyboard behavior for accordions
+is undesirable because it leads to bad user experience
+particularly for users on small or highly-zoomed displays
+(where the content of a single item is less likely to fit within the display).
 
 ### Use case for non-exclusive accordion semantic?
 
@@ -172,7 +198,9 @@ then that would favor a design that separates the ideas
 of connecting the `details` elements into a group
 and making the group exclusive.
 
-## Possibly-resolved design questions
+In the [discussion on 2023 April 27](https://github.com/openui/open-ui/issues/725#issuecomment-1525924478),
+no use cases for a platform feature for connecting a non-exclusive accordion
+were raised.
 
 ### Scope
 
