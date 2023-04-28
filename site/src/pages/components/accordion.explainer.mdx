@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@dbaron](https://github.com/dbaron)
-- Last updated: April 27, 2023
+- Last updated: April 28, 2023
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -28,6 +28,8 @@ layout: ../../layouts/ComponentLayout.astro
     - [Scope](#scope)
 - [Alternatives considered](#alternatives-considered)
   - [CSS Toggles](#css-toggles)
+  - [Toggle (expand/collapse) button or attribute](#toggle-expand-collapse-button-or-attribute)
+  - [Panelset](#panelset)
 
 # Background
 
@@ -231,7 +233,60 @@ having names cross shadow root boundaries would break encapsulation.
 The [CSS Toggles](https://tabatkins.github.io/css-toggle/) proposal
 is a much more complex proposal that would be able to describe
 exclusive accordions and many other things.
-However, it has a number of issues related to developer experience,
+However, it has a
+[number of issues](https://docs.google.com/document/d/10JxXgeDAJ5zerOdxoWM9ZU9d5iMOdzGJt0EhlhkOkxM/edit)
+related to developer experience,
 accessibility, and other things, and it's not clear whether the proposal
 is viable.
 
+## Toggle (expand/collapse) button or attribute
+
+The [proposal for a toggle (expand/collapse)](https://github.com/openui/open-ui/issues/700) feature
+probably falls somewhere between this proposal and CSS Toggles
+in terms of how general it is.
+It may be a reasonable alternative to this proposal,
+or it may be reasonable to do both.
+
+I think it's possible that there's a risk that this proposal becomes
+a more general feature than currently intended,
+which would have both some of the advantages and some of the problems
+that CSS Toggles have.
+
+It's likely worth exploring this alternative further,
+particularly to understand
+what integration with CSS and Javascript it would have,
+and how that integration would affect its use.
+
+## Panelset
+
+The [Panels and Panel Sets proposal](https://bkardell.com/common-panel/index.src.html)
+(also see [introductory article](https://www.oreilly.com/content/panels-and-panel-sets/))
+
+This proposal is significantly more general,
+and proposes to cover accordions, carousels, tabs, and decks.
+(It is less general than CSS Toggles,
+but more general than all the others mentioned here.)
+
+It [appears to propose](https://bkardell.com/common-panel/index.src.html#requirements-for-panels-and-panel-sets)
+a consistent interaction model across all of these types,
+which is a different approach from that taken in the CSS Toggles work
+and likely not compatible with user expectations.
+However, this is probably not an integral aspect of the proposal.
+
+The panelset proposal has enough open questions that
+it's a bit hard to assess.
+The use of the explicit `preferreddisplay` attribute avoids
+a number of the issues with CSS toggles.
+It seems likely, however,
+that the consistent use of heading+section markup pattern
+will make it difficult to do good CSS layout of tabs,
+and may also pose other issues with tabs
+with both developer expectations for tab markup and
+possibly assistive technology expectations for tab structure.
+
+At the same time,
+these proposals (this one and panelset) address problem spaces that,
+while intersecting,
+are different enough
+that it would still be reasonable
+to do both if we conclude that both are good.
