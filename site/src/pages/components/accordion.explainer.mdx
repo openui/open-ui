@@ -151,14 +151,23 @@ and insertion through other methods like setting `innerHTML`.)
 For many accordions, it is desirable for the print layout of the page
 to have all items opened.
 This is currently not possible to do from a style sheet,
-but it probably should be possible.
+but it probably should be possible,
+and it's possible that it should be the default.
 The presence of exclusive accordion semantics make this more difficult,
 because of the rule that only one item can be open.
+(However, some of the time it will make more sense to print what is
+on the screen rather than printing all of the content.
+It's also not clear to me how often distinguishing between these cases
+should be a developer decision or should be based on a user decision.)
 
 In theory this could be addressed with a model
 where details elements were implemented on top of developer-exposed CSS Toggles,
 and developers could disable the effects of those CSS Toggles when printing.
 However, this would be a relatively major change, worthy of its own explainer.
+
+It's also possible that developers could do this in Javascript,
+specifically for printing,
+but then it certainly wouldn't be a default and probably wouldn't be done often.
 
 We should find and consider alternative approaches for addressing this issue.
 
@@ -200,7 +209,8 @@ and making the group exclusive.
 
 In the [discussion on 2023 April 27](https://github.com/openui/open-ui/issues/725#issuecomment-1525924478),
 no use cases for a platform feature for connecting a non-exclusive accordion
-were raised.
+were raised
+(assuming the conclusion to the keyboard behavior issue above stays as-is).
 
 ### Scope
 
