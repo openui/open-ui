@@ -138,6 +138,9 @@ In particular, `name` is used for grouping related form controls.
 Some possibilities for the attribute's name are
 `name`, `group`, or `exclusive`.
 
+**Proposed solution**: Use `name`,
+since it's consistent with existing features.
+
 ### Interaction with `open` attribute
 
 Should this grouping cause the insertion of a `details` element with
@@ -150,6 +153,21 @@ violate the exclusivity semantics?
 
 (This applies both to insertion by the parser
 and insertion through other methods like setting `innerHTML`.)
+
+**Proposed solution**: Enforce exclusivity only for
+user interactions,
+use of the [`open` IDL attribute](https://html.spec.whatwg.org/multipage/C#dom-details-open),
+or setting the `open` attribute via `setAttribute`
+(or `setAttributeNS`, `setAttributeNode`, or `setAttributeNodeNS`).
+Do not enforce exclusivity when the `open` attribute is set by the parser,
+when it is set as a result of cloning a node,
+or when an element is moved to a new document.
+Do not enforce exclusivity for elements whose
+[root](https://dom.spec.whatwg.org/#concept-tree-root)
+is not a
+[Document](https://dom.spec.whatwg.org/#interface-document)
+or a
+[ShadowRoot](https://dom.spec.whatwg.org/#interface-shadowroot).
 
 ### Printing
 
@@ -168,13 +186,29 @@ should be a developer decision or should be based on a user decision.)
 In theory this could be addressed with a model
 where details elements were implemented on top of developer-exposed CSS Toggles,
 and developers could disable the effects of those CSS Toggles when printing.
+Or, more generally, this could be addressed with a solution
+that treats things like accordions and tabs
+as possible interactive presentations
+of markup that is semantically headings and sections,
+and allows the use of CSS (or some other mechanism tied to media queries)
+to choose between them.
 However, this would be a relatively major change, worthy of its own explainer.
+It also has many of the same problems as CSS Toggles (see below).
 
 It's also possible that developers could do this in Javascript,
 specifically for printing,
 but then it certainly wouldn't be a default and probably wouldn't be done often.
 
 We should find and consider alternative approaches for addressing this issue.
+
+**Proposed solution**: For now, do nothing here.
+If developers want all of the `details` elements on a page to print open,
+they need to change both `name` and `open` attributes
+during the
+[`beforeprint`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeprint_event)
+and
+[`afterprint`](https://developer.mozilla.org/en-US/docs/Web/API/Window/afterprint_event)
+events.
 
 ### Existing issues with `details`
 
