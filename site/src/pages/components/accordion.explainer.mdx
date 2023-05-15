@@ -32,7 +32,6 @@ layout: ../../layouts/ComponentLayout.astro
   - [CSS Toggles](#css-toggles)
   - [Toggle (expand/collapse) button or attribute](#toggle-expandcollapse-button-or-attribute)
   - [Panelset](#panelset)
-  - [Spicy sections](#spicy-sections)
 
 # Background
 
@@ -293,6 +292,9 @@ is significantly more general,
 and proposes to cover accordions, carousels, tabs, and decks.
 (It is less general than CSS Toggles,
 but more general than all the others mentioned here.)
+It was also previously known as spicy sections;
+see the [spicy-sections repository](https://github.com/tabvengers/spicy-sections)
+(also see [proposal to transfer](https://github.com/openui/open-ui/issues/517)).
 
 It [appears to propose](https://bkardell.com/common-panel/index.src.html#requirements-for-panels-and-panel-sets)
 a consistent interaction model across all of these types,
@@ -311,22 +313,7 @@ and may also pose other issues with tabs
 with both developer expectations for tab markup and
 possibly assistive technology expectations for tab structure.
 
-At the same time,
-these proposals (this one and panelset) address problem spaces that,
-while intersecting,
-are different enough
-that it would still be reasonable
-to do both if we conclude that both are good.
-
-## Spicy sections
-
-The [spicy-sections repository](https://github.com/tabvengers/spicy-sections)
-(also see [proposal to transfer](https://github.com/openui/open-ui/issues/517))
-also has significant work that shares a bit of history with panelset.
-(**TODO**: Do they share enough history that this section
-should be combined with the previous?)
-
-Like panelset, it is making a single proposal
+Panelset is a single proposal
 for multiple UI components
 that present things that are semantically headings and sections.
 This differs from the approach proposed here which builds technology
@@ -337,3 +324,10 @@ but also presents issues because the different interaction models
 have different accessibility characteristics,
 which creates some difficult problems
 as demonstrated in the work on CSS toggles.
+
+At the same time,
+this proposal and panelset address problem spaces that,
+while intersecting,
+are different enough
+that it would still be reasonable
+to do both if we conclude that both are good.
