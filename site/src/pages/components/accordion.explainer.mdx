@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@dbaron](https://github.com/dbaron)
-- Last updated: May 8, 2023
+- Last updated: May 19, 2023
 - Feedback: https://github.com/openui/open-ui/issues/725
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
@@ -24,6 +24,7 @@ layout: ../../layouts/ComponentLayout.astro
     - [Interaction with `open` attribute](#interaction-with-open-attribute)
     - [Printing](#printing)
     - [Existing issues with `details`](#existing-issues-with-details)
+    - [Accordions with exactly one item open](#accordions-with-exactly-one-item-open)
   - [Possibly-resolved design questions](#possibly-resolved-design-questions)
     - [Changes to ARIA roles or keyboard behavior](#changes-to-aria-roles-or-keyboard-behavior)
     - [Use case for non-exclusive accordion semantic?](#use-case-for-non-exclusive-accordion-semantic)
@@ -76,8 +77,8 @@ however, some systems offer an option for being exclusive,
 and some systems offer only exclusive accordions.
 
 Some examples of exclusive accordions on live sites:
-* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio)
 * [Parsons Table product page](https://www.roomandboard.com/catalog/dining-and-kitchen/tables/parsons-tables) at Room and Board (Style/Size/Top/Base accordion on right side of page)
+* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio) (though note that this is the type of accordion where exactly one item is open, so it's not exactly a standard exclusive accordion)
 * ...
 
 # User Needs
@@ -237,6 +238,22 @@ of markup that is semantically pairs of headings and sections.)
 Further reading:
 * [Details / Summary Are Not [insert control here]](https://adrianroselli.com/2019/04/details-summary-are-not-insert-control-here.html)
 * [Why `<details>` is Not an Accordion](https://daverupert.com/2019/12/why-details-is-not-an-accordion/)
+
+### Accordions with exactly one item open
+
+Some accordions (such as the one on the Pixel product page above)
+always have exactly one item open,
+and do not allow zero items to be open.
+(This could be called an exact-exclusive accordion.)
+This is a somewhat more complicated widget,
+because the open/close control
+disappears from the item that is open
+or becomes disabled.
+It's not clear how such widgets could be modeled with this design,
+other than by ensuring that developer Javascript to handle this.
+
+**Proposed solution**: For now, do not attempt to address this pattern directly,
+but make sure it's possible to do in Javascript.
 
 ## Possibly-resolved design questions
 
