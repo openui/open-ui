@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@dbaron](https://github.com/dbaron)
-- Last updated: May 8, 2023
+- Last updated: May 19, 2023
 - Feedback: https://github.com/openui/open-ui/issues/725
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
@@ -24,6 +24,7 @@ layout: ../../layouts/ComponentLayout.astro
     - [Interaction with `open` attribute](#interaction-with-open-attribute)
     - [Printing](#printing)
     - [Existing issues with `details`](#existing-issues-with-details)
+    - [Accordions with exactly one item open](#accordions-with-exactly-one-item-open)
   - [Possibly-resolved design questions](#possibly-resolved-design-questions)
     - [Changes to ARIA roles or keyboard behavior](#changes-to-aria-roles-or-keyboard-behavior)
     - [Use case for non-exclusive accordion semantic?](#use-case-for-non-exclusive-accordion-semantic)
@@ -32,7 +33,6 @@ layout: ../../layouts/ComponentLayout.astro
   - [CSS Toggles](#css-toggles)
   - [Toggle (expand/collapse) button or attribute](#toggle-expandcollapse-button-or-attribute)
   - [Panelset](#panelset)
-  - [Spicy sections](#spicy-sections)
 
 # Background
 
@@ -77,8 +77,10 @@ however, some systems offer an option for being exclusive,
 and some systems offer only exclusive accordions.
 
 Some examples of exclusive accordions on live sites:
-* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio)
 * [Parsons Table product page](https://www.roomandboard.com/catalog/dining-and-kitchen/tables/parsons-tables) at Room and Board (Style/Size/Top/Base accordion on right side of page)
+* [Aaron Dining Chair product page](https://www.potterybarn.com/products/aaron-chair/) at Pottery Barn (Overview / Responsibly Made / Dimensions & Care / Shipping & Returns accordion on right side of page)
+* [Saatva Classic Mattress product page](https://www.saatva.com/mattresses/saatva-classic) (a few pages down, with the first heading "Plush & breathable sleep surface")
+* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio) (though note that this is the type of accordion where exactly one item is open, so it's not exactly a standard exclusive accordion)
 * ...
 
 # User Needs
@@ -138,6 +140,9 @@ In particular, `name` is used for grouping related form controls.
 Some possibilities for the attribute's name are
 `name`, `group`, or `exclusive`.
 
+**Proposed solution**: Use `name`,
+since it's consistent with existing features.
+
 ### Interaction with `open` attribute
 
 Should this grouping cause the insertion of a `details` element with
@@ -150,6 +155,21 @@ violate the exclusivity semantics?
 
 (This applies both to insertion by the parser
 and insertion through other methods like setting `innerHTML`.)
+
+**Proposed solution**: Enforce exclusivity only for
+user interactions,
+use of the [`open` IDL attribute](https://html.spec.whatwg.org/multipage/C#dom-details-open),
+or setting the `open` attribute via `setAttribute`
+(or `setAttributeNS`, `setAttributeNode`, or `setAttributeNodeNS`).
+Do not enforce exclusivity when the `open` attribute is set by the parser,
+when it is set as a result of cloning a node,
+or when an element is moved to a new document.
+Do not enforce exclusivity for elements whose
+[root](https://dom.spec.whatwg.org/#concept-tree-root)
+is not a
+[Document](https://dom.spec.whatwg.org/#interface-document)
+or a
+[ShadowRoot](https://dom.spec.whatwg.org/#interface-shadowroot).
 
 ### Printing
 
@@ -168,13 +188,29 @@ should be a developer decision or should be based on a user decision.)
 In theory this could be addressed with a model
 where details elements were implemented on top of developer-exposed CSS Toggles,
 and developers could disable the effects of those CSS Toggles when printing.
+Or, more generally, this could be addressed with a solution
+that treats things like accordions and tabs
+as possible interactive presentations
+of markup that is semantically headings and sections,
+and allows the use of CSS (or some other mechanism tied to media queries)
+to choose between them.
 However, this would be a relatively major change, worthy of its own explainer.
+It also has many of the same problems as CSS Toggles (see below).
 
-It's also possible that developers could do this in Javascript,
+It's also possible that developers could do this in JavaScript,
 specifically for printing,
 but then it certainly wouldn't be a default and probably wouldn't be done often.
 
 We should find and consider alternative approaches for addressing this issue.
+
+**Proposed solution**: For now, do nothing here.
+If developers want all of the `details` elements on a page to print open,
+they need to change both `name` and `open` attributes
+during the
+[`beforeprint`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeprint_event)
+and
+[`afterprint`](https://developer.mozilla.org/en-US/docs/Web/API/Window/afterprint_event)
+events.
 
 ### Existing issues with `details`
 
@@ -200,6 +236,26 @@ See https://github.com/whatwg/html/issues/8864 .
 (This is not surprising since the accordion pattern
 is one possible interactive presentation
 of markup that is semantically pairs of headings and sections.)
+
+Further reading:
+* [Details / Summary Are Not [insert control here]](https://adrianroselli.com/2019/04/details-summary-are-not-insert-control-here.html)
+* [Why `<details>` is Not an Accordion](https://daverupert.com/2019/12/why-details-is-not-an-accordion/)
+
+### Accordions with exactly one item open
+
+Some accordions (such as the one on the Pixel product page above)
+always have exactly one item open,
+and do not allow zero items to be open.
+(This could be called an exact-exclusive accordion.)
+This is a somewhat more complicated widget,
+because the open/close control
+disappears from the item that is open
+or becomes disabled.
+It's not clear how such widgets could be modeled with this design,
+other than by ensuring that developer Javascript to handle this.
+
+**Proposed solution**: For now, do not attempt to address this pattern directly,
+but make sure it's possible to do in Javascript.
 
 ## Possibly-resolved design questions
 
@@ -282,58 +338,29 @@ that CSS Toggles have.
 
 It's likely worth exploring this alternative further,
 particularly to understand
-what integration with CSS and Javascript it would have,
+what integration with CSS and JavaScript it would have,
 and how that integration would affect its use.
 
-## Panelset
+## Panelset (aka "Spicy-Sections")
 
-The [Panels and Panel Sets proposal](https://bkardell.com/common-panel/index.src.html)
-(also see [introductory article](https://www.oreilly.com/content/panels-and-panel-sets/))
-is significantly more general,
-and proposes to cover accordions, carousels, tabs, and decks.
-(It is less general than CSS Toggles,
-but more general than all the others mentioned here.)
-
-It [appears to propose](https://bkardell.com/common-panel/index.src.html#requirements-for-panels-and-panel-sets)
-a consistent interaction model across all of these types,
-which is a different approach from that taken in the CSS Toggles work
-and likely not compatible with user expectations.
-However, this is probably not an integral aspect of the proposal.
+Within Open-UI there was another proposal 
+which was to be called [panelset](https://tabvengers.github.io/spicy-sections/).
+Earlier it was called "spicy sections" in order to avoid bikeshedding 
+or misconceptions that it was yet ready to be thought of as a proposal.
+The distinguishing characteristic of that proposal is that introduced
+the idea that certain 'widgets' had more in common with scrollbars 
+than they do inputs.  That is, they are often reasonable choices of 
+design particular to the media or situation.  Panelsets proposed the 
+introduction of other affordances to handle (in document, see also [559]( https://github.com/openui/open-ui/issues/559)) tabs and 
+accordions. Thus, it is less general than CSS Toggles, but more 
+general than all the others mentioned here.)
 
 The panelset proposal has enough open questions that
 it's a bit hard to assess.
-The use of the explicit `preferreddisplay` attribute avoids
-a number of the issues with CSS toggles.
-It seems likely, however,
-that the consistent use of heading+section markup pattern
-will make it difficult to do good CSS layout of tabs,
-and may also pose other issues with tabs
-with both developer expectations for tab markup and
-possibly assistive technology expectations for tab structure.
 
 At the same time,
-these proposals (this one and panelset) address problem spaces that,
+this proposal and panelset address problem spaces that,
 while intersecting,
 are different enough
 that it would still be reasonable
 to do both if we conclude that both are good.
-
-## Spicy sections
-
-The [spicy-sections repository](https://github.com/tabvengers/spicy-sections)
-(also see [proposal to transfer](https://github.com/openui/open-ui/issues/517))
-also has significant work that shares a bit of history with panelset.
-(**TODO**: Do they share enough history that this section
-should be combined with the previous?)
-
-Like panelset, it is making a single proposal
-for multiple UI components
-that present things that are semantically headings and sections.
-This differs from the approach proposed here which builds technology
-for just a single presentation.
-The approach of building one thing has clear advantages
-because it is a single control for a single underlying semantic,
-but also presents issues because the different interaction models
-have different accessibility characteristics,
-which creates some difficult problems
-as demonstrated in the work on CSS toggles.

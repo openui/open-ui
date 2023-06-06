@@ -25,7 +25,7 @@ This is a companion document to the main [Popup proposal](/components/popup.rese
 
 ## Alternative: An HTML Content Attribute (OLD version)
 
-This is an older version of an HTML content attribute proposal. The primary difference is that this version leaves all of the details of one-at-a-time and light dismiss behavior to the developer, to implement in Javascript. There seem to be many footguns inherent in this approach, as compared to the more prescriptive UI classes presented above. As such, this version was abandoned for the [current proposal](#alternative-an-html-content-attribute-old-version).
+This is an older version of an HTML content attribute proposal. The primary difference is that this version leaves all of the details of one-at-a-time and light dismiss behavior to the developer, to implement in JavaScript. There seem to be many footguns inherent in this approach, as compared to the more prescriptive UI classes presented above. As such, this version was abandoned for the [current proposal](#alternative-an-html-content-attribute-old-version).
 
 ### API Shape
 
@@ -122,7 +122,7 @@ tooltip.addEventListener('entertoplayer',() => {
 
 In all cases above, the UA would need to fire the event handler synchronously, so that these event handlers could be used to change rendering without any flashes of differently-styled content.
 
-If a “less Javascripty” interface was desired to expose this behavior, another way to achieve this would be to add a new CSS property, whose value is a selector:
+If a “less JavaScripty” interface was desired to expose this behavior, another way to achieve this would be to add a new CSS property, whose value is a selector:
 
 ```
 .popup {
@@ -130,7 +130,7 @@ If a “less Javascripty” interface was desired to expose this behavior, anoth
 }
 ```
 
-In this case, when an element matching .popup is promoted to the top layer, anything matching the closeother property's selector value will be removed from the top layer. This would behave identically to the Javascript entertoplayer listener coded above.
+In this case, when an element matching .popup is promoted to the top layer, anything matching the closeother property's selector value will be removed from the top layer. This would behave identically to the JavaScript entertoplayer listener coded above.
 
 In both of the above examples, any elements removed from the top layer this way will themselves receive a `exittoplayer` event, meaning they can cancel this removal.
 
@@ -145,7 +145,7 @@ The use cases for these attributes need to be better enumerated.
 
 #### Declarative Triggering (The `popup` Attribute)
 
-One feature provided by the `<popup>` proposal was the ability to use the `popup` content attribute on a triggering element (e.g. a button) to enable that element to show a `<popup>` when activated, without requiring Javascript.
+One feature provided by the `<popup>` proposal was the ability to use the `popup` content attribute on a triggering element (e.g. a button) to enable that element to show a `<popup>` when activated, without requiring JavaScript.
 
 To implement this via the HTML toplayer attribute, when the element with the popup attribute is activated by the user, the target element will simply have the `toplayer` attribute added to it by the UA, which will trigger it being placed into the top layer. In order for this to make a previously-invisible popup menu “show up”, CSS would need to be used:
 
@@ -309,7 +309,7 @@ See [this section](#focus-management-1).
 
 #### Declarative Triggering (The `popup` Attribute)
 
-One feature provided by the `<popup>` proposal was the ability to use the `popup` content attribute on a triggering element (e.g. a button) to enable that element to show a `<popup>` when activated, without requiring Javascript.
+One feature provided by the `<popup>` proposal was the ability to use the `popup` content attribute on a triggering element (e.g. a button) to enable that element to show a `<popup>` when activated, without requiring JavaScript.
 
 To implement this in a CSS-only context, the only way I can think of would be to modify the inline `style` attribute for the target element to include `position:top-layer`. That would be somewhat odd, though it would work, and would be relatively straightforward to implement. I'm not sure there are other similar precedents in the Web Platform.
 
@@ -350,7 +350,7 @@ Generally, a JavaScript API is less preferable than an HTML/CSS based solution. 
 
 #### Top Layer Presentation
 
-This can be implemented with a new Javascript function on Element::
+This can be implemented with a new JavaScript function on Element::
 
 ```
 <script>
@@ -360,7 +360,7 @@ myPopup.requestTopLayer();
 ```
 
 - This API is quite similar to the [requestFullScreen() API](https://fullscreen.spec.whatwg.org/#ref-for-dom-element-requestfullscreen%E2%91%A0).
-- This allows any element to be added to the top-layer via Javascript.
+- This allows any element to be added to the top-layer via JavaScript.
 - Similar to the other options presented in this document, admittance to the top-layer is not guaranteed or permanent - the UA can both deny an element access to the top-layer and can remove an element if needed. For example, when a modal dialog is shown or an element is made [fullscreen](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullScreen) - those changes might “kick out” other elements residing in the top-layer.
 - Some element types should likely not be allowed into the top-layer. E.g. `<dialog>`? Or any element that is currently fullscreen?
 
@@ -404,9 +404,9 @@ The [Attribute solution for events](#events-1) would seem to work equally well h
 
 #### Declarative Triggering (The `popup` Attribute)
 
-One feature provided by the `<popup>` proposal was the ability to use the `popup` content attribute on a triggering element (e.g. a button) to enable that element to show a `<popup>` when activated, without requiring Javascript.
+One feature provided by the `<popup>` proposal was the ability to use the `popup` content attribute on a triggering element (e.g. a button) to enable that element to show a `<popup>` when activated, without requiring JavaScript.
 
-To implement this via the Javascript `requestTopLayer()` API, when the element with the popup attribute is activated by the user, the UA will simply call the `requestTopLayer()` function on the target element. Akin to the [HTML solution](#the-top-layer-pseudo-class), CSS will need to be used if the desire is to show a previously-invisible popup menu.
+To implement this via the JavaScript `requestTopLayer()` API, when the element with the popup attribute is activated by the user, the UA will simply call the `requestTopLayer()` function on the target element. Akin to the [HTML solution](#the-top-layer-pseudo-class), CSS will need to be used if the desire is to show a previously-invisible popup menu.
 
 There could also be other such declarative attributes, e.g. `tooltip`, which trigger the popup after a hover delay, in exactly the same way as the `popup` attribute.
 
@@ -414,21 +414,21 @@ When the `popup` attribute is applied to an activating element, the `ariaHasPopu
 
 #### Anchoring (The `anchor` Attribute)
 
-The [Attribute solution for anchoring](#anchoring-the-anchor-attribute-1) would seem to apply equally well to the Javascript based API. It is perhaps possible to also/instead add another option to the `requestTopLayer()` function call to indicate ancestor popups for this purpose, but that feels rather awkward.
+The [Attribute solution for anchoring](#anchoring-the-anchor-attribute-1) would seem to apply equally well to the JavaScript based API. It is perhaps possible to also/instead add another option to the `requestTopLayer()` function call to indicate ancestor popups for this purpose, but that feels rather awkward.
 
 #### Display Ordering and the `initiallyopen` Attribute
 
-The `<popup>` proposal had an `initiallyopen` attribute which could be used to show the `<popup>` upon page load. [That original proposal](https://open-ui.org/components/popup.proposal-v1#the-initiallyopen-attribute) should still be usable in the context of a Javascript API, with very few changes.
+The `<popup>` proposal had an `initiallyopen` attribute which could be used to show the `<popup>` upon page load. [That original proposal](https://open-ui.org/components/popup.proposal-v1#the-initiallyopen-attribute) should still be usable in the context of a JavaScript API, with very few changes.
 
 #### Accessibility / Semantics
 
-Since the Javascript `requestTopLayer()` API does not change the content at all, and only impacts the element's presentation (top layer vs not top layer) after a call to `requestTopLayer()`, this will not have **any semantic or accessibility impact**. I.e. the element before and after the `requestTopLayer()` call will maintain its existing semantics and AOM representation.
+Since the JavaScript `requestTopLayer()` API does not change the content at all, and only impacts the element's presentation (top layer vs not top layer) after a call to `requestTopLayer()`, this will not have **any semantic or accessibility impact**. I.e. the element before and after the `requestTopLayer()` call will maintain its existing semantics and AOM representation.
 
-### Javascript-based APIs
+### JavaScript-based APIs
 
-There is a (strong?) bias among the group toward avoiding Javascript-only APIs, as they are more difficult to use, and the designer community is typically less comfortable and experienced with Javascript as compared to HTML/CSS. If it is possible to implement this “popup” functionality without **requiring** Javascript, that will be a win.
+There is a (strong?) bias among the group toward avoiding JavaScript-only APIs, as they are more difficult to use, and the designer community is typically less comfortable and experienced with JavaScript as compared to HTML/CSS. If it is possible to implement this “popup” functionality without **requiring** JavaScript, that will be a win.
 
-It is possible that the `popup` declarative attribute gets around many/most of the standard use cases, and reduces the need to manually call `requestTopLayer()` from explicit Javascript. But it still seems like an HTML attribute is more easily understandable to designers.
+It is possible that the `popup` declarative attribute gets around many/most of the standard use cases, and reduces the need to manually call `requestTopLayer()` from explicit JavaScript. But it still seems like an HTML attribute is more easily understandable to designers.
 
 ### Overall Pros and Cons
 
@@ -443,5 +443,5 @@ It is possible that the `popup` declarative attribute gets around many/most of t
 
 #### Cons
 
-- Javascript based APIs are less desirable than something based on HTML or CSS.
+- JavaScript based APIs are less desirable than something based on HTML or CSS.
 - Many footguns.
