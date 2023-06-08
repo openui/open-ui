@@ -1,0 +1,203 @@
+---
+menu: Proposals
+name: Popover=hint and Hover Triggering (Explainer)
+path: /components/popover-hint.research.explainer
+pathToResearch: /components/popup.research
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@aleventhal](https://github.com/aleventhal)
+- June 8, 2023
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+## Table of Contents
+
+- [Background](#background)
+  - [Goals](#goals)
+  - [See Also](#see-also)
+  - [Popover vs. Dialog](#popover-vs-dialog)
+- [API Shape](#api-shape)
+  - [HTML Content Attribute](#html-content-attribute)
+  - [Showing and Hiding a Popover](#showing-and-hiding-a-popover)
+    - [Declarative Triggers](#declarative-triggers)
+    - [JavaScript Trigger](#javascript-trigger)
+    - [CSS Pseudo Class](#css-pseudo-class)
+    - [Rendering](#rendering)
+    - [Shown vs Hidden Popovers](#shown-vs-hidden-popovers)
+    - [Animation of Popovers](#animation-of-popovers)
+  - [IDL Attribute and Feature Detection](#idl-attribute-and-feature-detection)
+  - [Events](#events)
+  - [Focus Management](#focus-management)
+  - [Anchoring](#anchoring)
+  - [Backdrop](#backdrop)
+- [Behaviors](#behaviors)
+  - [Automatic Dismiss Behavior](#automatic-dismiss-behavior)
+    - [Light Dismiss](#light-dismiss)
+    - [Nested Popovers](#nested-popovers)
+    - [The Popover Stack](#the-popover-stack)
+    - [Nearest Open Ancestral Popover](#nearest-open-ancestral-popover)
+    - [Close signal](#close-signal)
+  - [Classes of Top Layer UI](#classes-of-top-layer-ui)
+  - [Accessibility / Semantics](#accessibility--semantics)
+  - [Disallowed elements](#disallowed-elements)
+- [Example Use Cases](#example-use-cases)
+  - [Generic Popover (Date Picker)](#generic-popover-date-picker)
+  - [Generic Popover (`<selectmenu>` listbox example)](#generic-popover-selectmenu-listbox-example)
+  - [Manual](#manual)
+- [Additional Considerations](#additional-considerations)
+  - [Exceeding the Frame Bounds](#exceeding-the-frame-bounds)
+  - [Shadow DOM](#shadow-dom)
+  - [Eventual Single-Purpose Elements](#eventual-single-purpose-elements)
+- [The Choices Made in this API](#the-choices-made-in-this-api)
+  - [Alternatives Considered](#alternatives-considered)
+  - [Why a content attribute?](#why-a-content-attribute)
+  - [Design decisions (via OpenUI)](#design-decisions-via-openui)
+  - [Articles](#articles)
+
+# Background
+
+The [Popover API](https://html.spec.whatwg.org/multipage/C#the-popover-attribute) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), [OpenUI Explainer](https://open-ui.org/components/popover.research.explainer/)) is now part of the HTML standard. It allows developers to create popovers of varying types and also easily trigger them from buttons, without using Javascript.
+
+This explainer discusses two important extensions of the Popover API:
+
+1. The ability to trigger popovers via a "hover" type interaction.
+2. The ability to show a new type of popover for "hints".
+
+These two capabilities are orthogonal but closely related, and this explainer therefore discusses them both.
+
+The motivating use case, but certainly not the only use case, for these two capabilities is in the construction of "tooltips". Typically, tooltips are transient bits of additional information related to a bit of content. This additional information is *not required* and is supplementary in nature. Usually the user accesses this tooltip by hovering, keyboard-focusing, or long-pressing a control.
+
+# Behaviors
+
+## "Hover" triggering
+
+The existing popover API includes the concept of "invoking elements":
+
+```html
+<button popovertarget=foo popovertargetaction=show>
+  Click me to show a popover
+</button>
+<div popover id=foo> I'm a popover </div>
+```
+
+The `popovertarget` attribute can be used on buttons (and `<input type=button>`), and it points to the idref of an element with the `popover` attribute. In this configuration, clicking the button automatically shows the popover, without requiring Javascript. In addition, this linkage ensures that the accessibility tree is properly updated to represent the connection. The `popovertargetaction` attribute determines what action to take when the button is clicked: `show`, `hide`, or `toggle`.
+
+### Add the `hover` value
+
+To support hover triggering, a new value is added to `popovertargetaction`: `hover`. When `popovertargetaction=hover`, the popover will be **shown** when the invoking element is **a)** hovered with the mouse, **b)** focused, or **c)** long-pressed (mobile).
+
+### CSS values to control delay
+
+The majority of hover-triggered UI has a set of delays associated with it. It tends to be jarring to the user if UI elements show up *immediately* upon hovering an element. For example, that causes elements to show and hide rapidly as the user moves their mouse across the screen. To allow the user to be more intentional, there is an expectation that the user hovers over the element of interest for a short period of time before any popovers are triggered. Additionally, it is common for hint popovers to be hidden automatically when they are no longer hovered, again after a sufficient delay. This "hide delay" is particularly important in the case that there is a physical gap between the invoking element and the hint popover: the user must move the mouse from the invoker to the popover and cross that gap, and it is frustrating if the popover closes while that traversal is taking place.
+
+To facilitate these delays, two new CSS properties are added:
+
+- `popover-show-delay` - applied to the invoking element. The invoking element must be hovered, focused, or long-pressed for this long before the popover is shown. The default value for this property is `0.5s`.
+- `popover-hide-delay` - applied to the popover. The invoking element *or* the popover must be **not** hovered, focused, or long-pressed for this long before the popover is hidden. The default value for this property is `infinity`.
+
+It is important to "debounce" these delays. Said another way, the delays are interpreted as *the time an element is/isn't hovered/focused*. One difficulty implementing this type of behavior in Javascript is that the naive implementation is to just call `setTimeout(() => show/hidePopover(), delayValue)`. I.e. after the invoking element is hovered, wait `delayValue`, and then show the popover. But that does not properly handle the situation where the user hovers the element, and then de-hovers it, all within the delay time. In that case, no popover should be shown. Similarly, once the popover is shown and the user de-hovers the popover briefly but re-hoveres it again quickly, the popover should not close.
+
+### Popover types
+
+The new hover-triggering functionality should work for all `popover` types. There are use cases, e.g. for `popover=auto`; for example, a nested menu structure where sub-menus are shown when items in the primary menu are hovered or focused.
+
+### Example
+
+```html
+<button popovertarget=menu1>Menu</button>
+<menu popover id=menu1>
+  <li>
+    <button popovertarget=submenu1 popovertargetaction=hover>
+      Sub menu 1
+    </button>
+  </li>
+  <li>
+    <button popovertarget=submenu2 popovertargetaction=hover>
+      Sub menu 2
+    </button>
+  </li>
+</menu>
+<menu class=submenu popover id=submenu1>
+  Sub-menu #1
+</menu>
+<menu class=submenu popover id=submenu2>
+  Sub-menu #2
+</menu>
+<style>
+  button {
+    popover-show-delay: 0.5s;
+  }
+  [popover].submenu {
+    popover-hide-delay: 0.5s;
+  }
+  menu {
+      list-style-type: none;
+  }
+  menu button {
+    border: none;
+  }
+</style>
+```
+
+This example implements a popover menu (`id=menu1`) which has sub-menus (`id=submenu1` and `id=submenu2`) which can be triggered simply by hovering or focusing the main menu's buttons.
+
+## `popover=hint`
+
+When a hint is shown, it behaves differently from other popover types such as `popover=auto` and `popover=manual` in a few ways:
+
+|               | `popover=auto`            | `popover=hint` | `popover=manual` |
+| ------------- | ------------------------- | -------------- | --------------   |
+| Light dismiss |      Yes                  |     Yes        |      No          |
+| Closes:       | other `auto`s and `hint`s | other `hint`s  | nothing          |
+| Nesting:      |     Yes                   | No             | No               |
+
+First, hints should always be light dismissable. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking outside or hitting ESC will close a hint.
+
+Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses a unrelated element to see its hint, that action should not close the select picker. In essence, the hint is *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two hints open at a time. So hints should close other hints.
+
+Finally, `popover=auto` popovers support "nesting": the idea that one popover is a descendant of another popover, for example in the case of nested menus. It makes sense in that example for the parent menu to stay open while the child menu opens. The same is not true for hints - it would be confusing for one hint to be nested inside another, and wouldn't make sense. Therefore, hints do not support nesting.
+
+
+# Accessibility
+
+A key distinction between types of hints is whether it may be important for a user to explore or interact with the hint. Consensus on these types of hints/tooltips can help with the resolution of [ARIA#979: Clarify the use of role=tooltip](https://github.com/w3c/aria/issues/979).
+
+- A plain hint contains only elements with a computed role of generic, text and images.
+- A rich hint contains other elements, such as links, form controls, lists or tables. These are hints that a screen reader user may need to interact with or explore.
+
+## Why differentiate between rich and plain hints?
+
+For a screen reader user, there already exists simple settings and commands to read accessible descriptions, which are just an additional piece of text associated with an object, such as used by a `title` or `aria-description` attribute.  When a hint is just used for a prettier tooltip, a screen reader can reuse this simple mechanism and act like a title was present. There is no need for the user to navigate to it.
+
+However, when a hint is used for something more complex, such as a dialog that appears on hover, or a data table, then the user needs to be able to learn it’s there and navigate to it, so that they can use additional screen reader commands to interact with it.
+
+## A11y API support
+
+For the best screen reading experience, the implementation will need to expose different properties for a plain hint vs a rich hint (classification described above).
+
+- Plain hints: the browser will simply expose the text on the triggering element. The actual popover target element and its descendants can be invisible/ignored in the AX tree.
+    1. If no other accessible name is available, use hint’s inner text for the accessible name
+    2. If it's used as the name, then use it to compute the description, setting the described by relation to point from the trigger to the hint element
+
+- Rich hints:
+    1. Add `aria-expanded` on the triggering element: the same treatment as for `popover=auto`.
+    2. Minimum role of `tooltip` on the target — see [spec PR describing minimum role](https://github.com/w3c/html-aam/pull/454).
+    3. Add `aria-details` pointing from the trigger to the popover. This allows screen readers to announce the presence of the popover and a command for navigating to it.
+    4. Problem: in general, the details relation does not work for hidden objects, and we can’t necessarily expect the hint to be complete before it becomes visible, as that may happen on-demand. So what happens if the user navigates to a hint popover’s trigger, and it’s not open. If they tabbed there, then we can make sure the popover is shown on focus. But, if they are navigating with a virtual buffer as is likely, how will they trigger the hint popover to open (the user would need to know to focus the trigger, or JAWS/NVDA would need to start focusing objects during navigation as other screen readers do), and then and how will the user know it’s there (should we use a new value of the haspopup object attribute for these, e.g. haspopup=hint)?
+
+## `::tooltip` pseudo element
+
+[CSSWG Issue 8930](https://github.com/w3c/csswg-drafts/issues/8930) discusses the addition of a `::tooltip` (or similarly named) pseudo element that could be used to generate tooltips via CSS, and style them. These are intended (though see the discussion) to be Plain Hints (as described above).
+
+## Monkeypatch spec
+
+{To-do: document the changes necessary to the [WHATWG/html spec](https://html.spec.whatwg.org/multipage/C#the-popover-attribute) for this proposal.}
+
+
+## Articles and References
+
+- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API)
+- https://github.com/openui/open-ui/issues/530
+- https://github.com/openui/open-ui/issues/526
