@@ -73,15 +73,39 @@ To facilitate these delays, two new CSS properties are added:
 
 It is important to "debounce" these delays. Said another way, the delays are interpreted as *the time an element must be continuously hovered or de-hovered*. The naive Javascript implementation of this behavior is to just call `setTimeout(() => show/hidePopover(), delayValue)`. I.e. after the invoking element is hovered, wait `delayValue`, and then show the popover. But that does not properly handle the situation where the user hovers the element, and then de-hovers it, all within the delay time. In that case, no popover should be shown. Similarly, once the popover is shown and the user de-hovers the popover briefly but re-hoveres it again quickly, the popover should not close.
 
+## Example buttons
+
+Let's examine a small example:
+
+```html
+<button popovertarget=hint1 popovertargetaction=hover>
+  Button 1
+</button>
+<div popover=hint id="hint1">Hint 1</div>
+<button>Button 2</button>
+
+<style>
+  button    { popover-show-delay: 0.3s; }
+  [popover] { popover-hide-delay: 0.6s; }
+</style>
+```
+
+In this example, because of the `popover-show-delay: 0.3s`, hovering (with the mouse) or keyboard-focusing "Button 1", *and then waiting for 0.3 seconds* will cause "Hint 1" to be shown. It will stay showing as long as the button *or* the popover are hovered with the mouse or keyboard-focused.
+
+Because of the `popover-hide-delay: 0.6s`, the hint will be automatically hidden after 0.6 seconds, once "interest has left" the popover. That depends on how the popover was triggered:
+
+- If the invoker was **hovered** to trigger "Hint 1", then it will stay open as long as the invoker or the hint are still hovered. If the mouse if moved off of *both* the invoker and the hint for 0.6 seconds, the hint will be closed.
+- If the invoker was **keyboard focused** to trigger "Hint 1", then it will stay open as long as focus is contained within either the invoker or the hint. If keyboard focus leaves both invoker and hint for 0.6 seconds, the hint will be closed.
+
 ## Popover types
 
 The new hover-triggering functionality should work for all `popover` types. There are use cases, e.g. for `popover=auto`; for example, a nested menu structure where sub-menus are shown when items in the primary menu are hovered or focused.
 
-## Example
+## Example menu
 
 ```html
 <button popovertarget=menu1>Menu</button>
-<menu popover id=menu1>
+<div role=menu popover id=menu1>
   <li>
     <button popovertarget=submenu1 popovertargetaction=hover>
       Sub menu 1
@@ -92,18 +116,18 @@ The new hover-triggering functionality should work for all `popover` types. Ther
       Sub menu 2
     </button>
   </li>
-</menu>
-<menu class=submenu popover id=submenu1>
+</div>
+<div role=menu class=submenu popover id=submenu1>
   Sub-menu #1
-</menu>
-<menu class=submenu popover id=submenu2>
+</div>
+<div role=menu class=submenu popover id=submenu2>
   Sub-menu #2
-</menu>
+</div>
 <style>
   button { popover-show-delay: 0.5s; }
   [popover].submenu { popover-hide-delay: 0.5s; }
-  menu { list-style-type: none; }
-  menu button { border: none; }
+  [role=menu] { list-style-type: none; }
+  [role=menu] button { border: none; }
 </style>
 ```
 
@@ -119,12 +143,13 @@ When a hint is shown, it behaves differently from other popover types such as `p
 | Force-hides:  | Other `auto`s and `hint`s | Other `hint`s  | Nothing          |
 | Nesting:      |     Yes                   | No             | No               |
 
-First, hints should always be light dismissable. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking outside or hitting ESC will close a hint.
+First, hints should always be light dismissable. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
 
 Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses a unrelated element to see its hint, that action should not close the select picker. In essence, the hint is *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two hints open at a time. So hints should close other hints.
 
 Finally, `popover=auto` popovers support "nesting": the idea that one popover is a descendant of another popover, for example in the case of nested menus. It makes sense in that example for the parent menu to stay open while the child menu opens. The same is not true for hints - it would be confusing for one hint to be nested inside another, and wouldn't make sense. Therefore, hints do not support nesting.
 
+To summarize the above, there can only be one open `popover=hint` on a page, many nested (but only 1 "root") `popover=auto`, and many `popover=manual`.
 
 # Accessibility
 
@@ -143,9 +168,9 @@ However, when a hint is used for something more complex, such as a dialog that a
 
 For the best screen reading experience, the implementation will need to expose different properties for a plain hint vs a rich hint (classification described above).
 
-- Plain hints: the browser will simply expose the text on the triggering element. The actual popover target element and its descendants can be invisible/ignored in the AX tree.
-    1. If no other accessible name is available, use hint’s inner text for the accessible name
-    2. If it's used as the name, then use it to compute the description, setting the described by relation to point from the trigger to the hint element
+- Plain hints: the browser will expose the flattened text string comprised of the hint's text and text alternative content via the invoking element. The actual popover target element and its descendants can be invisible/ignored in the AX tree. Note: this would be similar to how `title` attribute tooltips are treated today.
+    1. If the invoking element lacks an accessible name, use the computed text of the hint as the element's accessible name.
+    2. If the hint is not used as the accessible name, then the hint would be treated as the accessible description of the invoking element. A described by relation would point from the trigger to the hint element.
 
 - Rich hints:
     1. Add `aria-expanded` on the triggering element: the same treatment as for `popover=auto`.
