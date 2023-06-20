@@ -2,7 +2,7 @@
 
 ### Background
 
-Since the beginning, web browsers have provided form controls and other website-level UI controls for web designers and developers to leverage in creating interfaces for their users. The web became what it is today precisely because websites are interactive. People search, select, log in, upload content, purchase, ask for what they need --- all through the power of controls.
+Since the beginning, web browsers have provided form controls and other website-level UI controls for web designers and developers to leverage in creating interfaces for their users. The web became what it is today precisely because websites are interactive. People search, select, log in, upload content, purchase, ask for what they need — all through the power of controls.
 
 Having the building blocks of user interfaces supplied by HTML makes it far easier for web developers to create interfaces for their users. Browser-supplied form and UI controls robustly respond to user needs. The same control can behave differently on different types of devices. They provide deep, accessible integration with all hardware and software. They adjust to unexpected conditions precisely because they are handled by the browser. 
 
