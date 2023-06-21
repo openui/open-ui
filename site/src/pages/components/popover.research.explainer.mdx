@@ -363,10 +363,11 @@ Again, the above descriptions depend on all five CSSWG issues above landing in s
 
 The `popover` content attribute will be [reflected](https://html.spec.whatwg.org/#reflect) as a nullable IDL attribute:
 
-```webidl
+```
 [Exposed=Window]
 partial interface Element {
   attribute DOMString? popover;
+}
 ```
 
 This not only allows developer ease-of-use from JavaScript, but also allows for a feature detection mechanism:
