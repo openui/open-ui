@@ -106,7 +106,7 @@ The new hover-triggering functionality should work for all `popover` types. Ther
 
 ```html
 <button popovertarget=menu1>Menu</button>
-<div role=menu popover id=menu1>
+<ul popover id=menu1>
   <li>
     <button popovertarget=submenu1 popovertargetaction=hover>
       Sub menu 1
@@ -117,18 +117,18 @@ The new hover-triggering functionality should work for all `popover` types. Ther
       Sub menu 2
     </button>
   </li>
-</div>
-<div role=menu class=submenu popover id=submenu1>
+</ul>
+<ul class=submenu popover id=submenu1>
   Sub-menu #1
 </div>
-<div role=menu class=submenu popover id=submenu2>
+<ul class=submenu popover id=submenu2>
   Sub-menu #2
 </div>
 <style>
   button { popover-show-delay: 0.5s; }
   [popover].submenu { popover-hide-delay: 0.5s; }
-  [role=menu] { list-style-type: none; }
-  [role=menu] button { border: none; }
+  ul { list-style-type: none; }
+  ul button { border: none; }
 </style>
 ```
 
