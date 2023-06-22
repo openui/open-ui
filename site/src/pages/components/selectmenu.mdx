@@ -21,6 +21,12 @@ import Image from '../../components/image.astro'
   - [Extending the markup](#extending-the-markup)
 - [Examples](#examples)
 - [Keyboard Behavior](#keyboard-behavior)
+- [Form Semantics](#form-semantics)
+  - [IDL](#idl)
+  - [`selectedOption` and `value`](#selectedoption-and-value)
+  - [`disabled`, `form`, `name`, `required`, and `labels`](#disabled-form-name-required-and-labels)
+  - [`type`](#type)
+  - [Validity IDLs](#validity-idls)
 
 # Background
 
@@ -312,3 +318,63 @@ When the listbox is open:
 * The up arrow key moves focus backwards in the list of options and changes the selected value to the newly selected option.
 * The down arrow key moves focus forwards in the list of options and changes the selected value to the newly selected option.
 * The left and right arrow keys do nothing.
+
+## Form Semantics
+
+The selectmenu element is a [form-associated element](https://html.spec.whatwg.org/multipage/forms.html#form-associated-element), which means that it can be used to build and submit forms just like the existing `<select>` element.
+
+### IDL
+
+The following IDL is used for selectmenu. Most items which are named the same as items for other form-associated elements behave in the same way.
+
+```webidl
+interface HTMLSelectMenuElement : HTMLElement {
+  readonly attribute boolean open;
+
+  readonly attribute HTMLOptionElement? selectedOption;
+  attribute DOMString value;
+  [CEReactions, Reflect] attribute boolean disabled;
+  readonly attribute HTMLFormElement? form;
+  [CEReactions, Reflect] attribute DOMString name;
+  readonly attribute DOMString type;
+  [CEReactions, Reflect] attribute boolean required;
+
+  readonly attribute boolean willValidate;
+  readonly attribute ValidityState validity;
+  readonly attribute DOMString validationMessage;
+  boolean checkValidity();
+  boolean reportValidity();
+  void setCustomValidity(DOMString error);
+
+  readonly attribute NodeList labels;
+};
+```
+
+### The `selectedOption` and `value` attributes
+
+`selectmenu.selectedOption` returns the currently selected `<option>` element. This is unlike `<select>` which has a `selectedOptions` property and returns a list of selected options because selectmenu only supports one selected option at a time.
+
+Just like the `<select>` element, `selectmenu.value` returns the `value` property of the currently selected option.
+
+### The `disabled`, `form`, `name`, `required`, and `labels` attributes
+
+These IDL attributes behave exactly as they do for other form-associated elements as specified by HTML:
+* [HTML spec for `disabled`](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#enabling-and-disabling-form-controls:-the-disabled-attribute)
+* [HTML spec for `form`](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form)
+* [HTML spec for `name`](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name)
+* [HTML spec for `required`](https://html.spec.whatwg.org/multipage/form-elements.html#attr-select-required)
+* [HTML spec for `labels`](https://html.spec.whatwg.org/multipage/forms.html#dom-lfe-labels)
+
+### The `type` attribute
+
+Like other form control elements, selectmenu supports the `type` attribute. It simply returns `"selectmenu"`.
+
+### Validity IDLs
+
+Like other form control elements, selectmenu supports validity checking attributes and methods as specified by HTML:
+* [HTML spec for `willValidate`](https://html.spec.whatwg.org/#dom-cva-willvalidate)
+* [HTML spec for `validity`](https://html.spec.whatwg.org/#dom-cva-validity)
+* [HTML spec for `validationMessage`](https://html.spec.whatwg.org/#dom-cva-validationmessage)
+* [HTML spec for `checkValidity()`](https://html.spec.whatwg.org/#dom-cva-checkvalidity)
+* [HTML spec for `reportValidity()`](https://html.spec.whatwg.org/#dom-cva-reportvalidity)
+* [HTML spec for `setCustomValidity()`](https://html.spec.whatwg.org/#dom-cva-setcustomvalidity)
