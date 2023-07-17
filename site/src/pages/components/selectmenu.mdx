@@ -27,6 +27,7 @@ import Image from '../../components/image.astro'
   - [`disabled`, `form`, `name`, `required`, and `labels`](#disabled-form-name-required-and-labels)
   - [`type`](#type)
   - [Validity IDLs](#validity-idls)
+- [Why not improve `<select>`](#improve-select)
 
 # Background
 
@@ -378,3 +379,12 @@ Like other form control elements, selectmenu supports validity checking attribut
 * [HTML spec for `checkValidity()`](https://html.spec.whatwg.org/#dom-cva-checkvalidity)
 * [HTML spec for `reportValidity()`](https://html.spec.whatwg.org/#dom-cva-reportvalidity)
 * [HTML spec for `setCustomValidity()`](https://html.spec.whatwg.org/#dom-cva-setcustomvalidity)
+
+## Why not improve `<select>`
+
+Instead of creating a new `<selectmenu>` element, we could improve the existing select element to meet the same needs. However, there are a few problems with this (borrowed from the [Custom Controls UI Explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md):
+
+- Changing the parsing behavior for `<select>` to allow other element children by default would likely break a lot of old sites that depend on the current behavior.
+- The `<select>` popup currently has the capability to break outside the window of the browser or of an iframe. Sites likely depend on this behavior, but we would need to remove it for security reasons if `<select>` is allowed to contain arbitrary content. So again this would need to be opt-in to avoid breaking existing sites.
+
+In order to resolve these two issues, we could have an attribute opt-in on the select element, like `<select custom>`. However, this has its own issues as well: consider the case where the `<select>` is created dynamically via `document.createElement()`, when the custom attribute must be set using `setAttribute()`. When should the transition to the custom behavior be applied? Applying it at the point of `setAttribute()` would be inconsistent with how other elements like `input[type=range]` work when created dynamically; typically the transformation would occur when the element was appended to the DOM. But, this means that for a dynamically created `<select>`, the developer would have to wait until the `<select>` is appended to the DOM before calling `attachShadow()`. Creating a new tag name for the element gets around this issue.
