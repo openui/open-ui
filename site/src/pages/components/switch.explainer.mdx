@@ -1,8 +1,9 @@
 ---
-name: { ComponentName }
-
-showInMenu: false
-layout: ../layouts/ComponentLayout.astro
+menu: Proposals
+name: Switch Component Specification
+path: /components/switch.explainer
+pathToResearch: /components/switch
+layout: ../../layouts/ComponentLayout.astro
 ---
 
 > This document represents a component specification template. Its purpose
@@ -10,31 +11,57 @@ layout: ../layouts/ComponentLayout.astro
 > authored, in light of common anatomies, behaviors, and accessibility.
 > The primary audience is a developer authoring a given component.
 
-# `{ComponentName}` Component Specification
-
 ## Overview
 
-_The name of the component, along with a high-level description._
+A switch toggles a binary state on or off. Other names include "toggle", "lightswitch", "toggle switch" or "toggle button"[^1].
 
 ### Background
 
 _Relevant historical or background information, related existing issues, etc._
 
+https://www.behance.net/gallery/70302039/History-Of-Toggle-UIUX-Case-Study-UI-Samples
+
 ### Use Cases
 
 _Primary use cases for this component._
+
+A switch can be used to indicate and toggle the state of a binary state. Popular use-cases inlcude switching dark mode on or off, switching WiFi on or off and extends to any kind of setting where a user is limited to a binary state - true or false, on or off.
+
+![Switch example by Material Design, Google Inc.](https://lh3.googleusercontent.com/9ZiRb_i7vCmW5HZ_uu-WNFljJQUnVSMY9ZOnku7ZknH0t9J0AkZwU7NcowggDruiZ6_bwUru_B1QxLq87L6a5NLVlJns4-8aSvq8aYUCFh28=s0)
+
+Toggling a switch always has an immediate effect.
+
+It's not recommended to use a switch to toggle between two opposite states. This could include a list vs. map view or, confusingly, switching between light and dark mode (switch light or dark mode on or off, but don't toggle between these opposing states).
 
 ### Non-goals
 
 _A list of use cases, features, or functionality which are **not** goals for the component._
 
+The switch is not a checkbox or radiobutton alternative.
+
 ### Features
 
 _A list of the key features unique to this component._
 
+#### Interaction
+
+- `click`/`touch`: the switch can be toggled by clicking it
+- `drag&drop`: the switch can be toggled by dragging the thumb
+
+#### Animation
+
+- background fade
+- track slide
+
+#### Form element
+
+The switch is also a form element, but should not be used to replace a checkbox or radio buttons in a form. In most modern applications, a JavaScript action will be triggered when the switch toggles. For a more traditional, non-JavaScript approach, it's necessary to receive the state of the switch on the server. In order to facilitate the directness of the action, a switch can be of type "submit". Like a submit button, toggling the switch will immediately submit the associated form to the server. This enables creating a HTML/CSS only settings page while staying true to user expectations of how the component should behave.
+
 ### Risks and Challenges
 
 _Notable risks or challenges associated with the component. Link issues related to platform blockers._
+
+Implementing the switch as a form element could lead developers to use it as a checkbox replacement.
 
 ### Prior Art/Examples
 
@@ -58,27 +85,37 @@ _Outline the key elements of the component's public API surface, taking into con
 
 _Example Table_
 
-| Property Name | Attribute Name | Type     | Default Value  | Description                      |
-| ------------- | -------------- | -------- | -------------- | -------------------------------- |
-| `value`       | `value`        | `number` | Value of `min` | The current value of the slider. |
-| `min`         | `min`          | `number` | `0`            | The minimum value of the slider. |
+**Open questions:**
+
+- If form associated, should default value of "on" be submitted if switch is on and the user did not specify a value to align with the [checkbox default value behavior](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#value:~:text=If%20the%20value%20attribute%20was%20omitted%2C%20the%20default%20value%20for%20the%20checkbox%20is%20on%2C%20so%20the%20submitted%20data%20in%20that%20case%20would%20be%20subscribe%3Don.)?
+- Should a custom "activate initially" attribute be used with the switch (`toggled`) or should the checkbox `checked` attribute be used as a standard?
+  `<switch toggled>` seems more natural while `<switch checked>` is already an established standard
+
+| Property Name | Attribute Name | Type      | Default Value | Description                                                                                                                                                                                                                    |
+| ------------- | -------------- | --------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `toggled`(?)  | `toggled`      | `boolean` | `false`       | Indicates if the switch should be "on" initially (similar to the `checked` attribute on the checkbox).                                                                                                                         |
+| `value`       | `value`        | `string`  | `"on"` (?)    | The current value of the slider. Only set if the switch is toggled/on on form submission.                                                                                                                                      |
+| `name`        | `name`         | `string`  | `""`          | The name of the component.                                                                                                                                                                                                     |
+| `id`          | `id`           | `string`  | `""`          | The unique identifier of the component.                                                                                                                                                                                        |
+| `type`        | `type`         | `string`  | `button`      | Similar to the `<button>` or `<input>`, the type property for the switch can take either "button" or "submit". "Button" is used for triggering JavaScript actions, "submit" is used to immediately submit the associated form. |
+| `readonly`    | `readonly`     | `boolean` | `false`       | Indicates that the switch is not interactive but its value should still be submitted with the form.                                                                                                                            |
+| `autofocus`   | `autofocus`    | `boolean` | `false`       | Get focus by default.                                                                                                                                                                                                          |
+| `required`    | `required`     | `boolean` | `false`       | Indicates that the switch is invalid unless on.                                                                                                                                                                                |
+| `form`        | `form`         | `string`  | `""`          | Associates the element with a form in the document whose `id` is this value.                                                                                                                                                   |
 
 #### Methods
 
 _Example Table_
-
-| Signature                                    | Description                                                                                                   |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `increment(value: number = this.step): void` | Increments the `value` of the component by the amount specified by `step`, clamped within `min`/`max` values. |
-| `decrement(value: number = this.step): void` | Decrements the `value` of the component by the amount specified by `step`, clamped within `min`/`max` values. |
+No special methods needed.
 
 #### Events
 
 _Example Table_
 
-| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                        |
-| ---------- | ----------- | ------- | -------- | ----------- | ---------------------------------------- |
-| `change`   | none        | `true`  | `true`   | `false`     | Fired when the slider's `value` changes. |
+| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                      |
+| ---------- | ----------- | ------- | -------- | ----------- | ------------------------------------------------------ |
+| `change`   | none        | `true`  | `true`   | `false`     | Fired when the switch `value` changes.                 |
+| `input`    | none        | `true`  | `true`   | `false`     | Fired when the switch `value` is commited by the user. |
 
 ### Appearance
 
@@ -98,29 +135,56 @@ _Example_
 
 _Define the recommended DOM to represent the component's anatomy, as shown above. Show how important attributes (aria attributes especially) are applied to the various parts. In cases where a component nests other components, expand the full DOM structure to understand the expectation and any shortcomings in the child components' customizability._
 
+**Open questions**
+
+- There are two variants of how state transitions work (simple example of toggling a switch to on):
+  1. Thumb moves to the end, background-color fades from grey to green
+  2. Thumb moves to the end, the track moves with the thumb, revealing the checked track, hiding the unchecked track
+
+```html
+<switch>
+  #shadow-root (open)
+  <button part="button">
+    <span part="track">
+      <slot name="checked-track (?)"></slot>
+      <slot name="unchecked-track (?)"></slot>
+    </span>
+    <span part="thumb">
+      <slot name="thumb"></slot>
+    </span>
+  </button>
+</switch>
+```
+
+- `<button>` is for focus handling and event target/trigger
+- ``
+
 #### Slots
 
-_What parts of the component are composable or replaceable?_
+**Open questions**
 
-_Example Table_
+- What should the active or checked state of the switch be called?
+  This could be used in multiple places, also a CSS pseudo class `switch:toggled`.
+- What should the track slot names be?
+  There are many possibilities here like with or without hyphen, "track" as pre- or postfix, something else entirely...
 
-| Slot Name | Description                                                        | Fallback Content                            |
-| --------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| `thumb`   | Enables replacing the component's `thumb` part with custom markup. | A default thumb implementation is provided. |
+| Slot Name             | Description                                                          | Fallback Content                            |
+| --------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
+| `thumb`               | Enables replacing the component's `thumb` part with custom markup.   | A default thumb implementation is provided. |
+| `checked-track` (?)   | Enables inserting content on the checked (end) side of the track     | No default content                          |
+| `unchecked-track` (?) | Enables inserting content on the unchecked (start) side fo the track | No default content                          |
 
 #### Host Classes
 
 _What classes does the component add to the host element?_
 
-| Class Name | Description |
-| ---------- | ----------- |
+No host classes necessary.
 
 #### Slotted Content Classes
 
 _What classes on slotted content does the component respond to?_
 
-| Class Name | Description |
-| ---------- | ----------- |
+No slotted content classes necessary.
 
 #### CSS Parts
 
@@ -131,6 +195,7 @@ _Example Table_
 | Part Name | Description                                                                                   |
 | --------- | --------------------------------------------------------------------------------------------- |
 | `thumb`   | Enables styling the `thumb` part without requiring it to be completely replaced via its slot. |
+| `track`   | Enables styling the `track` part without requiring it to be completely replaced via its slot. |
 
 ---
 
@@ -146,13 +211,29 @@ _List key component states, valid state transitions, and how interactions trigge
 
 _Example Table_
 
-| State Group | States         | Initial State | Description                                                                                                           | Interaction/Transition                       |
-| ----------- | -------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `disabled`  | `true`/`false` | `false`       | When `true`, disables the control, preventing user interaction and displaying the control with a disabled appearance. | No interaction. Controlled programmatically. |
+**Open questions:**
+
+- Should the switch value type be a boolean or the string set ["on", "off"]?
+- Should the switch be form associated?
+  Popular usage guidelines recommend a button-like usage with immediate effects after interaction instead of after form submission. Usage in a form is generally discouraged.
+
+| State Group | States            | Initial State | Description                                                                                                           | Interaction/Transition                                                                                      |
+| ----------- | ----------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `value`     | `"on"`/`"off"`(?) | `"off"`       | Determines the current value of the component.                                                                        | Changed upon user interaction on click, touch, space key (when focused), enter key (when focused, optional) |
+| `disabled`  | `true`/`false`    | `false`       | When `true`, disables the control, preventing user interaction and displaying the control with a disabled appearance. | No interaction. Controlled programmatically.                                                                |
+| `focused`   | `true`/`false`    | `false`       |
 
 ### Accessibility
 
-_Consider the accessibility of the component._
+ARIA authoring practices guide for the switch pattern: https://www.w3.org/WAI/ARIA/apg/patterns/switch/
+
+- A labelling text can be assigned to the switch like any other form control through a `<label>` element, the `aria-label=""` attribute or the `aria-labelledby=""` attribute
+- Should be assigned the implicit aria role of "switch"
+- The current value should be reported as "on" or "off" to scree readers
+
+**Open questions:**
+
+- How can the `<switch>` element be assigned the implicit role of "switch"?
 
 #### Keyboard Navigation and Focus
 
@@ -186,6 +267,7 @@ _Consider whether the component has any special globalization needs such as:_
 ### Security
 
 _Are there any security implications surrounding the component?_
+No security implications are expected.
 
 ### Performance
 
@@ -217,8 +299,21 @@ _Are there any special considerations for DevTools? Will tooling changes need to
 
 _Any related resource links such as web standards, discussion threads, diagrams, etc._
 
+- Checkbox vs Toggle Switch: 7 Use-Cases of Forms Design: https://uxdworld.com/2018/08/13/checkbox-vs-toggle-switch-7-use-cases-of-forms-design/
+- Extreme use cases, useful for scope: https://uxdesign.cc/the-good-the-bad-and-the-toggle-2abc0fbbd099
+- Indeterminate state: https://uxplanet.org/ui-switch-component-3f29bc7f4f45
+- When to use a toggle switch: https://www.thedesignerstoolbox.com/design-system/when-to-use-toggle-switch-in-ux/
+- History Of Toggle + UI/UX Case Study + UI Samples: https://www.behance.net/gallery/70302039/History-Of-Toggle-UIUX-Case-Study-UI-Samples
+- Material 3 Switch: https://m3.material.io/components/switch/overview
+
 ---
 
 ## Next Steps
 
 _What next steps, if any, are there? Is there some functionality that would be a nice-to-have or a common feature in other implementations that could be added but is not considered part of the MVP? Link all feature additions, modifications, bugs, or editorial change issues._
+
+---
+
+References:
+
+[^1]: https://component.gallery/components/toggle/
