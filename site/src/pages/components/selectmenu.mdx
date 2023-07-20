@@ -388,3 +388,5 @@ Instead of creating a new `<selectmenu>` element, we could improve the existing 
 - The `<select>` popup currently has the capability to break outside the window of the browser or of an iframe. Sites likely depend on this behavior, but we would need to remove it for security reasons if `<select>` is allowed to contain arbitrary content. So again this would need to be opt-in to avoid breaking existing sites.
 
 In order to resolve these two issues, we could have an attribute opt-in on the select element, like `<select custom>`. However, this has its own issues as well: we would have to make a major parsing change based on the presence of an attribute, which doesn't happen for other attributes/elements. What if a `<select custom>` is parsed and an inline script child of it removes its `custom` attribute before the `<select>` has been closed?
+
+For these reasons, reusing the `<select>` tag for this feature would not be backwards compatible. Creating a new tag name is the best option.
