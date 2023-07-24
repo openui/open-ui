@@ -11,21 +11,33 @@ layout: ../../layouts/ComponentLayout.astro
 > authored, in light of common anatomies, behaviors, and accessibility.
 > The primary audience is a developer authoring a given component.
 
+## Dictionary
+
+Active switch: a switch in the "on" position
+Inactive switch: a switch in the "off" position
+Toggled: a switch in the "on" position
+
 ## Overview
 
-A switch toggles a binary state on or off. Other names include "toggle", "lightswitch", "toggle switch" or "toggle button"[^1].
+A switch toggles a binary state on or off. Other names include "toggle", "lightswitch", "toggle switch" or "toggle button". [^1]
 
 ### Background
 
 _Relevant historical or background information, related existing issues, etc._
 
-https://www.behance.net/gallery/70302039/History-Of-Toggle-UIUX-Case-Study-UI-Samples
+The history of light switches date back to the 80’s, and they were used for just the On-Off purpose. The technological advancements of the day allow performing numerous tasks with the help of these light switches, including the adjustment of brightness of lamps.
+
+The first ever light switch worked on a technology called the quick-break mechanism. Invented by John Henry Holmes in 1884, there used to be formation of a residue in the previous arcing technologies, thus reducing the life of the switch.
+
+The word "toggle" is a reference to a kind of mechanism or joint consisting of two arms, which are almost in line with each other, connected with an elbow-like pivot. However, the phrase "toggle switch" is applied to a switch with a short handle.[^2][^3]
+
+![Internal components of a toggle switch](https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Light_switch_inside_explained.jpg/440px-Light_switch_inside_explained.jpg)
 
 ### Use Cases
 
 _Primary use cases for this component._
 
-A switch can be used to indicate and toggle the state of a binary state. Popular use-cases inlcude switching dark mode on or off, switching WiFi on or off and extends to any kind of setting where a user is limited to a binary state - true or false, on or off.
+A switch can be used to toggle a binary state. Popular use-cases inlcude switching dark mode on or off, switching WiFi on or off and extends to any situation where a user is limited to a binary state - true or false, on or off.
 
 ![Switch example by Material Design, Google Inc.](https://lh3.googleusercontent.com/9ZiRb_i7vCmW5HZ_uu-WNFljJQUnVSMY9ZOnku7ZknH0t9J0AkZwU7NcowggDruiZ6_bwUru_B1QxLq87L6a5NLVlJns4-8aSvq8aYUCFh28=s0)
 
@@ -39,6 +51,17 @@ _A list of use cases, features, or functionality which are **not** goals for the
 
 The switch is not a checkbox or radiobutton alternative.
 
+A switch differs from a checkbox because:
+
+- It has no indeterminate state
+- It requires an immediate action, no confirmation is needed for the state to take effect
+
+A switch differs from a radio button because:
+
+- It always has an initial state, either on or off. A radio button group can be in an initial "nothing selected", invalid state
+- Switches cannot be grouped together like radio buttons with the same `name` attribute. Two switches cannot have the same `name` attribute.
+- It requires an immediate action, no confirmation is needed for the state to take effect
+
 ### Features
 
 _A list of the key features unique to this component._
@@ -48,14 +71,26 @@ _A list of the key features unique to this component._
 - `click`/`touch`: the switch can be toggled by clicking it
 - `drag&drop`: the switch can be toggled by dragging the thumb
 
+#### Form association
+
+A `<switch>` can be part of a form and has a mechanism (`type="submit"`) to immediately submit the form it's part of. The value of a switch is reported to the form target as either "on" or "off".
+
+<p class="question">
+  How should form validation work? Is there a way to describe that the valid state is "off" instead
+  of the more intuitive "on"?
+</p>
+
 #### Animation
 
-- background fade
-- track slide
+Two popular animation techniques are supported.
 
-#### Form element
+##### Background fade
 
-The switch is also a form element, but should not be used to replace a checkbox or radio buttons in a form. In most modern applications, a JavaScript action will be triggered when the switch toggles. For a more traditional, non-JavaScript approach, it's necessary to receive the state of the switch on the server. In order to facilitate the directness of the action, a switch can be of type "submit". Like a submit button, toggling the switch will immediately submit the associated form to the server. This enables creating a HTML/CSS only settings page while staying true to user expectations of how the component should behave.
+Upon toggling the switch, it's background changes from grey (off) to green (on) and the toggle slides to the respective position. Content on the thumb can indicate the currently active state. Track content is also possible in this variant, but as the track does not move, the content is being hidden and revealed by the sliding thumb.
+
+##### Track slide
+
+Upon toggling the switch, the track and the thumb slide together to the respective position. The track reveals the active side of the track while the inactive track side is being hidden. This variant imitates physical switches and can also reveal track content on either side of the thumb, describing the currently active state.
 
 ### Risks and Challenges
 
@@ -140,6 +175,7 @@ _Define the recommended DOM to represent the component's anatomy, as shown above
 - There are two variants of how state transitions work (simple example of toggling a switch to on):
   1. Thumb moves to the end, background-color fades from grey to green
   2. Thumb moves to the end, the track moves with the thumb, revealing the checked track, hiding the unchecked track
+- The thumb is located outside the track because it can overlap the track and the track needs `overflow: hidden` in order to hide the inactive portion of the track. When transitioning in "track slide" mode, the thumb and track need to be animated individually, but need to move together in order to hide the line separating on and off states on the track (thumb needs to fill the height of the track). Is there a better way to solve this issue?
 
 ```html
 <switch>
@@ -157,22 +193,21 @@ _Define the recommended DOM to represent the component's anatomy, as shown above
 ```
 
 - `<button>` is for focus handling and event target/trigger
-- ``
+- The thumb slot is nested in the span, because the span is needed to ensure a working transition and it's easier to insert custom thumb content without replacing the entire thumb everytime.
 
 #### Slots
 
 **Open questions**
 
-- What should the active or checked state of the switch be called?
-  This could be used in multiple places, also a CSS pseudo class `switch:toggled`.
 - What should the track slot names be?
   There are many possibilities here like with or without hyphen, "track" as pre- or postfix, something else entirely...
+- What is the antonym of toggled?
 
-| Slot Name             | Description                                                          | Fallback Content                            |
-| --------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
-| `thumb`               | Enables replacing the component's `thumb` part with custom markup.   | A default thumb implementation is provided. |
-| `checked-track` (?)   | Enables inserting content on the checked (end) side of the track     | No default content                          |
-| `unchecked-track` (?) | Enables inserting content on the unchecked (start) side fo the track | No default content                          |
+| Slot Name         | Description                                                            | Fallback Content                            |
+| ----------------- | ---------------------------------------------------------------------- | ------------------------------------------- |
+| `thumb`           | Enables replacing the component's `thumb` part with custom markup.     | A default thumb implementation is provided. |
+| `track-end` (?)   | Enables inserting content on the toggled (end) side of the track       | No default content                          |
+| `track-start` (?) | Enables inserting content on the non-toggled (start) side fo the track | No default content                          |
 
 #### Host Classes
 
@@ -194,6 +229,7 @@ _Example Table_
 
 | Part Name | Description                                                                                   |
 | --------- | --------------------------------------------------------------------------------------------- |
+| `button`  | Enables styling the wrapping button element.                                                  |
 | `thumb`   | Enables styling the `thumb` part without requiring it to be completely replaced via its slot. |
 | `track`   | Enables styling the `track` part without requiring it to be completely replaced via its slot. |
 
@@ -214,8 +250,6 @@ _Example Table_
 **Open questions:**
 
 - Should the switch value type be a boolean or the string set ["on", "off"]?
-- Should the switch be form associated?
-  Popular usage guidelines recommend a button-like usage with immediate effects after interaction instead of after form submission. Usage in a form is generally discouraged.
 
 | State Group | States            | Initial State | Description                                                                                                           | Interaction/Transition                                                                                      |
 | ----------- | ----------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -229,7 +263,7 @@ ARIA authoring practices guide for the switch pattern: https://www.w3.org/WAI/AR
 
 - A labelling text can be assigned to the switch like any other form control through a `<label>` element, the `aria-label=""` attribute or the `aria-labelledby=""` attribute
 - Should be assigned the implicit aria role of "switch"
-- The current value should be reported as "on" or "off" to scree readers
+- The current value should be reported as "on" or "off" to screen readers
 
 **Open questions:**
 
@@ -243,18 +277,34 @@ ARIA authoring practices guide for the switch pattern: https://www.w3.org/WAI/AR
 
 _Example Table_
 
-| Key       | Description                                                                                                                                     |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Up/Right  | Increments the value of the component by calling the `increment` method. If the `shift` modifier is pressed, increases by 10x the `step` value. |
-| Down/Left | Decrements the value of the component by calling the `decrement` method. If the `shift` modifier is pressed, decreases by 10x the `step` value. |
+| Key              | Description                            |
+| ---------------- | -------------------------------------- |
+| Space            | Should toggle the switch when focused. |
+| Enter (optional) | Should toggle the switch when focused. |
 
 #### Form Input
 
 _Does this component integrate with form submission, form validation, etc.? Can integration be accomplish with standard APIs or are special work-arounds required?_
 
+The switch is also a form element, acting as a mix between a button and a checkbox - a stateful button.
+
+##### Type button
+
+A JavaScript event listener is used to trigger the immediate action assigned to the switch. This can include calling a REST API or toggling a class on an element (e.g. dark mode).
+
+##### Type submit
+
+For a more traditional, non-JavaScript approach, it's necessary to receive the state of the switch on the server. In order to facilitate the directness of the action, a switch can be of type "submit". Like a submit button, toggling the switch will immediately submit the associated form to the server. This enables creating a HTML/CSS only settings page while staying true to user expectations of how the component should behave.
+
 #### Use with Assistive Technology
 
 _Are there any details about shadow dom, focus delegation, or aria attributes that need special attention?_
+
+Focus should be delegated to the button inside the component.
+
+**Open questions:**
+
+- The ARIA specification recommends updating the `aria-checked` attribute when toggling the switch. Is this necessary or can this be handled similar to how checkboxes work?
 
 ### Globalization
 
@@ -317,3 +367,5 @@ _What next steps, if any, are there? Is there some functionality that would be a
 References:
 
 [^1]: https://component.gallery/components/toggle/
+[^2]: https://www.behance.net/gallery/70302039/History-Of-Toggle-UIUX-Case-Study-UI-Samples
+[^3]: https://en.wikipedia.org/wiki/Light_switch
