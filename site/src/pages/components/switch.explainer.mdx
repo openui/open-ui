@@ -1,15 +1,10 @@
 ---
 menu: Proposals
-name: Switch Component Specification
+name: Switch (Editor's Draft)
 path: /components/switch.explainer
 pathToResearch: /components/switch
 layout: ../../layouts/ComponentLayout.astro
 ---
-
-> This document represents a component specification template. Its purpose
-> is to provide a point-in-time guide as to how a component should be
-> authored, in light of common anatomies, behaviors, and accessibility.
-> The primary audience is a developer authoring a given component.
 
 ## Dictionary
 
@@ -23,31 +18,73 @@ A switch toggles a binary state on or off. Other names include "toggle", "lights
 
 ### Background
 
-_Relevant historical or background information, related existing issues, etc._
+{/* _Relevant historical or background information, related existing issues, etc._ */}
 
 The history of light switches date back to the 80’s, and they were used for just the On-Off purpose. The technological advancements of the day allow performing numerous tasks with the help of these light switches, including the adjustment of brightness of lamps.
 
 The first ever light switch worked on a technology called the quick-break mechanism. Invented by John Henry Holmes in 1884, there used to be formation of a residue in the previous arcing technologies, thus reducing the life of the switch.
 
-The word "toggle" is a reference to a kind of mechanism or joint consisting of two arms, which are almost in line with each other, connected with an elbow-like pivot. However, the phrase "toggle switch" is applied to a switch with a short handle.[^2][^3]
+The word "toggle" is a reference to a kind of mechanism or joint consisting of two arms, which are almost in line with each other, connected with an elbow-like pivot. However, the phrase "toggle switch" is applied to a switch with a short handle. [^2] <sup>and</sup> [^3]
 
 ![Internal components of a toggle switch](https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Light_switch_inside_explained.jpg/440px-Light_switch_inside_explained.jpg)
 
 ### Use Cases
 
-_Primary use cases for this component._
+{/* _Primary use cases for this component._ */}
 
-A switch can be used to toggle a binary state. Popular use-cases inlcude switching dark mode on or off, switching WiFi on or off and extends to any situation where a user is limited to a binary state - true or false, on or off.
+A switch can be used to toggle a binary state. Popular use-cases inlcude switching dark mode on or off, switching WiFi or other settings on or off and extends to any situation where a user is limited to a binary state - true or false, on or off.
 
 ![Switch example by Material Design, Google Inc.](https://lh3.googleusercontent.com/9ZiRb_i7vCmW5HZ_uu-WNFljJQUnVSMY9ZOnku7ZknH0t9J0AkZwU7NcowggDruiZ6_bwUru_B1QxLq87L6a5NLVlJns4-8aSvq8aYUCFh28=s0)
 
 Toggling a switch always has an immediate effect.
 
-It's not recommended to use a switch to toggle between two opposite states. This could include a list vs. map view or, confusingly, switching between light and dark mode (switch light or dark mode on or off, but don't toggle between these opposing states).
-
 ### Non-goals
 
 _A list of use cases, features, or functionality which are **not** goals for the component._
+
+#### Non-binary states
+
+It's not recommended to use a switch to toggle between two opposite states[^4]. This could include a list vs. map view or, confusingly, switching between light and dark mode (switch light or dark mode on or off, but don't toggle between these opposing states).
+
+#### Non-immediate action
+
+<p class="question">
+  Should the "switch" be used to trigger immediate actions only? A majority of Design Systems
+  recommend this behavior. This decision can have influence on the API in regards to form
+  association and validation.
+</p>
+
+Don’t use a switch to select one or more options from a list. Switches should provide an immediate noticeable effect that doesn’t require the user to click Save or Submit to apply the new state. [^4]
+
+Toggles should never require users to press a button to apply the settings. [^5]
+
+Design Systems that recommend immediate action:
+
+1. [Ant Design](https://ant.design/components/switch#when-to-use)
+2. [Material Design 3](https://m3.material.io/components/switch/guidelines#b8773628-a5cb-4883-991f-4da6879baeff)
+3. [Evergreen](https://evergreen.segment.com/components/switch)
+4. [Fast](https://github.com/microsoft/fast/blob/master/packages/web-components/fast-foundation/src/switch/switch.spec.md#documentation)
+5. [Atlaskit](https://atlassian.design/components/toggle/usage#best-practices)
+6. [Carbon](https://carbondesignsystem.com/components/toggle/usage#overview)
+7. [Fluent UI](https://developer.microsoft.com/en-us/fluentui#/controls/web/toggle)
+8. [Microsoft Desktop](https://learn.microsoft.com/en-us/windows/apps/design/controls/toggles#choosing-between-toggle-switch-and-check-box)
+9. [Lion](https://lion-web.netlify.app/components/switch/overview/#when-to-use)
+10. [Primer](https://primer.style/design/components/toggle-switch)
+
+Design Systems that encourage non-immediate action:
+_No Data found for explicit encouragement, allthough implementations that rely on a checkbox indirectly allow that behavior._
+
+Design Systems that don't make any statement about recommended usage:
+
+- [Bootstrap](https://getbootstrap.com/docs/5.3/forms/checks-radios/#switches)
+- [Lightning](https://www.lightningdesignsystem.com/components/checkbox-toggle/)
+- [KoliBri](https://public-ui.github.io/docs/components/input-checkbox)
+- [Semantic UI](https://semantic-ui.com/modules/checkbox.html)
+- [Spectrum](https://spectrum.adobe.com/page/switch/)
+- [Tailwind Elements](https://tailwind-elements.com/docs/standard/forms/switch/)
+- [WAI-ARIA](https://www.w3.org/WAI/ARIA/apg/patterns/switch/)
+
+#### Pattern differentiation
 
 The switch is not a checkbox or radiobutton alternative.
 
@@ -73,12 +110,12 @@ _A list of the key features unique to this component._
 
 #### Form association
 
-A `<switch>` can be part of a form and has a mechanism (`type="submit"`) to immediately submit the form it's part of. The value of a switch is reported to the form target as either "on" or "off".
-
 <p class="question">
   How should form validation work? Is there a way to describe that the valid state is "off" instead
   of the more intuitive "on"?
 </p>
+
+A `<switch>` can be part of a form and has a mechanism (`type="submit"`) to immediately submit the form it's part of. The value of a switch is reported to the form target as either "on" or "off".
 
 #### Animation
 
@@ -368,4 +405,6 @@ References:
 
 [^1]: https://component.gallery/components/toggle/
 [^2]: https://www.behance.net/gallery/70302039/History-Of-Toggle-UIUX-Case-Study-UI-Samples
-[^3]: https://en.wikipedia.org/wiki/Light_switch
+[^3]: Wikipedia Light Switch https://en.wikipedia.org/wiki/Light_switch
+[^4]: Material Design 3 Switch, Guidelines https://m3.material.io/components/switch/guidelines#59aa5700-2061-4f12-ad17-3afeb6b1c805
+[^5]: Atlaskit Switch, Usage best practices https://atlassian.design/components/toggle/usage#best-practices
