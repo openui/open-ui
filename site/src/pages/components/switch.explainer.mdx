@@ -6,15 +6,20 @@ pathToResearch: /components/switch
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-## Dictionary
-
-Active switch: a switch in the "on" position
-Inactive switch: a switch in the "off" position
-Toggled: a switch in the "on" position
-
 ## Overview
 
 A switch toggles a binary state on or off. Other names include "toggle", "lightswitch", "toggle switch" or "toggle button". [^1]
+
+### Dictionary
+
+<dl labelled-by="#dictionary">
+  <dt>Switch</dt>
+  <dd>The component described in this editors draft.</dd>
+  <dt>Active state</dt>
+  <dd>Refers to the "on" position of the switch.</dd>
+  <dt>Inactive state</dt>
+  <dd>Refers to the "off" position of the switch.</dd>
+</dl>
 
 ### Background
 
@@ -40,7 +45,7 @@ Toggling a switch always has an immediate effect.
 
 ### Non-goals
 
-_A list of use cases, features, or functionality which are **not** goals for the component._
+{/* _A list of use cases, features, or functionality which are **not** goals for the component._ */}
 
 #### Non-binary states
 
@@ -48,11 +53,11 @@ It's not recommended to use a switch to toggle between two opposite states[^4]. 
 
 #### Non-immediate action
 
-<p class="question">
+<div class="question">
   Should the "switch" be used to trigger immediate actions only? A majority of [analyzed Design
   Systems](https://open-ui.org/design-systems/) recommend this behavior. This decision can have
   influence on the API in regards to form association and validation.
-</p>
+</div>
 
 Don’t use a switch to select one or more options from a list. Switches should provide an immediate noticeable effect that doesn’t require the user to click Save or Submit to apply the new state. [^4]
 
@@ -109,10 +114,10 @@ _A list of the key features unique to this component._
 
 #### Form association
 
-<p class="question">
+<div class="question">
   How should form validation work? Is there a way to describe that the valid state is "off" instead
   of the more intuitive "on"?
-</p>
+</div>
 
 A `<switch>` can be part of a form and has a mechanism (`type="submit"`) to immediately submit the form it's part of. The value of a switch is reported to the form target as either "on" or "off".
 
@@ -130,7 +135,7 @@ Upon toggling the switch, the track and the thumb slide together to the respecti
 
 ### Risks and Challenges
 
-_Notable risks or challenges associated with the component. Link issues related to platform blockers._
+{/* _Notable risks or challenges associated with the component. Link issues related to platform blockers._ */}
 
 Implementing the switch as a form element could lead developers to use it as a checkbox replacement.
 
@@ -154,18 +159,21 @@ _Outline the key elements of the component's public API surface, taking into con
 
 #### Properties and Attributes
 
-_Example Table_
+<div class="question">
+  If form associated, should default value of "on" be submitted if switch is on and the user did not
+  specify a value to align with the [checkbox default value
+  behavior](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#value:~:text=If%20the%20value%20attribute%20was%20omitted%2C%20the%20default%20value%20for%20the%20checkbox%20is%20on%2C%20so%20the%20submitted%20data%20in%20that%20case%20would%20be%20subscribe%3Don.)?
+</div>
 
-**Open questions:**
-
-- If form associated, should default value of "on" be submitted if switch is on and the user did not specify a value to align with the [checkbox default value behavior](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#value:~:text=If%20the%20value%20attribute%20was%20omitted%2C%20the%20default%20value%20for%20the%20checkbox%20is%20on%2C%20so%20the%20submitted%20data%20in%20that%20case%20would%20be%20subscribe%3Don.)?
-- Should a custom "activate initially" attribute be used with the switch (`toggled`) or should the checkbox `checked` attribute be used as a standard?
+<div class="question">
+  Should a custom "activate initially" attribute be used with the switch (`toggled`) or should the checkbox `checked` attribute be used as a standard?
   `<switch toggled>` seems more natural while `<switch checked>` is already an established standard
+</div>
 
 | Property Name | Attribute Name | Type      | Default Value | Description                                                                                                                                                                                                                    |
 | ------------- | -------------- | --------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `toggled`(?)  | `toggled`      | `boolean` | `false`       | Indicates if the switch should be "on" initially (similar to the `checked` attribute on the checkbox).                                                                                                                         |
-| `value`       | `value`        | `string`  | `"on"` (?)    | The current value of the slider. Only set if the switch is toggled/on on form submission.                                                                                                                                      |
+| `value`       | `value`        | `string`  | `"off"` (?)   | The current value of the slider. Only set if the switch is toggled/on on form submission.                                                                                                                                      |
 | `name`        | `name`         | `string`  | `""`          | The name of the component.                                                                                                                                                                                                     |
 | `id`          | `id`           | `string`  | `""`          | The unique identifier of the component.                                                                                                                                                                                        |
 | `type`        | `type`         | `string`  | `button`      | Similar to the `<button>` or `<input>`, the type property for the switch can take either "button" or "submit". "Button" is used for triggering JavaScript actions, "submit" is used to immediately submit the associated form. |
@@ -176,12 +184,12 @@ _Example Table_
 
 #### Methods
 
-_Example Table_
-No special methods needed.
+<div class="question">
+  The switch state can be toggled by setting `mySwitch.value = true`. Is a dedicated method
+  `mySwitch.toggle(): (force?: boolean) => void` necessary or helpful?
+</div>
 
 #### Events
-
-_Example Table_
 
 | Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                      |
 | ---------- | ----------- | ------- | -------- | ----------- | ------------------------------------------------------ |
@@ -194,32 +202,68 @@ _Screenshots and/or description of the basic appearance of the component._
 
 ### Anatomy
 
-_Outline the component's structure with a diagram of its render tree. Enumerate key areas of visual composition and customization._
+{/* _Outline the component's structure with a diagram of its render tree. Enumerate key areas of visual composition and customization._ */}
 
-#### Diagram
+#### Switch with moving track
 
-_Example_
+<div class="question">
+  If the track content on either side can be of arbitrary length, the track width needs to be `2 *
+  longest side` and the switch needs to be `track width / 2` (not accounting for thumb width,
+  paddings and borders). Is it possible to style this?
+</div>
 
-![Example Diagram](../images/spec-diagram-example.png)
+![Switch anatomy with moving track](../images/switch-moving-track-anatomy.png)
+_Source: [Figma source of switch anatomy with moving track](https://www.figma.com/file/uAYj6yVcAGD2OgjwCTqRol/Switch?type=design&node-id=2%3A28&mode=design&t=OAr7EJBXAQ4AEwfI-1)_
+
+Limitations:
+
+- The thumb needs to be at least the height of the track in order to hide the boundary between active and inactive track side underneath.
+- It's unclear how to style the track and slider if the track content can be of arbitrary length.
+
+#### Switch with static track
+
+![Switch anatomy with static track](../images/switch-static-track-anatomy.png)
+_Source: [Figma source of switch anatomy with static track](https://www.figma.com/file/uAYj6yVcAGD2OgjwCTqRol/Switch?type=design&node-id=2%3A28&mode=design&t=OAr7EJBXAQ4AEwfI-1)_
+
+Limitations:
+
+- The content on both sides cannot be wider than the tumb. Otherwise, the thumb is no longer capable of hiding the content of the inactive track content.
 
 #### DOM Structure
 
-_Define the recommended DOM to represent the component's anatomy, as shown above. Show how important attributes (aria attributes especially) are applied to the various parts. In cases where a component nests other components, expand the full DOM structure to understand the expectation and any shortcomings in the child components' customizability._
+{/* _Define the recommended DOM to represent the component's anatomy, as shown above. Show how important attributes (aria attributes especially) are applied to the various parts. In cases where a component nests other components, expand the full DOM structure to understand the expectation and any shortcomings in the child components' customizability._ */}
 
-**Open questions**
+<div class="question">
+  <div>
+    There are two variants of how state transitions work:
+    <ol>
+      <li>Static track: Thumb moves to the end, background-color fades from grey to green </li>
+      {/* prettier-ignore */}
+      <li>Moving track: Thumb moves to the end, the track moves with the thumb, revealing the active
+        track, hiding the inactive track side.</li>
+    </ol>
+  </div>
+</div>
 
-- There are two variants of how state transitions work (simple example of toggling a switch to on):
-  1. Thumb moves to the end, background-color fades from grey to green
-  2. Thumb moves to the end, the track moves with the thumb, revealing the checked track, hiding the unchecked track
-- The thumb is located outside the track because it can overlap the track and the track needs `overflow: hidden` in order to hide the inactive portion of the track. When transitioning in "track slide" mode, the thumb and track need to be animated individually, but need to move together in order to hide the line separating on and off states on the track (thumb needs to fill the height of the track). Is there a better way to solve this issue?
+<div class="question">
+  The thumb is located outside the track because it can overlap the track and the track needs
+  `overflow: hidden` in order to hide the inactive portion of the track. When transitioning in
+  "moving track" mode, the thumb and track need to be animated individually, but need to move
+  together in order to hide the line separating on and off states on the track (thumb needs to fill
+  the height of the track). Is there a better way to solve this issue?
+</div>
 
 ```html
 <switch>
   #shadow-root (open)
   <button part="button">
     <span part="track">
-      <slot name="checked-track (?)"></slot>
-      <slot name="unchecked-track (?)"></slot>
+      <span part="active-track-side">
+        <slot name="active-track"></slot>
+      </span>
+      <span part="inactive-track-side">
+        <slot name="inactive-track"></slot>
+      </span>
     </span>
     <span part="thumb">
       <slot name="thumb"></slot>
@@ -233,41 +277,30 @@ _Define the recommended DOM to represent the component's anatomy, as shown above
 
 #### Slots
 
-**Open questions**
+<div class="question">
+  What should the track slot names be? There are many possibilities here like with or without
+  hyphen, "track" as pre- or postfix, something else entirely...
+</div>
 
-- What should the track slot names be?
-  There are many possibilities here like with or without hyphen, "track" as pre- or postfix, something else entirely...
-- What is the antonym of toggled?
+<div class="question">What is the antonym of toggled?</div>
 
-| Slot Name         | Description                                                            | Fallback Content                            |
-| ----------------- | ---------------------------------------------------------------------- | ------------------------------------------- |
-| `thumb`           | Enables replacing the component's `thumb` part with custom markup.     | A default thumb implementation is provided. |
-| `track-end` (?)   | Enables inserting content on the toggled (end) side of the track       | No default content                          |
-| `track-start` (?) | Enables inserting content on the non-toggled (start) side fo the track | No default content                          |
-
-#### Host Classes
-
-_What classes does the component add to the host element?_
-
-No host classes necessary.
-
-#### Slotted Content Classes
-
-_What classes on slotted content does the component respond to?_
-
-No slotted content classes necessary.
+| Slot Name            | Description                                                            | Fallback Content                            |
+| -------------------- | ---------------------------------------------------------------------- | ------------------------------------------- |
+| `thumb`              | Enables replacing the component's `thumb` part with custom markup.     | A default thumb implementation is provided. |
+| `active-track` (?)   | Enables inserting content on the toggled (end) side of the track       | No default content                          |
+| `inactive-track` (?) | Enables inserting content on the non-toggled (start) side fo the track | No default content                          |
 
 #### CSS Parts
 
-_What parts of the component are exposed for styling?_
+{/* _What parts of the component are exposed for styling?_ */}
 
-_Example Table_
-
-| Part Name | Description                                                                                   |
-| --------- | --------------------------------------------------------------------------------------------- |
-| `button`  | Enables styling the wrapping button element.                                                  |
-| `thumb`   | Enables styling the `thumb` part without requiring it to be completely replaced via its slot. |
-| `track`   | Enables styling the `track` part without requiring it to be completely replaced via its slot. |
+| Part Name             | Description                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| `button`              | Enables styling the wrapping button element.                                                  |
+| `thumb`               | Enables styling the `thumb` part without requiring it to be completely replaced via its slot. |
+| `track`               | Enables styling the `track` part without requiring it to be completely replaced via its slot. |
+| `active-track-side`   | Enables styling the track side visible in the "on" state.                                     |
+| `inactive-track-side` | Enables styling the track side visible in the "off" state.                                    |
 
 ---
 
@@ -275,43 +308,39 @@ _Example Table_
 
 ### States and Interactions
 
-_List key component states, valid state transitions, and how interactions trigger state transitions._
+{/* _List key component states, valid state transitions, and how interactions trigger state transitions._ */}
 
-- _Are states changed as a result of keyboard? mouse? touch?_
-- _Are there corresponding keyboard interactions for mouse/touch interactions?_
-- _Are some events triggered on key down vs key press?_
+{/* - _Are states changed as a result of keyboard? mouse? touch?_ */}
+{/* - _Are there corresponding keyboard interactions for mouse/touch interactions?_ */}
+{/* - _Are some events triggered on key down vs key press?_ */}
 
-_Example Table_
-
-**Open questions:**
-
-- Should the switch value type be a boolean or the string set ["on", "off"]?
+<div class="question">
+  Should the switch value type be a boolean or the string set ["on", "off"]?
+</div>
 
 | State Group | States            | Initial State | Description                                                                                                           | Interaction/Transition                                                                                      |
 | ----------- | ----------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `value`     | `"on"`/`"off"`(?) | `"off"`       | Determines the current value of the component.                                                                        | Changed upon user interaction on click, touch, space key (when focused), enter key (when focused, optional) |
 | `disabled`  | `true`/`false`    | `false`       | When `true`, disables the control, preventing user interaction and displaying the control with a disabled appearance. | No interaction. Controlled programmatically.                                                                |
-| `focused`   | `true`/`false`    | `false`       |
+| `focused`   | `true`/`false`    | `false`       |                                                                                                                       |                                                                                                             |
 
 ### Accessibility
 
+{/* - A labelling text can be assigned to the switch like any other form control through a `<label>` element, the `aria-label=""` attribute or the `aria-labelledby=""` attribute */}
+{/* - Should be assigned the implicit aria role of "switch" */}
+{/* - The current value should be reported as "on" or "off" to screen readers */}
+
 ARIA authoring practices guide for the switch pattern: https://www.w3.org/WAI/ARIA/apg/patterns/switch/
 
-- A labelling text can be assigned to the switch like any other form control through a `<label>` element, the `aria-label=""` attribute or the `aria-labelledby=""` attribute
-- Should be assigned the implicit aria role of "switch"
-- The current value should be reported as "on" or "off" to screen readers
-
-**Open questions:**
-
-- How can the `<switch>` element be assigned the implicit role of "switch"?
+<div class="question">
+  How can the `<switch>` element be assigned the implicit role of "switch"?
+</div>
 
 #### Keyboard Navigation and Focus
 
-- _Arrow vs tabbing key behavior_
-- _Modifier key effects (e.g. shift, ctrl, meta)_
-- _Does this component use focus delegation?_
-
-_Example Table_
+{/* - _Arrow vs tabbing key behavior_ */}
+{/* - _Modifier key effects (e.g. shift, ctrl, meta)_ */}
+{/* - _Does this component use focus delegation?_ */}
 
 | Key              | Description                            |
 | ---------------- | -------------------------------------- |
@@ -320,7 +349,7 @@ _Example Table_
 
 #### Form Input
 
-_Does this component integrate with form submission, form validation, etc.? Can integration be accomplish with standard APIs or are special work-arounds required?_
+{/* _Does this component integrate with form submission, form validation, etc.? Can integration be accomplish with standard APIs or are special work-arounds required?_ */}
 
 The switch is also a form element, acting as a mix between a button and a checkbox - a stateful button.
 
@@ -334,13 +363,14 @@ For a more traditional, non-JavaScript approach, it's necessary to receive the s
 
 #### Use with Assistive Technology
 
-_Are there any details about shadow dom, focus delegation, or aria attributes that need special attention?_
+{/* _Are there any details about shadow dom, focus delegation, or aria attributes that need special attention?_ */}
+
+<div class="question">
+  The ARIA specification recommends updating the `aria-checked` attribute when toggling the switch.
+  Is this necessary or can this be handled similar to how checkboxes work?
+</div>
 
 Focus should be delegated to the button inside the component.
-
-**Open questions:**
-
-- The ARIA specification recommends updating the `aria-checked` attribute when toggling the switch. Is this necessary or can this be handled similar to how checkboxes work?
 
 ### Globalization
 
@@ -352,7 +382,8 @@ _Consider whether the component has any special globalization needs such as:_
 
 ### Security
 
-_Are there any security implications surrounding the component?_
+{/* _Are there any security implications surrounding the component?_ */}
+
 No security implications are expected.
 
 ### Performance
@@ -383,7 +414,7 @@ _Are there any special considerations for DevTools? Will tooling changes need to
 
 ## Resources
 
-_Any related resource links such as web standards, discussion threads, diagrams, etc._
+{/* _Any related resource links such as web standards, discussion threads, diagrams, etc._ */}
 
 - Checkbox vs Toggle Switch: 7 Use-Cases of Forms Design: https://uxdworld.com/2018/08/13/checkbox-vs-toggle-switch-7-use-cases-of-forms-design/
 - Extreme use cases, useful for scope: https://uxdesign.cc/the-good-the-bad-and-the-toggle-2abc0fbbd099
