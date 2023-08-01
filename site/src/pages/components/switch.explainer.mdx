@@ -212,6 +212,8 @@ _Screenshots and/or description of the basic appearance of the component._
   paddings and borders). Is it possible to style this?
 </div>
 
+Animation variant where the thumb and the track move together to reveal the hidden side of the track. Any text displayed on the switch is optional and defined by the author through a slot or other means.
+
 ![Switch anatomy with moving track](../images/switch-moving-track-anatomy.png)
 _Source: [Figma source of switch anatomy with moving track](https://www.figma.com/file/uAYj6yVcAGD2OgjwCTqRol/Switch?type=design&node-id=2%3A28&mode=design&t=OAr7EJBXAQ4AEwfI-1)_
 
@@ -226,6 +228,8 @@ Limitations:
   Should the thumb width be dinamically adapted to the largest track content width, if any? This
   woudl ensure that the thumb is always able to hide active and inactive track content.
 </div>
+
+Animation variant where only the thumb moves and the background of the switch changes color only. Any text displayed on the switch is optional and defined by the author through a slot or other means.
 
 ![Switch anatomy with static track](../images/switch-static-track-anatomy.png)
 _Source: [Figma source of switch anatomy with static track](https://www.figma.com/file/uAYj6yVcAGD2OgjwCTqRol/Switch?type=design&node-id=2%3A28&mode=design&t=OAr7EJBXAQ4AEwfI-1)_
@@ -334,15 +338,9 @@ Limitations:
 
 ### Accessibility
 
-{/* - A labelling text can be assigned to the switch like any other form control through a `<label>` element, the `aria-label=""` attribute or the `aria-labelledby=""` attribute */}
-{/* - Should be assigned the implicit aria role of "switch" */}
-{/* - The current value should be reported as "on" or "off" to screen readers */}
+The control can be in a checked or unchecked state. Exposure of states will be defined by AT. [^6]
 
-ARIA authoring practices guide for the switch pattern: https://www.w3.org/WAI/ARIA/apg/patterns/switch/
-
-<div class="question">
-  How can the `<switch>` element be assigned the implicit role of "switch"?
-</div>
+The `<switch>` element can be assigned the default role of switch as described in the [Core Accessibility API Mappings](https://w3c.github.io/core-aam/#role-map-switch). [^7]
 
 #### Keyboard Navigation and Focus
 
@@ -372,11 +370,6 @@ For a more traditional, non-JavaScript approach, it's necessary to receive the s
 #### Use with Assistive Technology
 
 {/* _Are there any details about shadow dom, focus delegation, or aria attributes that need special attention?_ */}
-
-<div class="question">
-  The ARIA specification recommends updating the `aria-checked` attribute when toggling the switch.
-  Is this necessary or can this be handled similar to how checkboxes work?
-</div>
 
 Focus should be delegated to the button inside the component.
 
@@ -446,3 +439,5 @@ References:
 [^3]: Wikipedia Light Switch https://en.wikipedia.org/wiki/Light_switch
 [^4]: Material Design 3 Switch, Guidelines https://m3.material.io/components/switch/guidelines#59aa5700-2061-4f12-ad17-3afeb6b1c805
 [^5]: Atlaskit Switch, Usage best practices https://atlassian.design/components/toggle/usage#best-practices
+[^6]: Review by [scottaohara](https://github.com/scottaohara) https://github.com/openui/open-ui/pull/785#discussion_r1279305903
+[^7]: Review by [scottaohara](https://github.com/scottaohara) https://github.com/openui/open-ui/pull/785#discussion_r1279310394
