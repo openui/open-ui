@@ -7,7 +7,9 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@dbaron](https://github.com/dbaron)
-- Last updated: April 21, 2023
+- Last updated: June 13, 2023
+- Feedback: https://github.com/openui/open-ui/issues/725
+- HTML specification pull request: https://github.com/whatwg/html/pull/9400
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -16,16 +18,22 @@ layout: ../../layouts/ComponentLayout.astro
 
 - [Background](#background)
 - [Developer Demand for Exclusive Accordion](#developer-demand-for-exclusive-accordion)
+- [User Needs](#user-needs)
 - [Proposal](#proposal)
   - [Open design questions](#open-design-questions)
     - [Name](#name)
     - [Interaction with `open` attribute](#interaction-with-open-attribute)
+    - [Printing](#printing)
+    - [Existing issues with `details`](#existing-issues-with-details)
+    - [Accordions with exactly one item open](#accordions-with-exactly-one-item-open)
+  - [Possibly-resolved design questions](#possibly-resolved-design-questions)
     - [Changes to ARIA roles or keyboard behavior](#changes-to-aria-roles-or-keyboard-behavior)
     - [Use case for non-exclusive accordion semantic?](#use-case-for-non-exclusive-accordion-semantic)
-  - [Possibly-resolved design questions](#possibly-resolved-design-questions)
     - [Scope](#scope)
 - [Alternatives considered](#alternatives-considered)
   - [CSS Toggles](#css-toggles)
+  - [Toggle (expand/collapse) button or attribute](#toggle-expandcollapse-button-or-attribute)
+  - [Panelset](#panelset)
 
 # Background
 
@@ -50,9 +58,10 @@ for exclusive accordions.
 
 It is worth noting that the HTML `details` element
 is not currently as styleable as it needs to be to meet many use cases.
-Improving styleability of `details` will be addressed in a separate proposal,
+Improving styleability of `details` will be addressed in a
+[separate proposal](https://github.com/dbaron/details-styling),
 intended to address both better ability to style/replace the disclosure triangle,
-and (maybe separately) to fit the parts of a `details`
+and to fit the parts of a `details`
 into different types of layout (such as grid).
 For example, there is no standardized or interoperable way to
 replace the disclosure triangle's image or to change its placement
@@ -69,9 +78,33 @@ however, some systems offer an option for being exclusive,
 and some systems offer only exclusive accordions.
 
 Some examples of exclusive accordions on live sites:
-* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio)
 * [Parsons Table product page](https://www.roomandboard.com/catalog/dining-and-kitchen/tables/parsons-tables) at Room and Board (Style/Size/Top/Base accordion on right side of page)
+* [Aaron Dining Chair product page](https://www.potterybarn.com/products/aaron-chair/) at Pottery Barn (Overview / Responsibly Made / Dimensions & Care / Shipping & Returns accordion on right side of page)
+* [Saatva Classic Mattress product page](https://www.saatva.com/mattresses/saatva-classic) (a few pages down, with the first heading "Plush & breathable sleep surface")
+* [Pixel 7 product page](https://store.google.com/product/pixel_7?hl=en-US) on the Google Store (one accordion in each of the sections on Performance, Photography and Video, Protection, and Pixel Portfolio) (though note that this is the type of accordion where exactly one item is open, so it's not exactly a standard exclusive accordion)
 * ...
+
+# User Needs
+
+Developers regularly use exclusive accordions on the Web.
+Today, that generally means that they build their own widget
+rather than using a widget provided by the platform,
+because there is no such widget.
+
+This proposal is suggesting that we add features for exclusive accordions
+to the platform.
+Doing so would help users because
+it would make (or at least would enable making)
+the user experience
+more consistent, and generally better, in a number of areas:
+* keyboard shortcuts and focus handling,
+* exposure via ARIA to assistive technology, and
+* integration with browser features such as find-in-page.
+
+Reducing the need for developers to build their own widgets
+should also reduce the size of pages that use such widgets,
+which reduces the time and bandwidth needed
+for users to load those pages.
 
 # Proposal
 
@@ -108,6 +141,9 @@ In particular, `name` is used for grouping related form controls.
 Some possibilities for the attribute's name are
 `name`, `group`, or `exclusive`.
 
+**Proposed solution**: Use `name`,
+since it's consistent with existing features.
+
 ### Interaction with `open` attribute
 
 Should this grouping cause the insertion of a `details` element with
@@ -121,6 +157,109 @@ violate the exclusivity semantics?
 (This applies both to insertion by the parser
 and insertion through other methods like setting `innerHTML`.)
 
+**Proposed solution**: Enforce exclusivity only for
+user interactions,
+use of the [`open` IDL attribute](https://html.spec.whatwg.org/multipage/C#dom-details-open),
+or setting the `open` attribute via `setAttribute`
+(or `setAttributeNS`, `setAttributeNode`, or `setAttributeNodeNS`).
+Do not enforce exclusivity when the `open` attribute is set by the parser,
+when it is set as a result of cloning a node,
+or when an element is moved to a new document.
+Do not enforce exclusivity for elements whose
+[root](https://dom.spec.whatwg.org/#concept-tree-root)
+is not a
+[Document](https://dom.spec.whatwg.org/#interface-document)
+or a
+[ShadowRoot](https://dom.spec.whatwg.org/#interface-shadowroot).
+
+### Printing
+
+For many accordions, it is desirable for the print layout of the page
+to have all items opened.
+This is currently not possible to do from a style sheet,
+but it probably should be possible,
+and it's possible that it should be the default.
+The presence of exclusive accordion semantics make this more difficult,
+because of the rule that only one item can be open.
+(However, some of the time it will make more sense to print what is
+on the screen rather than printing all of the content.
+It's also not clear to me how often distinguishing between these cases
+should be a developer decision or should be based on a user decision.)
+
+In theory this could be addressed with a model
+where details elements were implemented on top of developer-exposed CSS Toggles,
+and developers could disable the effects of those CSS Toggles when printing.
+Or, more generally, this could be addressed with a solution
+that treats things like accordions and tabs
+as possible interactive presentations
+of markup that is semantically headings and sections,
+and allows the use of CSS (or some other mechanism tied to media queries)
+to choose between them.
+However, this would be a relatively major change, worthy of its own explainer.
+It also has many of the same problems as CSS Toggles (see below).
+
+It's also possible that developers could do this in JavaScript,
+specifically for printing,
+but then it certainly wouldn't be a default and probably wouldn't be done often.
+
+We should find and consider alternative approaches for addressing this issue.
+
+**Proposed solution**: For now, do nothing here.
+If developers want all of the `details` elements on a page to print open,
+they need to change both `name` and `open` attributes
+during the
+[`beforeprint`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeprint_event)
+and
+[`afterprint`](https://developer.mozilla.org/en-US/docs/Web/API/Window/afterprint_event)
+events.
+
+### Existing issues with `details`
+
+There are some existing issues with `details` elements
+that may need to be resolved
+before `details` elements can be used in a way
+that fulfills the goals of this proposal.
+
+First, there are issues related to interactive content
+in the `summary` element
+causing various keyboard and accessibility issues.
+See https://github.com/whatwg/html/issues/2272
+(and its links, which include browser bugs)
+for details.
+There are also some related questions about selection in `summary`
+as discussed in
+https://github.com/whatwg/html/issues/3191 and
+https://github.com/whatwg/html/issues/8707 .
+
+Second, there are some questions about the relationship between
+headings and `summary` elements.
+See https://github.com/whatwg/html/issues/8864 .
+(This is not surprising since the accordion pattern
+is one possible interactive presentation
+of markup that is semantically pairs of headings and sections.)
+
+Further reading:
+* [Details / Summary Are Not [insert control here]](https://adrianroselli.com/2019/04/details-summary-are-not-insert-control-here.html)
+* [Why `<details>` is Not an Accordion](https://daverupert.com/2019/12/why-details-is-not-an-accordion/)
+
+### Accordions with exactly one item open
+
+Some accordions (such as the one on the Pixel product page above)
+always have exactly one item open,
+and do not allow zero items to be open.
+(This could be called an exact-exclusive accordion.)
+This is a somewhat more complicated widget,
+because the open/close control
+disappears from the item that is open
+or becomes disabled.
+It's not clear how such widgets could be modeled with this design,
+other than by ensuring that developer Javascript to handle this.
+
+**Proposed solution**: For now, do not attempt to address this pattern directly,
+but make sure it's possible to do in Javascript.
+
+## Possibly-resolved design questions
+
 ### Changes to ARIA roles or keyboard behavior
 
 It's possible that the presence of a group should
@@ -130,6 +269,12 @@ or change their default keyboard behavior.
 If this is the case,
 it seems likely that such changes
 may also be desirable for non-exclusive accordions (see next question).
+
+Based on the [discussion on 2023 April 27](https://github.com/openui/open-ui/issues/725#issuecomment-1525924478),
+it seems like at least default keyboard behavior for accordions
+is undesirable because it leads to bad user experience
+particularly for users on small or highly-zoomed displays
+(where the content of a single item is less likely to fit within the display).
 
 ### Use case for non-exclusive accordion semantic?
 
@@ -149,7 +294,10 @@ then that would favor a design that separates the ideas
 of connecting the `details` elements into a group
 and making the group exclusive.
 
-## Possibly-resolved design questions
+In the [discussion on 2023 April 27](https://github.com/openui/open-ui/issues/725#issuecomment-1525924478),
+no use cases for a platform feature for connecting a non-exclusive accordion
+were raised
+(assuming the conclusion to the keyboard behavior issue above stays as-is).
 
 ### Scope
 
@@ -170,7 +318,50 @@ having names cross shadow root boundaries would break encapsulation.
 The [CSS Toggles](https://tabatkins.github.io/css-toggle/) proposal
 is a much more complex proposal that would be able to describe
 exclusive accordions and many other things.
-However, it has a number of issues related to developer experience,
+However, it has a
+[number of issues](https://docs.google.com/document/d/10JxXgeDAJ5zerOdxoWM9ZU9d5iMOdzGJt0EhlhkOkxM/edit)
+related to developer experience,
 accessibility, and other things, and it's not clear whether the proposal
 is viable.
 
+## Toggle (expand/collapse) button or attribute
+
+The [proposal for a toggle (expand/collapse)](https://github.com/openui/open-ui/issues/700) feature
+probably falls somewhere between this proposal and CSS Toggles
+in terms of how general it is.
+It may be a reasonable alternative to this proposal,
+or it may be reasonable to do both.
+
+I think it's possible that there's a risk that this proposal becomes
+a more general feature than currently intended,
+which would have both some of the advantages and some of the problems
+that CSS Toggles have.
+
+It's likely worth exploring this alternative further,
+particularly to understand
+what integration with CSS and JavaScript it would have,
+and how that integration would affect its use.
+
+## Panelset (aka "Spicy-Sections")
+
+Within Open-UI there was another proposal 
+which was to be called [panelset](https://tabvengers.github.io/spicy-sections/).
+Earlier it was called "spicy sections" in order to avoid bikeshedding 
+or misconceptions that it was yet ready to be thought of as a proposal.
+The distinguishing characteristic of that proposal is that introduced
+the idea that certain 'widgets' had more in common with scrollbars 
+than they do inputs.  That is, they are often reasonable choices of 
+design particular to the media or situation.  Panelsets proposed the 
+introduction of other affordances to handle (in document, see also [559]( https://github.com/openui/open-ui/issues/559)) tabs and 
+accordions. Thus, it is less general than CSS Toggles, but more 
+general than all the others mentioned here.)
+
+The panelset proposal has enough open questions that
+it's a bit hard to assess.
+
+At the same time,
+this proposal and panelset address problem spaces that,
+while intersecting,
+are different enough
+that it would still be reasonable
+to do both if we conclude that both are good.

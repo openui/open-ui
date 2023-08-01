@@ -13,9 +13,18 @@ We welcome all types of contributions from attending a meeting, to giving feedba
 The best place to start is by participating in one or more of our communication channels:
 
 - [Discord](https://discord.gg/DEWjhSw): Ask a question, learn about what's happening, be alerted of upcoming meetings and opportunities to get involved in the Open UI community.
-- [Open UI Github](https://github.com/openui/open-ui): Our repo where we track issues, progress on spec proposals, and publish our research for public consumption
-- [Open UI Telecon Agendas](https://github.com/openui/open-ui/tree/main/meetings/telecon): We have weekly telecons at 11:00 AM Pacific Standard Time, you can find previous minutes and upcoming agendas here. If you want to get added to the calendar invite contact [Greg Whitworth](https://twitter.com/gregwhitworth) or [Una Kravets](https://twitter.com/Una) on [Discord](https://discord.com/invite/DEWjhSw) or [Twitter](https://twitter.com/openuicg?lang=en)
+- [Open UI GitHub](https://github.com/openui/open-ui): Our repo where we track issues, progress on spec proposals, and publish our research for public consumption
 - [Open UI community group](https://www.w3.org/community/open-ui/): In order to add substantial contributions to Open UI you need to join the Open UI CG
+
+## Joining the Open UI Telecon
+
+We have a weekly telecon on Thursdays at 11AM - 12PM [Pacific Time](https://www.timeanddate.com/worldclock/usa/los-angeles). We post the agenda by end of day (Pacific time) Tuesday on the Discord telecon channel along with the Jitsi video telecon link. See the [agenda and minutes archives](https://github.com/openui/open-ui/tree/main/meetings/telecon).
+
+## Open UI IRC Channel
+
+Like many working or community groups in the W3C we leverage IRC. We primarily use it during the telecons to leverage the various bots that have been created through the years for drafting minutes and commenting on related Github bots. Our IRC channel is #openui and you can use the free IRC server on W3C at [https://irc.w3.org/](https://irc.w3.org/) if you don't have a preferred client.
+
+For useful and common IRC commands, please see this [guide](https://www.w3.org/wiki/IRC) or other resources found under the [W3C meeting tools section](https://wiki.csswg.org/tools#meeting-tools). 
 
 ## Standardizing an Open UI Web Component
 
@@ -56,7 +65,7 @@ We start with a design system review and then build on that. Design systems and 
 5. Review and summarize the characteristics of existing design systems for each piece of the anatomy. Make sure to look at the Aria Practices Guide for prior art overlapping component behavior and assistive technology rendering expectations [github.com/w3c/aria-practices](https://github.com/w3c/aria-practices). Consider how writing modes, device forms and operating systems affect or impact the component design.
 6. Add relevant [design system versions of your component](/design-system-analysis-guide)
 7. _Optionally: Compatibility research. Do analysis on [httparchive](https://httparchive.org/faq#how-do-i-use-bigquery-to-write-custom-queries-over-the-data) about how web developers are doing this. We want to ensure that the design is web compatible (i.e., when implemented in a browser, existing websites continue to work as before). One way to understand this is to imagine the semantics of your component, think about potential ways it could break a web page, then query http archive for that scenario, and report on the results for discussion._
-8. _Optionally: Web developer research. Talk to web developers, conduct surveys and/or interviews. Create use cases. Open an issue on Github. TODO: discuss research design._
+8. _Optionally: Web developer research. Talk to web developers, conduct surveys and/or interviews. Create use cases. Open an issue on GitHub. TODO: discuss research design._
 9. _Optionally talk to end users who are most impacted by your topic. Design your research ahead of time and get input from the open ui community, and from the folks you're discussing your research with. Think about the principles of [design justice](https://designjustice.org/read-the-principles) and try to recruit research participants as paid co-designers who have lived expertise._
 10. Finally, you should take the output of your research, synthesize it, and make a proposal using the [Proposal Guide](/proposal-guide)
 
@@ -100,7 +109,7 @@ In either case, we strive to write our specification prose in a way that is legi
     - States should be specified as well.
     - Make sure to describe various interfaces, like keyboard interaction, hit testing rules (where clicks go when you click on it), and otherwise.
 - Open a PR with your component spec
-- Get two internal reviews and approvals, one from each of a member of Open UI and a Chair of Open UI. _Note: you can get attention on your PR by tagging your pr agenda+ and attending Open UI telecon to facilitate a conversation about it. Or, if you are more comfortable, you can join the Open UI Discord and message a Editor and Member for review._
+- Get two internal reviews and approvals, one from each of a member of Open UI and a Chair of Open UI. _Note: you can get attention on your PR by tagging your pr agenda+ and attending Open UI telecon to facilitate a conversation about it. Or, if you are more comfortable, you can join the Open UI Discord and message an Editor and Member for review._
 - Ask someone with commit rights to merge your PR, which makes an “editor’s draft”.
 
 Note that at this stage, we don't necessarily know if the Component will be graduated into the web platform or not. However, if you think it might, or if you have ambitions to do so, it's a good idea to skip ahead to the guidance for Stage #3 "recommendation" to see what your spec will need to look like, and incorporate that guidance into this stage. Doing so will make it easier to advance your Component to stage #4 when that time comes.
@@ -170,7 +179,7 @@ You can find many good guides for this online. Open UI recommends https://develo
 
 ### 3.2b Graduate Spec
 
-If you have buy in from browser engines, HTML/CSS/ARIA editors to add the component to he web platform, you'll take these steps:
+If you have buy in from browser engines, HTML/CSS/ARIA editors to add the component to the web platform, you'll take these steps:
 
 ##### CSS
 
@@ -229,7 +238,7 @@ We write tests for a few different reasons:
 
 #### How to write a tests
 
-In all cases it’s a nice idea to start with a test plan. This is a high level document or github issue that describes the goals of the test suite and answers questions like:
+In all cases it’s a nice idea to start with a test plan. This is a high level document or GitHub issue that describes the goals of the test suite and answers questions like:
 
 - What code paths need to be tested in the feature?
 - Does everything need to be tested in isolation?
@@ -246,7 +255,7 @@ Once we have a plan, it’s a good idea to start to get familiar with the workfl
 #### Getting Your Tests Review
 
 Find the owner for the area you’re testing in your test suite, and let them know you are working on this. In WPT for example, ownership happens on a directory level.
-Then it’s time to write the tests. Then, we need to ping our stakeholders to get review. This can take a while, so don’t worry if does. It is appropriate to reach out to folks and ask if they have the bandwidth.
+Then it’s time to write the tests. Then, we need to ping our stakeholders to get review. This can take a while, so don’t worry if it does. It is appropriate to reach out to folks and ask if they have the bandwidth.
 
 ### 3.4 Write user Documentation
 

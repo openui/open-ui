@@ -14,20 +14,36 @@ which means that at any moment in time,
 only zero or one of the disclosure widgets can be open.
 In an exclusive accordion, opening one of the items
 closes any existing open item.
-(Of the design systems below,
-the accordion for Semantic UI is always exclusive,
-the accordion for Stardust UI can be exclusive or not exclusive,
-and those for Carbon Design System, FAST, KoliBri, Lightning Design System,
-and Lion are never exclusive.)
+
+Some exclusive accordions are even more specific
+and at any moment in time
+exactly one disclosure widget is open.
+For lack of a better term, I'll call these exact-exclusive.
+
+Of the design systems below, the following are never exclusive:
+* Carbon Design System
+* KoliBri
+* Lightning Design System,
+* Lion
+
+The following defaults to not exclusive, but exclusivity behavior of any
+sort can be implemented in the code using the widget:
+* Material UI
+
+The following can be exclusive or not exclusive:
+* Ant Design (exclusive when `accordion="true"` is used)
+* Bootstrap (exclusive when `data-bs-parent` is used)
+* Stardust UI (defaults to not exclusive)
+* Tailwind Elements (exclusive when `data-te-parent` is used)
+
+The following can be exclusive, not exclusive, or exact-exclusive:
+* Semantic UI (defaults to exclusive, not exclusive with `exclusive=false`, exact-exclusive with `collapsible=false`)
+
+The following can be either not exclusive or exact-exclusive:
+* FAST (defaults to not exclusive)
 
 import ComponentCoverage from '../../components/component-coverage'
 
 ## Names
 
 <ComponentCoverage component="Accordion" />
-
-import Concepts from '../../components/concepts'
-
-## Concepts
-
-<Concepts client:load component="Accordion" />

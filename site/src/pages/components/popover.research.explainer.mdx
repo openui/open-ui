@@ -7,9 +7,12 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal), [@jh3y](https://github.com/jh3y)
-- March 2, 2023
+- May 4, 2023
 
-Please also see the [WHATWG html spec PR for this proposal](https://github.com/whatwg/html/pull/8221).
+**NOTE:** This Popover API explainer was mostly useful during the development of the feature. While it is roughly still in line with the actual feature, it might be more informative to look at either of these two sources of documentation:
+
+1. [The MDN page documenting the Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API)
+2. [The HTML spec for the popover attribute](https://html.spec.whatwg.org/multipage/C#the-popover-attribute)
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -24,7 +27,7 @@ Please also see the [WHATWG html spec PR for this proposal](https://github.com/w
   - [HTML Content Attribute](#html-content-attribute)
   - [Showing and Hiding a Popover](#showing-and-hiding-a-popover)
     - [Declarative Triggers](#declarative-triggers)
-    - [Javascript Trigger](#javascript-trigger)
+    - [JavaScript Trigger](#javascript-trigger)
     - [CSS Pseudo Class](#css-pseudo-class)
     - [Rendering](#rendering)
     - [Shown vs Hidden Popovers](#shown-vs-hidden-popovers)
@@ -79,7 +82,7 @@ Here are the goals for this API:
 - Include an appropriate user input and focus management experience, with flexibility to modify behaviors such as initial focus.
 - **Accessible by default**, with the ability to further extend semantics/behaviors as needed for the author's specific use case.
 - Avoid developer footguns, such as improper stacking of dialogs and popovers, and incorrect accessibility mappings.
-- Avoid the need for any Javascript for most common cases.
+- Avoid the need for any JavaScript for most common cases.
 - Easy animation of show/hide operations.
 
 ## See Also
@@ -137,7 +140,7 @@ So this markup represents popover content:
 <div popover="auto">I am a popover</div>
 ```
 
-As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To show the popover, one of several methods can be used: [declarative triggering](#declarative-triggers), [Javascript triggering](#javascript-trigger).
+As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To show the popover, one of several methods can be used: [declarative triggering](#declarative-triggers), [JavaScript triggering](#javascript-trigger).
 
 Additionally, the `popover` attribute can be used without a value (or with an empty string `""` value), and in that case it will behave identically to `popover=auto`:
 
@@ -155,14 +158,14 @@ There are several ways to "show" a popover, and they are discussed in this secti
 
 ### Declarative Triggers
 
-A common design pattern is to have a button which makes a popover visible. To facilitate this pattern, and avoid the need for Javascript in this common case, two content attributes (`popovertarget` and `popovertargetaction`) allow the developer to declaratively toggle, show, or hide a popover. To do so, the attribute's value should be set to the idref of another element:
+A common design pattern is to have a button which makes a popover visible. To facilitate this pattern, and avoid the need for JavaScript in this common case, two content attributes (`popovertarget` and `popovertargetaction`) allow the developer to declaratively toggle, show, or hide a popover. To do so, the attribute's value should be set to the idref of another element:
 
 ```html
 <button popovertarget="foo">Toggle the popover</button>
 <div id="foo" popover>Popover content</div>
 ```
 
-When the button in this example is activated, the UA will call `.showPopover()` on the `<div id=foo popover>` element if it is currently hidden, or `hidePopover()` if it is showing. In this way, no Javascript will be necessary for this use case.
+When the button in this example is activated, the UA will call `.showPopover()` on the `<div id=foo popover>` element if it is currently hidden, or `hidePopover()` if it is showing. In this way, no JavaScript will be necessary for this use case.
 
 If the desire is to have a button that only shows or only hides a popover, the following markup can be used:
 
@@ -187,9 +190,9 @@ myButton.popoverTargetElement = myElement
 myButton.popoverTargetAction = 'show'
 ```
 
-### Javascript Trigger
+### JavaScript Trigger
 
-To show and hide the popover via Javascript, there are three methods on HTMLElement:
+To show and hide the popover via JavaScript, there are three methods on HTMLElement:
 
 ```javascript
 const popover = document.querySelector('[popover]')
@@ -233,14 +236,14 @@ myDiv.defaultOpen = true
 
 ### CSS Pseudo Class
 
-When a popover is open, it will match the `:open` pseudo class:
+When a popover is open, it will match the `:popover-open` pseudo class:
 
 ```javascript
 const popover = document.createElement('div')
 popover.popover = 'auto'
-popover.matches(':open') === false
+popover.matches(':popover-open') === false
 popover.showPopover()
-popover.matches(':open') === true
+popover.matches(':popover-open') === true
 ```
 
 ### Rendering
@@ -290,7 +293,7 @@ The above rules mean that a popover, when not "shown", has `display:none` applie
   /* Make the popover a flexbox: */
   display: flex;
 }
-[popover]:not(:open) {
+[popover]:not(:popover-open) {
   /* But make sure not to show it unless it's open: */
   display: none;
 }
@@ -318,12 +321,10 @@ Assuming all five of the above features land in specs and browsers in roughly th
   transition: display var(--transition-time), overlay-behavior var(--transition-time),
     opacity var(--transition-time);
 }
-@initial {
-  [popover] {
+[popover]:popover-open {
+  @initial {
     opacity: 0;
   }
-}
-[popover]:open {
   opacity: 1;
 }
 ```
@@ -333,7 +334,7 @@ The above CSS will result in the opacity (and also `display` and top-layer-ness)
 This can also be achieved with the equivalent CSS animations:
 
 ```css
-[popover]:open {
+[popover]:popover-open {
   animation: fadein 0.5s;
   transition: overlay-behavior 0.5s;
   opacity: 1; /* UA default */
@@ -362,13 +363,14 @@ Again, the above descriptions depend on all five CSSWG issues above landing in s
 
 The `popover` content attribute will be [reflected](https://html.spec.whatwg.org/#reflect) as a nullable IDL attribute:
 
-```webidl
+```
 [Exposed=Window]
 partial interface Element {
   attribute DOMString? popover;
+}
 ```
 
-This not only allows developer ease-of-use from Javascript, but also allows for a feature detection mechanism:
+This not only allows developer ease-of-use from JavaScript, but also allows for a feature detection mechanism:
 
 ```javascript
 function supportsPopover() {
@@ -428,7 +430,7 @@ The `autofocus` attribute allows control over the focus behavior when the popove
 - When a popover is hidden, focus is set back to the **previously focused element**, if it is non-`null`, in the following cases:
 
   1. Light dismiss via [close signal](https://wicg.github.io/close-watcher/#close-signal) (e.g. Escape key pressed).
-  2. Hide popover from Javascript via `hidePopover()`.
+  2. Hide popover from JavaScript via `hidePopover()`.
   3. Hide popover via a **popover-contained**\* triggering element with `popovertargetaction="hide" or "toggle". The triggering element must be popover-contained, otherwise the keyboard or mouse activation of the triggering element should have already moved focus to that element.
   4. Hide popover because its `popover` type changes (e.g. via `myPopover.popover='something else';`).
 
@@ -650,7 +652,7 @@ To achieve the [goals](#goals) of this project, a number of approaches could hav
 - An HTML content attribute (this proposal).
 - A dedicated `<popup>` element.
 - A CSS property.
-- A Javascript API.
+- A JavaScript API.
 
 Each of these options is significantly different from the others. To properly evaluate them, each option was fleshed out in some detail. Please see this document for the details of that effort:
 
