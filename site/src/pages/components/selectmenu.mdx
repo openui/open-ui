@@ -27,7 +27,7 @@ import Image from '../../components/image.astro'
   - [`disabled`, `form`, `name`, `required`, and `labels`](#disabled-form-name-required-and-labels)
   - [`type`](#type)
   - [Validity IDLs](#validity-idls)
-- [Why not improve `<select>`](#improve-select)
+- [Why not improve `<select>`](#why-not-improve-select)
 
 # Background
 
@@ -382,7 +382,7 @@ Like other form control elements, selectmenu supports validity checking attribut
 
 ## Why not improve `<select>`
 
-Instead of creating a new `<selectmenu>` element, we could improve the existing select element to meet the same needs. However, there are a few problems with this (borrowed from the [Custom Controls UI Explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md)):
+Instead of creating a new `<selectmenu>` element, we could improve the existing `<select>` element to meet the same needs. However, there are a few problems with this (borrowed from the [Custom Controls UI Explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md)):
 
 - Changing the parsing behavior for `<select>` to allow other element children by default would likely break a lot of old sites that depend on the current behavior.
 - The `<select>` popup currently has the capability to break outside the window of the browser or of an iframe. Sites may depend on this behavior, but we would need to remove it for security reasons if `<select>` is allowed to contain arbitrary content.
