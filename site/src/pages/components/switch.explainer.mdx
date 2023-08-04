@@ -256,7 +256,7 @@ Limitations:
         track, hiding the inactive track side.</li>
     </ol>
 
-    Should both variants be supported by toggling an attribute or is one or the other obsolete? Can a base markup be provided that enables devs to do one or the other variant with custom styles?
+    Should both variants be supported, maybe through an attribute, or is one or the other obsolete? Can a base markup be provided that enables devs to do one or the other variant with custom styles?
 
   </div>
 </div>
@@ -271,25 +271,16 @@ Limitations:
 
 ```html
 <switch>
-  #shadow-root (open)
-  <button part="button">
-    <span part="track">
-      <span part="active-track-side">
-        <slot name="active-track"></slot>
-      </span>
-      <span part="inactive-track-side">
-        <slot name="inactive-track"></slot>
-      </span>
-    </span>
-    <span part="thumb">
-      <slot name="thumb"></slot>
-    </span>
-  </button>
+  <track>
+    <activetrackside></activetrackside>
+    <inactivetrackside></inactivetrackside>
+  </track>
+  <thumb></thumb>
 </switch>
 ```
 
-- `<button>` is for focus handling and event target/trigger
-- The thumb slot is nested in the span, because the span is needed to ensure a working transition and it's easier to insert custom thumb content without replacing the entire thumb everytime.
+- Updated the DOM structure to match the "elements" approach. [^8]
+- Input for naming the elements welcome
 
 #### Slots
 
@@ -447,3 +438,4 @@ References:
 [^5]: Atlaskit Switch, Usage best practices https://atlassian.design/components/toggle/usage#best-practices
 [^6]: Review by [scottaohara](https://github.com/scottaohara) https://github.com/openui/open-ui/pull/785#discussion_r1279305903
 [^7]: Review by [scottaohara](https://github.com/scottaohara) https://github.com/openui/open-ui/pull/785#discussion_r1279310394
+[^8]: Elements approach resolution https://github.com/openui/open-ui/issues/702#issuecomment-1664464531
