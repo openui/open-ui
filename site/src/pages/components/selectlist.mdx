@@ -28,6 +28,7 @@ import Image from '../../components/image.astro'
   - [`type`](#type)
   - [Validity IDLs](#validity-idls)
 - [Why not improve `<select>`](#why-not-improve-select)
+- [Design decisions](#design-decisions)
 
 # Background
 
@@ -382,3 +383,8 @@ Instead of creating a new `<selectlist>` element, we could improve the existing 
 - The `<select>` popup has the capability to break outside the browser window, and `<selectlist>` will not. If the author wants this capability, they will have to stick with `<select>`. If the author would rather have custom styling, then they should use `<selectlist>`. This is a big differentiation and is more than just an opt-in for styling, so havingt a separate tag name than an opt-in attribute makes more sense.
 
 Given that we would be required to introduce something new into the platform (attribute, element, etc) to opt-in to the new behavior; we opted for a new element. This comes with the added benefit that over the years most developers that want customization of controls and components will not leverage `<select>` at all; akin to how developers leverage `grid` and `flex` display types for layout instead of `<table>` or `float`. Additionally, this has the potential to simplify the implementation cost since we do not have to make substantial changes to the current `<select>` parser
+
+## Design decisions
+
+- [Why "selectlist" instead of "selectmenu"](https://github.com/openui/open-ui/issues/773)
+- [Why not use the `slot` or `behavior` attributes](https://github.com/openui/open-ui/issues/702)
