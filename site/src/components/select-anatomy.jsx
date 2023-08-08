@@ -6,13 +6,8 @@ const SelectAnatomy = () => {
     <AnatomyWrapper>
       <Host name="select">
         <Slot name="button">
-          <Part name="button">
-            <Slot name="selected-value">
-              <Part name="selected-value">Currently selected value</Part>
-            </Slot>
-            <Slot name="marker">
-              <Part name="marker">Dropdown indicator (e.g. icon)</Part>
-            </Slot>
+          <Part name="button type=selectlist">
+            <Part name="selectedvalue">Currently selected value</Part>
           </Part>
         </Slot>
         <Slot name="listbox">
