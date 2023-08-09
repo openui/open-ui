@@ -27,6 +27,7 @@ import Image from '../../components/image.astro'
   - [`disabled`, `form`, `name`, `required`, and `labels`](#disabled-form-name-required-and-labels)
   - [`type`](#type)
   - [Validity IDLs](#validity-idls)
+- [Why not improve `<select>`](#why-not-improve-select)
 
 # Background
 
@@ -378,3 +379,13 @@ Like other form control elements, selectmenu supports validity checking attribut
 * [HTML spec for `checkValidity()`](https://html.spec.whatwg.org/#dom-cva-checkvalidity)
 * [HTML spec for `reportValidity()`](https://html.spec.whatwg.org/#dom-cva-reportvalidity)
 * [HTML spec for `setCustomValidity()`](https://html.spec.whatwg.org/#dom-cva-setcustomvalidity)
+
+## Why not improve `<select>`
+
+Instead of creating a new `<selectmenu>` element, we could improve the existing `<select>` element to meet the same needs. However, there are a few problems with this (borrowed from the [Custom Controls UI Explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md)):
+
+- Changing the parsing behavior for `<select>` to allow other element children by default would likely break a lot of old sites that depend on the current behavior.
+- While it might be possible to modify the parser to change rules based on the existence of an opt-in attribute, there would be additional work to be done if JavaScript added or removed that attribute after the fact.
+- The `<select>` popup has the capability to break outside the browser window, and `<selectmenu>` will not. If the author wants this capability, they will have to stick with `<select>`. If the author would rather have custom styling, then they should use `<selectmenu>`. This is a big differentiation and is more than just an opt-in for styling, so havingt a separate tag name than an opt-in attribute makes more sense.
+
+Given that we would be required to introduce something new into the platform (attribute, element, etc) to opt-in to the new behavior; we opted for a new element. This comes with the added benefit that over the years most developers that want customization of controls and components will not leverage `<select>` at all; akin to how developers leverage `grid` and `flex` display types for layout instead of `<table>` or `float`. Additionally, this has the potential to simplify the implementation cost since we do not have to make substantial changes to the current `<select>` parser
