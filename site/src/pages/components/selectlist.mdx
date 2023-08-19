@@ -46,10 +46,10 @@ Because the various parts of the selectlist can be styled, it's important to und
 <SelectAnatomy />
 
 - `<selectlist>` - The root element that contains the button and listbox.
-- button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox. If this part is not provided by the author, then selectlist will automatically create one. All child elements of the selectlist, except `<listbox>`, `<option>`s, and `<optgroup>`s will be slotted into this slot.
+- button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox. If this part is not provided by the author, then `<selectlist>` will automatically create one. All child elements of the `<selectlist>`, except `<listbox>`, `<option>`s, and `<optgroup>`s will be slotted into this slot.
 - `<button type=selectlist>` - The button which opens the listbox when clicked. The `type=selectlist` attribute indicates to the browser that this button should open the listbox.
 - `<selectedvalue>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
-- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then selectlist will automatically create one.
+- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
