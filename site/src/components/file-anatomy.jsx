@@ -3,14 +3,10 @@ import { AnatomyWrapper, Host, Part, Slot } from './anatomy-components'
 
 const FileAnatomy = () => {
   return (
-    <AnatomyWrapper>
+    <AnatomyWrapper showToggle={false}>
       <Host name="openui-file">
-        <Part name="file-selector-button">
-          <Slot name="button" />
-        </Part>
-        <Part name="label">
-          <Slot name="label" />
-        </Part>
+        <Part name="file-selector-button" />
+        <Part name="label" />
       </Host>
     </AnatomyWrapper>
   )
