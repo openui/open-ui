@@ -295,8 +295,8 @@ Limitations:
 ```html
 <switch>
   <track>
-    <trackside position="active"></trackside>
-    <trackside position="inactive"></trackside>
+    <toggled></toggled>
+    <untoggled></untoggled>
   </track>
   <thumb></thumb>
 </switch>
@@ -312,25 +312,26 @@ Limitations:
   hyphen, "track" as pre- or postfix, something else entirely...
 </div>
 
+Research on real world examples shows that about 30% of analyzed Design Systems use slotted content. For the detailed data, please visit the [switch slotted content research spreadsheet](https://docs.google.com/spreadsheets/d/1APgkr0OLaC16Lq0dORuNu51NaX8pTTWqyVZd0rWvLN8/edit#gid=0). The dataset for this research are variations of the switch found at the [component gallery for switch](https://component.gallery/components/toggle/).
+
+Findings:
+
+- 70% of Design Systems don't display any content inside their switches
+- 30% display content on the track
+- 18% display content on the thumb
+- 88% use the background color transition animation
+- 16% use a track slide animation
+
+Some Design Systems offer variants with or without slotted content or with different animation techniques.
+
 <div class="question">What is the antonym of toggled?</div>
 
-| Slot Name            | Description                                                            | Fallback Content                            |
-| -------------------- | ---------------------------------------------------------------------- | ------------------------------------------- |
-| `thumb`              | Enables replacing the component's `thumb` part with custom markup.     | A default thumb implementation is provided. |
-| `active-track` (?)   | Enables inserting content on the toggled (end) side of the track       | No default content                          |
-| `inactive-track` (?) | Enables inserting content on the non-toggled (start) side fo the track | No default content                          |
-
-#### CSS Parts
-
-{/* _What parts of the component are exposed for styling?_ */}
-
-| Part Name             | Description                                                                                   |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| `button`              | Enables styling the wrapping button element.                                                  |
-| `thumb`               | Enables styling the `thumb` part without requiring it to be completely replaced via its slot. |
-| `track`               | Enables styling the `track` part without requiring it to be completely replaced via its slot. |
-| `active-track-side`   | Enables styling the track side visible in the "on" state.                                     |
-| `inactive-track-side` | Enables styling the track side visible in the "off" state.                                    |
+| Slot Name       | Description                                                                              | Fallback Content                            |
+| --------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `thumb`         | Enables slotting custom content into the thumb.                                          | A default thumb implementation is provided. |
+| `track`         | Enables slotting of custom elements inside the track, e.g. for more intricate animations | No default content                          |
+| `toggled` (?)   | Enables inserting content on the toggled (end) side of the track                         | No default content                          |
+| `untoggled` (?) | Enables inserting content on the non-toggled (start) side fo the track                   | No default content                          |
 
 ---
 
