@@ -9,7 +9,7 @@ Meetings are held on Thursdays from [11:00 AM US/Pacific to 11:45 AM US/Pacific]
 ## Minutes
 
 The [`telecon/` directory](https://github.com/openui/open-ui/tree/main/meetings/telecon) contains meeting minutes. If you'd like to stay up to date on upcoming
-meetings, their agenda's and call in information please join the Open UI community group [here](https://www.w3.org/community/open-ui/).
+meetings, their agenda's and call in information please join the Open UI community group on the [W3C's Open UI community site](https://www.w3.org/community/open-ui/).
 
 ## Discord
 
