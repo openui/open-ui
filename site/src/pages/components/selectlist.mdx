@@ -46,10 +46,10 @@ Because the various parts of the selectlist can be styled, it's important to und
 <SelectAnatomy />
 
 - `<selectlist>` - The root element that contains the button and listbox.
-- `slot=button` - The button element that triggers the visibility of the listbox. If this part is not provided by the author, then selectlist will automatically create one.
-- `slot=selected-value` - The element that displays the value of the currently selected option. If this part is not provided by the author, then selectlist will automatically create one. Note that this part does not necessarily have to be placed inside the `slot=button` part (read on for more information about how to slot your own markup).
-- `slot=marker` - Something that indicates this button opens a listbox, e.g. an icon. If this part is not provided by the author, then selectlist will automatically create one.
-- `slot=listbox` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part is not provided by the author, then selectlist will automatically create one.
+- button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox. If this part is not provided by the author, then `<selectlist>` will automatically create one. All child elements of the `<selectlist>`, except `<listbox>`, `<option>`s, and `<optgroup>`s will be slotted into this slot.
+- `<button type=selectlist>` - The button which opens the listbox when clicked. The `type=selectlist` attribute indicates to the browser that this button should open the listbox.
+- `<selectedvalue>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
+- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
@@ -59,18 +59,24 @@ Selectlist provides a variety of tools to help with styling, including pseudo-se
 
 ### Styling parts of the control
 
-One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
+Selectlist supports a variety of pseudo-elements to target its different parts:
+- `::button` - Targets the button slot.
+- `::listbox` - Targets the `<listbox>`.
+- `::marker` - Targets the dropdown arrow of the default supplied button.
+- `::selectedvalue` - Targets the `<selectedvalue>` element.
+
+Each of these pseudo-elements will target the default part if the author doesn't provide their own replacement. If the author provides their own, these pseudo-elements will target the author provided part.
 
 ```html
 <style>
-  .my-select-list::part(button) {
+  .my-select-list::button {
     color: white;
     background-color: #f00;
     padding: 5px;
     border-radius: 5px;
   }
 
-  .my-select-list::part(listbox) {
+  .my-select-list::listbox {
     padding: 10px;
     margin-top: 5px;
     border: 1px solid red;
@@ -91,8 +97,6 @@ The above example results in the following style:
   alt="The rendering of a selectlist control with the above HTML and CSS code"
 />
 
-`::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
-
 ### `:open` and `:closed` pseudo-selectors
 
 The selectlist element supports the `:open` and `:closed` pseudo selectors as specified by CSS here: https://drafts.csswg.org/selectors/#open-state
@@ -100,8 +104,8 @@ The selectlist element supports the `:open` and `:closed` pseudo selectors as sp
 When the selectlist's listbox is showing, the selectlist element will match `:open`, and when it is not showing, it will match `:closed`. Here is an example which makes the button red when the listbox is closed and green when it is open:
 ```html
 <selectlist>
-  <button id=custombutton slot=button behavior=button>
-    <span behavior=selected-value></span>
+  <button id=custombutton type=selectlist>
+    <selectedvalue></selectedvalue>
   </button>
   <option>one</option>
   <option>two</option>
@@ -132,18 +136,15 @@ The default behavior of the `<selectlist>` control mimics the behavior of the `<
 </selectlist>
 ```
 
-When doing so, the default button, select-value, and listbox are created for you.
+When doing so, the default button, `<selectedvalue>`, and `<listbox>` are created for you.
 
 ### Slotting your own content
 
-A `<selectlist>` has named [slots](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots#adding_flexibility_with_slots)
-that can be referenced to replace the default parts.
-
-For example, to replace the default button with your own, you can do the following:
+The browser uses imperative slotting to replace default parts with author supplied ones. For example, to replace the default button with your own, you can do the following:
 
 ```html
 <style>
-  .my-custom-select [slot='button'] {
+  .my-custom-select .buttoncontainer {
     display: flex;
     align-content: center;
   }
@@ -162,8 +163,8 @@ For example, to replace the default button with your own, you can do the followi
   }
 </style>
 <selectlist class="my-custom-select">
-  <div slot="button">
-    <button behavior="button">Open</button>
+  <div class="buttoncontainer">
+    <button type=selectmenu>Open</button>
     <span class="label">Choose an option</span>
   </div>
   <option>Option 1</option>
@@ -172,9 +173,9 @@ For example, to replace the default button with your own, you can do the followi
 </selectlist>
 ```
 
-The `slot="button"` attribute on the outer `<div>` tells the `<selectlist>` to replace its default button with the contents of that `<div>`.
+The `<div class="buttoncontainer">` tells the `<selectlist>` to replace its default button with the contents of that `<div>` because it is the first child element of the `<selectlist>` which is not a `<listbox>`, `<option>`, or `<optgroup>`.
 
-The `behavior="button"` attribute on the inner `<button>` tells the browser that this element is what we want to use as the new button. The browser will automatically apply all the click and keyboard handling behavior to this element as well as the appropriate accessibility semantics.
+The `type=selectlist` attribute on the inner `<button>` tells the browser that this element should open the listbox when clicked. The browser will automatically apply all the click and keyboard handling behavior to this element as well as the appropriate accessibility semantics.
 
 The above code snippet results in the following style:
 
@@ -183,13 +184,11 @@ The above code snippet results in the following style:
   alt="The rendering of a selectlist control with the above HTML and CSS code"
 />
 
-Note that the `slot` and `behavior` attributes can be used on the same element too.
-
 You can replace the default listbox part in a similar fashion:
 
 ```html
 <style>
-  .my-custom-select [popover] {
+  .my-custom-select listbox {
     width: 300px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -202,19 +201,15 @@ You can replace the default listbox part in a similar fashion:
   }
 </style>
 <selectlist class="my-custom-select">
-  <div slot="listbox">
-    <div popover="auto" behavior="listbox">
-      <option>Option 1</option>
-      <option>Option 2</option>
-      <option>Option 3</option>
-      <option>Option 4</option>
-      <option>Option 5</option>
-    </div>
-  </div>
+  <listbox>
+    <option>Option 1</option>
+    <option>Option 2</option>
+    <option>Option 3</option>
+    <option>Option 4</option>
+    <option>Option 5</option>
+  </listbox>
 </selectlist>
 ```
-
-The element with `behavior="listbox"` is required to have the [popover attribute](https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute) set to `"auto"`. Applying `behavior="listbox"` tells the browser to apply select list listbox behavior to that element: it will be opened when the `<selectlist>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
 The above code snippet results in the following style:
 
@@ -231,7 +226,7 @@ Consider the following example:
 
 ```html
 <style>
-  .my-custom-select [slot='button'] {
+  .my-custom-select .buttoncontainer {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -249,7 +244,7 @@ Consider the following example:
   .my-custom-select button::before {
     content: '\25BC';
   }
-  .my-custom-select [popover] {
+  .my-custom-select listbox {
     padding: 0;
   }
   .my-custom-select .section {
@@ -267,28 +262,26 @@ Consider the following example:
   }
 </style>
 <selectlist class="my-custom-select">
-  <div slot="button">
+  <div class="buttoncontainer">
     <span class="label">Choose a plant</span>
-    <span behavior="selected-value" slot="selected-value"></span>
-    <button behavior="button"></button>
+    <selectedvalue></selectedvalue>
+    <button type="selectlist"></button>
   </div>
-  <div slot="listbox">
-    <div popover="auto" behavior="listbox">
-      <div class="section">
-        <h3>Flowers</h3>
-        <option>Rose</option>
-        <option>Lily</option>
-        <option>Orchid</option>
-        <option>Tulip</option>
-      </div>
-      <div class="section">
-        <h3>Trees</h3>
-        <option>Weeping willow</option>
-        <option>Dragon tree</option>
-        <option>Giant sequoia</option>
-      </div>
+  <listbox>
+    <div class="section">
+      <h3>Flowers</h3>
+      <option>Rose</option>
+      <option>Lily</option>
+      <option>Orchid</option>
+      <option>Tulip</option>
     </div>
-  </div>
+    <div class="section">
+      <h3>Trees</h3>
+      <option>Weeping willow</option>
+      <option>Dragon tree</option>
+      <option>Giant sequoia</option>
+    </div>
+  </listbox>
 </selectlist>
 ```
 
