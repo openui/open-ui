@@ -36,7 +36,7 @@ running the meeting ensure nobody is overlooked who has a question.
 
 ### Note-taking
 
-We have someone volunteer to take meeting notes every meeting. Notes help us
+We have someone volunteer to take meeting notes every meeting (the scribe). Notes help us
 keep a record of what was discussed. To take notes, post in #openui using the following format:
 
 ```
@@ -48,6 +48,20 @@ An example of this is:
 ```
  gregwhitworth: I would not want to put that on authors to have every primitive, mix and match etc.
 ```
+
+The chair (or scribe) can also set the topic (which generates a heading in the published notes): 
+
+```
+topic: <name of the topic>
+```
+
+This command adds the current topic's discussion as a comment to the relevant GitHub issue: 
+
+```
+github: <URL to GitHub>
+```
+
+(This only works if the issue's GitHub organisation is in the [bot's config](https://github.com/dbaron/wgmeeting-github-ircbot/blob/main/src/config.toml) and `github-bot` is in the IRC channel)
 
 ### Setting up and running a meeting
 
