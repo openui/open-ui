@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@aleventhal](https://github.com/aleventhal)
-- Last updated: July 10, 2023
+- Last updated: August 24, 2023
 
 A followup proposal to the [original Popover proposal](https://open-ui.org/components/popover.research.explainer/), which adds several features related to building hints/tooltips.
 
@@ -17,7 +17,7 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 
 - [Background](#background)
 - ["Hover" triggering](#hover-triggering)
-  - [Add the `hover` value](#add-the-hover-value)
+  - [Add the `interest` value](#add-the-interest-value)
   - [CSS values to control delay](#css-values-to-control-delay)
   - [Example buttons](#example-buttons)
   - [Popover types](#popover-types)
@@ -39,10 +39,10 @@ The [Popover API](https://html.spec.whatwg.org/multipage/C#the-popover-attribute
 
 This explainer discusses two important extensions of the Popover API:
 
-1. The ability to trigger popovers via a "hover" type interaction.
+1. The ability to trigger popovers via a "hover" type interaction (plus others for non-mouse users).
 2. The ability to show a new type of popover for "hints".
 
-These two capabilities are orthogonal but closely related, and this explainer therefore discusses them both.
+Importantly, these two capabilities are **orthogonal and independent** but closely related, and this explainer therefore discusses them both.
 
 The motivating use case, but certainly not the only use case, for these two capabilities is in the construction of "tooltips". Typically, tooltips are transient bits of additional information related to a bit of content. This additional information is *not required* and is supplementary in nature. Usually the user accesses this tooltip by hovering, keyboard-focusing, or long-pressing a control.
 
@@ -59,9 +59,9 @@ The existing popover API includes the concept of "invoking elements":
 
 The `popovertarget` attribute can be used on buttons (and `<input type=button>`), and it points to the idref of an element with the `popover` attribute. In this configuration, clicking the button automatically shows the popover, without requiring Javascript. In addition, this linkage ensures that the accessibility tree is properly updated to represent the connection. The `popovertargetaction` attribute determines what action to take when the button is activated: `show`, `hide`, or `toggle`.
 
-## Add the `hover` value
+## Add the `interest` value
 
-To support hover triggering, a new value is added: `popovertargetaction=hover`. When set to the `hover` value, the popover will be **shown** when the invoking element is **a)** hovered with the mouse, **b)** focused, or **c)** long-pressed (mobile).
+To support hover triggering, a new value is added: `popovertargetaction=interest`. The name of "interest" was [chosen](https://github.com/openui/open-ui/issues/767#issuecomment-1654177227) to represent the fact that the popover will be triggered not just via mouse-hover, but also by keyboard focus or touchscreen long-press. When set to the `interest` value, the popover will be **shown** when the invoking element is **a)** hovered with the mouse, **b)** focused, or **c)** long-pressed (mobile).
 
 ## CSS values to control delay
 
@@ -79,7 +79,7 @@ It is important to "debounce" these delays. Said another way, the delays are int
 Let's examine a small example:
 
 ```html
-<button popovertarget=hint1 popovertargetaction=hover>
+<button popovertarget=hint1 popovertargetaction=interest>
   Button 1
 </button>
 <div popover=hint id="hint1">Hint 1</div>
@@ -108,12 +108,12 @@ The new hover-triggering functionality should work for all `popover` types. Ther
 <button popovertarget=menu1>Menu</button>
 <ul popover id=menu1>
   <li>
-    <button popovertarget=submenu1 popovertargetaction=hover>
+    <button popovertarget=submenu1 popovertargetaction=interest>
       Sub menu 1
     </button>
   </li>
   <li>
-    <button popovertarget=submenu2 popovertargetaction=hover>
+    <button popovertarget=submenu2 popovertargetaction=interest>
       Sub menu 2
     </button>
   </li>
@@ -193,5 +193,6 @@ For the best screen reading experience, the implementation will need to expose d
 # Articles and References
 
 - [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API)
-- https://github.com/openui/open-ui/issues/530
-- https://github.com/openui/open-ui/issues/526
+- [OpenUI: How to resolve a11y and other issues](https://github.com/openui/open-ui/issues/526#issuecomment-1219845155)
+- [OpenUI: How to provide keyboard access](https://github.com/openui/open-ui/issues/530)
+- [OpenUI: Resolution to use `interest` as the name of the value](https://github.com/openui/open-ui/issues/767#issuecomment-1654177227)
