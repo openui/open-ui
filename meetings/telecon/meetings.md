@@ -55,10 +55,10 @@ The chair (or scribe) can also set the topic (which generates a heading in the p
 topic: <name of the topic>
 ```
 
-This command adds the current topic's discussion as a comment to the relevant GitHub issue: 
+If there is a GitHub issue for this topic, this command can be used to set the topic (to that issue's name) and post the discussion as a comment to the relevant issue:
 
 ```
-github: <URL to GitHub>
+/me github-bot, topic <GitHub issue url>
 ```
 
 (This only works if the issue's GitHub organisation is in the [bot's config](https://github.com/dbaron/wgmeeting-github-ircbot/blob/main/src/config.toml) and `github-bot` is in the IRC channel)

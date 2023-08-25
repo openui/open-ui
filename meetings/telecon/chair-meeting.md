@@ -15,8 +15,8 @@ any that seem ready for review and add them. Place these into the file you creat
 3. To start the meeting, type `Zakim, start meeting` - if you haven't set the meeting it will request you to
 4. Remember to tell the participants to the join IRC and type in `Present+ <Their Name>`
 5. Request someone to scribe and set them as scribe using `scribenick: <Their IRC nickname>`
-6. Begin with the first agenda item, type `topic: <Name of the topic` first, this creates a heading for the topic in the minutes
-7. (optional) if there is a related GitHub issue, type `github: <GitHub URL>`, this posts the minutes related to the current topic as a comment to the issue
+6. Begin with the first agenda item, type `topic: <Name of the topic>` first, this creates a heading for the topic in the minutes
+7. (optional) if there is a related GitHub issue, you can use `/me github-bot, topic <GitHub issue url>`, to set the topic as the issue's name and post the minutes related to the current topic as a comment to the issue
 
 # Make progress on issues
 
