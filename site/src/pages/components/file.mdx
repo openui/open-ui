@@ -73,7 +73,10 @@ button invokes the file selection prompt.
 
 ## Methods
 
-N/A
+| Signature            | Description                                                           |
+| ---------------------| ----------------------------------------------------------------------|
+| `click(): void`      | Triggers the system file picker UI to show. Requires user activation. |
+| `showPicker(): void` | Triggers the system file picker UI to show. Requires user activation. |
 
 ## Events
 
@@ -180,7 +183,7 @@ No third party dependencies are required.
 ### Platform Requirements
 
 To implement a custom file input, a developer must create a hidden
-`<input type="file">` element, and call `click()` on that element to invoke
+`<input type="file">` element, and call `click()` or `showPicker()` on that element to invoke
 that input's behaviour.
 
 The [Native File System API](https://wicg.github.io/native-file-system/)
