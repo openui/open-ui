@@ -144,9 +144,9 @@ When a hint is shown, it behaves differently from other popover types such as `p
 | Force-hides:  | Other `auto`s and `hint`s | Other `hint`s  | Nothing          |
 | Nesting:      |     Yes                   | No             | No               |
 
-First, hints should always be light dismissable. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
+First, hints should always be light dismissible. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
 
-Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses a unrelated element to see its hint, that action should not close the select picker. In essence, the hint is *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two hints open at a time. So hints should close other hints.
+Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses an unrelated element to see its hint, that action should not close the select picker. In essence, the hint is *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two hints open at a time. So hints should close other hints.
 
 Finally, `popover=auto` popovers support "nesting": the idea that one popover is a descendant of another popover, for example in the case of nested menus. It makes sense in that example for the parent menu to stay open while the child menu opens. The same is not true for hints - it would be confusing for one hint to be nested inside another, and wouldn't make sense. Therefore, hints do not support nesting.
 
