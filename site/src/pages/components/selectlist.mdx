@@ -49,7 +49,7 @@ Because the various parts of the selectlist can be styled, it's important to und
 - `<selectlist>` - The root element that contains the button and listbox.
 - button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox. If this part is not provided by the author, then `<selectlist>` will automatically create one. All child elements of the `<selectlist>`, except `<listbox>`, `<option>`s, and `<optgroup>`s will be slotted into this slot.
 - `<button type=selectlist>` - The button which opens the listbox when clicked. The `type=selectlist` attribute indicates to the browser that this button should open the listbox.
-- `<selectedvalue>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
+- `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
 - `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
@@ -64,7 +64,7 @@ Selectlist supports a variety of pseudo-elements to target its different parts:
 - `::button` - Targets the button slot.
 - `::listbox` - Targets the `<listbox>`.
 - `::marker` - Targets the dropdown arrow of the default supplied button.
-- `::selectedvalue` - Targets the `<selectedvalue>` element.
+- `::selectedoption` - Targets the `<selectedoption>` element.
 
 Each of these pseudo-elements will target the default part if the author doesn't provide their own replacement. If the author provides their own, these pseudo-elements will target the author provided part.
 
@@ -106,7 +106,7 @@ When the selectlist's listbox is showing, the selectlist element will match `:op
 ```html
 <selectlist>
   <button id=custombutton type=selectlist>
-    <selectedvalue></selectedvalue>
+    <selectedoption></selectedoption>
   </button>
   <option>one</option>
   <option>two</option>
@@ -137,7 +137,7 @@ The default behavior of the `<selectlist>` control mimics the behavior of the `<
 </selectlist>
 ```
 
-When doing so, the default button, `<selectedvalue>`, and `<listbox>` are created for you.
+When doing so, the default button, `<selectedoption>`, and `<listbox>` are created for you.
 
 ### Slotting your own content
 
@@ -165,7 +165,7 @@ The browser uses imperative slotting to replace default parts with author suppli
 </style>
 <selectlist class="my-custom-select">
   <div class="buttoncontainer">
-    <button type=selectmenu>Open</button>
+    <button type=selectlist>Open</button>
     <span class="label">Choose an option</span>
   </div>
   <option>Option 1</option>
@@ -265,7 +265,7 @@ Consider the following example:
 <selectlist class="my-custom-select">
   <div class="buttoncontainer">
     <span class="label">Choose a plant</span>
-    <selectedvalue></selectedvalue>
+    <selectedoption></selectedoption>
     <button type="selectlist"></button>
   </div>
   <listbox>
