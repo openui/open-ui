@@ -22,6 +22,7 @@ import stardust from './stardust.json'
 import tailwind from './tailwind.json'
 import w3 from './w3.json'
 import web from './web.json'
+import webkit from './webkit.json'
 
 // Sources
 export const sources = [
@@ -47,6 +48,7 @@ export const sources = [
   tailwind,
   w3,
   web,
+  webkit,
 ].map((source) => ({
   ...source,
   components: source.components.map((component) => {
