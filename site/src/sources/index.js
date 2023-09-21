@@ -9,6 +9,7 @@ import chromium from './chromium.json'
 import evergreen from './evergreen.json'
 import fabric from './fabric.json'
 import fast from './fast.json'
+import firefox from './firefox.json'
 import goodbarber from './goodbarber.json'
 import kolibri from './kolibri.json'
 import lightning from './lightning.json'
@@ -34,6 +35,7 @@ export const sources = [
   evergreen,
   fabric,
   fast,
+  firefox,
   goodbarber,
   kolibri,
   lightning,
