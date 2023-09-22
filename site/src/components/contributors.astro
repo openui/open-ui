@@ -1,12 +1,26 @@
 ---
-const CONTRIBUTORS_URL = `https://api.github.com/repos/openui/open-ui/contributors`
-const CONTRIBUTORS = await (await fetch(CONTRIBUTORS_URL)).json()
-// This is needed if call to CONTRIBUTORS_URL fails for some reasons.
-// I see this a lot when inspect local website on a11y issues.
-const CONTRIBUTORS_SAFE = CONTRIBUTORS.filter ? CONTRIBUTORS : [];
+const CONTRIBUTORS_URL = `https://api.github.com/repos/openui/open-ui/contributors`;
+const CONTRIBUTORS = [];
+
+// Function to fetch contributors from a specific page and add them to CONTRIBUTORS array
+const fetchContributors = async (page) => {
+  const response = await fetch(`${CONTRIBUTORS_URL}?page=${page}`);
+  const contributors = await response.json();
+  CONTRIBUTORS.push(...contributors);
+};
+
+// Fetch contributors from page 1
+await fetchContributors(1);
+
+// Fetch contributors from page 2
+await fetchContributors(2); // Add more fetchContributors calls for additional pages as needed
+
+// Filter out 'dependabot' users
+const CONTRIBUTORS_SAFE = CONTRIBUTORS.filter(c => !c.login.includes('dependabot'));
 ---
+
 <ul>
-  {CONTRIBUTORS_SAFE.filter(c => !c.login.includes('dependabot')).map(({ login, avatar_url, html_url }) => (
+  {CONTRIBUTORS_SAFE.map(({ login, avatar_url, html_url }) => (
     <li>
       <a href={html_url} title={login}>
         <img src={avatar_url} alt={`Github user ${login}`} width="48" height="48" loading="lazy"/>
