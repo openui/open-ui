@@ -3,6 +3,7 @@ import _ from 'lodash'
 import antd from './antd.json'
 import atlassian from './atlassian.json'
 import auth0 from './auth0.json'
+import boosted from './boosted.json'
 import bootstrap from './bootstrap.json'
 import carbon from './carbon.json'
 import chromium from './chromium.json'
@@ -28,6 +29,7 @@ export const sources = [
   antd,
   atlassian,
   auth0,
+  boosted,
   bootstrap,
   carbon,
   chromium,
