@@ -1,5 +1,4 @@
 import React from 'react'
-import _ from 'lodash'
 import { openUIConceptsByComponent } from '../sources'
 import './concepts.css'
 
@@ -9,9 +8,8 @@ const Concepts = ({ component }) => {
   const [showDescriptions, setShowDescriptions] = React.useState(false)
   const [collapseAll, toggleCollapseAll] = React.useState(true)
 
-  const conceptsForComponent = _.sortBy(
-    _.toPairs(openUIConceptsByComponent[component]),
-    ([openUIName, concepts]) => -concepts.length,
+  const conceptsForComponent = Object.entries(openUIConceptsByComponent[component] || []).sort(
+    ([_a, conceptsA], [_b, conceptsB]) => conceptsA.length - conceptsB.length,
   )
 
   return (
@@ -38,8 +36,8 @@ const Concepts = ({ component }) => {
           {collapseAll ? 'Collapse all' : 'Expand all'}
         </label>
       </div>
-      {_.map(conceptsForComponent, ([conceptOpenUIName, concepts]) => {
-        const uniqueNames = _.uniq(_.map(concepts, 'name'))
+      {conceptsForComponent.map(([conceptOpenUIName, concepts]) => {
+        const uniqueNames = Array.from(new Set(concepts.map((concept) => concept.name)))
         const hasOtherNames = uniqueNames.length > 1
 
         return (

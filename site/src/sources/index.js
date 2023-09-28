@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 import antd from './antd.json'
 import atlassian from './atlassian.json'
 import auth0 from './auth0.json'
@@ -61,7 +59,7 @@ export const sources = [
       ...component,
       sourceName: source.name,
       openUIName: componentOpenUIName,
-      concepts: _.map(component.concepts, (concept) => {
+      concepts: component.concepts?.map((concept) => {
         const conceptOpenUIName = concept.openUIName || concept.name
         return {
           ...concept,
@@ -69,74 +67,82 @@ export const sources = [
           componentName: componentOpenUIName,
           openUIName: conceptOpenUIName,
         }
-      }),
+      })
     }
   }),
 }))
 
-export const sourceNames = _.map(sources, 'name')
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/groupBy
+export const groupBy = (items, callbackFn) => {
+  return items.reduce((acc, currentValue, currentIndex) => {
+    let groupKey = callbackFn(currentValue, currentIndex);
+    if (!acc[groupKey]) {
+      acc[groupKey] = [];
+    }
+    acc[groupKey].push(currentValue);
+    return acc;
+  }, {});
+}
+
+export const get = (obj, path, defValue) => {
+  // If path is not defined or it has false value
+  if (!path) return undefined
+  // Check if path is string or array. Regex : ensure that we do not have '.' and brackets.
+  // Regex explained: https://regexr.com/58j0k
+  const pathArray = Array.isArray(path) ? path : path.match(/([^[.\]])+/g)
+  // Find value
+  const result = pathArray.reduce(
+    (prevObj, key) => prevObj && prevObj[key],
+    obj
+  )
+  // If found value is undefined return default value; otherwise return the value
+  return result === undefined ? defValue : result
+}
+
+export const uniqBy = (arr, iteratee) => {
+  if (typeof iteratee === 'string') {
+    const prop = iteratee
+    iteratee = item => item[prop]
+  }
+
+  return arr.filter(
+    (x, i, self) => i === self.findIndex(y => iteratee(x) === iteratee(y))
+  )
+}
+
+export const sourceNames = sources.map((source) => source.name)
 export const sourcesCount = sources.length
-export const sourceComponentConceptMap = sources.reduce((acc, src) => {
-  acc[src.name] = {}
-
-  _.forEach(src.components, (comp) => {
-    acc[src.name][comp.openUIName] = {}
-
-    _.forEach(comp.concepts, (con) => {
-      acc[src.name][comp.openUIName][con.openUIName] = con
-    })
-  })
-
-  return acc
-}, {})
 
 // Components
-const componentList = _.flatMap(sources, 'components')
-export const componentOriginalNames = _.map(componentList, 'name')
-export const componentsByName = _.groupBy(componentList, 'openUIName')
+const componentList = sources.flatMap((source) => source.components)
+export const componentOriginalNames = componentList.map((component) => component.name)
+export const componentsByName = groupBy(componentList, (component) => component.openUIName)
 
 // Anatomies
-export const anatomiesByComponent = _.mapValues(componentsByName, (components) =>
-  _.compact(_.uniqBy(_.flatMap(components, 'anatomy'), 'name')),
+export const anatomiesByComponent = Object.fromEntries(
+  Object.entries(componentsByName).map(([key, value]) =>
+    [key, uniqBy(value.flatMap((component) => component.anatomy).filter(Boolean), "name")])
 )
 
 // Concepts
-const conceptList = _.compact(_.flatMap(componentList, 'concepts'))
+const conceptList = componentList.flatMap((component) => component.concepts).filter(Boolean)
 
-export const openUIConceptsByComponent = _.mapValues(
-  _.groupBy(conceptList, 'componentName'),
-  (concepts) => _.groupBy(concepts, 'openUIName'),
-)
+export const openUIConceptsByComponent = Object.fromEntries(Object.entries(groupBy(conceptList, concept => concept.componentName)).map(([key, value]) => [key, groupBy(value, concept => concept.openUIName)]))
 
-export const conceptsByComponent = _.mapValues(
-  _.groupBy(conceptList, 'componentName'),
-  (concepts) => _.groupBy(concepts, 'name'),
-)
+export const conceptsByComponent = Object.fromEntries(Object.entries(groupBy(conceptList, concept => concept.componentName)).map(([key, value]) => [key, groupBy(value, concept => concept.name)]))
 
 export const getSourcesWithComponentConcept = (
   componentName,
   conceptName,
   conceptOpenUIName = conceptName,
 ) =>
-  _.uniq(
-    _.map(
-      _.get(conceptsByComponent, [componentName, conceptName]).filter(
+  [...new Set(
+      get(conceptsByComponent, [componentName, conceptName]).filter(
         (concept) => concept.name === conceptName && concept.openUIName === conceptOpenUIName,
-      ),
-      'sourceName',
-    ),
-  )
+      )
+        .map((concept) => concept.sourceName),
+  )]
 
 // Images
 export const getImagesForComponentConcept = (componentOpenUIName, conceptOpenUIName) =>
-  _.compact(_.map(_.get(openUIConceptsByComponent, [componentOpenUIName, conceptOpenUIName])))
-
-// Images for component
-export const getImagesForComponent = (componentOpenUIName) => {
-  const images = []
-  const arr = _.map(_.get(openUIConceptsByComponent, componentOpenUIName), (val) =>
-    _.map(val, (v) => v.image),
-  )
-  arr.forEach((a) => a.forEach((i) => images.push(i)))
-  return images
-}
+  get(openUIConceptsByComponent, [componentOpenUIName, conceptOpenUIName]).filter(Boolean)
