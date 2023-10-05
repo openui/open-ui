@@ -342,6 +342,7 @@ interface HTMLSelectListElement : HTMLElement {
   boolean checkValidity();
   boolean reportValidity();
   void setCustomValidity(DOMString error);
+  void showPicker();
 
   readonly attribute NodeList labels;
 };
@@ -375,6 +376,10 @@ Like other form control elements, selectlist supports validity checking attribut
 * [HTML spec for `checkValidity()`](https://html.spec.whatwg.org/#dom-cva-checkvalidity)
 * [HTML spec for `reportValidity()`](https://html.spec.whatwg.org/#dom-cva-reportvalidity)
 * [HTML spec for `setCustomValidity()`](https://html.spec.whatwg.org/#dom-cva-setcustomvalidity)
+
+### The `showPicker` method
+
+Like other inputs, selectlist supports the `showPicker` method. This method is used to show the listbox. It requires user activation.
 
 ## Why not improve `<select>`
 
