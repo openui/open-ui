@@ -1,0 +1,47 @@
+---
+menu: Research
+name: Number (Explainer)
+pathToResearch: /components/inputnumber.research
+layout: ../../layouts/ComponentLayout.astro
+---
+
+import InputNumberAnatomy from '../../components/input-number-anatomy.jsx'
+
+## Overview
+
+The number component is a control that allows the user to enter a number, integer or decimal. It is a variation of the text input component, but with extra validation and optionally increment/decrement controls.
+
+### Use Cases
+
+The number component is primarily leveraged to indicate a numeric value. For example, forms could use a number input to enter a quantity of items.
+
+## Design
+
+### API
+
+#### Properties
+
+| Attribute Name   | Type     | Default Value | Description                                                                                              |
+| ---------------- | -------- | ------------- | ---------------------------------------------------------------------------------------------------------|
+| `min`            | `number` | `null`        | The minimum valid value of the input.                                                                    |
+| `max`            | `number` | `null`        | The maximum valid value of the input.                                                                    |
+| `step`           | `number` | `null`        | The amount that the value changes when editing using keyboard arrows or UI.                              |
+| `value`          | `number` | `null`        | The value of the checkbox.                                                                               |
+| `autofocus`      | `bool`   | `false`       | Get focus by default.                                                                                    |
+| `disabled`       | `bool`   | `false`       | Prevents the user from interacting with the control. Defaults to false.                                  |
+| `form`           | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.                             |
+| `name`           | `string` | `""`          | Specify the name of the control for purposes of form submission.                                         |
+| `placeholder`    | `string` | `""`          | Text that appears in the form control when it has no value set                                         |
+| `required`       | `bool`   | `false`       | Indicates that the input is invalid unless checked.                                                      |
+| `readonly`       | `bool`   | `readonly`    | Indicates that the input is not interactive but its value should still be submitted with the form.       |
+
+### Anatomy
+
+<InputNumberAnatomy />
+
+### Explanation
+
+The proposed anatomy of the number component is based on the existing `<input type="number">` element. Which shares the same anatomy across all desktop implementations.
+
+The spinner part of the component is not universal, for example mobile implementations of the number input do not have a spinner. However, the spinner is a useful affordance for desktop users, so it is included in the anatomy.
+Implementations should consider the default styles given to the spinner parts.
