@@ -17,7 +17,7 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 
 - [Background](#background)
 - ["Hover" triggering](#hover-triggering)
-  - [Add the `interest` value](#add-the-interest-value)
+  - [Interest triggering](#interest-triggering)
   - [CSS values to control delay](#css-values-to-control-delay)
   - [Example buttons](#example-buttons)
   - [Popover types](#popover-types)
@@ -59,9 +59,11 @@ The existing popover API includes the concept of "invoking elements":
 
 The `popovertarget` attribute can be used on buttons (and `<input type=button>`), and it points to the idref of an element with the `popover` attribute. In this configuration, clicking the button automatically shows the popover, without requiring Javascript. In addition, this linkage ensures that the accessibility tree is properly updated to represent the connection. The `popovertargetaction` attribute determines what action to take when the button is activated: `show`, `hide`, or `toggle`.
 
-## Add the `interest` value
+## Interest triggering
 
-To support hover triggering, a new value is added: `popovertargetaction=interest`. The name of "interest" was [chosen](https://github.com/openui/open-ui/issues/767#issuecomment-1654177227) to represent the fact that the popover will be triggered not just via mouse-hover, but also by keyboard focus or touchscreen long-press. When set to the `interest` value, the popover will be **shown** when the invoking element is **a)** hovered with the mouse, **b)** focused, or **c)** long-pressed (mobile).
+To support hover triggering, a new attribute is added: `interesttarget=foo`. The name of "interest" was [chosen](https://github.com/openui/open-ui/issues/767#issuecomment-1654177227) to represent the fact that the popover will be triggered not just via mouse-hover, but also by keyboard focus or touchscreen long-press. When using `interesttarget`, the popover will be **shown** when the invoking element is **a)** hovered with the mouse, **b)** focused, or **c)** long-pressed (mobile).
+
+See [`intesttarget` explainer](/components/invokers.explainer/#introduction) for more details.
 
 ## CSS values to control delay
 
@@ -79,7 +81,7 @@ It is important to "debounce" these delays. Said another way, the delays are int
 Let's examine a small example:
 
 ```html
-<button popovertarget=hint1 popovertargetaction=interest>
+<button interesttarget=hint1>
   Button 1
 </button>
 <div popover=hint id="hint1">Hint 1</div>
@@ -108,12 +110,12 @@ The new hover-triggering functionality should work for all `popover` types. Ther
 <button popovertarget=menu1>Menu</button>
 <ul popover id=menu1>
   <li>
-    <button popovertarget=submenu1 popovertargetaction=interest>
+    <button interesttarget=submenu1>
       Sub menu 1
     </button>
   </li>
   <li>
-    <button popovertarget=submenu2 popovertargetaction=interest>
+    <button interesttarget=submenu2>
       Sub menu 2
     </button>
   </li>
