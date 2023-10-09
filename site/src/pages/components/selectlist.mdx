@@ -34,6 +34,8 @@ import Image from '../../components/image.astro'
 
 The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
 
+The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-form://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-forms) that form controls are neither interoperable nor stylable. `<selectlist>` will be fully interoperable and stylable.
+
 ## Testing out the selectlist element
 
 `<selectlist>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
@@ -49,7 +51,7 @@ Because the various parts of the selectlist can be styled, it's important to und
 - `<selectlist>` - The root element that contains the button and listbox.
 - button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox. If this part is not provided by the author, then `<selectlist>` will automatically create one. All child elements of the `<selectlist>`, except `<listbox>`, `<option>`s, and `<optgroup>`s will be slotted into this slot.
 - `<button type=selectlist>` - The button which opens the listbox when clicked. The `type=selectlist` attribute indicates to the browser that this button should open the listbox.
-- `<selectedvalue>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
+- `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
 - `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
@@ -65,7 +67,7 @@ Selectlist supports a variety of pseudo-elements to target its different parts:
 - `::button` - Targets the button slot.
 - `::listbox` - Targets the `<listbox>`.
 - `::marker` - Targets the dropdown arrow of the default supplied button.
-- `::selectedvalue` - Targets the `<selectedvalue>` element.
+- `::selectedoption` - Targets the `<selectedoption>` element.
 
 Each of these pseudo-elements will target the default part if the author doesn't provide their own replacement. If the author provides their own, these pseudo-elements will target the author provided part.
 
@@ -107,7 +109,7 @@ When the selectlist's listbox is showing, the selectlist element will match `:op
 ```html
 <selectlist>
   <button id=custombutton type=selectlist>
-    <selectedvalue></selectedvalue>
+    <selectedoption></selectedoption>
   </button>
   <option>one</option>
   <option>two</option>
@@ -138,7 +140,7 @@ The default behavior of `<selectlist>` mimics the behavior and minimal required 
 </selectlist>
 ```
 
-When doing so, the default button, `<selectedvalue>`, and `<listbox>` are created for you, and as with the current `<select>` element, the initial `<option>` will be returned as the `<selectedvalue>`.
+When doing so, the default button, `<selectedvalue>`, and `<listbox>` are created for you. As with the current `<select>` element, the initial `<option>` will be returned as the `<selectedvalue>`.
 
 If one wanted to create groupings of options, then the following minimal markup could be used:
 
@@ -159,6 +161,7 @@ If one wanted to create groupings of options, then the following minimal markup 
 ```
 
 Note that with the `<select>` element a `label` attribute would have been used to provide the label for the `optgroup`. Being an attribute, this limited authors to using text alone to label their option groups. With the `<selectlist>` the `<legend>` element, rather than the `label` attribute, is how one would provide the label for the option group.
+
 
 ### Slotting your own content
 
@@ -286,7 +289,7 @@ Consider the following example:
 <selectlist class="my-custom-select">
   <div class="buttoncontainer">
     <span class="label">Choose a plant</span>
-    <selectedvalue></selectedvalue>
+    <selectedoption></selectedoption>
     <button type="selectlist"></button>
   </div>
   <listbox>
@@ -361,6 +364,7 @@ interface HTMLSelectListElement : HTMLElement {
   boolean checkValidity();
   boolean reportValidity();
   void setCustomValidity(DOMString error);
+  void showPicker();
 
   readonly attribute NodeList labels;
 };
@@ -395,6 +399,10 @@ Like other form control elements, selectlist supports validity checking attribut
 * [HTML spec for `reportValidity()`](https://html.spec.whatwg.org/#dom-cva-reportvalidity)
 * [HTML spec for `setCustomValidity()`](https://html.spec.whatwg.org/#dom-cva-setcustomvalidity)
 
+### The `showPicker` method
+
+Like other inputs, selectlist supports the `showPicker` method. This method is used to show the listbox. It requires user activation.
+
 ## Why not improve `<select>`
 
 Instead of creating a new `<selectlist>` element, we could improve the existing `<select>` element to meet the same needs. However, there are a few problems with this (borrowed from the [Custom Controls UI Explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md)):
@@ -409,3 +417,5 @@ Given that we would be required to introduce something new into the platform (at
 
 - [Why "selectlist" instead of "selectmenu"](https://github.com/openui/open-ui/issues/773)
 - [Why not use the `slot` or `behavior` attributes](https://github.com/openui/open-ui/issues/702)
+- [Why not support the `size` attribute](https://github.com/openui/open-ui/issues/153)
+- [Why support `:checked` instead of `:selected`](https://github.com/openui/open-ui/issues/827)

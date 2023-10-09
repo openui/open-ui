@@ -17,7 +17,7 @@ Other useful tools:
 
 ## Useful Commands
 
-Run these commands from the context of this `research` directory, as opposed to the root directory. This list contains the most useful commands. You should run `yarn run` to see all scripts.
+Run these commands from the context of this `site` directory, as opposed to the root directory. This list contains the most useful commands. You should run `yarn run` to see all scripts.
 
 ```sh
 yarn              # install dependencies

@@ -3,12 +3,14 @@ import _ from 'lodash'
 import antd from './antd.json'
 import atlassian from './atlassian.json'
 import auth0 from './auth0.json'
+import boosted from './boosted.json'
 import bootstrap from './bootstrap.json'
 import carbon from './carbon.json'
 import chromium from './chromium.json'
 import evergreen from './evergreen.json'
 import fabric from './fabric.json'
 import fast from './fast.json'
+import firefox from './firefox.json'
 import goodbarber from './goodbarber.json'
 import kolibri from './kolibri.json'
 import lightning from './lightning.json'
@@ -22,18 +24,21 @@ import stardust from './stardust.json'
 import tailwind from './tailwind.json'
 import w3 from './w3.json'
 import web from './web.json'
+import webkit from './webkit.json'
 
 // Sources
 export const sources = [
   antd,
   atlassian,
   auth0,
+  boosted,
   bootstrap,
   carbon,
   chromium,
   evergreen,
   fabric,
   fast,
+  firefox,
   goodbarber,
   kolibri,
   lightning,
@@ -47,6 +52,7 @@ export const sources = [
   tailwind,
   w3,
   web,
+  webkit,
 ].map((source) => ({
   ...source,
   components: source.components.map((component) => {

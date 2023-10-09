@@ -1,0 +1,872 @@
+{
+  "$schema": "../schemas/design-system.schema.json",
+  "lastUpdated": "2023-09-06",
+  "name": "Boosted",
+  "description": "Orange Design System's official Web framework, built according to the Orange Design System Guidelines. It is a fork of Bootstrap with custom rendering and specific Orange components.",
+  "url": "https://boosted.orange.com/",
+  "by": "Orange",
+  "components": [
+    {
+      "name": "Accordion",
+      "url": "https://boosted.orange.com/docs/components/accordion/",
+      "definition": "Vertically collapsing accordions based on Boosted's Collapse component."
+    },
+    {
+      "name": "Alerts",
+      "openUIName": "Alert",
+      "url": "https://boosted.orange.com/docs/components/alerts/",
+      "definition": "Provide contextual feedback messages for typical user actions with an handful of available and flexible alert messages.",
+      "anatomy": [
+        {
+          "name": "Icon"
+        },
+        {
+          "name": "Title"
+        },
+        {
+          "name": "Text description",
+          "optional": true
+        },
+        {
+          "name": "Inline action",
+          "optional": true
+        },
+        {
+          "name": "Close button",
+          "optional": true
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-alert.png",
+          "description": "Basic alerts with danger, information, warning and error states."
+        },
+        {
+          "name": "sizes",
+          "image": "boosted-alert-sizes.png",
+          "description": "Alerts can come with a smaller variant."
+        },
+        {
+          "name": "additional-content",
+          "image": "boosted-alert-additional-content.png",
+          "description": "Alerts can contain additional HTML elements like headings, links and paragraphs."
+        },
+        {
+          "name": "dismissible",
+          "image": "boosted-alert-dismissible.png",
+          "description": "Alerts can be optionally dismissible via a close button."
+        }
+      ]
+    },
+    {
+      "name": "Back to top",
+      "url": "https://boosted.orange.com/docs/components/back-to-top/",
+      "definition": "Sticky back-to-top link appearing after scrolling down one viewport height."
+    },
+    {
+      "name": "Badge",
+      "url": "https://boosted.orange.com/docs/components/badge/",
+      "definition": "Small count and labeling component.",
+      "concepts": [
+        {
+          "name": "count",
+          "description": "Position the badge in the corner of a link with an icon.",
+          "image": "boosted-badge-count.png"
+        }
+      ]
+    },
+    {
+      "name": "Breadcrumb",
+      "url": "https://boosted.orange.com/docs/components/breadcrumb/",
+      "definition": "Indicate the current page's location within a navigational hierarchy.",
+      "anatomy": [
+        {
+          "name": "Home",
+          "description": "Link to the homepage of the website."
+        },
+        {
+          "name": "Page link",
+          "description": "Navigates to the page."
+        },
+        {
+          "name": "Chevron",
+          "description": "Chevrons that visually separate each level in the breadcrumb trail. Not interactive."
+        },
+        {
+          "name": "Current page",
+          "description": "Current page title. Not interactive."
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-breadcrumb.png",
+          "description": "Basic breadcrumb."
+        },
+        {
+          "name": "divider",
+          "image": "boosted-breadcrumb-divider.png",
+          "description": "Breadcrumb with custom divider."
+        }
+      ]
+    },
+    {
+      "name": "Buttons",
+      "openUIName": "Button",
+      "url": "https://boosted.orange.com/docs/components/buttons/",
+      "definition": "Custom button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.",
+      "anatomy": [
+        {
+          "name": "Label"
+        },
+        {
+          "name": "Icon",
+          "optional": true
+        },
+        {
+          "name": "Container"
+        }
+      ],
+      "concepts": [
+        {
+          "name": "base",
+          "openUIName": "default",
+          "image": "boosted-buttons-base.png",
+          "description": "Base button."
+        },
+        {
+          "name": "primary",
+          "image": "boosted-buttons-primary.png",
+          "description": "Primary button."
+        },
+        {
+          "name": "secondary",
+          "image": "boosted-buttons-secondary.png",
+          "description": "Secondary button."
+        },
+        {
+          "name": "success",
+          "image": "boosted-buttons-success.png",
+          "description": "Success button."
+        },
+        {
+          "name": "danger",
+          "image": "boosted-buttons-danger.png",
+          "description": "Danger button."
+        },
+        {
+          "name": "light",
+          "image": "boosted-buttons-light.png",
+          "description": "Light button."
+        },
+        {
+          "name": "dark",
+          "image": "boosted-buttons-dark.png",
+          "description": "Dark button."
+        },
+        {
+          "name": "link",
+          "image": "boosted-buttons-link.png",
+          "description": "Link button."
+        },
+        {
+          "name": "icon",
+          "image": "boosted-buttons-icon.png",
+          "description": "Button with icon."
+        },
+        {
+          "name": "icon-only",
+          "image": "boosted-buttons-icon-only.png",
+          "description": "Button with icon only."
+        },
+        {
+          "name": "no-outline",
+          "image": "boosted-buttons-no-outline.png",
+          "description": "Borderless button."
+        },
+        {
+          "name": "social",
+          "image": "boosted-buttons-social.png",
+          "description": "Social button."
+        },
+        {
+          "name": "size",
+          "image": "boosted-buttons-size.png",
+          "description": "Buttons can come with smaller and larger variants."
+        },
+        {
+          "name": "disabled",
+          "image": "boosted-buttons-disabled.png",
+          "description": "Buttons disabled state."
+        }
+      ]
+    },
+    {
+      "name": "Button group",
+      "openUIName": "Button",
+      "url": "https://boosted.orange.com/docs/components/button-group/",
+      "definition": "Group a series of buttons together on a single line or stack them in a vertical column.",
+      "concepts": [
+        {
+          "name": "group",
+          "image": "boosted-button-group.png",
+          "description": "Wrap a series of buttons."
+        },
+        {
+          "name": "radio",
+          "image": "boosted-button-group-radio.png",
+          "description": "Combine button-like radio toggle buttons into a seamless looking button group."
+        }
+      ]
+    },
+    {
+      "name": "Card",
+      "url": "https://boosted.orange.com/docs/components/card/",
+      "definition": "Flexible and extensible content container with multiple variants and options.",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-card.png",
+          "description": "Basic card container."
+        },
+        {
+          "name": "image",
+          "openUIName": "media",
+          "image": "boosted-card-image.png",
+          "description": "Basic card container with an image."
+        }
+      ]
+    },
+    {
+      "name": "Carousel",
+      "url": "https://boosted.orange.com/docs/components/carousel/",
+      "definition": "A slideshow component for cycling through elements—images or slides of text.",
+      "concepts": [
+        {
+          "name": "default",
+          "image": "boosted-carousel.png",
+          "description": "Basic carousel with previous and next controls."
+        },
+        {
+          "name": "indicators",
+          "image": "boosted-carousel-indicators.png",
+          "description": "Carousel with indicators."
+        },
+        {
+          "name": "pause-play-button",
+          "image": "boosted-carousel-pause-play-button.png",
+          "description": "Carousel with pause/play button for accessibility."
+        }
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "url": "https://boosted.orange.com/docs/forms/checks-radios/#checks",
+      "definition": "Custom checkbox style for consistent cross-browser appearance.",
+      "anatomy": [
+        {
+          "name": "Checkbox"
+        },
+        {
+          "name": "Label"
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-checkbox.png",
+          "description": "Basic checkbox."
+        },
+        {
+          "name": "checked",
+          "image": "boosted-checkbox-checked.png",
+          "description": "Checked attribute of the checkbox."
+        },
+        {
+          "name": "indeterminate",
+          "image": "boosted-checkbox-indeterminate.png",
+          "description": "Indeterminate attribute of the checkbox."
+        },
+        {
+          "name": "disabled",
+          "image": "boosted-checkbox-disabled.png",
+          "description": "Disabled attribute of the checkbox."
+        },
+        {
+          "name": "required",
+          "image": "boosted-checkbox-required.png",
+          "description": "Required attribute of the checkbox."
+        },
+        {
+          "name": "invalid",
+          "image": "boosted-checkbox-invalid.png",
+          "description": "Invalid checkbox."
+        }
+      ]
+    },
+    {
+      "name": "Close button",
+      "url": "https://boosted.orange.com/docs/components/close-button/",
+      "definition": "Generic close button for dismissing content like modals and alerts."
+    },
+    {
+      "name": "Collapse",
+      "openUIName": "Disclosure",
+      "url": "https://boosted.orange.com/docs/components/collapse/",
+      "definition": "Toggle the visibility of content with a few classes."
+    },
+    {
+      "name": "Dropdowns",
+      "url": "https://boosted.orange.com/docs/components/dropdowns/",
+      "definition": "Toggle contextual overlays for displaying lists of links and more.",
+      "anatomy": [
+        {
+          "name": "Label"
+        },
+        {
+          "name": "Dropdown field"
+        },
+        {
+          "name": "Selected option"
+        },
+        {
+          "name": "Toggle icon"
+        },
+        {
+          "name": "Dropdown menu"
+        },
+        {
+          "name": "Menu option"
+        }
+      ]
+    },
+    {
+      "name": "Dropdowns (field)",
+      "openUIName": "Popup",
+      "url": "https://boosted.orange.com/docs/components/dropdowns/",
+      "concepts": [
+        {
+          "name": "dropdown",
+          "openUIName": "menu",
+          "image": "boosted-dropdowns-field.png",
+          "description": "Dropdown field."
+        }
+      ]
+    },
+    {
+      "name": "Dropdowns (menu)",
+      "openUIName": "Menu",
+      "url": "https://boosted.orange.com/docs/components/dropdowns",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-dropdowns-menu.png",
+          "description": "Dropdown menu."
+        }
+      ]
+    },
+    {
+      "name": "File input",
+      "openUIName": "File",
+      "url": "https://boosted.orange.com/docs/forms/form-control/#file-input",
+      "definition": "Custom file input style for consistent cross-browser appearance.",
+      "anatomy": [
+        {
+          "name": "Button",
+          "description": "Opens the device storage browser."
+        },
+        {
+          "name": "Help text",
+          "description": "Indicating there is no file selected."
+        },
+        {
+          "name": "Input field",
+          "description": "Once a file has been selected, the name of the specific file with the file extension replaces the default help text in the input field."
+        }
+      ],
+      "concepts": [
+        {
+          "name": "Default",
+          "image": "boosted-file-input.png",
+          "description": "File input."
+        },
+        {
+          "name": "Default (with file selection)",
+          "image": "boosted-file-input-with-file-selection.png",
+          "description": "File input with file selection."
+        },
+        {
+          "name": "Multiple",
+          "image": "boosted-file-input-multiple.png",
+          "description": "File input that handles multiple files."
+        },
+        {
+          "name": "Multiple (with file selection)",
+          "image": "boosted-file-input-multiple-with-file-selection.png",
+          "description": "File input that handles multiple files with file selection."
+        },
+        {
+          "name": "Disabled",
+          "image": "boosted-file-input-disabled.png",
+          "description": "Disabled file input."
+        },
+        {
+          "name": "Sizes",
+          "image": "boosted-file-input-sizes.png",
+          "description": "File input can come with smaller and larger variants."
+        }
+      ]
+    },
+    {
+      "name": "Footer",
+      "url": "https://boosted.orange.com/docs/components/footer/",
+      "definition": "Powerful, responsive, and customizable footer for branding, navigation and more."
+    },
+    {
+      "name": "Img",
+      "openUIName": "Image",
+      "url": "https://boosted.orange.com/docs/content/images",
+      "definition": "Opting images into responsive behavior and lightweight styles via classes.",
+      "concepts": [
+        {
+          "name": "responsive",
+          "openUIName": "fit",
+          "image": "boosted-img-responsive.png",
+          "description": "Responsive images."
+        },
+        {
+          "name": "thumbnail",
+          "image": "boosted-img-thumbnail.png",
+          "description": "Thumbnail images."
+        },
+        {
+          "name": "class-float",
+          "openUIName": "alignment",
+          "image": "boosted-img-class-float.png",
+          "description": "Aligning images with float helpers."
+        }
+      ]
+    },
+    {
+      "name": "List group",
+      "openUIName": "List",
+      "url": "https://boosted.orange.com/docs/components/list-group/",
+      "definition": "Flexible and powerful component for displaying a series of content.",
+      "concepts": [
+        {
+          "name": "default",
+          "openUIName": "surface",
+          "image": "boosted-list-group.png",
+          "description": "Basic list group."
+        },
+        {
+          "name": "flush",
+          "image": "boosted-list-group-flush.png",
+          "description": "Flush list group."
+        },
+        {
+          "name": "numbered",
+          "openUIName": "ordered",
+          "image": "boosted-list-group-numbered.png",
+          "description": "Numbered list group."
+        }
+      ]
+    },
+    {
+      "name": "Modal",
+      "openUIName": "Dialog",
+      "url": "https://boosted.orange.com/docs/components/modal/",
+      "definition": "Dialogs for lightboxes, user notifications, or completely custom content.",
+      "concepts": [
+        {
+          "name": "modal",
+          "openUIName": "basic",
+          "image": "boosted-modal.png",
+          "description": "Basic modal."
+        }
+      ]
+    },
+    {
+      "name": "Navbar",
+      "url": "https://boosted.orange.com/docs/components/navbar/",
+      "definition": "Powerful, responsive navigation header including support for branding, navigation, and more."
+    },
+    {
+      "name": "Navs & tabs",
+      "openUIName": "Tabs",
+      "url": "https://boosted.orange.com/docs/components/navs-tabs/",
+      "definition": "Navigation components.",
+      "anatomy": [
+        {
+          "name": "Selected tab"
+        },
+        {
+          "name": "Tab default"
+        },
+        {
+          "name": "Selection indicator"
+        },
+        {
+          "name": "Divider"
+        }
+      ]
+    },
+    {
+      "name": "Offcanvas",
+      "url": "https://boosted.orange.com/docs/components/offcanvas/",
+      "definition": "Hidden sidebars for navigation, shopping carts, and more."
+    },
+    {
+      "name": "Orange navbar",
+      "url": "https://boosted.orange.com/docs/components/orange-navbar/",
+      "definition": "Exclusive responsive branded navbars."
+    },
+    {
+      "name": "Pagination",
+      "url": "https://boosted.orange.com/docs/components/pagination/",
+      "definition": "Showing pagination to indicate a series of related content across multiple pages."
+    },
+    {
+      "name": "Placeholders",
+      "openUIName": "Skeleton",
+      "url": "https://boosted.orange.com/docs/components/placeholders/",
+      "definition": "Components that indicate something may still be loading.",
+      "concepts": [
+        {
+          "name": "default",
+          "image": "boosted-placeholders.png",
+          "description": "Basic placeholders."
+        }
+      ]
+    },
+    {
+      "name": "Popovers",
+      "openUIName": "Popup",
+      "url": "https://boosted.orange.com/docs/components/popovers/",
+      "definition": "Components to provide extra information or show more content like those found in iOS.",
+      "concepts": [
+        {
+          "name": "popover",
+          "openUIName": "misc",
+          "image": "boosted-popovers.png",
+          "description": "Basic popover."
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "url": "https://boosted.orange.com/docs/components/progress/",
+      "definition": "Custom progress bars featuring support for stacked bars, animated backgrounds, and text labels.",
+      "anatomy": [
+        {
+          "name": "Label",
+          "description": "Describes the process that the progress bar refers to."
+        },
+        {
+          "name": "Bar",
+          "description": "Indicates how much the process has progressed."
+        },
+        {
+          "name": "Track",
+          "description": "The area that the bar moves on top of and visually represents the total duration of the process."
+        },
+        {
+          "name": "Value",
+          "description": "Displays the completion amount."
+        }
+      ]
+    },
+    {
+      "name": "Quantity selector",
+      "url": "https://boosted.orange.com/docs/forms/quantity-selector/",
+      "definition": "Incremental and decremental display of small numbers."
+    },
+    {
+      "name": "Radios",
+      "openUIName": "Radio Button",
+      "url": "https://boosted.orange.com/docs/forms/checks-radios/#radios",
+      "definition": "Custom radios style for consistent cross-browser appearance.",
+      "anatomy": [
+        {
+          "name": "Radio button"
+        },
+        {
+          "name": "Label"
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "openUIName": "state",
+          "image": "boosted-radios.png",
+          "description": "Basic radio button."
+        },
+        {
+          "name": "checked",
+          "openUIName": "state",
+          "image": "boosted-radios-checked.png",
+          "description": "Checked attribute of the radio button."
+        },
+        {
+          "name": "disabled",
+          "openUIName": "state",
+          "image": "boosted-radios-disabled.png",
+          "description": "Disabled attribute of the checkbox."
+        }
+      ]
+    },
+    {
+      "name": "Range",
+      "openUIName": "Slider",
+      "url": "https://boosted.orange.com/docs/forms/range/",
+      "definition": "Custom range style for consistent cross-browser appearance, and built-in customization.",
+      "anatomy": [
+        {
+          "name": "Slider label"
+        },
+        {
+          "name": "Active fill"
+        },
+        {
+          "name": "Handle"
+        },
+        {
+          "name": "Track"
+        },
+        {
+          "name": "Value"
+        },
+        {
+          "name": "Tick marks",
+          "optional": true
+        },
+        {
+          "name": "Values",
+          "optional": true
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-range.png",
+          "description": "Basic range."
+        },
+        {
+          "name": "disabled",
+          "image": "boosted-range-disabled.png",
+          "description": "Disabled range."
+        },
+        {
+          "name": "value",
+          "image": "boosted-range-value.png",
+          "description": "Range with value for better usability."
+        }
+      ]
+    },
+    {
+      "name": "Scrollspy",
+      "url": "https://boosted.orange.com/docs/components/scrollspy/",
+      "definition": "Automatically update navigation or list group components based on scroll position to indicate which link is currently active in the viewport."
+    },
+    {
+      "name": "Select",
+      "url": "https://boosted.orange.com/docs/forms/select/",
+      "definition": "Custom select style for consistent cross-browser appearance."
+    },
+    {
+      "name": "Spinners",
+      "url": "https://boosted.orange.com/docs/components/spinners/",
+      "definition": "Indicate the loading state of a component or page."
+    },
+    {
+      "name": "Star rating",
+      "url": "https://boosted.orange.com/docs/forms/checks-radios/#star-rating",
+      "definition": "5-star rating component."
+    },
+    {
+      "name": "Stepped process",
+      "url": "https://boosted.orange.com/docs/components/stepped-process/",
+      "definition": "Bar used for multiple steps forms process."
+    },
+    {
+      "name": "Sticker",
+      "url": "https://boosted.orange.com/docs/components/sticker/",
+      "definition": "Custom stickers to inform people about new offers."
+    },
+    {
+      "name": "Switches",
+      "openUIName": "Switch",
+      "url": "https://boosted.orange.com/docs/forms/checks-radios/#switches",
+      "definition": "Custom switch style for consistent cross-browser appearance.",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-switches.png",
+          "description": "Basic switch."
+        },
+        {
+          "name": "checked",
+          "image": "boosted-switches-checked.png",
+          "description": "Checked attribute of the switch."
+        },
+        {
+          "name": "disabled",
+          "image": "boosted-switches-disabled.png",
+          "description": "Disabled attribute of the switch."
+        },
+        {
+          "name": "label",
+          "image": "boosted-switches-label.png",
+          "description": "Switch label."
+        }
+      ]
+    },
+    {
+      "name": "Tables",
+      "openUIName": "Table",
+      "url": "https://boosted.orange.com/docs/content/tables/",
+      "definition": "Custom table style for consistent cross-browser appearance, and built-in customization.",
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-tables.png",
+          "description": "Basic table."
+        },
+        {
+          "name": "striped",
+          "image": "boosted-tables-striped.png",
+          "description": "Striped table."
+        },
+        {
+          "name": "hoverable",
+          "openUIName": "highlight",
+          "image": "boosted-tables-hoverable.png",
+          "description": "Highlight rows on hover."
+        },
+        {
+          "name": "active",
+          "openUIName": "highlight",
+          "image": "boosted-tables-active.png",
+          "description": "Active rows."
+        },
+        {
+          "name": "small",
+          "openUIName": "compact",
+          "image": "boosted-tables-small.png",
+          "description": "Small table."
+        },
+        {
+          "name": "row-selection",
+          "openUIName": "selected-rows",
+          "image": "boosted-tables-row-selection.png",
+          "description": "Table with row selection."
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "openUIName": "Tag",
+      "url": "https://boosted.orange.com/docs/components/tags/",
+      "definition": "Convey information, apply filters or display a selection of items.",
+      "anatomy": [
+        {
+          "name": "Container"
+        },
+        {
+          "name": "Icon",
+          "optional": true
+        },
+        {
+          "name": "Label"
+        },
+        {
+          "name": "Remove icon",
+          "optional": true
+        }
+      ],
+      "concepts": [
+        {
+          "name": "informative",
+          "openUIName": "basic",
+          "image": "boosted-tags-informative.png",
+          "description": "Informative tag to display categories. No interaction."
+        },
+        {
+          "name": "filter",
+          "image": "boosted-tags-filter.png",
+          "description": "Filter tag that can be actionable."
+        },
+        {
+          "name": "navigation",
+          "image": "boosted-tags-navigation.png",
+          "description": "Navigation tag that can be actionable. Usually used as anchor links."
+        },
+        {
+          "name": "input",
+          "openUIName": "closable",
+          "image": "boosted-tags-input.png",
+          "description": "Input tag that can be closed."
+        },
+        {
+          "name": "sizes",
+          "openUIName": "size",
+          "image": "boosted-tags-sizes.png",
+          "description": "Tags can come with smaller variant."
+        },
+        {
+          "name": "disabled",
+          "image": "boosted-tags-disabled.png",
+          "description": "Disabled tag."
+        }
+      ]
+    },
+    {
+      "name": "Title bars",
+      "url": "https://boosted.orange.com/docs/components/title-bars/",
+      "definition": "Exclusive branded responsive title bars."
+    },
+    {
+      "name": "Toasts",
+      "openUIName": "Toast",
+      "url": "https://boosted.orange.com/docs/components/toasts/",
+      "definition": "Push notifications to your visitors with a toast, a lightweight and easily customizable alert message."
+    },
+    {
+      "name": "Tooltips",
+      "openUIName": "Tooltip",
+      "url": "https://boosted.orange.com/docs/components/tooltips/",
+      "definition": "Custom tooltips.",
+      "anatomy": [
+        {
+          "name": "Label"
+        },
+        {
+          "name": "Overlay container"
+        },
+        {
+          "name": "Pointer"
+        }
+      ],
+      "concepts": [
+        {
+          "name": "basic",
+          "image": "boosted-tooltips.png",
+          "description": "Basic tooltip."
+        },
+        {
+          "name": "directions",
+          "openUIName": "position",
+          "image": "boosted-tooltips-directions.png",
+          "description": "Tooltips can be positioned on the top, right, bottom, or left of the target element."
+        },
+        {
+          "name": "html",
+          "openUIName": "rich",
+          "image": "boosted-tooltips-html.png",
+          "description": "Tooltips containing HTML."
+        }
+      ]
+    }
+  ]
+}
