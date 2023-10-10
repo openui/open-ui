@@ -89,7 +89,7 @@ the balance.
   pedals or game controllers, the equivalent "focus or hover" action is used to
   take interest on the element.
 - Loses/Lost Interest: The action of _Loses Interest_ refers to the user "moving
-  away" from an element, or its _interstee_, using a HID; in other words
+  away" from an element, or its _interestee_, using a HID; in other words
   interest must be on a different element that is neither. Elements can only
   _Lose Interest_ if they are in the state of Showing Interest. If the HID is a
   mouse, this would be a `mouseout` event. If the HID is a touch screen, this
@@ -206,14 +206,14 @@ If a `<button>` is a form participant, or has `type=submit`, then `invoketarget`
 _must_ be ignored. `interesttarget` is still valid in these scenarios.
 
 If an `<input>` is a form participant, or has a `type` other than `reset` or
-`button`, then `invoketarget` and `interesttarget` _must_ be ignored. `interesttarget` 
+`button`, then `invoketarget` and `interesttarget` _must_ be ignored. `interesttarget`
 additionally works with `type` of `submit`.
 
 ### Example Code
 
 #### Popovers
 
-When pointing to a `popover`, `invoketarget` acts like much like
+When pointing to a `popover`, `invoketarget` acts much like
 `popovertarget`, allowing the toggling of popovers.
 
 ```html
@@ -333,8 +333,7 @@ event handlers to the Interest elements.
 
 ### Accessibility
 
-> [!WARNING]\
-> This section is incomplete PRs welcome.
+> Warning: This section is incomplete PRs welcome.
 
 The _Invoker_ implicitly receives `aria-controls=IDREF` or `aria-details=IDREF`
 (tbd) to expose the _Invoker_ controls another element (the _Invokee_) for
@@ -400,9 +399,7 @@ that this list is ordered and higher rules take precedence:
 | `<*>`           | `'requestFullscreen'` | Request the element to enter into 'fullscreen' mode                                  |
 | `<*>`           | `'exitFullscreen'`    | Request the element to exit 'fullscreen' mode                                        |
 
-> [!NOTE]\
-> The above table is an attempt at wide coverage, but ideas are welcome. Please
-> submit a PR if you have one!
+> Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
 Depending on the target set by `interesttarget`, showing interest or losing
 interest can trigger additional behaviours alongside the event dispatch.
@@ -416,9 +413,7 @@ rules take precedence:
 | `<* popover=hint>` | `'interest'`     | Call `.showPopover()` on the invokee |
 | `<* popover=hint>` | `'loseinterest'` | Call `.hidePopover()` on the invokee |
 
-> [!NOTE]\
-> The above table is an attempt at wide coverage, but ideas are welcome. Please
-> submit a PR if you have one!
+> Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
 ### Invoke/Interest and Custom Elements
 
