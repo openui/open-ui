@@ -54,6 +54,7 @@ Because the various parts of the selectlist can be styled, it's important to und
 - `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
 - `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
+- `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
 ## Styling selectlist
@@ -129,7 +130,7 @@ You can further customize the control to fit your needs by providing your own ma
 
 ### Default behavior
 
-The default behavior of the `<selectlist>` control mimics the behavior of the `<select>` control. You can use it just like a native `<select>`, with the following minimal markup:
+The default behavior of `<selectlist>` mimics the behavior and minimal required markup of the current `<select>` element. For instance, the following markup demonstrates the bare minimum necessary to render a `<selectlist>`:
 
 ```html
 <selectlist>
@@ -139,7 +140,28 @@ The default behavior of the `<selectlist>` control mimics the behavior of the `<
 </selectlist>
 ```
 
-When doing so, the default button, `<selectedoption>`, and `<listbox>` are created for you.
+When doing so, the default button, `<selectedoption>`, and `<listbox>` are created for you. As with the current `<select>` element, the initial `<option>` will be returned as the `<selectedoption>`.
+
+If one wanted to create groupings of options, then the following minimal markup could be used:
+
+```html
+<label for=ex2>My second example</label>
+<selectlist id=ex2>
+  <optgroup>
+    <legend>Fruits</legend>
+    <option>Apples</option>
+    <option>Oranges</option>
+  </optgroup>
+  <optgroup>
+    <legend>Vegetables</legend>
+    <option>Carrots</option>
+    <option>Onions</option>
+  </optgroup>
+</selectlist>
+```
+
+Note that with the `<select>` element a `label` attribute would have been used to provide the label for the `optgroup`. Being an attribute, this limited authors to using text alone to label their option groups. With the `<selectlist>` the `<legend>` element, rather than the `label` attribute, is how one would provide the label for the option group.
+
 
 ### Slotting your own content
 
