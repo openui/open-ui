@@ -206,7 +206,7 @@ If a `<button>` is a form participant, or has `type=submit`, then `invoketarget`
 _must_ be ignored. `interesttarget` is still valid in these scenarios.
 
 If an `<input>` is a form participant, or has a `type` other than `reset` or
-`button`, then `invoketarget` and `interesttarget` _must_ be ignored. `interesttarget` 
+`button`, then `invoketarget` and `interesttarget` _must_ be ignored. `interesttarget`
 additionally works with `type` of `submit`.
 
 ### Example Code
@@ -536,8 +536,9 @@ developers to use it only on interactive elements, where it makes sense.
 
 #### What does this mean for `popovertarget`?
 
-Whilst `invoketarget` _does_ replicate `popovertarget`'s functionality, it does
-not necessarily mean `popovertarget` gets removed from the spec.
+Whilst `invoketarget` _does_ replicate `popovertarget`'s functionality, the two will co-exist side by side for
+some while to enable a smooth transition.
+It is, however, intended that `invoketarget` will replace `popovertarget` leading to `popovertarget`'s eventual deprecation.
 
 #### InvokeTarget seems limited, what if I wanted to add arguments?
 
