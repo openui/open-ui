@@ -156,20 +156,20 @@ for more).
 Elements with `invoketarget` set will dispatch an `InvokeEvent` on the _Invokee_
 (the element referenced by `invoketarget`) when the element is _Invoked_. The
 `InvokeEvent`'s `type` is always `invoke`. The event also contains a
-`relatedTarget` property that will reference the _Invoker_ element.
+`invoker` property that will reference the _Invoker_ element.
 `InvokeEvents` are always non-bubbling, cancellable events.
 
 ```webidl
 [Exposed=Window]
 interface InvokeEvent : Event {
   constructor(InvokeEventInit invokeEventInit);
-  readonly attribute Element relatedTarget;
+  readonly attribute Element invoker;
   readonly attribute DOMString type = "invoke";
   readonly attribute DOMString action;
 };
 dictionary InvokeEventInit : EventInit {
   DOMString action = "auto";
-  Element relatedTarget;
+  Element invoker;
 };
 ```
 
@@ -180,17 +180,17 @@ event type will be `'interest'`. If the element has _Shown Interest_, and
 interest moves away from both the _Interest Element_ and the _Interestee_, then
 the element _Loses Interest_ and an `InterestEvent` with the type of
 `'loseinterest'` will be dispatched on the _Interestee_. The event also contains
-a `relatedTarget` property that will reference the _Interest_ element.
+a `invoker` property that will reference the _Interest_ element.
 `InterestEvents` are always non-bubbling, cancellable events.
 
 ```webidl
 [Exposed=Window]
 interface InterestEvent : Event {
   constructor(DOMString type, InterestEventInit interestEventInit);
-  readonly attribute Element relatedTarget;
+  readonly attribute Element invoker;
 };
 dictionary InterestEventInit : EventInit {
-  Element relatedTarget;
+  Element invoker;
 };
 ```
 
