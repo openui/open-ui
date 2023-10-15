@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/design-system.schema.json",
+  "lastUpdated": "2023-10-15",
+  "name": "Edge",
+  "url": "https://www.microsoft.com/en-us/edge",
+  "by": "Microsoft",
+  "description": "",
+  "components": [
+    {
+      "name": "Password",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "password-container",
+            "legacyPart": "::-internal-password-container",
+            "element": "div",
+            "children": [
+              {
+                "name": "editing-view-port",
+                "description": "This wraps the value of the input",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "value",
+                    "description": "This is holds the value of the input",
+                    "element": "div"
+                  }
+                ]
+              },
+              {
+                "name": "reveal",
+                "legacyPart": "::-ms-reveal",
+                "description": "This is the password reveal button, pseudo element is web-exposed",
+                "element": "div"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

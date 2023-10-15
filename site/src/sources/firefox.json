@@ -24,11 +24,58 @@
       "name": "Select"
     },
     {
-      "name": "Meter"
+      "name": "Meter",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "meter-bar",
+            "legacyPart": "::-moz-meter-bar",
+            "description": ":-moz-meter-sub-sub-optimum, :-moz-meter-sub-optimum or :-moz-meter-optimum based on the value of the meter.",
+            "element": "div"
+          }
+        ]
+      }
     },
     {
       "name": "Details",
-      "openUIName": "Disclosure"
+      "openUIName": "Disclosure",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "internal-main-summary",
+            "element": "summary",
+            "children": [
+              {
+                "name": "marker",
+                "part": "::marker"
+              },
+              {
+                "name": "summary-content"
+              }
+            ]
+          },
+          {
+            "name": "details-content"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Summary",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "marker",
+            "part": "::marker"
+          },
+          {
+            "name": "summary-content"
+          }
+        ]
+      }
     },
     {
       "name": "Legend"
@@ -44,10 +91,57 @@
     },
     {
       "name": "Range",
-      "openUIName": "Slider"
+      "openUIName": "Slider",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "range-track",
+            "legacyPart": "::-moz-range-track",
+            "element": "div"
+          },
+          {
+            "name": "range-progress",
+            "legacyPart": "::-moz-range-progress",
+            "element": "div"
+          },
+          {
+            "name": "range-thumb",
+            "legacyPart": "::-moz-range-thumb",
+            "element": "div"
+          }
+        ]
+      }
     },
     {
-      "name": "Number"
+      "name": "Number",
+      "openUIName": "InputNumber",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "value",
+            "element": "div"
+          },
+          {
+            "name": "number-spin-box",
+            "legacyPart": "::-moz-number-spin-box",
+            "element": "div",
+            "children": [
+              {
+                "name": "number-spin-up",
+                "legacyPart": "::-moz-number-spin-up",
+                "element": "div"
+              },
+              {
+                "name": "number-spin-down",
+                "legacyPart": "::-moz-number-spin-down",
+                "element": "div"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Text",
@@ -55,10 +149,154 @@
     },
     {
       "name": "Date",
-      "openUIName": "Datepicker"
+      "openUIName": "Datepicker",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "datetimebox",
+            "element": "div",
+            "children": [
+              {
+                "name": "datetime-input-box-wrapper",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "datetime-input-edit-wrapper",
+                    "element": "span",
+                    "children": [
+                      {
+                        "name": "datetime-day",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-month",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-year",
+                        "element": "span"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "datetime-calendar-button",
+                    "element": "button",
+                    "children": [
+                      {
+                        "name": "datetime-calendar-button-svg"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "name": "Color"
+      "name": "Datetime-local",
+      "openUIName": "Datepicker",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "datetimebox",
+            "element": "div",
+            "children": [
+              {
+                "name": "datetime-input-box-wrapper",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "datetime-input-edit-wrapper",
+                    "element": "span",
+                    "children": [
+                      {
+                        "name": "datetime-day",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-month",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-year",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-hour",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-minute",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span",
+                        "optional": true
+                      },
+                      {
+                        "name": "datetime-second",
+                        "element": "span",
+                        "optional": true
+                      }
+                    ]
+                  },
+                  {
+                    "name": "datetime-calendar-button",
+                    "element": "button",
+                    "children": [
+                      {
+                        "name": "datetime-calendar-button-svg"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Color",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "color-swatch",
+            "legacyPart": "::-moz-color-swatch",
+            "element": "div"
+          }
+        ]
+      }
     },
     {
       "name": "Ul",
@@ -72,7 +310,17 @@
       "name": "Nav"
     },
     {
-      "name": "Progress"
+      "name": "Progress",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "progress-bar",
+            "legacyPart": "::-moz-progress-bar",
+            "element": "div"
+          }
+        ]
+      }
     },
     {
       "name": "Dialog"
@@ -91,7 +339,21 @@
       "name": "Audio"
     },
     {
-      "name": "File"
+      "name": "File",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "file-selector-button",
+            "part": "::file-selector-button",
+            "element": "button"
+          },
+          {
+            "name": "label",
+            "element": "label"
+          }
+        ]
+      }
     },
     {
       "name": "Submit"
@@ -100,7 +362,61 @@
       "name": "Reset"
     },
     {
-      "name": "Time"
+      "name": "Time",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "datetimebox",
+            "element": "div",
+            "children": [
+              {
+                "name": "datetime-input-box-wrapper",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "datetime-input-edit-wrapper",
+                    "element": "span",
+                    "children": [
+                      {
+                        "name": "datetime-hour",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-minute",
+                        "element": "span"
+                      },
+                      {
+                        "name": "datetime-separator",
+                        "element": "span",
+                        "optional": true
+                      },
+                      {
+                        "name": "datetime-second",
+                        "element": "span",
+                        "optional": true
+                      }
+                    ]
+                  },
+                  {
+                    "name": "datetime-calendar-button",
+                    "element": "button",
+                    "children": [
+                      {
+                        "name": "datetime-calendar-button-svg"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Month"
@@ -112,7 +428,23 @@
       "name": "URL"
     },
     {
-      "name": "Password"
+      "name": "Password",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "value",
+            "element": "div"
+          },
+          {
+            "name": "reveal",
+            "legacyPart": "::-moz-reveal",
+            "element": "button",
+            "optional": true,
+            "description": "This is the password reveal button, pseudo-element doesn't seem to be web exposed. Behind a disabled pref."
+          }
+        ]
+      }
     },
     {
       "name": "Email"

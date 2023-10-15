@@ -5,6 +5,7 @@ import boosted from './boosted.json'
 import bootstrap from './bootstrap.json'
 import carbon from './carbon.json'
 import chromium from './chromium.json'
+import edge from './edge.json'
 import evergreen from './evergreen.json'
 import fabric from './fabric.json'
 import fast from './fast.json'
@@ -33,6 +34,7 @@ export const sources = [
   bootstrap,
   carbon,
   chromium,
+  edge,
   evergreen,
   fabric,
   fast,

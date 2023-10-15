@@ -34,7 +34,28 @@
     {
       "name": "Details",
       "openUIName": "Disclosure",
-      "url": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element"
+      "url": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "summary",
+            "element": "summary",
+            "children": [
+              {
+                "name": "marker",
+                "part": "::marker"
+              },
+              {
+                "name": "summary-content"
+              }
+            ]
+          },
+          {
+            "name": "details-content"
+          }
+        ]
+      }
     },
     {
       "name": "Legend",
@@ -124,7 +145,19 @@
     },
     {
       "name": "File",
-      "url": "https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)"
+      "url": "https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "file-selector-button",
+            "part": "::file-selector-button"
+          },
+          {
+            "name": "label"
+          }
+        ]
+      }
     },
     {
       "name": "Submit",
