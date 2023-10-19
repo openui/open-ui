@@ -16,18 +16,15 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 ## Table of Contents
 
 - [Background](#background)
-- ["Hover" triggering](#hover-triggering)
-  - [Add the `interest` value](#add-the-interest-value)
-  - [CSS values to control delay](#css-values-to-control-delay)
-  - [Example buttons](#example-buttons)
-  - [Popover types](#popover-types)
-  - [Example menu](#example-menu)
-- [`popover=hint` Behavior](#popoverhint-behavior)
+  - [What is a tooltip/toggletip](#what-is-a-tooltiptoggletip)
+  - [Tooltip lifecycle behaviors](#tooltip-lifecycle-behaviors)
+- [This Explainer is only about #2](#this-explainer-is-only-about-2)
+- [Proposal: popover=hint](#proposal-popoverhint)
 - [Accessibility](#accessibility)
   - [Why differentiate between rich and plain hints?](#why-differentiate-between-rich-and-plain-hints)
   - [A11y API support](#a11y-api-support)
 - [::tooltip pseudo element](#tooltip-pseudo-element)
-- [Monkeypatch spec](#monkeypatch-spec)
+- [Spec PR](#spec-pr)
 - [Articles and References](#articles-and-references)
 
 {/* <!-- END doctoc generated TOC please keep comment here to allow auto update --> */}
@@ -96,13 +93,15 @@ Once a tooltip is open, there are several ways the user can indicate that they a
 
 As described above, there are many behaviors associated with tooltips.
 
-**This explainer is only interested in one thing:** providing a mechanism to achieve the behaviors in section 2 above, related to **closing other popovers and tooltips**..
+**This explainer is only interested in one thing:** providing a mechanism to achieve the behaviors in [section 2](#2-close-other-popovers-and-tooltips) above, related to **closing other popovers and tooltips**..
 
-**This explainer is NOT interested in sections 1 or 3**, which related to triggering or dismissing the tooltip. Those behaviors are addressed by a separate "Invokers" proposal:
+**This explainer is NOT interested in sections [1](#1-triggering-a-tooltip) or [3](#3-dismissing-a-tooltip)**, which related to triggering or dismissing the tooltip. Those behaviors are addressed by a separate "Invokers" proposal:
 
-https://open-ui.org/components/invokers.explainer/ (see [this section](https://open-ui.org/components/invokers.explainer/#:~:text=Interest/Shows%20Interest)). See also this related [spec issue](https://github.com/whatwg/html/issues/9625).
+- https://open-ui.org/components/invokers.explainer (see [this section](https://open-ui.org/components/invokers.explainer/#:~:text=Interest/Shows%20Interest)). See also this related [spec issue](https://github.com/whatwg/html/issues/9625).
 
-The invokers proposal covers hover/focus/etc triggering all kinds of things, including popovers, dialogs and more. It fully handles the behaviors described in [Triggering a tooltip](#1-triggering-a-tooltip) and [Dismissing a tooltip](#3-dismissing-a-tooltip). Since that proposal is very general, and includes many non-popover use cases, it makes sense to discuss it separately.
+The invokers proposal covers hover/focus/etc triggering all kinds of things, including popovers, dialogs and more. It fully handles the behaviors described in sections [1](#1-triggering-a-tooltip) and [3](#3-dismissing-a-tooltip). Since that proposal is very general, and includes many non-popover use cases, it makes sense to discuss it separately.
+
+**Note also** that this proposal is **orthogonal** to the [invokers](https://open-ui.org/components/invokers.explainer) proposal. The behaviors described here can function on their own, via the existing `popovertarget=idref` mechanism, or even via Javascript. Of course, very much like the [Anchor Positioning](https://drafts.csswg.org/css-anchor-position-1/) feature, hint popovers will become even more powerful once the [invokers](https://open-ui.org/components/invokers.explainer) mechanism has landed. But these two features do not need to be gated on each other.
 
 # Proposal: popover=hint
 
@@ -114,7 +113,7 @@ When a hint is shown, it behaves differently from other popover types such as `p
 | ------------- | ------------------------- | -------------- | --------------   |
 | Light dismiss |      Yes                  |     Yes        |      No          |
 | Force-hides:  | Other `auto`s and `hint`s | Other `hint`s  | Nothing          |
-| Nesting:      |     Yes                   | No             | No               |
+| Nesting:      |     Yes                   | No [*](#nesting_star)             | No               |
 
 First, hints should always be light dismissible. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
 
@@ -122,7 +121,7 @@ The second row ("Force-hides") shows that tooltip content is "secondary" to othe
 
 Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses an unrelated element to see its hint, that action should not close the select picker. In essence, the hint is "secondary" and *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two unrelated hints open at a time. So hints should close other hints.
 
-The third row ("Nesting") is more debatable (see [this issue](https://github.com/whatwg/html/issues/9776) and [this issue](https://github.com/openui/open-ui/issues/854)). In most cases, tooltips are never nested. However, there are counterexamples in which one tooltip contains additional elements that have tooltips of their own. At this point, it is unclear whether hints should be allowed to be nested within each other, in the same way that `popover=auto` popovers can be nested.
+**<a id="nesting_star">*</a>** The third row ("Nesting") is more debatable (see [this issue](https://github.com/whatwg/html/issues/9776) and [this issue](https://github.com/openui/open-ui/issues/854)). In most cases, tooltips are never nested. However, there are counterexamples in which one tooltip contains additional elements that have tooltips of their own. At this point, it is unclear whether hints should be allowed to be nested within each other, in the same way that `popover=auto` popovers can be nested. See https://github.com/whatwg/html/issues/9776 for the latest.
 
 # Accessibility
 
