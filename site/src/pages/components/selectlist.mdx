@@ -10,6 +10,7 @@ import Image from '../../components/image.astro'
 ## Table of Contents
 
 - [Background](#background)
+- [Use cases](#use-cases)
 - [Testing out the selectlist element](#testing-out-the-selectlist-element)
 - [Anatomy of the selectlist element](#anatomy-of-the-selectlist-element)
 - [Styling selectlist](#styling-selectlist)
@@ -30,11 +31,167 @@ import Image from '../../components/image.astro'
 - [Why not improve `<select>`](#why-not-improve-select)
 - [Design decisions](#design-decisions)
 
-# Background
+## Background
 
 The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
 
 The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-form://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-forms) that form controls are neither interoperable nor stylable. `<selectlist>` will be fully interoperable and stylable.
+
+## Use cases
+
+### Customizing basic styles
+
+This example changes the fonts and colors of various parts of the button and listbox parts of the selectlist. The existing `<select>` element will not incorporate these basic styles into its rendering.
+
+<div style="display:flex">
+<div style="flex:50%">
+```html
+<selectlist>
+  <option>one</option>
+  <option>two</option>
+</selectlist>
+<style>
+selectlist::listbox,
+selectlist::button {
+  font-family: monospace;
+  font-size: 12px;
+}
+</style>
+```
+</div>
+<div style="flex:50%">
+  <Image
+    style="height:100%"
+    src="/images/selectlist-usecase-basic.png"
+    alt="The rendering of a selectlist with monospaced font and red colors"
+  />
+</div>
+</div>
+
+### Rich content in `<option>`s
+
+This example adds "rich content" inside option elements in the form of country flags. This is a common pattern on the web which isn't possible in the existing `<select>` element because `<select>`'s `<option>`s only render text content.
+
+<div style="display:flex">
+<div style="flex:50%">
+```html
+<selectlist>
+  <option>
+    <img src="usa.jpg">
+    USA
+  </option>
+  <option>
+    <img src="germany.jpg">
+    Germany
+  </option>
+  <option>
+    <img src="spain.jpg">
+    Spain
+  </option>
+</selectlist>
+```
+</div>
+<div style="flex:50%">
+  <Image
+    style="height:100%"
+    src="/images/selectlist-usecase-rich.png"
+    alt="The rendering of a selectlist with country flags next to the options"
+  />
+</div>
+</div>
+
+### Replacing the button
+
+This example replaces the button which opens the listbox with an author provided `<button>` element.
+
+<div style="display:flex">
+<div style="flex:50%">
+```html
+<selectlist>
+  <button type=selectlist>
+    selected option: <selectedoption></selectedoption>
+  </button>
+  <option>one</option>
+  <option>two</option>
+</selectlist>
+```
+</div>
+<div style="flex:50%">
+  <Image
+    style="height:100%"
+    src="/images/selectlist-usecase-button.png"
+    alt="The rendering of a selectlist with an author-provided button"
+  />
+</div>
+</div>
+
+### Rendering the `<option>` differently in the button
+
+This example uses the `<selectedoption>` element with custom CSS to target it which renders the option differently in the listbox vs in the button.
+
+<div style="display:flex">
+<div style="flex:50%">
+```html
+<selectlist>
+  <button type=selectlist>
+    <selectedoption></selectedoption>
+  </button>
+  <option>
+    ❤️ <span class=description>heart</span>
+  </option>
+  <option>
+    🙂 <span class=description>smile</span>
+  </option>
+</selectlist>
+<style>
+selectedoption .description {
+  display: none;
+}
+</style>
+```
+</div>
+<div style="flex:50%">
+  <Image
+    style="height:100%"
+    src="/images/selectlist-usecase-selectedoption.png"
+    alt="The rendering of a selectlist with a custom selectedoption element"
+  />
+</div>
+</div>
+
+### Putting custom content in the listbox
+
+This example has a `<listbox>` which enables it to put arbitrary content into the listbox rather than just `<option>`s.
+
+<div style="display:flex">
+<div style="flex:50%">
+```html
+<selectlist>
+  <listbox>
+    <div>Heading</div>
+    <div>First two options:</div>
+    <option>one</option>
+    <option>two</option>
+    <div>Second two options:</div>
+    <option>three</option>
+    <option>four</option>
+  </listbox>
+</selectlist>
+<style>
+div {
+  font-weight: bold;
+}
+</style>
+```
+</div>
+<div style="flex:50%">
+  <Image
+    style="height:100%"
+    src="/images/selectlist-usecase-listbox.png"
+    alt="The rendering of a selectlist with a custom listbox element"
+  />
+</div>
+</div>
 
 ## Testing out the selectlist element
 
