@@ -7,6 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 import SelectAnatomy from '../../components/select-anatomy'
 import Image from '../../components/image.astro'
 
+
 ## Table of Contents
 
 - [Background](#background)
@@ -43,8 +44,8 @@ The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archive
 
 This example changes the fonts and colors of various parts of the button and listbox parts of the selectlist. The existing `<select>` element will not incorporate these basic styles into its rendering.
 
-<div style="display:flex">
-<div style="flex:50%">
+<div className="code-image-container">
+<div className="code-container">
 ```html
 <selectlist>
   <option>one</option>
@@ -59,9 +60,8 @@ selectlist::button {
 </style>
 ```
 </div>
-<div style="flex:50%">
+<div className="image-container">
   <Image
-    style="height:100%"
     src="/images/selectlist-usecase-basic.png"
     alt="The rendering of a selectlist with monospaced font and red colors"
   />
@@ -72,8 +72,8 @@ selectlist::button {
 
 This example adds "rich content" inside option elements in the form of country flags. This is a common pattern on the web which isn't possible in the existing `<select>` element because `<select>`'s `<option>`s only render text content.
 
-<div style="display:flex">
-<div style="flex:50%">
+<div className="code-image-container">
+<div>
 ```html
 <selectlist>
   <option>
@@ -91,9 +91,8 @@ This example adds "rich content" inside option elements in the form of country f
 </selectlist>
 ```
 </div>
-<div style="flex:50%">
+<div>
   <Image
-    style="height:100%"
     src="/images/selectlist-usecase-rich.png"
     alt="The rendering of a selectlist with country flags next to the options"
   />
@@ -104,8 +103,8 @@ This example adds "rich content" inside option elements in the form of country f
 
 This example replaces the button which opens the listbox with an author provided `<button>` element.
 
-<div style="display:flex">
-<div style="flex:50%">
+<div className="code-image-container">
+<div>
 ```html
 <selectlist>
   <button type=selectlist>
@@ -116,9 +115,8 @@ This example replaces the button which opens the listbox with an author provided
 </selectlist>
 ```
 </div>
-<div style="flex:50%">
+<div>
   <Image
-    style="height:100%"
     src="/images/selectlist-usecase-button.png"
     alt="The rendering of a selectlist with an author-provided button"
   />
@@ -129,8 +127,8 @@ This example replaces the button which opens the listbox with an author provided
 
 This example uses the `<selectedoption>` element with custom CSS to target it which renders the option differently in the listbox vs in the button.
 
-<div style="display:flex">
-<div style="flex:50%">
+<div className="code-image-container">
+<div>
 ```html
 <selectlist>
   <button type=selectlist>
@@ -150,9 +148,8 @@ selectedoption .description {
 </style>
 ```
 </div>
-<div style="flex:50%">
+<div>
   <Image
-    style="height:100%"
     src="/images/selectlist-usecase-selectedoption.png"
     alt="The rendering of a selectlist with a custom selectedoption element"
   />
@@ -163,8 +160,8 @@ selectedoption .description {
 
 This example has a `<listbox>` which enables it to put arbitrary content into the listbox rather than just `<option>`s.
 
-<div style="display:flex">
-<div style="flex:50%">
+<div className="code-image-container">
+<div>
 ```html
 <selectlist>
   <listbox>
@@ -184,9 +181,8 @@ div {
 </style>
 ```
 </div>
-<div style="flex:50%">
+<div>
   <Image
-    style="height:100%"
     src="/images/selectlist-usecase-listbox.png"
     alt="The rendering of a selectlist with a custom listbox element"
   />
