@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@aleventhal](https://github.com/aleventhal)
-- Last updated: October 19, 2023
+- Last updated: October 26, 2023
 
 A followup proposal to the [original Popover proposal](https://open-ui.org/components/popover.research.explainer/), which adds several features related to building hints/tooltips.
 
@@ -18,7 +18,7 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 - [Background](#background)
   - [What is a tooltip/toggletip](#what-is-a-tooltiptoggletip)
   - [Tooltip lifecycle behaviors](#tooltip-lifecycle-behaviors)
-- [This Explainer is only about #2](#this-explainer-is-only-about-2)
+- [Scope of this explainer](#scope-of-this-explainer)
 - [Proposal: popover=hint](#proposal-popoverhint)
 - [Accessibility](#accessibility)
   - [Why differentiate between rich and plain hints?](#why-differentiate-between-rich-and-plain-hints)
@@ -52,9 +52,9 @@ Definition <span>#</span>1 is too limiting, and does not capture common use case
 
 Definition <span>#</span>2 is mis-guided. Many things can be "hover-triggered" without being tooltips. A great example is a hover-triggered menu, where hovering over a sub-menu item brings up the sub-menu. Most people agree that the sub-menu is **not** a tooltip. It just happens to be hover-triggered.
 
-That leaves definition <span>#</span>3, which I believe is the correct definition. A tooltip should not contain directly-necessary information - that should be placed into the page content directly. It should provide auxiliary or extra information that is available only when the user wants to dig deeper into some content. And that extra information should be able to contain more than just text, since the auxiliary information might very well contain or even **be** an image or other non-text content.
+That leaves definition <span>#</span>3, which is the recommended definition (see articles [1](https://sarahmhigley.com/writing/tooltips-in-wcag-21/), [2](https://inclusive-components.design/tooltips-toggletips/), [3](https://github.com/scottaohara/a11y_tooltips#readme), [4](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/)). A tooltip should not contain directly-necessary information - that should be placed into the page content directly. It should provide auxiliary or extra information that is available only when the user wants to dig deeper into some content. And that extra information should be able to contain more than just text, since the auxiliary information might very well contain or even **be** an image or other non-text content.
 
-Note, importantly, that a tooltip **does not need** to be triggered by hover to be a tooltip. Also note that all things that are hover-triggered are not tooltips. A tooltip is defined more by **its content** than how it gets **activated**.
+Note, importantly, that a tooltip **does not need** to be triggered by hover to be a tooltip. Also note that all things that are hover-triggered are not tooltips. A tooltip is defined by **its content**, and not how it gets **activated**.
 
 ## Tooltip lifecycle behaviors
 
@@ -89,7 +89,7 @@ Once a tooltip is open, there are several ways the user can indicate that they a
 - When keyboard-focus-triggered, move focus outside both the tooltip and the context element for a length of time.
 - Other UA-specific or AT-specific methods such as gazing away from the context element.
 
-# This Explainer is only about #2
+# Scope of this explainer
 
 As described above, there are many behaviors associated with tooltips.
 
