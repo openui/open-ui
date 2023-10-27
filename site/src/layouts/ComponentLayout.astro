@@ -14,6 +14,27 @@ const { name, pathToProposal, pathToResearch } = frontmatter
   .links > .link  {
     margin-left: 0.5rem;
   }
+  :global(.code-image-container) {
+      display: flex;
+  }
+
+  :global(.code-image-container > div) {
+      flex: 50%;
+  }
+
+  :global(.code-image-container img) {
+      height: 100%;
+  }
+
+  @media (max-width: 800px) {
+      :global(.code-image-container) {
+          flex-direction: column;
+      }
+
+      :global(.code-image-container img) {
+          width: 100%;
+      }
+  }
 </style>
 
 <Layout frontmatter={frontmatter}>
