@@ -5,12 +5,12 @@ const CheckboxAnatomy = () => {
   return (
     <AnatomyWrapper>
       <Host name="openui-checkbox">
-        <Part name="label">
-          <Slot name="label" />
-        </Part>
-        <Part name="indicator">
-          <Slot name="indicator" />
-        </Part>
+        <Slot name="label">
+          <Part name="label" />
+        </Slot>
+        <Slot name="indicator">
+          <Part name="indicator" />
+        </Slot>
       </Host>
     </AnatomyWrapper>
   )

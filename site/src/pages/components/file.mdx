@@ -95,12 +95,12 @@ button invokes the file selection prompt.
 
 ```html
 <host>
-  <div part="file-selector-button">
-    <slot name="file-selector-button"></slot>
-  </div>
-  <div part="label">
-    <slot name="label"></slot>
-  </div>
+  <slot name="file-selector-button">
+    <button part="file-selector-button"></button>
+  </slot>
+  <slot name="label">
+    <span part="label"></span>
+  </slot>
 </host>
 ```
 
@@ -109,7 +109,7 @@ button invokes the file selection prompt.
 | Slot Name              | Description                                                                           | Fallback Content              |
 | ---------------------- | ------------------------------------------------------------------------------------- | ----------------------------- |
 | `file-selector-button` | Invokes the file selection prompt.                                                    | A button element is provided. |
-| `label`                | Indicates if a file input is waiting for file selection, or if it has selected files. | A label element is provided.  |
+| `label`                | Indicates if a file input is waiting for file selection, or if it has selected files. | A span element is provided.  |
 
 #### CSS Parts
 
