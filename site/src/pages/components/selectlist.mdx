@@ -70,23 +70,23 @@ selectlist::button {
 
 ### Rich content in `<option>`s
 
-This example adds "rich content" inside option elements in the form of country flags. This is a common pattern on the web which isn't possible in the existing `<select>` element because `<select>`'s `<option>`s only render text content.
+This example adds "rich content" inside option elements in the form of images next to the options. This is a common pattern on the web which isn't possible in the existing `<select>` element because `<select>`'s `<option>`s only render text content.
 
 <div className="code-image-container">
 <div>
 ```html
 <selectlist>
   <option>
-    <img src="usa.jpg">
-    USA
+    <img src="swallow.jpg">
+    Swallow
   </option>
   <option>
-    <img src="germany.jpg">
-    Germany
+    <img src="raven.jpg">
+    Raven
   </option>
   <option>
-    <img src="spain.jpg">
-    Spain
+    <img src="wasp.jpg">
+    Wasp
   </option>
 </selectlist>
 ```
@@ -165,18 +165,40 @@ This example has a `<listbox>` which enables it to put arbitrary content into th
 ```html
 <selectlist>
   <listbox>
-    <div>Heading</div>
-    <div>First two options:</div>
-    <option>one</option>
-    <option>two</option>
-    <div>Second two options:</div>
-    <option>three</option>
-    <option>four</option>
+    <div class=container>
+      <div>
+        <div role=group>1-2</div>
+        <option>one</option>
+        <option>two</option>
+      </div>
+      <div>
+        <div role=group>3-4</div>
+        <option>three</option>
+        <option>four</option>
+      </div>
+      <div>
+        <div role=group>5-6</div>
+        <option>five</option>
+        <option>six</option>
+      </div>
+      <div>
+        <div role=group>7-8</div>
+        <option>seven</option>
+        <option>eight</option>
+      </div>
+    </div>
   </listbox>
 </selectlist>
 <style>
-div {
-  font-weight: bold;
+.container {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: 50px 50px;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+}
+.container > div {
+  background-color: lightgray;
 }
 </style>
 ```
@@ -185,6 +207,23 @@ div {
   <Image
     src="/images/selectlist-usecase-listbox.png"
     alt="The rendering of a selectlist with a custom listbox element"
+  />
+</div>
+</div>
+
+Here is another example with custom content in the listbox: [codepen](https://codepen.io/una/pen/PoXbgVW)
+
+### Animations
+
+<div className="code-image-container">
+<div>
+  This example uses view transitions to animate the opening and closing of the listbox.
+  [Link to codepen](https://codepen.io/argyleink/pen/wvYrZEV/ab71f1b613db0487f64ff8c6919b0173)
+</div>
+<div>
+  <Image
+    src="/images/selectlist-animation.gif"
+    alt="A selectlist with a listbox that animates open and closed"
   />
 </div>
 </div>
