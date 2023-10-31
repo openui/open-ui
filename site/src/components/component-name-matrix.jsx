@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { componentOriginalNames, sources, sourcesCount } from '../sources'
-import _ from 'lodash'
 import './component-name-matrix.css'
 
 const SORT_OPTIONS = {
@@ -29,13 +28,21 @@ const ComponentNameMatrix = (props) => {
     return matchName
   })
 
-  const matchNameToCount = _.sortBy(_.toPairs(_.countBy(matchNames)), ([matchName, count]) =>
-    sort === SORT_OPTIONS.COMPONENT_NAME
-      ? matchName
-      : SORT_OPTIONS.MATCH_COUNT
-      ? -count
-      : matchName,
-  )
+  const matchNameToCount = Object.entries(
+    matchNames.reduce((acc, value) => {
+      if (!acc[value]) {
+        acc[value] = 1;
+      } else {
+        acc[value]++;
+      }
+
+      return acc;
+    }, {})
+  ).sort(([matchNameA, countA], [matchNameB, countB]) => {
+    return sort === SORT_OPTIONS.COMPONENT_NAME
+      ? matchNameA.localeCompare(matchNameB)
+      : (SORT_OPTIONS.MATCH_COUNT ? countB - countA : matchNameA.localeCompare(matchNameB));
+  })
 
   return (
     <div>
@@ -43,7 +50,7 @@ const ComponentNameMatrix = (props) => {
       <div className="component-name-matrix">
         <div className="column">
           <strong className="header">Match</strong>
-          {_.map(matchNameToCount, ([matchName, count]) => {
+          {matchNameToCount.map(([matchName, count]) => {
             return (
               <div key={matchName} className="cell">
                 {Math.round((count / sourcesCount) * 100)}%
@@ -58,16 +65,15 @@ const ComponentNameMatrix = (props) => {
           })}
         </div>
 
-        {_.map(sources, (source) => (
+        {sources.map((source) => (
           <div key={source.name} className="column">
             <strong className="header">
               <a target="_blank" rel="noopener noreferrer" href={source.url}>
                 {source.name}
               </a>
             </strong>
-            {_.map(matchNameToCount, ([matchName, count]) => {
-              const foundComponent = _.find(
-                source.components,
+            {matchNameToCount.map(([matchName, count]) => {
+              const foundComponent = source.components.find(
                 ({ name }) => getMatchName(name) === matchName,
               )
 
