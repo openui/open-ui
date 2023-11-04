@@ -17,13 +17,12 @@ import Image from '../../components/image.astro'
 ## Table of Contents
 
 - [Background and scope of this document](#background-and-scope-of-this-document)
-- [Recommended anatomy for version 1](#recommended-anatomy-for-version-1)
-  - [Anatomy of  `<combobox>`](#anatomy-of-combobox)
-  - [Default Behavior](#default-behavior)
-  - [Combobox with selectedoption/optgroup](#combobox-with-selectedoptionoptgroup)
-- [Introduction of the **filter** attribute](#introduction-of-the-filter-attribute)
-- [Introduction of the **search** attribute](#introduction-of-the-search-attribute)
-- [Introduction of **multiple** attribute](#introduction-of-multiple-attribute)
+- [Anatomy](#anatomy)
+- [Default Behavior](#default-behavior)
+- [Combobox with selectedoption/optgroup](#combobox-with-selectedoptionoptgroup)
+- [Introducing **filter** attribute](#introducing-filter-attribute)
+- [Introducing **search** attribute](#introducing-search-attribute)
+- [Future: Introduction of **multiple** attribute](#future-introduction-of-multiple-attribute)
 - [Keyboard Behavior](#keyboard-behavior)
 - [Appendix](#appendix)
   - [Explored Anatomy Options for `<combobox>`](#explored-anatomy-options-for-combobox)
@@ -61,7 +60,7 @@ This document will not be attempting some of the complex scenarios found across 
 
 A good analogy for what this document will result in looking like is the [Tabs research document.](https://open-ui.org/components/tabs.research.parts/)
 
-## Recommended anatomy for version 1
+## Anatomy
 
 ```
 <combobox>
@@ -73,16 +72,12 @@ A good analogy for what this document will result in looking like is the [Tabs r
 </combobox>
 ```
 
-
-**Pros:**
-* Clear Semantics: The `<combobox>` element explicitly conveys its purpose.
-
-**Cons:**
-* Introducing new element, `<combobox>`
-
-### Anatomy of `<combobox>`:
-
 <ComboboxAnatomy />
+
+<div class="question">
+  <em>This anatomy would require `input` to be supported by invokertarget, see issue [#839](https://github.com/openui/open-ui/issues/839)  ?</em>
+</div>
+
 
 - `<combobox>`: The root container that encapsulates the entire `combobox` structure. It provides context for the interaction between the `input` and the `listbox`.
   - Slots:
@@ -91,13 +86,12 @@ A good analogy for what this document will result in looking like is the [Tabs r
   - Attributes:
     - **search**: Indicates the combobox will actively fetch results based on user input.
     - **filter**: Indicates the combobox will narrow down visible options based on user input.
-    - **multiple**: Allows multiple options to be selected.
+    - **multiple**: Allows multiple options to be selected (will be added in future revisions in alignment with `selectlist`).
 - `<input type=selectlist>`: This is where the user can type input or view the selected option. It acts as the trigger to display the listbox.
   - Slots:
-    - **placeholder** (optional): To display hint text when the input is empty.
     - **selectedoption** (optional): To display the currently selected option from the `listbox`. 
       - Note: Currently input doesn't support slots
-- `<listbox>`: This container holds the selectable options. It's hidden by default and is displayed when the `<input type=selectlist>` is activated.
+- `<listbox>`: The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
   - Slots:
     - `<option>`
     - `<optgroup>` (optional)
@@ -108,9 +102,9 @@ A good analogy for what this document will result in looking like is the [Tabs r
     - `<option>`: The options within this group.
 - `<legend>` (Optional, within `<optgroup>`): Provides a label or title for a group of options within the `listbox`.
 
-### Default Behavior
+## Default Behavior
 
-Just like a regular dropdown, the `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
+Just like [`<selectlist>`](#https://open-ui.org/components/selectlist/#default-behavior) default behavior, the `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
 
 
 ```
@@ -122,10 +116,11 @@ Just like a regular dropdown, the `<combobox>` doesn't need much to get started.
 ```
 
 
-When you use it like this, the combobox creates the parts you need: an input to drop down the list, a place showing your selected option, and the `listbox` itself.
+When an author uses it like this, the combobox creates the parts they need: an input to drop down the list, a place showing your selected option, and the `listbox` itself.
 
-### Combobox with selectedoption/optgroup
+## Combobox with selectedoption/optgroup
 
+To showcase the selected option within a `combobox`, you can include a `<selectedoption>` element. This allows you to present the chosen value separately from the `input` element,
 
 ```
 <combobox>
@@ -150,9 +145,9 @@ When you use it like this, the combobox creates the parts you need: an input to 
 </combobox>
 ```
 
-## Introduction of the `filter` attribute
+## Introducing `filter` attribute
 
-The introduction of the `filter` _bool_ attribute revolutionizes the way users interact with combobox elements. By narrowing down visible options based on real-time input.
+The `filter` [_bool_ attribute](https://html.spec.whatwg.org/#boolean-attributes) enhances the `<combobox>` by dynamically narrowing down choices to match user input, making selection faster and more intuitive.
 
 
 ```
@@ -167,24 +162,29 @@ The introduction of the `filter` _bool_ attribute revolutionizes the way users i
 </combobox>
 ```
 
+Here's how the `filter` attribute simplifies finding and selecting options in a `combobox`:
+
+1. When the combobox loads, it's ready to filter options.
+2. Start typing, and it will only show you matching options.
+3. Only options that start with what you've typed will show up.
+4. Click or press enter to select from the shorter list.
+5. When you select, the list closes and shows your choice.
+
 <Image
   src="/images/combobox/comobobox-filter.gif"
   alt="Combobox showing filtered values"
   style="width:30%"
 />
 
-## Introduction of the `search` attribute
+## Introducing `search` attribute
 
-The introduction of the `search` attribute support search with
+The `search` attribute adds smart search features to `<combobox>`. It lets users find options in different ways:
 
+**Attribute values:**
 
-
-* pattern
-* startswith 
-* Contains
-* ..
-
-The current behavior of `<selectlist>` is the _startswith_ value
+* [**pattern**](https://html.spec.whatwg.org/#the-pattern-attribute) : Matches options against a pattern. For example, typing "**^a**" finds options starting with "**a**".
+* [**startswith**](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.startswith) : Shows options that start with the user’s input. Typing "**Ap**" will display "Apple" and "Apricot" but not "Banana". This is the default behavior for **`<selectlist>`**
+* [**includes**](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.includes) : Searches anywhere in the option text. Typing "**a**" will display "Apple", "Apricot", and "Banana".
 
 
 ```
@@ -206,15 +206,13 @@ The current behavior of `<selectlist>` is the _startswith_ value
 
 
 
-### Introduction of `multiple` attribute
+## Future: Introduction of `multiple` attribute
 
-TBD
+The `multiple` attribute will be specified in detail in a forthcoming update, in sync with the `<selectlist>` element's multi-selection capabilities.
 
 
-### Keyboard Behavior
-
-TBD : [https://www.w3.org/WAI/ARIA/apg/patterns/combobox/](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) 
-
+## Keyboard Behavior
+Details regarding keyboard interaction for the combobox will follow the [W3C ARIA Authoring Practices for combobox patterns](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). For further development and discussions, please see the [filed issue](https://github.com/openui/open-ui/issues/929).
 
 
 ## Research
