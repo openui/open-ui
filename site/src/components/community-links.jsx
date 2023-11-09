@@ -4,23 +4,23 @@ import { faDiscord, faGithub, faXTwitter } from '@fortawesome/free-brands-svg-ic
 import './community-links.css'
 
 const iconStyle = {
-  marginRight: '0.2em',
-  width: '16px',
+  width: '24px',
+  height: '24px',
 }
 
 export default function CommunityLinks({ className = '' }) {
   return (
     <div className={'community-links ' + className}>
-      <a href="https://github.com/openui/open-ui" rel="noreferrer noopener">
-        <FontAwesomeIcon style={iconStyle} icon={faGithub} /> GitHub
+      <a href="https://github.com/openui/open-ui" title="GitHub" rel="noreferrer noopener">
+        <FontAwesomeIcon style={iconStyle} icon={faGithub} />
       </a>
 
-      <a href="https://discord.gg/DEWjhSw" rel="noreferrer noopener">
-        <FontAwesomeIcon style={iconStyle} icon={faDiscord} /> Discord
+      <a href="https://discord.gg/DEWjhSw" title="Discord" rel="noreferrer noopener">
+        <FontAwesomeIcon style={iconStyle} icon={faDiscord} />
       </a>
 
-      <a href="https://x.com/openuicg" rel="noreferrer noopener">
-        <FontAwesomeIcon style={iconStyle} icon={faXTwitter} /> X
+      <a href="https://x.com/openuicg" title="X" rel="noreferrer noopener">
+        <FontAwesomeIcon style={iconStyle} icon={faXTwitter} />
       </a>
     </div>
   )
