@@ -268,7 +268,7 @@ rendered button _within_ the input; and can be used to declare a customised
 alternative button to the input's button.
 
 ```html
-<button invoketarget="my-file">Pick a file...</button>
+<button invoketarget="my-file" invokeaction="showPicker">Pick a file...</button>
 
 <input id="my-file" type="file" />
 ```
@@ -280,7 +280,7 @@ shines, allowing multiple buttons to handle different interactions with the
 video player.
 
 ```html
-<button invoketarget="my-video">Play/Pause</button>
+<button invoketarget="my-video" invokeaction="playpause">Play/Pause</button>
 <button invoketarget="my-video" invokeaction="mute">Mute</button>
 
 <video id="my-video"></video>
@@ -382,12 +382,10 @@ that this list is ordered and higher rules take precedence:
 | `<details>`     | `'close'`             | If the `<details>` is `open`, then close it                                          |
 | `<select>`      | `'showPicker'`        | Call `.showPicker()` on the invokee                                                  |
 | `<input>`       | `'showPicker'`        | Call `.showPicker()` on the invokee                                                  |
-| `<video>`       | `'auto'`              | Toggle the `.playing` value                                                          |
 | `<video>`       | `'playpause'`         | Toggle the `.playing` value                                                          |
 | `<video>`       | `'pause'`             | If `.playing` is `true`, set it to `false`                                           |
 | `<video>`       | `'play'`              | If `.playing` is `false`, set it to `true`                                           |
 | `<video>`       | `'mute'`              | Toggle the `.muted` value                                                            |
-| `<audio>`       | `'auto'`              | Toggle the `.playing` value                                                          |
 | `<audio>`       | `'playpause'`         | Toggle the `.playing` value                                                          |
 | `<audio>`       | `'pause'`             | If `.playing` is `true`, set it to `false`                                           |
 | `<audio>`       | `'play'`              | If `.playing` is `false`, set it to `true`                                           |
