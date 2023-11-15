@@ -1,20 +1,19 @@
 import React from 'react'
-import _ from 'lodash'
-import { componentsByName } from '../sources'
+import { componentsByName, get, uniqBy, groupBy } from '../sources'
 import './component-coverage.css'
 
 const ComponentCoverage = ({ component }) => {
-  const matchingComponents = _.get(componentsByName, component)
-  const withDifferentNamesUniq = _.uniqBy(matchingComponents, 'name')
-  const withDifferentNamesGrouped = _.groupBy(matchingComponents, 'name')
+  const matchingComponents = get(componentsByName, component)
+  const withDifferentNamesUniq = uniqBy(matchingComponents, 'name')
+  const withDifferentNamesGrouped = groupBy(matchingComponents, (component) => component.name)
 
-  if (_.isEmpty(withDifferentNamesUniq)) {
+  if (withDifferentNamesUniq.length === 0) {
     return null
   }
 
   return (
     <ul className="component-coverage">
-      {_.map(withDifferentNamesUniq, (component, i) => {
+      {withDifferentNamesUniq.map((component, i) => {
         const components = withDifferentNamesGrouped[component.name]
         return (
           <li key={component.name + component.sourceName}>

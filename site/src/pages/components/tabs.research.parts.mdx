@@ -19,7 +19,7 @@ This section simply documents what our research found.
 
 The first challenge was that nailing down an overview of what "tabs" currently widely support is trickier than one might imagine. Systems disagree on what they even call components or patterns which different persons might identify as "tabs" depending on whether this perspective is informed based on APIs and programming, a user experiencing something, design, and so on.
 
-Implementations and systems can vary quite a bit, even having several "tab-like" components which share common base classes or mixins but are actually discrete components or patterns with different features and recommendations on thier use. Some are even just the tablist aspect itself with no sense of the whole joint component and relationship to content, leaving this to authors.
+Implementations and systems can vary quite a bit, even having several "tab-like" components which share common base classes or mixins but are actually discrete components or patterns with different features and recommendations on their use. Some are even just the tablist aspect itself with no sense of the whole joint component and relationship to content, leaving this to authors.
 
 ##### Examples where this refers to a full component:
 
@@ -33,7 +33,7 @@ Implementations and systems can vary quite a bit, even having several "tab-like"
 - Fast
 - Semantic UI
 
-##### Examples where this refers to a only Tab List / Tab Bar (see Parts and Terminology):
+##### Examples where this refers to an only Tab List / Tab Bar (see Parts and Terminology):
 
 - Material
 - Vaadin
@@ -55,8 +55,8 @@ Given somewhat radical differences in programming models, libraries, features an
 Given the challenges above and variance above in what different systems consider tabs in significant ways, terminology becomes very overloaded and the language of discussing this problem space can quickly get very tricky. In order to keep things as clear as possible this document will attempt to label and refer to the to the most common identifying parts of the fundamental anatomy of a conceptual control with the following terms, borrowing heavily from ARIA where appropriate (though, as two words for readability) and extending where obvious concepts exist, but no standard and non-overloaded term does:
 
 - **Tab Set** - Refers to the whole component. _ARIA defines no corresponding role for the entire composite component._
-- **Tab Section** - A conceptual "whole tab". It is the combination of a linked Tab Label and Tab Panel. Given the tree and layering nature of this component, in many systems it is constructed of disjoint parts (elements, in web terms) and thus isn't itself given a common name and by nature cannot have a mapped role in ARIA. However, in order to refer to the whole unit, having a term is necessary. Naturaly, in discussion, people will tend to refer to it as a "tab" as well which only exacerbates the confusion, thus a discrete name is desirable here.
-- **Tab Bar** - A conceptual container for the Tab List and potentially related controls in some common visualizations, but potentially not all. _ARIA contains no cooresponding role for this particular distinction as it has no semantic meaning itself_.
+- **Tab Section** - A conceptual "whole tab". It is the combination of a linked Tab Label and Tab Panel. Given the tree and layering nature of this component, in many systems it is constructed of disjoint parts (elements, in web terms) and thus isn't itself given a common name and by nature cannot have a mapped role in ARIA. However, in order to refer to the whole unit, having a term is necessary. Naturally, in discussion, people will tend to refer to it as a "tab" as well which only exacerbates the confusion, thus a discrete name is desirable here.
+- **Tab Bar** - A conceptual container for the Tab List and potentially related controls in some common visualizations, but potentially not all. _ARIA contains no corresponding role for this particular distinction as it has no semantic meaning itself_.
 - **Tab List** - A structural container of a group of Tab Label that owns each Tab Panel. _This corresponds to the element given a `tablist` role in ARIA_.
 - **Tab Label** - An individual label belonging to the Tab List and identifying the Tab Section/associating the Tab Panel. _This corresponds to the `tab` ARIA role, however, for clarity we prefer to avoid confusion_
 - **Tab Panel** - The content part of a Tab Section, which is labelled by the Tab Label. _This corresponds to the ARIA role of `tabpanel`_
@@ -79,7 +79,7 @@ The most fundamental aspect of a Tab Label is text, though some systems support 
 | Ant Design           | ![Ant design tabs with an icon and text](https://lh5.googleusercontent.com/QLDfkARNJDI9AbP1t27K3HFpMUiKBu07bP6u6iyDzr0BMZB-UZ7K2Nfbq0GHt4NELe66rTfoFfBH9cwATof0yv1ukA2oq4MF0DR_OkM)                                                          |
 | Carbon Design        | Not explicitly supported                                                                                                                                                                                                                     |
 | Fast                 | Not explicitly supported                                                                                                                                                                                                                     |
-| Lightning Components | ![Ligtning component tabs with icon and text in horizontal top position](https://lh3.googleusercontent.com/qiG1YSwFv7J3IQSZkjux5K1J7WnDL8aGdUHD1BO6uHgUCGMRQG6E8ngN30d6vHDyZaMUaniJR-JiEXQJag9bwB-4OFLGELWuHKx3Uz567UaNz6eY4OOrLKFk55KxS-n7PfzpBcvG)                                                     |
+| Lightning Components | ![Lightning component tabs with icon and text in horizontal top position](https://lh3.googleusercontent.com/qiG1YSwFv7J3IQSZkjux5K1J7WnDL8aGdUHD1BO6uHgUCGMRQG6E8ngN30d6vHDyZaMUaniJR-JiEXQJag9bwB-4OFLGELWuHKx3Uz567UaNz6eY4OOrLKFk55KxS-n7PfzpBcvG)                                                     |
 | Material             | ![Material design with icon and text in horizontal top position](https://lh5.googleusercontent.com/Yof7dEFxA068PtyzK7OpXhjfjOZA9PHezerZUjMNA-EsSTNY2Q2AZMNQLk9Oo_LBlnZ5BrQAVNeZR1j1BaLc8noIniKNmxfftrFHFgDuXBVZzIJGkBa_UuoFuGa2jugWwwgTlM0u) |
 | Oragami              | Not specifically supported, but markup based and seems to support embedding custom content                                                                                                                                                   |
 | Semantic UI          | Not explicitly supported ('menus' separate from the component they call 'tabs' which is more of a set of mutually exclusive selectable sections, but looks like these menus can contain embedded custom content)                             |
@@ -91,7 +91,7 @@ The most fundamental aspect of a Tab Label is text, though some systems support 
     alt="Material design tabs with icons instead of text" />
   <figcaption>
     Some systems which support icons allow for tabs that contain only icons, others do not. Material
-    is an example of the former. Note that in these cases, it is improtant that non-visible text
+    is an example of the former. Note that in these cases, it is important that non-visible text
     alternatives must be provided for a11y, though most systems don't specifically require it.
   </figcaption>
 </figure>
@@ -102,7 +102,7 @@ Most design systems recommend homogeneity in the same Tab Bar (that is, against 
 
 There are some well established expectations with regard to internationalization for certain parts of Tab Sets. In right-to-left languages, for example, generally speaking some kind of RTL mirroring applies - however, it will work differently depending on a number of other factors. Some of these are very well established, others less so. For example, when tabs are grouped in the in the horizontal top position, in RTL the order of the tabs is reversed, and the icon/text flip too. Keyboard controls, however, continue to maintain spatial order (that is, pressing 'left arrow' will move selection to the tab displayed to the left of the currently selected and so on. First and last shortcuts will be impacted as per the directionality. As systems add additional elements or orientations this becomes slightly less clear.
 
-If the component offers some additional afforandance for overflow (see overflow), for example, this may or may not have effects (paging or next/back buttons would work spatially, while a dropdown should appear to the left but options would be in ...document order?).
+If the component offers some additional affordance for overflow (see overflow), for example, this may or may not have effects (paging or next/back buttons would work spatially, while a dropdown should appear to the left but options would be in ...document order?).
 
 <figure>
   <img src="https://lh4.googleusercontent.com/SZMUPImNdUKl-TL7z_RBsNIqj2tcofFM2IjGV2qa4025hsAPylWVeAXC04SmeOc2JwIT-6kimj_VObEhJ4YSxSA3OjxYZkHpaTsFP97izDxwW_Y0pwfC_EAo9CBSvXj2QbZQ4yhS"
@@ -118,7 +118,7 @@ Mirroring should work similarly in horizontal bottom positioning. However, if le
 Some systems also support an explicit mode for aligning the icon on its own line at the top, above the text
 
 <figure>
-  <img src="https://lh3.googleusercontent.com/h2Q2h_XBqagUrRAZvkBj2KnNqzy2Nsm5NagwMhHxMU-utmUCUfm8t_zvmTMMQR_OOlmv5N582YGw9_tli8piYYJ2Jd4DsSA8dXZgJa1fQR2EWg1uqJRSf-l12f7VUmu_tkGR31YS" 
+  <img src="https://lh3.googleusercontent.com/h2Q2h_XBqagUrRAZvkBj2KnNqzy2Nsm5NagwMhHxMU-utmUCUfm8t_zvmTMMQR_OOlmv5N582YGw9_tli8piYYJ2Jd4DsSA8dXZgJa1fQR2EWg1uqJRSf-l12f7VUmu_tkGR31YS"
     alt="Material design with icon and text in horizontal top position and icons to the top, in both directions" />
   <figcaption>
     Material design with icon and text in horizontal top position and icons to the top, in both
@@ -132,11 +132,11 @@ Note that as top icons are in the block direction, they are generally unchanged 
 
 {' '}
 
-<img src="https://lh5.googleusercontent.com/L3TVs550nWAIWJVUiQDaDg80eCaWFmoWWj7SkzFMsNnMinMlF-Jr9SNYOecJsCU-WKydkvXCCFwnoReHFuVHZkazo0daYrvyMD4TeprxHZoDOAT4XdDnM1e27nc_Fw00EuueVuWC" 
+<img src="https://lh5.googleusercontent.com/L3TVs550nWAIWJVUiQDaDg80eCaWFmoWWj7SkzFMsNnMinMlF-Jr9SNYOecJsCU-WKydkvXCCFwnoReHFuVHZkazo0daYrvyMD4TeprxHZoDOAT4XdDnM1e27nc_Fw00EuueVuWC"
   alt="Ant design showing left positioned tabs with icon shown in LTR direction" />
 
-  <img src="https://lh6.googleusercontent.com/Mc0zk-V694ZugovmciPiDZXcNwihJuo3MmGWCKQDfY-9pnWNACvT_n-kX40rnLaUyRuZipklhAPkxhydE_lg1W4KqpPH8zj9a9HI_TqK9xkBqx1JlNmwfURO6QPeyoqfPFSzwj7F" 
-    alt="Ant design showing the same left positioned tabs with icon shown in RTL direction" /> 
+  <img src="https://lh6.googleusercontent.com/Mc0zk-V694ZugovmciPiDZXcNwihJuo3MmGWCKQDfY-9pnWNACvT_n-kX40rnLaUyRuZipklhAPkxhydE_lg1W4KqpPH8zj9a9HI_TqK9xkBqx1JlNmwfURO6QPeyoqfPFSzwj7F"
+    alt="Ant design showing the same left positioned tabs with icon shown in RTL direction" />
   <figcaption>Ant design showing the same left positioned tabs with icon shown in both the ltr direction and rtl direction.</figcaption>
 </figure>
 
@@ -156,7 +156,7 @@ All implementations support this view, somehow (in some cases only the Tab Bar i
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Ant design           | ![Ant design supports horizontal top grouping](https://lh5.googleusercontent.com/L3TVs550nWAIWJVUiQDaDg80eCaWFmoWWj7SkzFMsNnMinMlF-Jr9SNYOecJsCU-WKydkvXCCFwnoReHFuVHZkazo0daYrvyMD4TeprxHZoDOAT4XdDnM1e27nc_Fw00EuueVuWC)                                                        |
 | Atlaskit             | ![Atlaskit supports horizontal top grouping](https://lh4.googleusercontent.com/8Ans37O220-AJ-a3PveeXOy9LbXyeE75TeK9OwGOHgxAH9SxksqOaZbHDoH-hxGnyaglrVJVrLSsqV84UUmoN2i-YL-KSBIoBgNUOOCyI4wxVeGubSFbiw7z7cXt0CtB_mpXShT3)                                                          |
-| Carbon Design        | ![Cabon Design supports horizotnal top grouping](https://lh3.googleusercontent.com/WGhOhruW0HRlsJEOsJQ2QKHrWUbRtHvll-HodL-liAL-KTL3paSTb7KPieFcBgOa714m0dIbkOU2qXHxQWw7BrMuMj8P9Uv1iUYJuYhoqk9r7XQM22w0jxp9HO8JC50pN5B_nyo_)                                                      |
+| Carbon Design        | ![Cabon Design supports horizontal top grouping](https://lh3.googleusercontent.com/WGhOhruW0HRlsJEOsJQ2QKHrWUbRtHvll-HodL-liAL-KTL3paSTb7KPieFcBgOa714m0dIbkOU2qXHxQWw7BrMuMj8P9Uv1iUYJuYhoqk9r7XQM22w0jxp9HO8JC50pN5B_nyo_)                                                      |
 | Fast                 | ![Fast supports horizontal top grouping](https://lh4.googleusercontent.com/oZOYSKtU9uCeFdrpnU7MmyHfA1R-VEUcalh9BaJBGpoThtZZ4bmrGSLc_SdKPTD94SVO9ut6_5rijTQRyoQs1sk0ktoWcCY59FGpO2HWkihoEpWPHKwP72rvket92DYsS4dLIDVk)                                                              |
 | Lightning Components | ![Lightning Components support horizontal top grouping](https://lh3.googleusercontent.com/L20FSDmXZUIoSyR8V_mMJcdGD9CrRM28WAPg6XkGl2rv8_OMapwDMQskuh7vQ2wUI-HEimHsle-40mR4YAHI_NeGMVsdgY3oDZ887lsi5XuGd_YEHiil4SDGFIUsKZRfofG2sKXm)                                               |
 | Material (TabBar)    | ![Material supports a Tab Bar which is horizontally exclusive, but works for horizontal top grouping](https://lh3.googleusercontent.com/qcr3Pg1oAC1Qi6fGvuVI7r3NW5hBPJ_8Y7qZzeh2wKw02TKbZMQAMCfj2SE1zBrDobuilFwjYU8PuXRAUCrkBDBVF8jJIT-VdBDho-A3hmL6O-Pu3ldok9tKxjdIU1RQzJ7PvtXP) |
@@ -231,11 +231,11 @@ These components, which fit the description we have provided, are developing and
 Responsive design, particularly, has changed the way we consider, approach and name some things. Grouped tabs can be re-visualized vertically and un-grouped and with content interwoven without changing anything about state, semantics, functionality, etc.
 
 <figure>
-  <img src="https://lh4.googleusercontent.com/lmYTpd6Y4gfQ6VQ1pCydTEd-QB4wtk8nPAYQMQSlYyicl3qf4yefaJiSCvICk00MygJwq17k-BgROTL-31xsVzk8dlxnc5280JCzo4GMSOh3n4I3fYKM0f8hJV5o6XOK5V7i9Vf7" 
+  <img src="https://lh4.googleusercontent.com/lmYTpd6Y4gfQ6VQ1pCydTEd-QB4wtk8nPAYQMQSlYyicl3qf4yefaJiSCvICk00MygJwq17k-BgROTL-31xsVzk8dlxnc5280JCzo4GMSOh3n4I3fYKM0f8hJV5o6XOK5V7i9Vf7"
     alt="Expanded Personal information form section with vertically aligned text fields Name, Phone and Email. Other form sections like Billing and Payment are collapsed." />
   <figcaption>
     Vaadin's accordion is a semantic and feature match as described: An element must be selected, it
-    is an exlusive choice
+    is an exclusive choice
   </figcaption>
 </figure>
 
@@ -246,11 +246,11 @@ RedHat is a another example of a component which, below a certain breakpoint wil
 Grouped tabs can be re-visualized horizontally and un-grouped and with content interwoven without changing anything about state, semantics, functionality, etc. These are currently more popular in video games and IOT with more predictable and fixed viewport sizes.
 
 <figure>
-  <img src="https://lh4.googleusercontent.com/SEriVYC4DCSaXvVpF2hfEF0DjzLoc95HIAHdjEIp6WChbX1BlPJ_kUMO_MXKY1EnZP7aOyDrzosK7UvfZsGhnwG_QytUn5BJq8Zh9n274keGXUdZ4r2q7b-mUEdBCj5qTFYr_bKi" 
+  <img src="https://lh4.googleusercontent.com/SEriVYC4DCSaXvVpF2hfEF0DjzLoc95HIAHdjEIp6WChbX1BlPJ_kUMO_MXKY1EnZP7aOyDrzosK7UvfZsGhnwG_QytUn5BJq8Zh9n274keGXUdZ4r2q7b-mUEdBCj5qTFYr_bKi"
     alt="X-Box control where each section represeted by slightly bended stripes on the left and right of curently expanded content" />
   <figcaption>
     An example of an X-Box control which is a semantic and feature match as described: An element
-    must be selected, it is an eclusive choice.{' '}
+    must be selected, it is an exclusive choice.{' '}
   </figcaption>
 </figure>
 #### Radial
@@ -258,11 +258,11 @@ Grouped tabs can be re-visualized horizontally and un-grouped and with content i
 Grouped tabs can be re-visualized along a curve without changing anything about state, semantics, functionality, etc. These are currently more popular in video games and IOT.
 
 <figure>
-  <img src="https://lh3.googleusercontent.com/ltVy5vJSq870EteZ-9yEg-18eo2gBMzXJBXJjtKmBQF8-ZWT4b2HtR5IA3DWr8zMcnsMZGPtWN7kWhC4qhdmCugOboQAYC959L1N80ey1zwAn7qc73Q55p2qy8BPON4H7N7Gxw_f" 
+  <img src="https://lh3.googleusercontent.com/ltVy5vJSq870EteZ-9yEg-18eo2gBMzXJBXJjtKmBQF8-ZWT4b2HtR5IA3DWr8zMcnsMZGPtWN7kWhC4qhdmCugOboQAYC959L1N80ey1zwAn7qc73Q55p2qy8BPON4H7N7Gxw_f"
     alt="Semi transparent circle where each section represented as arc and icon. Content of the section displayed in the center of the circle." />
   <figcaption>
     An example of a video game control which is a semantic and feature match as described: An
-    element must be selected, it is an eclusive choice.{' '}
+    element must be selected, it is an exclusive choice.{' '}
   </figcaption>
 </figure>
 
@@ -273,9 +273,9 @@ Some systems attempt to simply support some kind of center alignment of the grou
 Examples:
 
 <figure>
-  <img src="https://lh3.googleusercontent.com/IH_lgfebZ9Lop1hOBgcLzsuBDeeeGPJbDkX9lLSZq2s5cJ8hMnCf2KGhe7bXXqEt2WW0DXSMVY75Ztkjd5bQ7gfBgSEF9XYMYsPqs6isjqqlNjJWXsU_EFdBt3iOHxo2VG3BmtnP" 
+  <img src="https://lh3.googleusercontent.com/IH_lgfebZ9Lop1hOBgcLzsuBDeeeGPJbDkX9lLSZq2s5cJ8hMnCf2KGhe7bXXqEt2WW0DXSMVY75Ztkjd5bQ7gfBgSEF9XYMYsPqs6isjqqlNjJWXsU_EFdBt3iOHxo2VG3BmtnP"
     alt="Ant design Tab Set with 3 tabs with equal empty space area on the right and on the left of the tab set. Selected tabe highlighted by underlining."/>
-  <figcaption>Ant design Tab Set with tabs center aligment option</figcaption>
+  <figcaption>Ant design Tab Set with tabs center alignment option</figcaption>
 </figure>
 
 <hr />{' '}
@@ -283,7 +283,7 @@ Examples:
 <figure>
   <img src="https://lh3.googleusercontent.com/DJ6DU9U2d_eFd9wTpzorGpB3lzTKBM8LpD29n6rIVyWqlbn2i9nNEWVZKmVEfXxf4oWmEHXkurUVVOw6Tjmup4y_KOBDDyBOgOIN4KgsjZD2ZTwSt2xwM2Os06onfUysIWUCcHFM"
     alt="RedHat Tab Set with 5 tabs with equal empty space area on the right and on the left of the tab set. Selected tabe highlighted by underlining."/>
-  <figcaption>RedHat with Tab Set center aligment</figcaption>
+  <figcaption>RedHat with Tab Set center alignment</figcaption>
 </figure>
 
 ## Tab List Overflow
@@ -305,7 +305,7 @@ Below are a sampling of differences.
 <hr />
 
 <figure>
-  <img src="https://lh3.googleusercontent.com/pxhABlRN-HvOnA9Fj7a7oa3pNwooNsWaCof1qvjV6VHiaKcj62wCi4jifBUkmx6TkCj9w1D6_T_mZdCd6jnNPcagSXUq8eWrcEDU6bUQAMvyAPC4AgdrT7gRqZcNfVnzOIAPcg8v" 
+  <img src="https://lh3.googleusercontent.com/pxhABlRN-HvOnA9Fj7a7oa3pNwooNsWaCof1qvjV6VHiaKcj62wCi4jifBUkmx6TkCj9w1D6_T_mZdCd6jnNPcagSXUq8eWrcEDU6bUQAMvyAPC4AgdrT7gRqZcNfVnzOIAPcg8v"
     alt="On the screen displayed 2 tabs. In order to see other tabs, there two buttons on the left and right with icons representing direction." />
   <figcaption>
     Carbon design adds next/previous interactive buttons in the horizontal grouped direction
@@ -315,12 +315,12 @@ Below are a sampling of differences.
 
 <hr />
 
-_Fast does not currently explcitly support anything in particular here, but they are working on it._
+_Fast does not currently explicitly support anything in particular here, but they are working on it._
 
 <hr />
 
 <figure>
-  <img src="https://lh4.googleusercontent.com/Bq-34D6YjO7cUH5kq9ev-0ldlae77d4b6wlGWwd1os0Iuf3xFNn8FiIj5CAiiPv12Qi3mtuAx7qmOeDOcXOAdqBKrjqpfgHCw-O99h-4eQlwuk0d0lGw4hvD9ovYbnKn32DiDqYw" 
+  <img src="https://lh4.googleusercontent.com/Bq-34D6YjO7cUH5kq9ev-0ldlae77d4b6wlGWwd1os0Iuf3xFNn8FiIj5CAiiPv12Qi3mtuAx7qmOeDOcXOAdqBKrjqpfgHCw-O99h-4eQlwuk0d0lGw4hvD9ovYbnKn32DiDqYw"
     alt="Two horizontal tabs with one More dropdown. More dropdown expanded and show other two tabs vertically in menu." />
   <figcaption>
     Lightning components adds a trailing interactive "more" dropdown (containing the entire list) in
@@ -387,7 +387,7 @@ A few systems allow the "disabling" of individual tab labels. While this is not 
 - There is a slight conflict here in that many design guidelines recommendations for when to use a Tab Set (whatever it is called) describe a quality that tabs should not be statefully related, and most of the use cases for this quality seem to have that as a prerequisite (wizard-like sequential forms scenarios, for example).
 
 <figure>
-  <img src="https://lh4.googleusercontent.com/5TLmXxzF3AvHBr-ii7tkUDAoc3-XpBDe-KYZ4QdIzKUSNolQO0WY-S5j8cAB3huPoM-a43WHqtGahqUgDOdsewpb435LAJuDoiIopxao5McvDVogt-pcvuBGDG-mt6JIhRN-JqVK" 
+  <img src="https://lh4.googleusercontent.com/5TLmXxzF3AvHBr-ii7tkUDAoc3-XpBDe-KYZ4QdIzKUSNolQO0WY-S5j8cAB3huPoM-a43WHqtGahqUgDOdsewpb435LAJuDoiIopxao5McvDVogt-pcvuBGDG-mt6JIhRN-JqVK"
     alt="Three tabs on white background, with one disabled tab have light grey color for text." />
   <figcaption>Ant design supports disabled tab labels</figcaption>
 </figure>
@@ -416,10 +416,10 @@ Note that if tabsets are 'dismissable' they can also be 'entirely dismissable' (
 This might be thought of to go hand in hand with the ability to add a tab, and while not uncommon in programmatic APIs, it is considerably more rare from a user interface point of view and there aren't plentiful ideas in practice from libraries to draw from.
 
 <figure>
-  <img src="https://lh6.googleusercontent.com/Jk0ZfC8097A_6D18GrVjuhq61kvxv5KG6IktcnTHfS6-cpTwxP-2m3DYYPbV3vTrU_phhmpEZEEdXD3fCH3NhDHqRONs-qiCS_A5hNNunu3FQqvxjDNO-BPKyVluXa29oHxR-hQm" 
+  <img src="https://lh6.googleusercontent.com/Jk0ZfC8097A_6D18GrVjuhq61kvxv5KG6IktcnTHfS6-cpTwxP-2m3DYYPbV3vTrU_phhmpEZEEdXD3fCH3NhDHqRONs-qiCS_A5hNNunu3FQqvxjDNO-BPKyVluXa29oHxR-hQm"
     alt="Two horizontablly positioned tab. After text representing header there cross button which can be used to close tab" />
   <figcaption>
-    An example of dismissable tabs from Ant design (also shows the ability to add a trigger to add a
+    An example of dismissible tabs from Ant design (also shows the ability to add a trigger to add a
     new tab, but this is hard to investigate more here)
   </figcaption>
 </figure>
@@ -429,7 +429,7 @@ This might be thought of to go hand in hand with the ability to add a tab, and w
 While exceptionally rare in our survey of components, the idea that individual tab labels can include a context menu was common enough that keyboard shortcuts for this it is included in ARIA Practices. Several components accept rich content in tab labels (more than strings) and so in theory might be said to allow rather than support this, however it has some interesting challenges. Like dismiss buttons there are some accessibility characteristic of this that are not entirely clearly specified and popular web based implementations are uncommon enough that it was not easy to find good discussion abut how, for example, a visual affordance should affect sequential focus or how these swap/mirror in RTL. How this winds up working out with other potential extra (rare) tab label elements would require some additional investigation.
 
 <figure>
-  <img src="https://lh5.googleusercontent.com/9vy1QPIqwdMJhz_A1TJFRXckRuZIPrPJ7r3iFjUcKYRRioEP-ghKPdEpt45LyXt7Prhc_7O0NYLAbKsjzfLyjMdFufhz072yWvtmYkBwMjHKOLTNZKJYIguiwOamCBkIVdOfb-Hr" 
+  <img src="https://lh5.googleusercontent.com/9vy1QPIqwdMJhz_A1TJFRXckRuZIPrPJ7r3iFjUcKYRRioEP-ghKPdEpt45LyXt7Prhc_7O0NYLAbKsjzfLyjMdFufhz072yWvtmYkBwMjHKOLTNZKJYIguiwOamCBkIVdOfb-Hr"
     alt="Two horizontablly positioned tab Orders and Chat. After Chat tab name there smal button with down arrow" />
   <figcaption>
     Examples of components explicitly supporting a context menu as part of the API are rare, but do
@@ -449,7 +449,7 @@ Some Tab Sets allow users to drag Tab Labels and reorder them in the Tab List (n
 Some tabsets allow you to embed extra interactive elements into the grouped tablist (or maybe it is surrounding it visually?). This is certainly not universal or uniform and the interaction patterns and a11y are not well established as a generic mechanism. It may be the intent that these are intended to allow some of the extended things that other implementations attempt to provide.
 
 <figure>
-  <img src="https://lh6.googleusercontent.com/71fsXy0f8Q4bu9wcFSYVrEqUAMqmOfD4vmwqa5UwTvXU0jzle5UZC_Izd2gtp6fCeQyt4CEFu7xjTi3ng03XiiBvKCdZP07gN0ntzOgpSNNbLw2CT_6Adt2ye7Cc-totNglN-l4g" 
+  <img src="https://lh6.googleusercontent.com/71fsXy0f8Q4bu9wcFSYVrEqUAMqmOfD4vmwqa5UwTvXU0jzle5UZC_Izd2gtp6fCeQyt4CEFu7xjTi3ng03XiiBvKCdZP07gN0ntzOgpSNNbLw2CT_6Adt2ye7Cc-totNglN-l4g"
     alt="Three horizontablly positioned tabs on the same line. On the same visual line there button Left Extra Action on the left of tabs and Right Extra Action on the right of tabs." />
   <figcaption>
     Ant design is an example of a system which provides buttons for "extra actions" to before and
@@ -463,7 +463,7 @@ Some tabsets allow you to embed extra interactive elements into the grouped tabl
 While many APIs would allow complex content in a tab label, at least Lightning Component provide a specific "state indicator" built into the component itself indicating that this tab needs attention. It is interesting to consider whether there are implications on swap/mirroring in RTL of either approach. It is also worth considering how this relates to the question of statefulness in this component, where precisely that line is drawn (this is arguably a contained state that doesn't affect others), as well as how such information is communicated accessibly.
 
 <figure>
-  <img src="https://lh6.googleusercontent.com/91NrU-G02Iatw3hsQnmD0rDYHmq3X2Fe4UJFRoOgQCuKlEurC3-_16S8LC1a0-CusHbvV_trEmXAD45AXziA8bwH4Wlr6kGtLY2Z5miXkm-9MJUeSyZ3x3kX1bHOIF-nJbizVxYL" 
+  <img src="https://lh6.googleusercontent.com/91NrU-G02Iatw3hsQnmD0rDYHmq3X2Fe4UJFRoOgQCuKlEurC3-_16S8LC1a0-CusHbvV_trEmXAD45AXziA8bwH4Wlr6kGtLY2Z5miXkm-9MJUeSyZ3x3kX1bHOIF-nJbizVxYL"
     alt="Four horizontablly positioned tabs. Second tab has red crossed circle on the right." />
   <figcaption>
     An illustration of Lightning's status indicators which, in LTR show an icon for conveying that a

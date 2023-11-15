@@ -1,5 +1,5 @@
 ---
-menu: Proposals
+menu: Active Proposals
 name: Popover API (Explainer)
 path: /components/popover.research.explainer
 pathToResearch: /components/popup.research
@@ -114,7 +114,7 @@ Given these use cases, it's important to call out the technical differences betw
 
 - A `<div popover=manual>` is **in the top layer**, so it draws on top of other content. The same is not true for a non-modal `<dialog>`. This is likely the most impactful difference, as it tends to be difficult to ensure that a non-modal `<dialog>` is painted on top of other page content.
 - A `<dialog>` element always has **`role=dialog`**, while the `popover` attribute can be applied to the **most-semantically-relevant HTML element**, including the `<dialog>` element itself: `<dialog popover>`.
-- The popover API comes with some **"nice to have's"**:
+- The popover API comes with some **"nice to haves"**:
   - popovers are easy to animate both the show and hide transitions, via pure CSS. In contrast, JS is required in order to animate `dialog.close()`.
   - popovers work with the invoking attributes (e.g. `popovertarget`) to declaratively show/hide them with pure HTML. In contrast, JS is required to show/close a `<dialog>`.
   - popovers fire both a "popovershow" and a "popoverhide" event. In contrast, a `<dialog>` only fires `cancel` and `close`, but no event is fired when it is shown.
@@ -157,6 +157,8 @@ For convenience and brevity, the remainder of this explainer will use this boole
 There are several ways to "show" a popover, and they are discussed in this section. When any of these methods are used to show a popover, it will be made visible and moved (by the UA) to the [top layer](https://fullscreen.spec.whatwg.org/#top-layer). The top layer is a layer that paints on top of all other page content, with the exception of other elements currently in the top layer. This allows, for example, a "stack" of popovers to exist.
 
 ### Declarative Triggers
+
+> Note: It is intended that [`invoketarget`](/components/invokers.explainer) will replace `popovertarget` leading to `popovertarget`'s eventual deprecation.
 
 A common design pattern is to have a button which makes a popover visible. To facilitate this pattern, and avoid the need for JavaScript in this common case, two content attributes (`popovertarget` and `popovertargetaction`) allow the developer to declaratively toggle, show, or hide a popover. To do so, the attribute's value should be set to the idref of another element:
 
@@ -511,7 +513,7 @@ The "nearest open ancestral popover" `P` to a given `Node` N is defined in this 
 > `P` is the topmost popover in [the popover stack](#the-popover-stack) for which any one of the following is true:
 >
 > 1. `P` is a flat-tree DOM ancestor of `N`.
-> 2. `N` is a descendant of another popover `P2`, which has an `anchor` attribute whose value is equal to `P`'s `id` or any of `P`'s flat-tree descendent's `id`s.
+> 2. `N` is a descendant of another popover `P2`, which has an `anchor` attribute whose value is equal to `P`'s `id` or any of `P`'s flat-tree descendant's `id`s.
 > 3. `P` contains a [triggering element](#declarative-triggers) whose target is another popover `P2`, which contains `N`.
 >
 > If none of the popovers in [the popover stack](#the-popover-stack) match the above conditions, then `P` is `null`.

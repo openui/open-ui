@@ -20,3 +20,21 @@ import Concepts from '../../components/concepts'
 ## Concepts
 
 <Concepts client:load component="Tooltip" />
+
+## Supports nesting
+
+| UI Library                                                                                                                | Can be nested?     | Closes other tooltips?                         | Note                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| [Ant Design](https://codepen.io/pen?&editors=001)                                                                         | No                 | Yes (default, but can be changed)              | Only accepts textual content                                                   |
+| [Atlaskit](https://codesandbox.io/s/w5ldwk?module=/example.tsx&file=/example.tsx)                                         | No                 | Yes                                            | Only accepts textual content                                                   |
+| [Bootstrap](https://getbootstrap.com/docs/5.3/components/tooltips/)                                                       | No                 | Yes, but stays open when clicked               | Only accepts textual content                                                   |
+| [Carbon design system](https://vue.carbondesignsystem.com/?path=/story/component-cvtooltips-cvdefinitiontooltip--default) | No                 | Yes                                            | Only accepts textual content                                                   |
+| [Evergreen](https://codesandbox.io/s/8h1ync)                                                                              | No                 | Yes                                            | Only accepts textual content                                                   |
+| [UI Fabrik](https://codepen.io/utilitybend/pen/MWZZRoB/7bba995cc9c04cd05905ece99c5c06eb)                                  | No                 | Yes                                            | Linked example could potentially be nested, but not intentional                |
+| [FAST](https://explore.fast.design/components/fast-tooltip)                                                               | Yes                | Yes (but not when nested, previous stays open) | In the sandbox (link on library) nesting was possible to achieve               |
+| [KoliBri](https://public-ui.github.io/docs/components/tooltip)                                                            | To be investigated | To be investigated                             |                                                                                |
+| [Lightning Design System](https://www.lightningdesignsystem.com/components/tooltips/)                                     | To be investigated | To be investigated                             |                                                                                |
+| [Material Components Web](https://m2.material.io/components/tooltips/web/)                                                | To be investigated | Yes                                            | It can contain custom HTML, further investigation necessary for nesting        |
+| [Semantic UI](https://semantic-ui.com/modules/popup.html#/definition)                                                     | No                 | Not the parent when nested                     | Linked example could potentially be nested, but not intentional                |
+| [Stardust UI](https://fluentsite.z22.web.core.windows.net/0.66.2/components/tooltip/definition)                           | No                 | can be prevented                               | Only in other elements, but not nested in tooltip (according to documentation) |
+| [Boosted](https://boosted.orange.com/docs/5.3/components/tooltips/)                                                       | No                 | Not when other tooltip is clicked              | Only accepts textual content                                                   |

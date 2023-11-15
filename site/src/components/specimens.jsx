@@ -4,10 +4,6 @@ import Image from './image.jsx'
 import { MissingImages } from './missing-images'
 import './specimens.css'
 
-const getMissingImages = (images) => {
-  return
-}
-
 const Specimens = ({ component, conceptName, showDescriptions }) => {
   const images = getImagesForComponentConcept(component, conceptName)
   const missingImages = images.filter(({ image }) => !image)
@@ -23,7 +19,7 @@ const Specimens = ({ component, conceptName, showDescriptions }) => {
             <div key={image.image + index} className="specimen">
               <div className="image-wrapper">
                 <Image
-                  src={'/../images/' + image.image}
+                  src={'/images/' + image.image}
                   title={image.image}
                   alt={`${conceptName} concept on a ${component} component in ${image.sourceName}.`}
                 />

@@ -1,6 +1,6 @@
 ---
-menu: Proposals
-name: File (Editor's Draft)
+menu: Non-active Proposals
+name: File (Explainer)
 pathToResearch: /components/file.research
 layout: ../../layouts/ComponentLayout.astro
 ---
@@ -73,7 +73,10 @@ button invokes the file selection prompt.
 
 ## Methods
 
-N/A
+| Signature            | Description                                                           |
+| ---------------------| ----------------------------------------------------------------------|
+| `click(): void`      | Triggers the system file picker UI to show. Requires user activation. |
+| `showPicker(): void` | Triggers the system file picker UI to show. Requires user activation. |
 
 ## Events
 
@@ -92,12 +95,12 @@ N/A
 
 ```html
 <host>
-  <div part="file-selector-button">
-    <slot name="file-selector-button"></slot>
-  </div>
-  <div part="label">
-    <slot name="label"></slot>
-  </div>
+  <slot name="file-selector-button">
+    <button part="file-selector-button"></button>
+  </slot>
+  <slot name="label">
+    <span part="label"></span>
+  </slot>
 </host>
 ```
 
@@ -106,7 +109,7 @@ N/A
 | Slot Name              | Description                                                                           | Fallback Content              |
 | ---------------------- | ------------------------------------------------------------------------------------- | ----------------------------- |
 | `file-selector-button` | Invokes the file selection prompt.                                                    | A button element is provided. |
-| `label`                | Indicates if a file input is waiting for file selection, or if it has selected files. | A label element is provided.  |
+| `label`                | Indicates if a file input is waiting for file selection, or if it has selected files. | A span element is provided.  |
 
 #### CSS Parts
 
@@ -180,7 +183,7 @@ No third party dependencies are required.
 ### Platform Requirements
 
 To implement a custom file input, a developer must create a hidden
-`<input type="file">` element, and call `click()` on that element to invoke
+`<input type="file">` element, and call `click()` or `showPicker()` on that element to invoke
 that input's behaviour.
 
 The [Native File System API](https://wicg.github.io/native-file-system/)

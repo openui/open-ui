@@ -1,13 +1,13 @@
 ---
-menu: Proposals
-name: Popover Hint and Hover (Explainer)
+menu: Active Proposals
+name: Popover=hint (Explainer)
 path: /components/popover-hint.research.explainer
 pathToResearch: /components/popup.research
 layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@aleventhal](https://github.com/aleventhal)
-- Last updated: July 10, 2023
+- Last updated: October 26, 2023
 
 A followup proposal to the [original Popover proposal](https://open-ui.org/components/popover.research.explainer/), which adds several features related to building hints/tooltips.
 
@@ -16,18 +16,15 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 ## Table of Contents
 
 - [Background](#background)
-- ["Hover" triggering](#hover-triggering)
-  - [Add the `hover` value](#add-the-hover-value)
-  - [CSS values to control delay](#css-values-to-control-delay)
-  - [Example buttons](#example-buttons)
-  - [Popover types](#popover-types)
-  - [Example menu](#example-menu)
-- [`popover=hint` Behavior](#popoverhint-behavior)
+  - [What is a tooltip/toggletip](#what-is-a-tooltiptoggletip)
+  - [Tooltip lifecycle behaviors](#tooltip-lifecycle-behaviors)
+- [Scope of this explainer](#scope-of-this-explainer)
+- [Proposal: popover=hint](#proposal-popoverhint)
 - [Accessibility](#accessibility)
   - [Why differentiate between rich and plain hints?](#why-differentiate-between-rich-and-plain-hints)
   - [A11y API support](#a11y-api-support)
 - [::tooltip pseudo element](#tooltip-pseudo-element)
-- [Monkeypatch spec](#monkeypatch-spec)
+- [Spec PR](#spec-pr)
 - [Articles and References](#articles-and-references)
 
 {/* <!-- END doctoc generated TOC please keep comment here to allow auto update --> */}
@@ -37,104 +34,78 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 
 The [Popover API](https://html.spec.whatwg.org/multipage/C#the-popover-attribute) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), [OpenUI Explainer](https://open-ui.org/components/popover.research.explainer/)) is now part of the HTML standard. It allows developers to create popovers of varying types and also easily trigger them from buttons, without using Javascript.
 
-This explainer discusses two important extensions of the Popover API:
+One very common use case for popovers that isn't well covered by the existing Popover API is building "tooltips". This explainer discusses a proposal (`popover=hint`) to assist developers in building tooltips, and other similar use cases.
 
-1. The ability to trigger popovers via a "hover" type interaction.
-2. The ability to show a new type of popover for "hints".
+## What is a tooltip/toggletip
 
-These two capabilities are orthogonal but closely related, and this explainer therefore discusses them both.
+There are many great articles on tooltips, including these by [Sarah Higley](https://sarahmhigley.com/writing/tooltips-in-wcag-21/), [Inclusive Components](https://inclusive-components.design/tooltips-toggletips/), [Scott O'Hara](https://github.com/scottaohara/a11y_tooltips#readme), and [WAI](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/). And there is a very closely related UX element called a "toggletip". For brevity, in this explainer, I'll group them both and refer to them simply as "tooltips".
 
-The motivating use case, but certainly not the only use case, for these two capabilities is in the construction of "tooltips". Typically, tooltips are transient bits of additional information related to a bit of content. This additional information is *not required* and is supplementary in nature. Usually the user accesses this tooltip by hovering, keyboard-focusing, or long-pressing a control.
+It turns out, the definition of "tooltip" can be tricky. There are several definitions people tend to use:
 
-# "Hover" triggering
+1. The "original" definition: a **text-only "tip"** about a "tool" button. For example, "Insert link" for this icon: ![insert link icon](/images/insert-link-button.png). The web platform has a [fraught](https://www.24a11y.com/2017/the-trials-and-tribulations-of-the-title-attribute/) implementation of this definition, via the `title` attribute.
+2. The "triggered by hover" definition: any **pop-up window/dialog**, containing **any type of content**, that **opens when a user mouse-hovers** an element.
+3. The "semantic" definition: A popover containing **non-essential**, **auxiliary** information about a context element.
 
-The existing popover API includes the concept of "invoking elements":
+Definition <span>#</span>1 is too limiting, and does not capture common use cases that include non-textual content. A good example is the window that appears when you hover over a username on Github:
 
-```html
-<button popovertarget=foo popovertargetaction=show>
-  Click me to show a popover
-</button>
-<div popover id=foo> I'm a popover </div>
-```
+  ![Github user information tooltip](/images/github-tooltip.png)
 
-The `popovertarget` attribute can be used on buttons (and `<input type=button>`), and it points to the idref of an element with the `popover` attribute. In this configuration, clicking the button automatically shows the popover, without requiring Javascript. In addition, this linkage ensures that the accessibility tree is properly updated to represent the connection. The `popovertargetaction` attribute determines what action to take when the button is activated: `show`, `hide`, or `toggle`.
+Definition <span>#</span>2 is mis-guided. Many things can be "hover-triggered" without being tooltips. A great example is a hover-triggered menu, where hovering over a sub-menu item brings up the sub-menu. Most people agree that the sub-menu is **not** a tooltip. It just happens to be hover-triggered.
 
-## Add the `hover` value
+That leaves definition <span>#</span>3, which is the recommended definition (see articles [1](https://sarahmhigley.com/writing/tooltips-in-wcag-21/), [2](https://inclusive-components.design/tooltips-toggletips/), [3](https://github.com/scottaohara/a11y_tooltips#readme), [4](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/)). A tooltip should not contain directly-necessary information - that should be placed into the page content directly. It should provide auxiliary or extra information that is available only when the user wants to dig deeper into some content. And that extra information should be able to contain more than just text, since the auxiliary information might very well contain or even **be** an image or other non-text content.
 
-To support hover triggering, a new value is added: `popovertargetaction=hover`. When set to the `hover` value, the popover will be **shown** when the invoking element is **a)** hovered with the mouse, **b)** focused, or **c)** long-pressed (mobile).
+Note, importantly, that a tooltip **does not need** to be triggered by hover to be a tooltip. Also note that all things that are hover-triggered are not tooltips. A tooltip is defined by **its content**, and not how it gets **activated**.
 
-## CSS values to control delay
+## Tooltip lifecycle behaviors
 
-The majority of hover-triggered UI has a set of delays associated with it. It tends to be jarring to the user if UI elements show up *immediately* upon hovering an element. For example, that causes elements to show and hide rapidly as the user moves their mouse across the screen. To allow the user to be more intentional, there is an expectation that the element of interest must be hovered for a short period of time before any popovers are triggered. Additionally, it is common for such hover-triggered popovers to also be hidden automatically when they are no longer hovered, again after a sufficient delay. This "hide delay" is particularly important in the case that there is a physical gap between the invoking element and the hint popover: the user must move the mouse from the invoker to the popover and cross that gap, and it is frustrating if the popover closes while that traversal is taking place.
+When using a tooltip, there are several **behaviors** that come into play.
 
-To facilitate these delays, two new CSS properties are added:
+### 1. Triggering a tooltip
 
-- `popover-show-delay` - applied to the invoking element. The invoking element must be hovered, focused, or long-pressed for this long before the popover is shown. The default value for this property is `0.5s`.
-- `popover-hide-delay` - applied to the popover. The invoking element *or* the popover must be **not** hovered, focused, or long-pressed for this long before the popover is hidden. The default value for this property is `infinity`.
+A user needs to first identify that there is a tooltip associated with a context element, and then needs to trigger that tooltip somehow. Typical ways to trigger a tooltip include:
 
-It is important to "debounce" these delays. Said another way, the delays are interpreted as *the time an element must be continuously hovered or de-hovered*. The naive Javascript implementation of this behavior is to just call `setTimeout(() => show/hidePopover(), delayValue)`. I.e. after the invoking element is hovered, wait `delayValue`, and then show the popover. But that does not properly handle the situation where the user hovers the element, and then de-hovers it, all within the delay time. In that case, no popover should be shown. Similarly, once the popover is shown and the user de-hovers the popover briefly but re-hoveres it again quickly, the popover should not close.
+- Hover the context element with the mouse for a length of time.
+- Focus the context element with the keyboard, for a length of time.
+- Long-press the context element, and choose to activate the tooltip via a context menu.
+- Other UA-specific or AT-specific methods, such as gazing at the context element (detected with eye tracking).
 
-## Example buttons
+### 2. Close other popovers and tooltips
 
-Let's examine a small example:
+Once a tooltip has been triggered, the popover containing the tooltip needs to be shown. When this happens, there may already be other unrelated popovers that are showing:
 
-```html
-<button popovertarget=hint1 popovertargetaction=hover>
-  Button 1
-</button>
-<div popover=hint id="hint1">Hint 1</div>
-<button>Button 2</button>
+- Selection pickers (e.g. from a `<selectlist>` or a color picker).
+- Action menus (e.g. the "File" menu in an editing app).
+- Other tooltips for different context elements.
 
-<style>
-  button    { popover-show-delay: 0.3s; }
-  [popover] { popover-hide-delay: 0.6s; }
-</style>
-```
+Some or all of these unrelated popovers might need to be closed, to avoid user confusion.
 
-In this example, because of the `popover-show-delay: 0.3s`, hovering (with the mouse) or keyboard-focusing "Button 1", *and then waiting for 0.3 seconds* will cause "Hint 1" to be shown. It will stay showing as long as the button *or* the popover are hovered with the mouse or keyboard-focused.
+### 3. Dismissing a tooltip
 
-Because of the `popover-hide-delay: 0.6s`, the hint will be automatically hidden after 0.6 seconds, once "interest has left" the popover. That depends on how the popover was triggered:
+Once a tooltip is open, there are several ways the user can indicate that they are done with that content, and the tooltip should be closed:
 
-- If the invoker was **hovered** to trigger "Hint 1", then it will stay open as long as the invoker or the hint are still hovered. If the mouse if moved off of *both* the invoker and the hint for 0.6 seconds, the hint will be closed.
-- If the invoker was **keyboard focused** to trigger "Hint 1", then it will stay open as long as focus is contained within either the invoker or the hint. If keyboard focus leaves both invoker and hint for 0.6 seconds, the hint will be closed.
+- Press the ESC key.
+- Mouse-click or touchscreen-tap somewhere else, outside the tooltip ("light-dismiss").
+- When mouse-hover-triggered, move the mouse outside both the tooltip and the context element for a length of time.
+- When keyboard-focus-triggered, move focus outside both the tooltip and the context element for a length of time.
+- Other UA-specific or AT-specific methods such as gazing away from the context element.
 
-## Popover types
+# Scope of this explainer
 
-The new hover-triggering functionality should work for all `popover` types. There are use cases, e.g. for `popover=auto`; for example, a nested menu structure where sub-menus are shown when items in the primary menu are hovered or focused.
+As described above, there are many behaviors associated with tooltips.
 
-## Example menu
+**This explainer is only interested in one thing:** providing a mechanism to achieve the behaviors in [section 2](#2-close-other-popovers-and-tooltips) above, related to **closing other popovers and tooltips**..
 
-```html
-<button popovertarget=menu1>Menu</button>
-<ul popover id=menu1>
-  <li>
-    <button popovertarget=submenu1 popovertargetaction=hover>
-      Sub menu 1
-    </button>
-  </li>
-  <li>
-    <button popovertarget=submenu2 popovertargetaction=hover>
-      Sub menu 2
-    </button>
-  </li>
-</ul>
-<ul class=submenu popover id=submenu1>
-  Sub-menu #1
-</div>
-<ul class=submenu popover id=submenu2>
-  Sub-menu #2
-</div>
-<style>
-  button { popover-show-delay: 0.5s; }
-  [popover].submenu { popover-hide-delay: 0.5s; }
-  ul { list-style-type: none; }
-  ul button { border: none; }
-</style>
-```
+**This explainer is NOT interested in sections [1](#1-triggering-a-tooltip) or [3](#3-dismissing-a-tooltip)**, which related to triggering or dismissing the tooltip. Those behaviors are addressed by a separate "Invokers" proposal:
 
-This example implements a popover menu (`id=menu1`) which has sub-menus (`id=submenu1` and `id=submenu2`) which can be triggered simply by hovering or focusing the main menu's buttons.
+- https://open-ui.org/components/invokers.explainer (see [this section](https://open-ui.org/components/invokers.explainer/#:~:text=Interest/Shows%20Interest)). See also this related [spec issue](https://github.com/whatwg/html/issues/9625).
 
-# `popover=hint` Behavior
+The invokers proposal covers hover/focus/etc triggering all kinds of things, including popovers, dialogs and more. It fully handles the behaviors described in sections [1](#1-triggering-a-tooltip) and [3](#3-dismissing-a-tooltip). Since that proposal is very general, and includes many non-popover use cases, it makes sense to discuss it separately.
+
+**Note also** that this proposal is **orthogonal** to the [invokers](https://open-ui.org/components/invokers.explainer) proposal. The behaviors described here can function on their own, via the existing `popovertarget=idref` mechanism, or even via Javascript. Of course, very much like the [Anchor Positioning](https://drafts.csswg.org/css-anchor-position-1/) feature, hint popovers will become even more powerful once the [invokers](https://open-ui.org/components/invokers.explainer) mechanism has landed. But these two features do not need to be gated on each other.
+
+# Proposal: popover=hint
+
+This proposal is to add one more value to the [popover attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover), to enable the specific behaviors associated with tooltips and "hint" style UI. The proposal is to allow the value `hint` (e.g. `popover=hint`), which triggers differences in the behaviors associated with opening, closing, and light dismissing that popover. Since the content in a tooltip is "secondary" or "auxiliary", elements with `popover=hint` should defer to other popover types.
 
 When a hint is shown, it behaves differently from other popover types such as `popover=auto` and `popover=manual` in a few ways:
 
@@ -142,15 +113,15 @@ When a hint is shown, it behaves differently from other popover types such as `p
 | ------------- | ------------------------- | -------------- | --------------   |
 | Light dismiss |      Yes                  |     Yes        |      No          |
 | Force-hides:  | Other `auto`s and `hint`s | Other `hint`s  | Nothing          |
-| Nesting:      |     Yes                   | No             | No               |
+| Nesting:      |     Yes                   | No [*](#nesting_star)             | N/A - no light dismiss  |
 
-First, hints should always be light dismissable. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
+First, hints should always be light dismissible. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
 
-Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses a unrelated element to see its hint, that action should not close the select picker. In essence, the hint is *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two hints open at a time. So hints should close other hints.
+The second row ("Force-hides") shows that tooltip content is "secondary" to other content, so hints do not hide other non-hint popovers. An example use case for this is that there is a select list picker open, and the user is selecting from the available options. While doing that, the user mouse-hovers another element on the page to see a tooltip that might inform them about which option to pick. While the tooltip is shown, the select list picker should not be closed.
 
-Finally, `popover=auto` popovers support "nesting": the idea that one popover is a descendant of another popover, for example in the case of nested menus. It makes sense in that example for the parent menu to stay open while the child menu opens. The same is not true for hints - it would be confusing for one hint to be nested inside another, and wouldn't make sense. Therefore, hints do not support nesting.
+Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses an unrelated element to see its hint, that action should not close the select picker. In essence, the hint is "secondary" and *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two unrelated hints open at a time. So hints should close other hints.
 
-To summarize the above, there can only be one open `popover=hint` on a page, many nested (but only 1 "root") `popover=auto`, and many `popover=manual`.
+**<a id="nesting_star">*</a>** The third row ("Nesting") is more debatable (see [this issue](https://github.com/whatwg/html/issues/9776) and [this issue](https://github.com/openui/open-ui/issues/854)). In most cases, tooltips are never nested. However, there are counterexamples in which one tooltip contains additional elements that have tooltips of their own. At this point, it is unclear whether hints should be allowed to be nested within each other, in the same way that `popover=auto` popovers can be nested. See https://github.com/whatwg/html/issues/9776 for the latest.
 
 # Accessibility
 
@@ -183,15 +154,15 @@ For the best screen reading experience, the implementation will need to expose d
 
 # ::tooltip pseudo element
 
-[CSSWG Issue 8930](https://github.com/w3c/csswg-drafts/issues/8930) discusses the addition of a `::tooltip` (or similarly named) pseudo element that could be used to generate tooltips via CSS, and style them. These are intended (though see the discussion) to be Plain Hints (as described above). This proposal may be complimentary to this explainer's feature proposals, or it might replace some of them.
+[CSSWG Issue 8930](https://github.com/w3c/csswg-drafts/issues/8930) discusses the addition of a `::tooltip` (or similarly named) pseudo element that could be used to generate tooltips via CSS, and style them. These are intended (though see the discussion) to be Plain Hints (as described above). The `::tooltip` proposal may be complimentary to this explainer's feature proposals, or it might replace some of them.
 
-# Monkeypatch spec
+# Spec PR
 
-\{To-do: document the changes necessary to the [WHATWG/html spec](https://html.spec.whatwg.org/multipage/C#the-popover-attribute) for this proposal.\}
-
+There is a [WHATWG HTML spec PR](https://github.com/whatwg/html/pull/9778) open to implement the changes described in this explainer.
 
 # Articles and References
 
 - [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API)
-- https://github.com/openui/open-ui/issues/530
-- https://github.com/openui/open-ui/issues/526
+- [OpenUI: How to resolve a11y and other issues](https://github.com/openui/open-ui/issues/526#issuecomment-1219845155)
+- [OpenUI: How to provide keyboard access](https://github.com/openui/open-ui/issues/530)
+- [OpenUI: Resolution to use `interest` as the name of the value](https://github.com/openui/open-ui/issues/767#issuecomment-1654177227)

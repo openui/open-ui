@@ -1,5 +1,5 @@
 ---
-menu: Proposals
+menu: Active Proposals
 name: Selectlist Element (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
@@ -7,9 +7,11 @@ layout: ../../layouts/ComponentLayout.astro
 import SelectAnatomy from '../../components/select-anatomy'
 import Image from '../../components/image.astro'
 
+
 ## Table of Contents
 
 - [Background](#background)
+- [Use cases](#use-cases)
 - [Testing out the selectlist element](#testing-out-the-selectlist-element)
 - [Anatomy of the selectlist element](#anatomy-of-the-selectlist-element)
 - [Styling selectlist](#styling-selectlist)
@@ -23,15 +25,212 @@ import Image from '../../components/image.astro'
 - [Keyboard Behavior](#keyboard-behavior)
 - [Form Semantics](#form-semantics)
   - [IDL](#idl)
-  - [`selectedOption` and `value`](#selectedoption-and-value)
-  - [`disabled`, `form`, `name`, `required`, and `labels`](#disabled-form-name-required-and-labels)
-  - [`type`](#type)
+  - [The `selectedOption` and `value` attributes](#the-selectedoption-and-value-attributes)
+  - [The `disabled`, `form`, `name`, `required`, and `labels` attributes](#the-disabled-form-name-required-and-labels-attributes)
+  - [The `type` attribute](#the-type-attribute)
   - [Validity IDLs](#validity-idls)
 - [Why not improve `<select>`](#why-not-improve-select)
+- [Design decisions](#design-decisions)
 
-# Background
+## Background
 
 The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
+
+The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-form://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-forms) that form controls are neither interoperable nor stylable. `<selectlist>` will be fully interoperable and stylable.
+
+## Use cases
+
+### Customizing basic styles
+
+This example changes the fonts and colors of various parts of the button and listbox parts of the selectlist. The existing `<select>` element will not incorporate these basic styles into its rendering.
+
+<div className="code-image-container">
+<div className="code-container">
+```html
+<selectlist>
+  <option>one</option>
+  <option>two</option>
+</selectlist>
+<style>
+selectlist::listbox,
+selectlist::button {
+  font-family: monospace;
+  font-size: 12px;
+}
+</style>
+```
+</div>
+<div className="image-container">
+  <Image
+    src="/images/selectlist-usecase-basic.png"
+    alt="The rendering of a selectlist with monospaced font and red colors"
+  />
+</div>
+</div>
+
+### Rich content in `<option>`s
+
+This example adds "rich content" inside option elements in the form of country flags. This is a common pattern on the web which isn't possible in the existing `<select>` element because `<select>`'s `<option>`s only render text content.
+
+<div className="code-image-container">
+<div>
+```html
+<selectlist>
+  <option>
+    <img src="usa.jpg" alt="flag of USA">
+    USA
+  </option>
+  <option>
+    <img src="germany.jpg" alt="flag of Germany">
+    Germany
+  </option>
+  <option>
+    <img src="spain.jpg" alt="flag of Spain">
+    Spain
+  </option>
+</selectlist>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-rich.png"
+    alt="The rendering of a selectlist with country flags next to the options"
+  />
+</div>
+</div>
+
+### Replacing the button
+
+This example replaces the button which opens the listbox with an author provided `<button>` element.
+
+<div className="code-image-container">
+<div>
+```html
+<selectlist>
+  <button type=selectlist>
+    selected option: <selectedoption></selectedoption>
+  </button>
+  <option>one</option>
+  <option>two</option>
+</selectlist>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-button.png"
+    alt="The rendering of a selectlist with an author-provided button"
+  />
+</div>
+</div>
+
+### Rendering the `<option>` differently in the button
+
+This example uses the `<selectedoption>` element with custom CSS to target it which renders the option differently in the listbox vs in the button.
+
+<div className="code-image-container">
+<div>
+```html
+<selectlist>
+  <button type=selectlist>
+    <selectedoption></selectedoption>
+  </button>
+  <option>
+    ❤️ <span class=description>heart</span>
+  </option>
+  <option>
+    🙂 <span class=description>smile</span>
+  </option>
+</selectlist>
+<style>
+selectedoption .description {
+  display: none;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-selectedoption.png"
+    alt="The rendering of a selectlist with a custom selectedoption element"
+  />
+</div>
+</div>
+
+### Putting custom content in the listbox
+
+This example has a `<listbox>` which enables it to put arbitrary content into the listbox rather than just `<option>`s.
+
+<div className="code-image-container">
+<div>
+```html
+<selectlist>
+  <listbox>
+    <div class=container>
+      <div>
+        <optgroup label="1-2">
+          <option>one</option>
+          <option>two</option>
+        </optgroup>
+      </div>
+      <div>
+        <optgroup label="3-4">
+          <option>three</option>
+          <option>four</option>
+        </optgroup>
+      </div>
+      <div>
+        <optgroup label="5-6">
+          <option>five</option>
+          <option>six</option>
+        </optgroup>
+      </div>
+      <div>
+        <optgroup label="7-8">
+          <option>seven</option>
+          <option>eight</option>
+        </optgroup>
+      </div>
+    </div>
+  </listbox>
+</selectlist>
+<style>
+.container {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: 50px 50px;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+}
+.container > div {
+  background-color: lightgray;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-listbox.png"
+    alt="The rendering of a selectlist with a custom listbox element"
+  />
+</div>
+</div>
+
+Here is another example with custom content in the listbox: [codepen](https://codepen.io/una/pen/PoXbgVW)
+
+### Animations
+
+<div className="code-image-container">
+<div>
+  This example uses view transitions to animate the opening and closing of the listbox.
+  [Link to codepen](https://codepen.io/argyleink/pen/wvYrZEV/ab71f1b613db0487f64ff8c6919b0173)
+</div>
+<div>
+  <Image
+    src="/images/selectlist-animation.gif"
+    alt="A selectlist with a listbox that animates open and closed"
+  />
+</div>
+</div>
 
 ## Testing out the selectlist element
 
@@ -46,11 +245,12 @@ Because the various parts of the selectlist can be styled, it's important to und
 <SelectAnatomy />
 
 - `<selectlist>` - The root element that contains the button and listbox.
-- `slot=button` - The button element that triggers the visibility of the listbox. If this part is not provided by the author, then selectlist will automatically create one.
-- `slot=selected-value` - The element that displays the value of the currently selected option. If this part is not provided by the author, then selectlist will automatically create one. Note that this part does not necessarily have to be placed inside the `slot=button` part (read on for more information about how to slot your own markup).
-- `slot=marker` - Something that indicates this button opens a listbox, e.g. an icon. If this part is not provided by the author, then selectlist will automatically create one.
-- `slot=listbox` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part is not provided by the author, then selectlist will automatically create one.
+- button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox. If this part is not provided by the author, then `<selectlist>` will automatically create one. All child elements of the `<selectlist>`, except `<listbox>`, `<option>`s, and `<optgroup>`s will be slotted into this slot.
+- `<button type=selectlist>` - The button which opens the listbox when clicked. The `type=selectlist` attribute indicates to the browser that this button should open the listbox.
+- `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
+- `<listbox>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
+- `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
 ## Styling selectlist
@@ -59,18 +259,24 @@ Selectlist provides a variety of tools to help with styling, including pseudo-se
 
 ### Styling parts of the control
 
-One way to style the control to match your requirements is to use the CSS `::part()` pseudo-element to select the different parts within the control's anatomy that you wish to style.
+Selectlist supports a variety of pseudo-elements to target its different parts:
+- `::button` - Targets the button slot.
+- `::listbox` - Targets the `<listbox>`.
+- `::marker` - Targets the dropdown arrow of the default supplied button.
+- `::selectedoption` - Targets the `<selectedoption>` element.
+
+Each of these pseudo-elements will target the default part if the author doesn't provide their own replacement. If the author provides their own, these pseudo-elements will target the author provided part.
 
 ```html
 <style>
-  .my-select-list::part(button) {
+  .my-select-list::button {
     color: white;
     background-color: #f00;
     padding: 5px;
     border-radius: 5px;
   }
 
-  .my-select-list::part(listbox) {
+  .my-select-list::listbox {
     padding: 10px;
     margin-top: 5px;
     border: 1px solid red;
@@ -91,8 +297,6 @@ The above example results in the following style:
   alt="The rendering of a selectlist control with the above HTML and CSS code"
 />
 
-`::part()` can be used to style the `button`, `selected-value`, and `listbox` parts of the control.
-
 ### `:open` and `:closed` pseudo-selectors
 
 The selectlist element supports the `:open` and `:closed` pseudo selectors as specified by CSS here: https://drafts.csswg.org/selectors/#open-state
@@ -100,8 +304,8 @@ The selectlist element supports the `:open` and `:closed` pseudo selectors as sp
 When the selectlist's listbox is showing, the selectlist element will match `:open`, and when it is not showing, it will match `:closed`. Here is an example which makes the button red when the listbox is closed and green when it is open:
 ```html
 <selectlist>
-  <button id=custombutton slot=button behavior=button>
-    <span behavior=selected-value></span>
+  <button id=custombutton type=selectlist>
+    <selectedoption></selectedoption>
   </button>
   <option>one</option>
   <option>two</option>
@@ -122,7 +326,7 @@ You can further customize the control to fit your needs by providing your own ma
 
 ### Default behavior
 
-The default behavior of the `<selectlist>` control mimics the behavior of the `<select>` control. You can use it just like a native `<select>`, with the following minimal markup:
+The default behavior of `<selectlist>` mimics the behavior and minimal required markup of the current `<select>` element. For instance, the following markup demonstrates the bare minimum necessary to render a `<selectlist>`:
 
 ```html
 <selectlist>
@@ -132,18 +336,36 @@ The default behavior of the `<selectlist>` control mimics the behavior of the `<
 </selectlist>
 ```
 
-When doing so, the default button, select-value, and listbox are created for you.
+When doing so, the default button, `<selectedoption>`, and `<listbox>` are created for you. As with the current `<select>` element, the initial `<option>` will be returned as the `<selectedoption>`.
+
+If one wanted to create groupings of options, then the following minimal markup could be used:
+
+```html
+<label for=ex2>My second example</label>
+<selectlist id=ex2>
+  <optgroup>
+    <legend>Fruits</legend>
+    <option>Apples</option>
+    <option>Oranges</option>
+  </optgroup>
+  <optgroup>
+    <legend>Vegetables</legend>
+    <option>Carrots</option>
+    <option>Onions</option>
+  </optgroup>
+</selectlist>
+```
+
+Note that with the `<select>` element a `label` attribute would have been used to provide the label for the `optgroup`. Being an attribute, this limited authors to using text alone to label their option groups. With the `<selectlist>` the `<legend>` element, rather than the `label` attribute, is how one would provide the label for the option group.
+
 
 ### Slotting your own content
 
-A `<selectlist>` has named [slots](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots#adding_flexibility_with_slots)
-that can be referenced to replace the default parts.
-
-For example, to replace the default button with your own, you can do the following:
+The browser uses imperative slotting to replace default parts with author supplied ones. For example, to replace the default button with your own, you can do the following:
 
 ```html
 <style>
-  .my-custom-select [slot='button'] {
+  .my-custom-select .buttoncontainer {
     display: flex;
     align-content: center;
   }
@@ -162,8 +384,8 @@ For example, to replace the default button with your own, you can do the followi
   }
 </style>
 <selectlist class="my-custom-select">
-  <div slot="button">
-    <button behavior="button">Open</button>
+  <div class="buttoncontainer">
+    <button type=selectlist>Open</button>
     <span class="label">Choose an option</span>
   </div>
   <option>Option 1</option>
@@ -172,9 +394,9 @@ For example, to replace the default button with your own, you can do the followi
 </selectlist>
 ```
 
-The `slot="button"` attribute on the outer `<div>` tells the `<selectlist>` to replace its default button with the contents of that `<div>`.
+The `<div class="buttoncontainer">` tells the `<selectlist>` to replace its default button with the contents of that `<div>` because it is the first child element of the `<selectlist>` which is not a `<listbox>`, `<option>`, or `<optgroup>`.
 
-The `behavior="button"` attribute on the inner `<button>` tells the browser that this element is what we want to use as the new button. The browser will automatically apply all the click and keyboard handling behavior to this element as well as the appropriate accessibility semantics.
+The `type=selectlist` attribute on the inner `<button>` tells the browser that this element should open the listbox when clicked. The browser will automatically apply all the click and keyboard handling behavior to this element as well as the appropriate accessibility semantics.
 
 The above code snippet results in the following style:
 
@@ -183,13 +405,11 @@ The above code snippet results in the following style:
   alt="The rendering of a selectlist control with the above HTML and CSS code"
 />
 
-Note that the `slot` and `behavior` attributes can be used on the same element too.
-
 You can replace the default listbox part in a similar fashion:
 
 ```html
 <style>
-  .my-custom-select [popover] {
+  .my-custom-select listbox {
     width: 300px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -202,19 +422,15 @@ You can replace the default listbox part in a similar fashion:
   }
 </style>
 <selectlist class="my-custom-select">
-  <div slot="listbox">
-    <div popover="auto" behavior="listbox">
-      <option>Option 1</option>
-      <option>Option 2</option>
-      <option>Option 3</option>
-      <option>Option 4</option>
-      <option>Option 5</option>
-    </div>
-  </div>
+  <listbox>
+    <option>Option 1</option>
+    <option>Option 2</option>
+    <option>Option 3</option>
+    <option>Option 4</option>
+    <option>Option 5</option>
+  </listbox>
 </selectlist>
 ```
-
-The element with `behavior="listbox"` is required to have the [popover attribute](https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute) set to `"auto"`. Applying `behavior="listbox"` tells the browser to apply select list listbox behavior to that element: it will be opened when the `<selectlist>`'s button is clicked, and the user can select `<option>`s inside it with mouse, arrow keys, and touch.
 
 The above code snippet results in the following style:
 
@@ -231,7 +447,7 @@ Consider the following example:
 
 ```html
 <style>
-  .my-custom-select [slot='button'] {
+  .my-custom-select .buttoncontainer {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -249,7 +465,7 @@ Consider the following example:
   .my-custom-select button::before {
     content: '\25BC';
   }
-  .my-custom-select [popover] {
+  .my-custom-select listbox {
     padding: 0;
   }
   .my-custom-select .section {
@@ -267,28 +483,26 @@ Consider the following example:
   }
 </style>
 <selectlist class="my-custom-select">
-  <div slot="button">
+  <div class="buttoncontainer">
     <span class="label">Choose a plant</span>
-    <span behavior="selected-value" slot="selected-value"></span>
-    <button behavior="button"></button>
+    <selectedoption></selectedoption>
+    <button type="selectlist"></button>
   </div>
-  <div slot="listbox">
-    <div popover="auto" behavior="listbox">
-      <div class="section">
-        <h3>Flowers</h3>
-        <option>Rose</option>
-        <option>Lily</option>
-        <option>Orchid</option>
-        <option>Tulip</option>
-      </div>
-      <div class="section">
-        <h3>Trees</h3>
-        <option>Weeping willow</option>
-        <option>Dragon tree</option>
-        <option>Giant sequoia</option>
-      </div>
+  <listbox>
+    <div class="section">
+      <h3>Flowers</h3>
+      <option>Rose</option>
+      <option>Lily</option>
+      <option>Orchid</option>
+      <option>Tulip</option>
     </div>
-  </div>
+    <div class="section">
+      <h3>Trees</h3>
+      <option>Weeping willow</option>
+      <option>Dragon tree</option>
+      <option>Giant sequoia</option>
+    </div>
+  </listbox>
 </selectlist>
 ```
 
@@ -346,6 +560,7 @@ interface HTMLSelectListElement : HTMLElement {
   boolean checkValidity();
   boolean reportValidity();
   void setCustomValidity(DOMString error);
+  void showPicker();
 
   readonly attribute NodeList labels;
 };
@@ -380,6 +595,10 @@ Like other form control elements, selectlist supports validity checking attribut
 * [HTML spec for `reportValidity()`](https://html.spec.whatwg.org/#dom-cva-reportvalidity)
 * [HTML spec for `setCustomValidity()`](https://html.spec.whatwg.org/#dom-cva-setcustomvalidity)
 
+### The `showPicker` method
+
+Like other inputs, selectlist supports the `showPicker` method. This method is used to show the listbox. It requires user activation.
+
 ## Why not improve `<select>`
 
 Instead of creating a new `<selectlist>` element, we could improve the existing `<select>` element to meet the same needs. However, there are a few problems with this (borrowed from the [Custom Controls UI Explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md)):
@@ -389,3 +608,12 @@ Instead of creating a new `<selectlist>` element, we could improve the existing 
 - The `<select>` popup has the capability to break outside the browser window, and `<selectlist>` will not. If the author wants this capability, they will have to stick with `<select>`. If the author would rather have custom styling, then they should use `<selectlist>`. This is a big differentiation and is more than just an opt-in for styling, so havingt a separate tag name than an opt-in attribute makes more sense.
 
 Given that we would be required to introduce something new into the platform (attribute, element, etc) to opt-in to the new behavior; we opted for a new element. This comes with the added benefit that over the years most developers that want customization of controls and components will not leverage `<select>` at all; akin to how developers leverage `grid` and `flex` display types for layout instead of `<table>` or `float`. Additionally, this has the potential to simplify the implementation cost since we do not have to make substantial changes to the current `<select>` parser
+
+## Design decisions
+
+- [Why "selectlist" instead of "selectmenu"](https://github.com/openui/open-ui/issues/773)
+- [Why not use the `slot` or `behavior` attributes](https://github.com/openui/open-ui/issues/702)
+- [Why not support the `size` attribute](https://github.com/openui/open-ui/issues/153)
+- [Why support `:checked` instead of `:selected`](https://github.com/openui/open-ui/issues/827)
+- [Why allow interactive content in `<listbox>` but with strong warnings](https://github.com/openui/open-ui/issues/540)
+- [Why not make selection follow focus](https://github.com/openui/open-ui/issues/742)
