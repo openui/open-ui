@@ -1,6 +1,6 @@
 ---
-menu: Proposals
-name: Switch (Editor's Draft)
+menu: Active Proposals
+name: Switch (Explainer)
 path: /components/switch.explainer
 pathToResearch: /components/switch
 layout: ../../layouts/ComponentLayout.astro
@@ -21,9 +21,9 @@ A switch toggles a binary state on or off. Other names include "toggle", "lights
   <dd>Refers to the "off" position of the switch.</dd>
 </dl>
 
-### Parallel standardisation efforts
+### Input type checkbox with switch attribute
 
-- Add switch attribute to the input element to allow for a two-state switch control (`<input type="checkbox" switch>`) https://github.com/whatwg/html/pull/9546 based on the issue https://github.com/whatwg/html/issues/4180.
+There is a [switch proposal at WHATWG](https://github.com/whatwg/html/pull/9546) (also see the original issue at https://github.com/whatwg/html/issues/4180) that would re-use the input element (`<input type="checkbox" switch>`) to implement a switch component. This explainer here is focusing on a different approach, using a standalone `<switch>` element. See the [comparison section](#comparison) for a list of differences between the switch attribute proposal and the switch element explained here.
 
 ### Background
 
@@ -35,7 +35,10 @@ The first ever light switch worked on a technology called the quick-break mechan
 
 The word "toggle" is a reference to a kind of mechanism or joint consisting of two arms, which are almost in line with each other, connected with an elbow-like pivot. However, the phrase "toggle switch" is applied to a switch with a short handle. [^2] <sup>and</sup> [^3]
 
-![Internal components of a toggle switch](https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Light_switch_inside_explained.jpg/440px-Light_switch_inside_explained.jpg)
+<div style="max-width: 400px; margin-inline: auto">
+  ![Internal components of a toggle
+  switch](https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Light_switch_inside_explained.jpg/440px-Light_switch_inside_explained.jpg)
+</div>
 
 ### Use Cases
 
@@ -43,9 +46,127 @@ The word "toggle" is a reference to a kind of mechanism or joint consisting of t
 
 A switch can be used to toggle a binary state. Popular use-cases inlcude switching dark mode on or off, switching WiFi or other settings on or off and extends to any situation where a user is limited to a binary state - true or false, on or off.
 
-![Switch example by Material Design, Google Inc.](https://lh3.googleusercontent.com/9ZiRb_i7vCmW5HZ_uu-WNFljJQUnVSMY9ZOnku7ZknH0t9J0AkZwU7NcowggDruiZ6_bwUru_B1QxLq87L6a5NLVlJns4-8aSvq8aYUCFh28=s0)
+<div style="max-width: 400px; margin-inline: auto">
+  ![Switch example by Material Design, Google
+  Inc.](https://lh3.googleusercontent.com/9ZiRb_i7vCmW5HZ_uu-WNFljJQUnVSMY9ZOnku7ZknH0t9J0AkZwU7NcowggDruiZ6_bwUru_B1QxLq87L6a5NLVlJns4-8aSvq8aYUCFh28=s0)
+</div>
 
 Toggling a switch always has an immediate effect.
+
+### Comparison switch attribute vs. switch element
+
+<div class="question">Are these examples valid?</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Switch attribute</th>
+      <th>Switch element</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Markup</td>
+      <td>
+        ```html
+        <input type="checkbox" switch />
+        ```
+      </td>
+      <td>
+        ```html
+        <switch></switch>
+        ```
+
+        or
+
+        ```html
+        <switch>
+          <track>
+            <toggled></toggled>
+            <untoggled></untoggled>
+          </track>
+          <thumb></thumb>
+        </switch>
+        ```
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Styling (re-coloring tracks)
+      </td>
+      <td>
+        ```css
+        input[switch]::track {
+          background-color: red;
+        }
+        ```
+      </td>
+      <td>
+        ```css
+        switch track {
+          background-color: red;
+        }
+        ```
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Customizing icon on thumb
+      </td>
+      <td>
+        ```css
+        input[switch]::thumb {
+          background-image: url("/checkmark.png");
+        }
+        ```
+
+        - Can't use svg with `currentColor`
+      </td>
+      <td>
+        ```html
+          <switch>
+            <thumb>
+              <svg>...</svg>
+            </thumb>
+          </switch>
+        ```
+
+        - Ability to use inline svg with `currentColor`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Localization of track content
+      </td>
+      <td>
+        ```css
+        input[switch]::on-track {
+          content: 'ON';
+        }
+        input[switch]:lang(de)::on-track {
+          content: 'AN';
+        }
+        ```
+
+        - Localization in CSS is not practical
+      </td>
+      <td>
+        ```html
+          <switch>
+            <track>
+              <toggled>{{ translate('on') }}</toggled>
+              <untoggled>{{ translate('off') }}</untoggled>
+            </track>
+          </switch>
+        ```
+
+        - Any localization technique can be used to define slotted text
+      </td>
+    </tr>
+
+  </tbody>
+</table>
 
 ### Non-goals
 
@@ -174,11 +295,18 @@ Open UI research page: https://open-ui.org/components/switch/
 
 ## Design
 
-_Describe the design of the component, thinking through several perspectives:_
+### User interaction
 
-- _A customer using the component on a web page._
-- _A developer building an app with the component and interacting through HTML/CSS/JavaScript._
-- _A designer customizing the component._
+From a user standpoint, the following interactions should be supported
+
+- Click: toggles the switch
+- Drag & drop: toggles the switch in the direction of the movement, the thumb follows the pointer
+- Swipe: toggles the switch in the direction of the swiping movement, the thumb follows the touch interaction
+- Focus & space: toggles the switch
+
+### Styleability
+
+All parts described in the [anatomy section](#anatomy) should be styleable by either providing an element or pseudo-element.
 
 ### APIs
 
@@ -244,10 +372,17 @@ Animation variant where the thumb and the track move together to reveal the hidd
 ![Switch anatomy with moving track](/images/switch-moving-track-anatomy.png)
 _Source: [Figma source of switch anatomy with moving track](https://www.figma.com/file/uAYj6yVcAGD2OgjwCTqRol/Switch?type=design&node-id=2%3A28&mode=design&t=OAr7EJBXAQ4AEwfI-1)_
 
-Limitations:
+**Edge cases:**
+
+This is a list of potential styling challenges.
 
 - The thumb needs to be at least the height of the track in order to hide the boundary between active and inactive track side underneath.
+
+![exemplary image showing that a smaller thumb will reveal a portion of the inactive track side](/images/switch/thumb-should-be-same-height-as-track.png)
+
 - It's unclear how to style the track and slider if the track content can be of arbitrary length.
+
+![exemplary showing two track sides that are not the same width](/images/switch/track-sides-should-be-same-width.png)
 
 #### Switch with static track
 
@@ -261,9 +396,11 @@ Animation variant where only the thumb moves and the background of the switch ch
 ![Switch anatomy with static track](/images/switch-static-track-anatomy.png)
 _Source: [Figma source of switch anatomy with static track](https://www.figma.com/file/uAYj6yVcAGD2OgjwCTqRol/Switch?type=design&node-id=2%3A28&mode=design&t=OAr7EJBXAQ4AEwfI-1)_
 
-Limitations:
+**Edge cases:**
 
-- The content on both sides cannot be wider than the tumb. Otherwise, the thumb is no longer capable of hiding the content of the inactive track content.
+This is a list of potential styling challenges.
+
+- The content on both sides cannot be wider than the thumb. Otherwise, the thumb is no longer capable of hiding the content of the inactive track content. ![exemplary image showing a right track with long text and a left track with very little, making it obvious that this is a visual problem](/images/switch/thumb-should-hide-track.png)
 
 #### DOM Structure
 
@@ -385,21 +522,21 @@ A JavaScript event listener is used to trigger the immediate action assigned to 
 
 ##### Type submit
 
+<div class="question">Feedback on this feature would be welcome.</div>
+
 For a more traditional, non-JavaScript approach, it's necessary to receive the state of the switch on the server. In order to facilitate the directness of the action, a switch can be of type "submit". Like a submit button, toggling the switch will immediately submit the associated form to the server. This enables creating a HTML/CSS only settings page while staying true to user expectations of how the component should behave.
 
 #### Use with Assistive Technology
 
 {/* _Are there any details about shadow dom, focus delegation, or aria attributes that need special attention?_ */}
 
-Focus should be delegated to the button inside the component.
+The switch element can be associated with the existing `role="switch"`.
 
 ### Globalization
 
-_Consider whether the component has any special globalization needs such as:_
-
-- _Special RTL handling_
-- _Swapping of internal icons/visuals_
-- _Localization_
+<div class="question">
+  Is thumb in the "on" position on the left in a `rtl` directional environment?
+</div>
 
 ### Security
 
@@ -407,31 +544,10 @@ _Consider whether the component has any special globalization needs such as:_
 
 No security implications are expected.
 
-### Performance
+## Related issues
 
-_Are there any performance pitfalls or challenges with implementing the component? (examples below)_
-
-- If the component renders a loop of items, should certain areas be considered for virtualization?
-- If the component needs to measure an area before rendering, how will jank be avoided?
-- If any measuring is needed at all, can rAF techniques help queue measures and prevent synchronous reflows?
-
-## Dependencies
-
-_Will implementing the component require taking on any dependencies?_
-
-- _3rd party libraries_
-- _Upcoming standards we need to polyfill_
-- _Do any dependencies bring along an associated timeline?_
-
-### Platform Requirements
-
-_Are there any core web platform features that are needed to implement this component well?_
-
-### Tooling
-
-_Are there any special considerations for DevTools? Will tooling changes need to be made? Is there a special way to light up this component in DevTools that would be compelling for developers/designers?_
-
----
+- [switch: What customizability for animations should be supported?](https://github.com/openui/open-ui/issues/816)
+- [[switch]: Naming of the component and it's parts](https://github.com/openui/open-ui/issues/804)
 
 ## Resources
 
@@ -443,12 +559,6 @@ _Are there any special considerations for DevTools? Will tooling changes need to
 - When to use a toggle switch: https://www.thedesignerstoolbox.com/design-system/when-to-use-toggle-switch-in-ux/
 - History Of Toggle + UI/UX Case Study + UI Samples: https://www.behance.net/gallery/70302039/History-Of-Toggle-UIUX-Case-Study-UI-Samples
 - Material 3 Switch: https://m3.material.io/components/switch/overview
-
----
-
-## Next Steps
-
-_What next steps, if any, are there? Is there some functionality that would be a nice-to-have or a common feature in other implementations that could be added but is not considered part of the MVP? Link all feature additions, modifications, bugs, or editorial change issues._
 
 ---
 
