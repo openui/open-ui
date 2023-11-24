@@ -240,7 +240,7 @@ A switch differs from a radio button because:
   of the more intuitive "on"?
 </div>
 
-A `<switch>` can be part of a form and has a mechanism (`type="submit"`) to immediately submit the form it's part of. The value of a switch is reported to the form target as either "on" or "off".
+A `<switch>` can be part of a form. The value of a switch is reported to the form target as either "on" or "off".
 
 #### Animation
 
@@ -315,8 +315,8 @@ All parts described in the [anatomy section](#anatomy) should be styleable by ei
 #### Properties and Attributes
 
 <div class="question">
-  If form associated, should default value of "on" be submitted if switch is on and the user did not
-  specify a value to align with the [checkbox default value
+  If form associated, should default value of "on" be submitted if the switch is on and the user did
+  not specify a value to align with the [checkbox default value
   behavior](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#value:~:text=If%20the%20value%20attribute%20was%20omitted%2C%20the%20default%20value%20for%20the%20checkbox%20is%20on%2C%20so%20the%20submitted%20data%20in%20that%20case%20would%20be%20subscribe%3Don.)?
 </div>
 
@@ -325,17 +325,16 @@ All parts described in the [anatomy section](#anatomy) should be styleable by ei
   `<switch toggled>` seems more natural while `<switch checked>` is already an established standard
 </div>
 
-| Property Name | Attribute Name | Type      | Default Value | Description                                                                                                                                                                                                                    |
-| ------------- | -------------- | --------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `toggled`(?)  | `toggled`      | `boolean` | `false`       | Indicates if the switch should be "on" initially (similar to the `checked` attribute on the checkbox).                                                                                                                         |
-| `value`       | `value`        | `string`  | `"off"` (?)   | The current value of the slider. Only set if the switch is toggled/on on form submission.                                                                                                                                      |
-| `name`        | `name`         | `string`  | `""`          | The name of the component.                                                                                                                                                                                                     |
-| `id`          | `id`           | `string`  | `""`          | The unique identifier of the component.                                                                                                                                                                                        |
-| `type`        | `type`         | `string`  | `button`      | Similar to the `<button>` or `<input>`, the type property for the switch can take either "button" or "submit". "Button" is used for triggering JavaScript actions, "submit" is used to immediately submit the associated form. |
-| `readonly`    | `readonly`     | `boolean` | `false`       | Indicates that the switch is not interactive but its value should still be submitted with the form.                                                                                                                            |
-| `autofocus`   | `autofocus`    | `boolean` | `false`       | Get focus by default.                                                                                                                                                                                                          |
-| `required`    | `required`     | `boolean` | `false`       | Indicates that the switch is invalid unless on.                                                                                                                                                                                |
-| `form`        | `form`         | `string`  | `""`          | Associates the element with a form in the document whose `id` is this value.                                                                                                                                                   |
+| Property Name | Attribute Name | Type      | Default Value | Description                                                                               |
+| ------------- | -------------- | --------- | ------------- | ----------------------------------------------------------------------------------------- |
+| `checked`     | `checked`      | `boolean` | `false`       | Indicates if the switch should be "on" initially.                                         |
+| `value`       | `value`        | `string`  | `"off"` (?)   | The current value of the slider. Only set if the switch is toggled/on on form submission. |
+| `name`        | `name`         | `string`  | `""`          | The name of the component.                                                                |
+| `id`          | `id`           | `string`  | `""`          | The unique identifier of the component.                                                   |
+| `disabled`    | `disabled`     | `boolean` | `false`       | Indicates that the switch is in a disabled state.                                         |
+| `autofocus`   | `autofocus`    | `boolean` | `false`       | Get focus by default.                                                                     |
+| `required`    | `required`     | `boolean` | `false`       | Indicates that the switch is invalid unless on.                                           |
+| `form`        | `form`         | `string`  | `""`          | Associates the element with a form in the document whose `id` is this value.              |
 
 #### Methods
 
@@ -514,17 +513,7 @@ Content for thumb and either track side can be defined by the author.
 
 {/* _Does this component integrate with form submission, form validation, etc.? Can integration be accomplish with standard APIs or are special work-arounds required?_ */}
 
-The switch is also a form element, acting as a mix between a button and a checkbox - a stateful button.
-
-##### Type button
-
-A JavaScript event listener is used to trigger the immediate action assigned to the switch. This can include calling a REST API or toggling a class on an element (e.g. dark mode).
-
-##### Type submit
-
-<div class="question">Feedback on this feature would be welcome.</div>
-
-For a more traditional, non-JavaScript approach, it's necessary to receive the state of the switch on the server. In order to facilitate the directness of the action, a switch can be of type "submit". Like a submit button, toggling the switch will immediately submit the associated form to the server. This enables creating a HTML/CSS only settings page while staying true to user expectations of how the component should behave.
+The switch is a form associated element.
 
 #### Use with Assistive Technology
 
