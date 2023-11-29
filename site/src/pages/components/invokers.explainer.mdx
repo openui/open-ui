@@ -281,7 +281,7 @@ video player.
 
 ```html
 <button invoketarget="my-video" invokeaction="playpause">Play/Pause</button>
-<button invoketarget="my-video" invokeaction="mute">Mute</button>
+<button invoketarget="my-video" invokeaction="toggleMuted">Mute/Unmute</button>
 
 <video id="my-video"></video>
 ```
@@ -385,11 +385,11 @@ that this list is ordered and higher rules take precedence:
 | `<video>`       | `'playpause'`         | Toggle the `.playing` value                                                          |
 | `<video>`       | `'pause'`             | If `.playing` is `true`, set it to `false`                                           |
 | `<video>`       | `'play'`              | If `.playing` is `false`, set it to `true`                                           |
-| `<video>`       | `'mute'`              | Toggle the `.muted` value                                                            |
+| `<video>`       | `'toggleMuted'`       | Toggle the `.muted` value                                                            |
 | `<audio>`       | `'playpause'`         | Toggle the `.playing` value                                                          |
 | `<audio>`       | `'pause'`             | If `.playing` is `true`, set it to `false`                                           |
 | `<audio>`       | `'play'`              | If `.playing` is `false`, set it to `true`                                           |
-| `<audio>`       | `'mute'`              | Toggle the `.muted` value                                                            |
+| `<audio>`       | `'toggleMuted'`       | Toggle the `.muted` value                                                            |
 | `<*>`           | `'toggleFullscreen'`  | If the element is fullscreen, then exit, otherwise request to enter                  |
 | `<*>`           | `'requestFullscreen'` | Request the element to enter into 'fullscreen' mode                                  |
 | `<*>`           | `'exitFullscreen'`    | Request the element to exit 'fullscreen' mode                                        |
