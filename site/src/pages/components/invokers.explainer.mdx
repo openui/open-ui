@@ -111,13 +111,12 @@ to create custom Invoke actions for their components.
 
 Built-in interactive elements have built-in behaviours (detailed below) which
 are determined by the `invokeaction`. The built-in names _must not_ contain a
-`-`. An invokeAction without a dash that is not a built-in is considered
+`-`. An `invokeaction` without a dash that is not a built-in is considered
 invalid, and will not dispatch an InvokeEvent.
 
 Valid invokeactions (that is: custom invokeactions or a valid built-in) will
-dispatch events InvokeEvents, allowing custom code to take control of
-invocations (for example calling `.preventDefault()` or executing custom
-side-effects).
+dispatch InvokeEvents, allowing custom code to take control of invocations (for
+example calling `.preventDefault()` or executing custom side-effects).
 
 Elements with `invoketarget` set will dispatch an `InvokeEvent` on the
 _Invokee_ (the element referenced by `invoketarget`) when the element is
@@ -272,10 +271,9 @@ will be `aria-expanded=true` when the _Invokee_ is open and
 ### Defaults
 
 Depending on the target set by `invoketarget`, invoking the button will trigger
-additional behaviours alongside the event dispatch. Invoking a custom
-invokeaction will _always_ dispatch a trusted `InvokeEvent`. In addition the
-following table represents how built-in invocations on specific element types
-are handled. Note that this list is ordered and higher rules take precedence:
+additional behaviours alongside the event dispatch. In addition the following
+table represents how built-in invocations on specific element types are
+handled. Note that this list is ordered and higher rules take precedence:
 
 | Invokee Element | `action` hint         | Behaviour                                                                            |
 | :-------------- | :-------------------- | :----------------------------------------------------------------------------------- |
