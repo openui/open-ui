@@ -1,0 +1,199 @@
+---
+menu: Active Proposals
+name: Interest Invokers (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors: [Keith Cirkel](https://github.com/keithamus)
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+# Interest Invokers
+
+## Pitch in Code
+
+```html
+<button interesttarget="my-tooltip">Hover/Focus to show the tooltip</button>
+
+<span popover=hint id="my-toolip">This is the tooltip</span>
+```
+
+## Introduction
+
+Following [invokers](../invokers.explainer), adding an `interesttarget`
+attribute to interactive elements: starting with `<button>`, `<input
+type="button">`/`<input type="reset">`, and `<a>` (perhaps expanding to
+`<area>`, `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
+[#14](https://github.com/openui/open-ui/issues/908)). This would allow
+disclosure of high fidelity tooltips in a more accessible and declarative way.
+Elements with `interesttarget` will - when hovered, long pressed, or focussed -
+dispatch an `InterestEvent` on the element referenced by `interesttarget`, with
+some default behaviours.
+
+### Terms
+
+- Interest/Shows Interest: The action of _Interest_ refers to the user "landing"
+  on an element without invoking it, using a HID. If the HID is a mouse, this
+  would be a `hover` event. If the HID is a touch screen, this would be a long
+  press on the element using a stylus or finger, if the HID is a keyboard, this
+  would be when the element is focussed. For other HIDs such as eye tracking or
+  pedals or game controllers, the equivalent "focus or hover" action is used to
+  take interest on the element.
+- Loses/Lost Interest: The action of _Loses Interest_ refers to the user "moving
+  away" from an element, or its _interestee_, using a HID; in other words
+  interest must be on a different element that is neither. Elements can only
+  _Lose Interest_ if they are in the state of Showing Interest. If the HID is a
+  mouse, this would be a `mouseout` event. If the HID is a touch screen, this
+  would be long pressing outside of the elements bounds. If the HID is a
+  keyboard, this would be moving focus away from the element. For other HIDs
+  such as eye tracking or game controllers, the equivalent "focusout or
+  mouseout" action is used to _Lose Interest_ on the element.
+- Interestee: An element which is referenced to by an Interest element, via the
+  `interesttarget` attribute.
+
+## Proposed Plan
+
+In the style of `invoketarget`, this document proposes we add `interesttarget`
+as an available attribute to `interesttarget` attribute to `<button>`, `<a>`,
+`<area>` and `<input>` elements.
+
+```webidl
+interface mixin InvokerElement {
+  [CEReactions] attribute Element? invokeTargetElement;
+  [CEReactions] attribute DOMString invokeAction;
+};
+HTMLButtonElement extends InvokerElement
+HTMLInputElement extends InvokerElement
+```
+
+The `interesttarget` value should be an IDREF pointing to an element within the
+document. `.interestTargetElement` also exists on the element to imperatively
+assign a node to be the invoker target, allowing for cross-root invokers (in
+some cases, see [the popovertarget attr-asociated element
+steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element)
+for more).
+
+Elements with `interesttarget` set will dispatch an `InterestEvent` on the
+_Interestee_ (the element referenced by `interesttarget`) when the element
+_Shows Interest_ or _Loses Interest_. When the element _Shows Interest_ the
+event type will be `'interest'`. If the element has _Shown Interest_, and
+interest moves away from both the _Interest Element_ and the _Interestee_, then
+the element _Loses Interest_ and an `InterestEvent` with the type of
+`'loseinterest'` will be dispatched on the _Interestee_. The event also contains
+a `relatedTarget` property that will reference the _Interest_ element.
+`InterestEvents` are always non-bubbling, cancellable events.
+
+```webidl
+[Exposed=Window]
+interface InterestEvent : Event {
+  constructor(DOMString type, InterestEventInit interestEventInit);
+  readonly attribute Element invoker;
+};
+dictionary InterestEventInit : EventInit {
+  Element invoker;
+};
+```
+
+Both `interesttarget` and `invoketarget` can exist on the same element at the
+same time, and both should be respected.
+
+If a `<button>` is a form participant, or has `type=submit`, then `invoketarget`
+_must_ be ignored. `interesttarget` is still valid in these scenarios.
+
+If an `<input>` is a form participant, or has a `type` other than `reset` or
+`button`, then `invoketarget` and `interesttarget` _must_ be ignored. `interesttarget`
+additionally works with `type` of `submit`.
+
+### Example Code
+
+#### Popovers
+
+An `interesttarget` allows for tooltips using `popover`:
+
+```html
+<button interesttarget="my-popover">Open Popover</button>
+
+<div id="my-popover" popover="hint">Hello world</div>
+```
+
+#### Custom behaviour
+
+Elements with _Interest_ will dispatch events on the _Interestee_ element,
+allowing for custom JavaScript to be triggered without having to wire up manual
+event handlers to the Interest elements.
+
+```html
+<button interesttarget="my-custom">
+  When this button shows interest, the below div will display.
+</button>
+
+<div id="my-custom" hidden>Supplementary information</div>
+
+<script>
+  const custom = document.getElementById("my-custom");
+  custom.addEventListener("interest", (e) => {
+    custom.hidden = false;
+  });
+  custom.addEventListener("loseinterest", (e) => {
+    custom.hidden = true;
+  });
+</script>
+```
+
+### Usability
+
+The events `interest` and `loseinterest` are intentionally abstract to allow
+more complex usability concepts to unfold. For example browsers may design in a
+delay to the events, or not change the "hit areas" for when a pointer moves in
+or out of the Interest Invoker, to aid in usability. One option being explored
+is the ability to add "safe areas" or "hit triangles", which allow the user to
+move the pointer between the Interest Invoker (e.g. the button) and Interestee
+(e.g. the tooltip). See [#963](https://github.com/openui/open-ui/issues/963)
+for more.
+
+### Accessibility
+
+> Warning: This section is TBD. PRs and discussions welcome.
+
+### Defaults
+
+Depending on the target set by `interesttarget`, showing interest or losing
+interest can trigger additional behaviours alongside the event dispatch.
+Showing/losing interest on an interesttarget will _always_ dispatch a trusted
+`InterestEvent`, but in addition the following table represents how interest on
+specific element types are handled. Note that this list is ordered and higher
+rules take precedence:
+
+| Interestee Element | Event Type       | Behaviour                            |
+| :----------------- | :--------------- | :----------------------------------- |
+| `<* popover=hint>` | `'interest'`     | Call `.showPopover()` on the invokee |
+| `<* popover=hint>` | `'loseinterest'` | Call `.hidePopover()` on the invokee |
+
+> Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
+
+### PAQ (Potentially Asked Questions)
+
+#### Why the name `interest`? Why not `hover` or `focus`?
+
+Much like `click`, `hover` or `focus` are specific to certain types of HID, and
+are not terms which encompass all viable methods of interaction. Lots of
+[alternatives were discussed](https://github.com/openui/open-ui/issues/767) and
+it was deemed that `interest` is the best name to explain the concept of a
+"hover or focus or equivalent".
+
+#### Why is `interesttarget` on a lot more elements than `invoketarget`?
+
+While _invocation_ should only be limited to buttons, disclosure of
+supplementary information can be expanded to _all_ interactive elements. There
+are many useful use cases for offering a tooltip on anchors, such as signalling
+that they are external, or that they will open in a new window, or to show
+preview information (think: preview windows on iOS Safari or the hovercards that
+display on GitHub over a user's handle).
+
+#### Why is `interesttarget` not unlimited, like `title` is?
+
+It could be considered a mistake to allow `title` on all elements; as adding
+interactivity to non-interactive elements creates many problems. Limiting where
+`interesttarget` is allowed aims to create a "pit of success", guiding
+developers to use it only on interactive elements, where it makes sense.
