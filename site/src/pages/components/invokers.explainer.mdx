@@ -281,13 +281,12 @@ handled. Note that this list is ordered and higher rules take precedence:
 | `<* popover>`   | `'togglePopover'`     | Call `.togglePopover()` on the invokee                                               |
 | `<* popover>`   | `'hidePopover'`       | Call `.hidePopover()` on the invokee                                                 |
 | `<* popover>`   | `'showPopover'`       | Call `.showPopover()` on the invokee                                                 |
-| `<dialog>`      | `'auto'`              | If the `<dialog>` is not `open`, call `showModal()`, otherwise cancel the dialog     |
-| `<dialog>`      | `'toggleModal'`       | If the `<dialog>` is not `open`, call `showModal()`, otherwise cancel the dialog     |
-| `<dialog>`      | `'cancel'`            | If the `<dialog>` is `open`, cancel the dialog                                       |
+| `<dialog>`      | `'auto'`              | If the `<dialog>` is not `open`, call `showModal()`, otherwise close the dialog      |
 | `<dialog>`      | `'showModal'`         | If the `<dialog>` is not `open`, call `showModal()`                                  |
 | `<dialog>`      | `'close'`             | If the `<dialog>` is `open`, close and use the button `value` for returnValue        |
 
-Futher behaviours have been designed and may ship after the initial release of Invokers:
+Futher behaviours have been designed and may ship after the initial release of
+Invokers, the names and exact semantics may be subject to change:
 
 | Invokee Element | `action` hint         | Behaviour                                                                            |
 | :-------------- | :-------------------- | :----------------------------------------------------------------------------------- |
@@ -295,6 +294,8 @@ Futher behaviours have been designed and may ship after the initial release of I
 | `<details>`     | `'toggle'`            | If the `<details>` is `open`, then close it, otherwise open it                       |
 | `<details>`     | `'open'`              | If the `<details>` is not `open`, then open it                                       |
 | `<details>`     | `'close'`             | If the `<details>` is `open`, then close it                                          |
+| `<dialog>`      | `'toggle'`            | If the `<dialog>` is `open`, cancel the dialog                                       |
+| `<dialog>`      | `'cancel'`            | If the `<dialog>` is `open`, cancel the dialog                                       |
 | `<select>`      | `'showPicker'`        | Call `.showPicker()` on the invokee                                                  |
 | `<input>`       | `'showPicker'`        | Call `.showPicker()` on the invokee                                                  |
 | `<video>`       | `'playpause'`         | Toggle the `.playing` value                                                          |
