@@ -484,7 +484,7 @@ Note that in contrast to the `::backdrop` pseudo element for modal dialogs and f
 For elements that are displayed on the top layer via this API, there are a number of things that can cause the element to be removed from the top-layer, besides the ones [described above](#showing-and-hiding-a-popover). These fall into three main categories:
 
 - **One at a Time.** Another element being added to the top-layer causes existing top layer elements to be removed. This is typically used for “one at a time” type elements: when one popover is shown, other popovers should be hidden, so that only one is on-screen at a time. This is also used when “more important” top layer elements get added. For example, fullscreen elements should close all open popovers.
-- **Light Dismiss.** User action such as clicking outside the element, hitting Escape, or causing keyboard focus to leave the element should all cause a displayed popover to be hidden. This is typically called “light dismiss”, and is discussed in more detail in [this section](#light-dismiss).
+- **Light Dismiss.** User action such as clicking outside the element or hitting Escape should all cause a displayed popover to be hidden. This is typically called “light dismiss”, and is discussed in more detail in [this section](#light-dismiss).
 - **Other Reasons.** Because the top layer is a UA-managed resource, it may have other reasons (for example a user preference) to forcibly remove elements from the top layer.
 
 In all such cases, the UA is allowed to forcibly remove an element from the top layer and re-apply the `display:none` popover UA rule. The rules the UA uses to manage these interactions depends on the element types, and this is described in more detail in [this section](#classes-of-top-layer-ui).
