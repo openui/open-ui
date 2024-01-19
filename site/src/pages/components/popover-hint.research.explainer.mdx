@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@aleventhal](https://github.com/aleventhal)
-- Last updated: October 26, 2023
+- Last updated: January 19, 2024
 
 A followup proposal to the [original Popover proposal](https://open-ui.org/components/popover.research.explainer/), which adds several features related to building hints/tooltips.
 
@@ -46,7 +46,7 @@ It turns out, the definition of "tooltip" can be tricky. There are several defin
 2. The "triggered by hover" definition: any **pop-up window/dialog**, containing **any type of content**, that **opens when a user mouse-hovers** an element.
 3. The "semantic" definition: A popover containing **non-essential**, **auxiliary** information about a context element.
 
-Definition <span>#</span>1 is too limiting, and does not capture common use cases that include non-textual content. A good example is the window that appears when you hover over a username on Github:
+Definition <span>#</span>1 is too limiting, and does not capture common use cases that include non-textual content. <a id="github-example"></a> A good example is the window that appears when you hover over a username on Github:
 
   ![Github user information tooltip](/images/github-tooltip.png)
 
@@ -101,7 +101,7 @@ As described above, there are many behaviors associated with tooltips.
 
 The invokers proposal covers hover/focus/etc triggering all kinds of things, including popovers, dialogs and more. It fully handles the behaviors described in sections [1](#1-triggering-a-tooltip) and [3](#3-dismissing-a-tooltip). Since that proposal is very general, and includes many non-popover use cases, it makes sense to discuss it separately.
 
-**Note also** that this proposal is **orthogonal** to the [invokers](https://open-ui.org/components/invokers.explainer) proposal. The behaviors described here can function on their own, via the existing `popovertarget=idref` mechanism, or even via Javascript. Of course, very much like the [Anchor Positioning](https://drafts.csswg.org/css-anchor-position-1/) feature, hint popovers will become even more powerful once the [invokers](https://open-ui.org/components/invokers.explainer) mechanism has landed. But these two features do not need to be gated on each other.
+**Note also** that this proposal is **orthogonal** to the [invokers](https://open-ui.org/components/invokers.explainer) proposal. The behaviors described here can function on their own, via the existing `popovertarget=idref` mechanism, or even via Javascript. Of course, very much like the [Anchor Positioning](https://drafts.csswg.org/css-anchor-position-1/) feature, hint popovers will become even more powerful once the [invokers](https://open-ui.org/components/invokers.explainer) mechanism has landed. But these two features do not need to be dependent on each other, or land together.
 
 # Proposal: popover=hint
 
@@ -109,19 +109,30 @@ This proposal is to add one more value to the [popover attribute](https://develo
 
 When a hint is shown, it behaves differently from other popover types such as `popover=auto` and `popover=manual` in a few ways:
 
-|               | `popover=auto`            | `popover=hint` | `popover=manual` |
-| ------------- | ------------------------- | -------------- | --------------   |
-| Light dismiss |      Yes                  |     Yes        |      No          |
-| Force-hides:  | Other `auto`s and `hint`s | Other `hint`s  | Nothing          |
-| Nesting:      |     Yes                   | No [*](#nesting_star)             | N/A - no light dismiss  |
+|               | `popover=auto`                | `popover=hint`              | `popover=manual`       |
+| ------------- | ----------------------------- | --------------------------- | ---------------------- |
+| Light dismiss |      Yes                      |     Yes                     |      No                |
+| Force-hides:  | Unrelated `auto`s and `hint`s | Other `hint`s               | Nothing                |
+| Nesting:      |     Yes                       | [Special](#popover-stacks) | N/A - no light dismiss |
 
-First, hints should always be light dismissible. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key will close a hint.
+First, hints should always be light dismissible. They are transient, supplementary information, so they should not require affirmative action to close them. Clicking or tapping outside or hitting the <kbd>ESC</kbd> key (or any [close request](https://html.spec.whatwg.org/#close-request)) will close a hint.
 
-The second row ("Force-hides") shows that tooltip content is "secondary" to other content, so hints do not hide other non-hint popovers. An example use case for this is that there is a select list picker open, and the user is selecting from the available options. While doing that, the user mouse-hovers another element on the page to see a tooltip that might inform them about which option to pick. While the tooltip is shown, the select list picker should not be closed.
+The second row ("Force-hides") shows that tooltip content is "secondary" to other content, so hints do not hide other **non**-hint popovers. An example use case for this is that there is a `<select>` picker open, and the user is selecting from the available options. While doing that, the user mouse-hovers another element on the page to see a tooltip that might inform them about which option to pick. When the tooltip is shown, the select list picker should not be closed. In essence, the hint is "secondary" and *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another tooltip is shown, the first tooltip should be closed. It would be confusing to have two unrelated hints open at a time. So hints should close other unrelated hints.
 
-Second, when a hint is opened, it should not immediately close other `popover=auto` popovers that are open. For example, if a select picker UI is opened as a `popover=auto`, and the user hovers or focuses an unrelated element to see its hint, that action should not close the select picker. In essence, the hint is "secondary" and *even more transient* than the picker, so it shouldn't take precedence. However, if the user subsequently hovers/focuses a *second* unrelated element and another hint is shown, the first hint should be closed. It would be confusing to have two unrelated hints open at a time. So hints should close other hints.
+The third row ("Nesting") is more nuanced and interesting. (See [this issue](https://github.com/whatwg/html/issues/9776) and [this issue](https://github.com/openui/open-ui/issues/854) for more discussion.) The next section explores this behavior in more detail.
 
-**<a id="nesting_star">*</a>** The third row ("Nesting") is more debatable (see [this issue](https://github.com/whatwg/html/issues/9776) and [this issue](https://github.com/openui/open-ui/issues/854)). In most cases, tooltips are never nested. However, there are counterexamples in which one tooltip contains additional elements that have tooltips of their own. At this point, it is unclear whether hints should be allowed to be nested within each other, in the same way that `popover=auto` popovers can be nested. See https://github.com/whatwg/html/issues/9776 for the latest.
+# Popover Stacks
+
+In most cases, tooltips are never nested - they are single bits of auxiliary information about something, and they are not related to one another. However, there are examples in which one tooltip is fairly "rich", and contains additional elements that have tooltips of their own. (One example of this use case comes from Github, as [seen in the "rich tooltip" example above](#github-example).) In that case, the "contained" tooltip should not dismiss the "containing" tooltip. This leads to the need for a separate "hint stack" which is separate from the "auto stack" already present for `popover=auto` popovers. Further, it should also be possible to nest a `popover=hint` within a `popover=auto`, since a very similar use case would be a `popover=auto` that contains an element that triggers a `popover=hint`. If the containing `popover=auto` and its contained `popover=hint` are both open, and the user hovers an unrelated `popover=hint`, that action should not close either of the first two, since those are rooted in a `popover=auto`.
+
+Given the above use cases, a required set of behaviors emerges:
+
+1. There are two stacks of popovers, one called the "auto stack" and one called the "hint stack".
+2. A `popover=auto` popover *always* gets added to the "auto stack", as today.
+3. If a `popover=hint` is nested (in the [normal popover sense of nesting](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using#nested_popovers)) inside an open `popover=auto`, then the `popover=hint` should be added to the "auto stack", since it's nested within an auto popover. Note that this means the "auto stack" can contain both `popover=auto` and `popover=hint` popovers.
+4. If a `popover=hint` is nested within another `popover=hint`, or if it is not nested at all, then it should be added to the "hint stack". It is unrelated to other `popover=auto` popovers.
+5. A `popover=auto` can never be nested inside a `popover=hint`.
+
 
 # Accessibility
 
@@ -166,3 +177,4 @@ There is a [WHATWG HTML spec PR](https://github.com/whatwg/html/pull/9778) open 
 - [OpenUI: How to resolve a11y and other issues](https://github.com/openui/open-ui/issues/526#issuecomment-1219845155)
 - [OpenUI: How to provide keyboard access](https://github.com/openui/open-ui/issues/530)
 - [OpenUI: Resolution to use `interest` as the name of the value](https://github.com/openui/open-ui/issues/767#issuecomment-1654177227)
+- [WHATWG: Discussion of the overall feature, plus the nestability of hints](https://github.com/whatwg/html/issues/9776)
