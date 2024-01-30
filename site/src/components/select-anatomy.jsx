@@ -6,7 +6,7 @@ const SelectAnatomy = () => {
     <AnatomyWrapper>
       <Host name="select">
         <Slot name="button">
-          <Part name="button type=selectlist">
+          <Part name="button type=select">
             <Part name="selectedoption">Currently selected option</Part>
             <Part name="marker"></Part>
           </Part>
