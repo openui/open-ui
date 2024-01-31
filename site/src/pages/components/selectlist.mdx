@@ -27,6 +27,7 @@ import Image from '../../components/image.astro'
   - [Extending the markup](#extending-the-markup)
   - [Demo page](#demo-page)
 - [Keyboard Behavior](#keyboard-behavior)
+- [`multiple` and `size` attributes](#multiple-and-size-attributes)
 - [Design decisions](#design-decisions)
 
 ## Background
@@ -38,6 +39,8 @@ The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archive
 ## Opting in to the new behavior
 
 The `<select>` element will continue to behave as it currently does unless a `<button>` or `<datalist>` element is provided as a child of the `<select>`. `<button>` elements replace the native button which opens the listbox, and `<datalist>` replaces popup listbox. By replacing the native components with regular web content, the contents are fully stylable and customizable.
+
+The current behavior in the HTML parser for `<select>` is to remove all tags which arent `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`.
 
 Here is a basic `<select>` element today:
 ```html
@@ -487,6 +490,10 @@ When the listbox is open:
 * The down arrow key moves focus forwards in the list of options and changes the selected value to the newly selected option.
 * The left and right arrow keys do nothing.
 
+## `multiple` and `size` attributes
+
+The HTML parser will not allow `<button>` or `<datalist>` children when the `multiple` or `size` attributes are present on `<select>`. This will ensure that the old rendering behavior of `multiple` and `size` is used. If the author adds a `<datalist>` or `<button>` via script to a `<select multiple>` or `<select size>`, the old rendering will still be used. In the future, we would like to upgrade `<select multiple>` to become stylable, at which time we will change the HTML parser again to allow `<button>` and `<datalist>` children. This also allows feature detection to know whether `<select multiple>` improvements are ready to be used. More detail in [this issue](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971).
+
 ## Design decisions
 
 - [Why reuse `<select>` instead of creating a new element](https://github.com/openui/open-ui/issues/970)
@@ -495,3 +502,4 @@ When the listbox is open:
 - [Why support `:checked` instead of `:selected`](https://github.com/openui/open-ui/issues/827)
 - [Why allow interactive content in `<listbox>` but with strong warnings](https://github.com/openui/open-ui/issues/540)
 - [Why not make selection follow focus](https://github.com/openui/open-ui/issues/742)
+- [Why not allow select or datalist in size/multiple select](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971)
