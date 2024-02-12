@@ -21,7 +21,7 @@ A switch toggles a binary state on or off. Other names include "toggle", "lights
   <dd>Refers to the "off" position of the switch.</dd>
 </dl>
 
-### Input type checkbox with switch attribute
+### Alternative proposal
 
 There is a [switch proposal at WHATWG](https://github.com/whatwg/html/pull/9546) (also see the original issue at https://github.com/whatwg/html/issues/4180) that would re-use the input element (`<input type="checkbox" switch>`) to implement a switch component. This explainer here is focusing on a different approach, using a standalone `<switch>` element. See the [comparison section](#comparison) for a list of differences between the switch attribute proposal and the switch element explained here.
 
@@ -117,7 +117,7 @@ Toggling a switch always has an immediate effect.
       <td>
         ```css
         input[switch]::thumb {
-          background-image: url("/checkmark.png");
+          background-image: url("/checkmark.svg");
         }
         ```
 
@@ -141,11 +141,17 @@ Toggling a switch always has an immediate effect.
       </td>
       <td>
         ```css
-        input[switch]::on-track {
+        input[switch]::before {
           content: 'ON';
         }
-        input[switch]:lang(de)::on-track {
+        input[switch]:lang(de)::before {
           content: 'AN';
+        }
+        ```
+
+        ```css
+        input[switch]::before {
+          content: attr(data-on-text);
         }
         ```
 
@@ -174,7 +180,7 @@ Toggling a switch always has an immediate effect.
 
 #### Non-binary states
 
-It's not recommended to use a switch to toggle between two opposite states[^4]. This could include a list vs. map view or, confusingly, switching between light and dark mode (switch light or dark mode on or off, but don't toggle between these opposing states).
+It's not recommended to use a switch to toggle between two opposite states[^4]. This could include a list vs. map view or switching between light and dark mode. Light mode can be switched on or off, but don't toggle between light and dark - two opposing states.
 
 #### Non-immediate action
 
@@ -220,19 +226,13 @@ A switch differs from a checkbox because:
 
 A switch differs from a radio button because:
 
-- It always has an initial state, either on or off. A radio button group can be in an initial "nothing selected", invalid state
+- It always has an initial state, either on or off. A radio button group can be in an initial "nothing selected" state
 - Switches cannot be grouped together like radio buttons with the same `name` attribute. Two switches cannot have the same `name` attribute.
 - It requires an immediate action, no confirmation is needed for the state to take effect
 
 ### Features
 
 {/* _A list of the key features unique to this component._ */}
-
-#### Interaction
-
-- `click`/`touch`: the switch can be toggled by clicking it
-- `drag&drop`: the switch can be toggled by dragging the thumb (optional, in addition to `click`/`touch`)
--
 
 #### Form association
 
@@ -442,6 +442,13 @@ This is a list of potential styling challenges.
 - Updated the DOM structure to match the "elements" approach. [^8]
 - Input for naming the elements welcome
 
+#### Allowed content
+
+There are limitations on what type of elements are allowed as children of the track and thumb elements.
+
+**Thumb:** the `<thumb>` element should allow for img/svg content excluding `<foreignObject>` [^9]
+**Toggled and untoggled elements:** the `<toggled>` and `<untoggled>`elements should allow for text and img/svg content excluding `<foreignObject>` [^10]
+
 #### Slots
 
 <div class="question">
@@ -497,6 +504,8 @@ The control can be in a checked or unchecked state. [^6]
 
 The `<switch>` element can be assigned the default role of switch as described in the [Core Accessibility API Mappings](https://w3c.github.io/core-aam/#role-map-switch). [^7]
 
+The swich is a labellable element.
+
 Content for thumb and either track side can be defined by the author.
 
 #### Keyboard Navigation and Focus
@@ -521,6 +530,11 @@ The switch is a form associated element.
 {/* _Are there any details about shadow dom, focus delegation, or aria attributes that need special attention?_ */}
 
 The switch element can be associated with the existing `role="switch"`.
+
+#### Accessibility ressources
+
+- [ARIA Authoring practices switch component](https://www.w3.org/WAI/ARIA/apg/patterns/switch)
+- [ARIA switch role](https://w3c.github.io/aria/#switch)
 
 ### Globalization
 
@@ -562,3 +576,5 @@ References:
 [^6]: Review by [scottaohara](https://github.com/scottaohara) https://github.com/openui/open-ui/pull/785#discussion_r1279305903
 [^7]: Review by [scottaohara](https://github.com/scottaohara) https://github.com/openui/open-ui/pull/785#discussion_r1279310394
 [^8]: Elements approach resolution https://github.com/openui/open-ui/issues/702#issuecomment-1664464531
+[^9]: Thumb content resolution https://github.com/openui/open-ui/issues/979
+[^10]: Track content resolution https://github.com/openui/open-ui/issues/978
