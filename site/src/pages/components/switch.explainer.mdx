@@ -300,11 +300,11 @@ Open UI research page: https://open-ui.org/components/switch/
 
 ### User interaction
 
+<div class="question">Should a swipe or drag&drop movement also toggle the switch?</div>
+
 From a user standpoint, the following interactions should be supported
 
 - Click/tap: toggles the switch
-- Drag & drop: toggles the switch in the direction of the movement, the thumb follows the pointer
-- Swipe: toggles the switch in the direction of the swiping movement, the thumb follows the touch interaction
 - <kbd>Spacebar</kbd>: toggles the switch which has keyboard focus
 
 ### Styleability
@@ -317,27 +317,16 @@ All parts described in the [anatomy section](#anatomy) should be styleable by ei
 
 #### Properties and Attributes
 
-<div class="question">
-  If form associated, should default value of "on" be submitted if the switch is on and the user did
-  not specify a value to align with the [checkbox default value
-  behavior](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#value:~:text=If%20the%20value%20attribute%20was%20omitted%2C%20the%20default%20value%20for%20the%20checkbox%20is%20on%2C%20so%20the%20submitted%20data%20in%20that%20case%20would%20be%20subscribe%3Don.)?
-</div>
-
-<div class="question">
-  Should a custom "activate initially" attribute be used with the switch (`toggled`) or should the checkbox `checked` attribute be used as a standard?
-  `<switch toggled>` seems more natural while `<switch checked>` is already an established standard
-</div>
-
-| Property Name | Attribute Name | Type      | Default Value | Description                                                                               |
-| ------------- | -------------- | --------- | ------------- | ----------------------------------------------------------------------------------------- |
-| `checked`     | `checked`      | `boolean` | `false`       | Indicates if the initial state should be "on" initially.                                  |
-| `value`       | `value`        | `string`  | `"off"` (?)   | The current value of the slider. Only set if the switch is toggled/on on form submission. |
-| `name`        | `name`         | `string`  | `""`          | The name of the component.                                                                |
-| `id`          | `id`           | `string`  | `""`          | The unique identifier of the component.                                                   |
-| `disabled`    | `disabled`     | `boolean` | `false`       | Indicates that the switch is in a disabled state.                                         |
-| `autofocus`   | `autofocus`    | `boolean` | `false`       | Get focus by default.                                                                     |
-| `required`    | `required`     | `boolean` | `false`       | Indicates that the switch is invalid unless on.                                           |
-| `form`        | `form`         | `string`  | `""`          | Associates the element with a form in the document whose `id` is this value.              |
+| Property Name | Attribute Name | Type      | Default Value | Description                                                                  |
+| ------------- | -------------- | --------- | ------------- | ---------------------------------------------------------------------------- |
+| `checked`     | `checked`      | `boolean` | `false`       | Indicates if the initial state should be "on" initially.                     |
+| `value`       | `value`        | `string`  | `"off"`       | The current value of the switch.                                             |
+| `name`        | `name`         | `string`  | `""`          | The name of the component.                                                   |
+| `id`          | `id`           | `string`  | `""`          | The unique identifier of the component.                                      |
+| `disabled`    | `disabled`     | `boolean` | `false`       | Indicates that the switch is in a disabled state.                            |
+| `autofocus`   | `autofocus`    | `boolean` | `false`       | Get focus by default.                                                        |
+| `required`    | `required`     | `boolean` | `false`       | Indicates that the switch is invalid unless on.                              |
+| `form`        | `form`         | `string`  | `""`          | Associates the element with a form in the document whose `id` is this value. |
 
 #### Methods
 
