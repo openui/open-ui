@@ -351,11 +351,11 @@ Turning an element into a fullscreen needs to be carefully consdidered.
 Scripting already allows this via the `.requestFullscreen()` API which, as the
 name suggests, may not always be successful given the UA context. This API
 requires the document context to be active, for example requiring a user
-activiation (this is true of invokers in the general case), it also requires
+activation (this is true of invokers in the general case), it also requires
 the Permissions Policy to allow for this behaviour, and requires the element to
 not already be on the Top Layer.
 
-All of these constrains should also be true for invokers opening fullscreen
+All of these constraints should also be true for invokers opening fullscreen
 elements. This means the only _significant_ new behavioural difference between
 an invoker opening a fullscreen element vs the existing behaviour which
 requires scripting, is that sanboxed iframes which disallow scripting but allow
@@ -371,7 +371,7 @@ fullscreen may now declare a button that can fullscreen. Consider the following:
 ````
 
 In this example, the `<button onclick>` will do nothing as the iframe is
-sanboxed and does not allow scripting. The `<button invoketarget>` will
+sandboxed and does not allow scripting. The `<button invoketarget>` will
 fullscreen the element, however, as the `allow=fullscreen` Permission Policy is
 enabled to allow fullscreen.
 
@@ -386,13 +386,13 @@ outside of the browsers native video controls. This includes playing, pausing,
 and toggling mute/unmute. Today this is only possible using scripting via the
 equivalent scripting APIs: `.play()` / `.pause()` / `.muted=`. These APIs are
 guarded by Permissions Policy, and so should the invoker equivalent. Some User
-Agents can be configered to reject calls to `.play()`, and this should also be
+Agents can be configured to reject calls to `.play()`, and this should also be
 true of invokers. As such the key new capability here is the ability to call
 these APIs without scripting enabled. This is effectively the same concern as
 fullscreen; the security model is guarded around the Permissions Policy.
 
 There is also additional concern around the media element invokers being able
-to circumvent autoplay policies. Invokers should not be able to cicurmvent
+to circumvent autoplay policies. Invokers should not be able to circumvent
 these, and so the play or playpause actions should only be functional in
 environments which allow autoplaying of videos.
 
