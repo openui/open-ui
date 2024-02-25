@@ -23,11 +23,11 @@ layout: ../../layouts/ComponentLayout.astro
 
 Following [invokers](../invokers.explainer), adding an `interesttarget`
 attribute to interactive elements: starting with `<button>`, `<input
-type="button">`/`<input type="reset">`, and `<a>` (perhaps expanding to
-`<area>`, `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
+type="button">`/`<input type="reset">`/`<input type="submit">`, and `<a>` (perhaps
+expanding to `<area>`, `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
 [#14](https://github.com/openui/open-ui/issues/908)). This would allow
 disclosure of high fidelity tooltips in a more accessible and declarative way.
-Elements with `interesttarget` will - when hovered,or focussed (or an equivalent
+Elements with `interesttarget` will - when hovered, or focussed (or an equivalent
 user-agent determined action) - dispatch an `InterestEvent` on the element
 referenced by `interesttarget`, with some default behaviours.
 
@@ -69,13 +69,15 @@ interest.
 ## Proposed Plan
 
 In the style of `invoketarget`, this document proposes we add `interesttarget`
-as an available attribute to `<button>`, `<a>`, `<area>` and `<input>` elements.
+as an available attribute to `<button>`, `<a>`, and `<input>` elements.
 
 ```webidl
 interface mixin InterestInvokerElement {
   [CEReactions] attribute Element? interestTargetElement;
 };
-HTMLElement extends InterestInvokerElement
+HTMLButtonElement includes InterestInvokerElement
+HTMLInputElement includes InterestInvokerElement
+HTMLAnchorElement includes InterestInvokerElement
 ```
 
 The `interesttarget` value should be an IDREF pointing to an element within the
