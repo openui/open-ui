@@ -275,22 +275,24 @@ additional behaviours alongside the event dispatch. In addition the following
 table represents how built-in invocations on specific element types are
 handled. Note that this list is ordered and higher rules take precedence:
 
+When the `invokeaction` attribute is missing it will default to an auto state.
+
 | Invokee Element | `action` hint         | Behaviour                                                                            |
 | :-------------- | :-------------------- | :----------------------------------------------------------------------------------- |
-| `<* popover>`   | `'auto'`              | Call `.togglePopover()` on the invokee                                               |
+| `<* popover>`   | (auto)                | Same as `'togglePopover'`                                                            |
 | `<* popover>`   | `'togglePopover'`     | Call `.togglePopover()` on the invokee                                               |
 | `<* popover>`   | `'hidePopover'`       | Call `.hidePopover()` on the invokee                                                 |
 | `<* popover>`   | `'showPopover'`       | Call `.showPopover()` on the invokee                                                 |
-| `<dialog>`      | `'auto'`              | If the `<dialog>` is not `open`, call `showModal()`, otherwise close and use the button `value` for returnValue     |
+| `<dialog>`      | (auto)                | If the `<dialog>` is not `open`, call `showModal()`, otherwise close and use the button `value` for returnValue     |
 | `<dialog>`      | `'showModal'`         | If the `<dialog>` is not `open`, call `showModal()`                                  |
 | `<dialog>`      | `'close'`             | If the `<dialog>` is `open`, close and use the button `value` for returnValue        |
 
-Futher behaviours have been designed and may ship after the initial release of
+Further behaviours have been designed and may ship after the initial release of
 Invokers, the names and exact semantics may be subject to change:
 
 | Invokee Element | `action` hint         | Behaviour                                                                            |
 | :-------------- | :-------------------- | :----------------------------------------------------------------------------------- |
-| `<details>`     | `'auto'`              | If the `<details>` is `open`, then close it, otherwise open it                       |
+| `<details>`     | (auto)                | Same as `'toggle'`                                                                   |
 | `<details>`     | `'toggle'`            | If the `<details>` is `open`, then close it, otherwise open it                       |
 | `<details>`     | `'open'`              | If the `<details>` is not `open`, then open it                                       |
 | `<details>`     | `'close'`             | If the `<details>` is `open`, then close it                                          |
