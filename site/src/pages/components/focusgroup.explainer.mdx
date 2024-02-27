@@ -105,6 +105,8 @@ focus tracking are unchanged with this proposal.
 
 1. (Child opt-in) Group a set of focusable child elements under a single focusgroup.
 2. (Descendent opt-in) Focusable elements deeply nested can participate in a single focusgroup.
+3. (Cross Shadow DOM) Focusable elements nested inside a Shadow DOM are discoverable and focusable
+   when their Shadow Host or an ancestor element declares a focusgroup (by default).
 3. (Wrap) Focusgroup can be configured to have wrap-around focus semantics.
 4. (Horizontal/vertical) A focusgroup can be configured to respond to either horizontal navigation
    keys or vertical keys or both (to trivially reserve one axis of arrow key behavior for
@@ -139,7 +141,7 @@ Focusgroups consist of a **focusgroup definition** that establish **focusgroup c
 items. Focusgroup items are the elements that actually participate in the focusgroup (among the possible
 focusgroup candidates).
 
-When a linear focusgroup definition is associated with an element, all of that element's direct children
+When a linear focusgroup definition is associated with an element, all of that element's shadow-inclusive direct children
 become focusgroup candidates. Focusgroup candidates become focusgroup items if they are focusable, e.g.,
 implicitly focusable elements like `<button>`, or explicitly made focusable via `tabindex` or some
 other mechanism (e.g., `contenteditable`).
@@ -169,7 +171,7 @@ a reserved name that corresponds to the same focusgroup implied by the HTML `foc
 ```
 
 For the `parent` element which includes the focusgroup definition, the elements `one`, `two`, and `three`
-(and any other children of `parent` that may be added or removed) are focusgroup candidates and because
+(and any other shadow-inclusive children of `parent` that may be added or removed) are focusgroup candidates and because
 each are focusable, they also become focusgroup items. When one of the focusgroup items is focused, then
 the user can move focus sequentially according to DOM order among all the focusgroup items using the arrow
 keys (up/right moves focus forward, down/left moves focus backwards). Note that only elements `one` and
@@ -221,7 +223,7 @@ The CSS-specified value of 'nowrap' would override the HTML attribute value's "w
 similarly for 'both' overriding "horizontal".
 
 There is no change to the way Tab navigation works with `tabindex` nor the Tab ordering behavior. To
-use a focusgroup, focus must enter that element's focusable children somehow: for accessibility
+use a focusgroup, focus must enter that element's focusable shadow-inclusive children somehow: for accessibility
 and keyboard-only scenarios, the Tab key is typically used--programmatic calls to `element.focus()`
 or user clicks with a pointing device are alternatives.
 
@@ -270,6 +272,22 @@ from "selection/toggle" state.
 A future extension of this proposal may allow focus entering a focusgroup to jump to the currently
 toggled (or the toggle with the highest value) if any toggles are set in the focusgroup.
 
+Focusgroup definitions apply by default across Shadow DOM boundaries in order to make it easy for component
+developers to support focusgroup behavior across component boundaries. (Component authors that want to opt-out
+of this behavior can do so according to Section 6.7.)
+
+Example 4:
+
+```html
+<list-component focusgroup role="listbox" aria-label="cute dogs">
+  <template shadowrootmode="open">
+    <my-listitem role="option" tabindex="0" aria-selected="true">Terrier</my-listitem>
+    <my-listitem role="option" tabindex="-1" aria-selected="false">Dalmation</my-listitem>
+    <my-listitem role="option" tabindex="-1" aria-selected="false">Saint Bernard</my-listitem>
+  </template>
+</list-component>
+```
+
 ### 6.1. Key conflicts
 
 The focusgroup handles keystrokes (keydown) with a default behavior to move the focus within
@@ -310,9 +328,9 @@ this purpose.
 
 ### 6.4. Expanding and connecting linear focusgroups together (`extend`)
 
-By default, a focusgroup definition's focusgroup candidates are its direct children. There are two
+By default, a focusgroup definition's focusgroup candidates are its direct shadow-inclusive children. There are two
 ways to "extend the reach" of a linear focusgroup's candidates. One way is to use CSS to directly
-assign a focusgroup candidate state to a descendant element (explained later). The other is to use
+assign a focusgroup candidate state to a shadow-inclusive descendant element (explained later). The other is to use
 `extend`. A linear focusgroup definition can declare that it intends to `extend` an ancestor linear
 focusgroup. If there is an ancestor linear focusgroup of the same name, the extending focusgroup
 becomes an extension of that ancestor's focusgroup. Extending a linear focusgroup is also an
@@ -328,7 +346,7 @@ Below, the `<my-accordion>` element with a focusgroup attribute defines a focusg
 focusable in it; the focusable `<button>` elements are separated by an `<h3>` element. The `<h3>` and
 `<div>` elements are the focusgroup candidates, and are not focusable:
 
-Example 4:
+Example 5:
 
 ```html
 <my-accordion focusgroup>
@@ -342,7 +360,7 @@ Example 4:
 To make the `<button>`s belong to one focusgroup, a focusgroup definition must placed on the `<h3>`
 elements that explicitly declares `extend`, causing `<h3>` children to become focusgroup candidates.
 
-Example 5:
+Example 6:
 
 ```css
 my-accordion[focusgroup] > h3 {
@@ -357,7 +375,7 @@ chain of elements is the focusgroup definition that is considered for extending.
 
 When extending a focusgroup, traversal order is based on document order. Given the following:
 
-Example 6:
+Example 7:
 
 ```html
 <div role="toolbar" focusgroup>
@@ -383,7 +401,7 @@ focusgroup (the toolbar; with the same supported axis) does not make sense; the 
 join the rest of the ancestor focusgroup candidates to form one logical ordering--they do not
 define a separate range of focusgroup candidates to apply different wrapping logic onto.
 
-Example 7:
+Example 8:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
@@ -425,7 +443,7 @@ focusgroups).
 | focusgroup="inline"         | focus&#8209;group&#8209;direction:&nbsp;inline     | The focusgroup items will respond to forward and backward movement only with the "horizontal" arrow keys or "vertical" based on writing mode. |
 | focusgroup="" (unspecified) | focus&#8209;group&#8209;direction:&nbsp;both       | The focusgroup items will respond to forward and backward movement with both directions (horizontal and vertical). The default/initial value. |
 
-Example 8:
+Example 9:
 
 ```html
 <style>
@@ -450,7 +468,7 @@ arrow keys.
 Because 2-axis directionality is the default, specifying both `horizontal` and `vertical` at the
 same time on one focusgroup is not allowed:
 
-Example 9:
+Example 10:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
@@ -480,7 +498,7 @@ focusgroup that supports the direction requested, then the arrow keypress is for
 focusgroup. When the axes are aligned, this is how the focusgroup is extended into a contiguous
 linear group as described previously.
 
-Example 10:
+Example 11:
 
 ```html
 <vertical-menu role="menu" focusgroup="vertical wrap">
@@ -499,7 +517,7 @@ linear focusgroup**.
 
 #### 6.6.2. Orthogonal-axis extending linear focusgroups
 
-Example 11:
+Example 12:
 
 ```html
 <style>
@@ -564,7 +582,7 @@ The arrow key interactions will be clearer to users when nested focusgroups are 
 to each other. Authors should **not** extend `both` direction linear focusgroups with single-directional
 linear focusgroups (and vice-versa) as a best practice. The following example is a best-practice:
 
-Example 12:
+Example 13:
 
 ```html
 <horizontal-menu role="menubar" focusgroup="horizontal wrap">
@@ -590,19 +608,19 @@ to "Action 3". Using alternating directions in nested focusgroups ensures
 natural symmetry for users (cross-axis forward to descend, cross-axis reverse to ascend).
 
 When a focusgroup is considering a cross-axis arrow key to descend, only the currently focused
-element and any of its extending focusgroup descendants are considered. This behavior ensures that
+element and any of its extending focusgroup shadow-inclusive descendants are considered. This behavior ensures that
 no unexpected descents occur when focus is not on a currently descendible element. Conversely,
-_any_ of a focusgroup's focused children will check the parent focusgroup for a cross-axis ascent
+_any_ of a focusgroup's focused shadow-inclusive children will check the parent focusgroup for a cross-axis ascent
 (if that axis is not already handled by the current focusgroup--and if it is handled, only the
 extremities of the focusgroup's children perform this check as in Example 11). This means that
-ascending to the parent focusgroup is possible from any extending children.
+ascending to the parent focusgroup is possible from any extending shadow-inclusive children.
 
 #### 6.6.3. Notes about wrapping while extending
 
 As noted previously, the wrapping state of a focusgroup definition is extended only when two
 focusgroups have an axis-aligned relationship:
 
-Example 13:
+Example 14:
 
 ```html
 <!-- attributes making these elements focusable are elided -->
@@ -617,7 +635,7 @@ by the `<span>`'s focusgroup definition. (Because the axes are aligned, they are
 linear focusgroup. As one logical linear focusgroup, it does not make sense to try to change
 the wrapping behavior for a subset of the focusgroup.)
 
-Example 14:
+Example 15:
 
 ```html
 <!-- attributes making these elements focusable are elided -->
@@ -632,7 +650,7 @@ descender/ascender relationship in the vertical direction (it's one-way: from th
 `<div>` not vice-versa). But because the `<span>`'s focusgroup definition does not support the
 vertical direction, wrapping state is not extended from the parent. Conversely:
 
-Example 15:
+Example 16:
 
 ```html
 <style>
@@ -657,7 +675,7 @@ the `<span>`'s focusgroup) can be independently configured to wrap or not wrap (
 won't wrap because `nowrap` is the initial value). In Example 16, the up/down arrow keys will wrap
 around (exclusively) in the `<span>`'s focusgroup, but not when using the left/right arrow keys:
 
-Example 16:
+Example 17:
 
 ```html
 <style>
@@ -678,7 +696,7 @@ Example 16:
 When the relationships are descender/ascender in both directions, then the wrap state can't
 extend in any direction, and will apply to each focusgroup's chosen direction independently:
 
-Example 17:
+Example 18:
 
 ```html
 <style>
@@ -707,7 +725,7 @@ structures (1):
 
 Structurally:
 
-Example 18:
+Example 19:
 
 ```html
 <style>
@@ -765,16 +783,17 @@ the focusgroup on the menu (and the wrapping value is also extended).
 ### 6.7. Opting-in &amp; opting-out
 
 Focusgroup definitions are assigned to an element in order to set the behavior for
-their _child elements_ which become focusgroup candidates. Because all _child elements_
+their _shadow-inclusive child elements_ which become focusgroup candidates. Because all _shadow-inclusive child elements_
 are focusgroup candidates, any child element that is (or becomes) focusable will
 automatically become a focusgroup item belonging to it's parent's focusgroup.
 
 What if an element should be focusable, exists as a child of an element with a focusgroup
 definition (because some of its other focusable siblings _should_ belong to the focusgroup),
-but does not want to participate in the focusgroup?
+but does not want to participate in the focusgroup? Or what if a component nested across a 
+Shadow DOM boundary want to opt-out of focusgroup participation?
 
 Conversely, what if an element that is not a direct child of a linear focusgroup (but is
-a descendant) would like to become a member of a focusgroup without using `extend`?
+a shadow-inclusive descendant) would like to become a member of a focusgroup without using `extend`?
 
 Individual focusgroup candidates can "opt-out" or "opt-in" to participation in any
 focusgroup. Opting-in or out is a local focusgroup item decision (it is not be managed at
@@ -795,7 +814,7 @@ focusgroup definitions):
 
 In the following example, the `options-widget` opts-out of participation in the focusgroup.
 
-Example 19:
+Example 20:
 
 ```html
 <style>
@@ -818,7 +837,7 @@ Example 19:
 
 In the following example, the `<deep-child>` element opts-in to the focusgroup defined on "ancestor".
 
-Example 20:
+Example 21:
 
 ```html
 <style>
@@ -871,7 +890,7 @@ focusgroup it belongs to is the one specified by its `focus-group-item` value.
 The following example shows one parent element that has two focusgroups defined, and
 opts half of the children into one and half into the other.
 
-Example 21:
+Example 22:
 
 ```html
 <style>
@@ -969,9 +988,9 @@ the definition is ignored (i.e., there is no fallback to a linear grid).
 
 | HTML attribute value | CSS property &amp; value                | Explanation                                                                                                                                                                                                         |
 | -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| focusgroup="grid"    | focus&#8209;group&#8209;name:&nbsp;grid | Establishes the root of an automatic grid focusgroup. Descendants of the automatic grid are identified and assigned `focus-group-item: row` and `focus-group-item: cell` focusgroup candidate status automatically. |
+| focusgroup="grid"    | focus&#8209;group&#8209;name:&nbsp;grid | Establishes the root of an automatic grid focusgroup. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-item: row` and `focus-group-item: cell` focusgroup candidate status automatically. |
 
-Example 22:
+Example 23:
 
 ```html
 <table role="grid" focusgroup="grid">
@@ -996,9 +1015,9 @@ With a manual grid, the rows and cells must be explicitly indicated using
 
 | HTML attribute value | CSS property &amp; value                       | Explanation                                                                                                                                                                     |
 | -------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| n/a                  | focus&#8209;group&#8209;name:&nbsp;manual-grid | Establishes the root of a manual grid focusgroup. Descendants of the manual grid must be identified with `focus-group-item: row` and `focus-group-item: cell` explicitly.       |
-| n/a                  | focus&#8209;group&#8209;item:&nbsp;row         | Must be a descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element).                                                                              |
-| n/a                  | focus&#8209;group&#8209;item:&nbsp;cell        | Must be a descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element). Must also be a descendant of a `focus-group-item: row` focusgroup candidate. |
+| n/a                  | focus&#8209;group&#8209;name:&nbsp;manual-grid | Establishes the root of a manual grid focusgroup. Shadow-inclusive descendants of the manual grid must be identified with `focus-group-item: row` and `focus-group-item: cell` explicitly.       |
+| n/a                  | focus&#8209;group&#8209;item:&nbsp;row         | Must be a shadow-inclusive descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element).                                                                              |
+| n/a                  | focus&#8209;group&#8209;item:&nbsp;cell        | Must be a shadow-inclusive descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element). Must also be a shadow-inclusive descendant of a `focus-group-item: row` focusgroup candidate. |
 
 Cells cannot be children of other cells, and rows cannot be children of rows.
 
@@ -1011,7 +1030,7 @@ their nearest manual-grid root.
 In the following example, the `<my-cell>`s are all meant to be on the same row of the
 grid, and the rows are designated by `<my-row>` elements:
 
-Example 23:
+Example 24:
 
 ```html
 <style>
@@ -1046,7 +1065,7 @@ Example 23:
 The following non-uniform structure can still have grid semantics added
 via `manual-grid`:
 
-Example 24:
+Example 25:
 
 ```html
 <style>
@@ -1115,7 +1134,13 @@ No considerable privacy concerns are expected, but we welcome community feedback
 
 No significant security concerns are expected.
 
-## 8. Alternative Solutions
+## 8. Design decisions
+
+Here is a short list to issue discussions that led to the current design of focusgroup.
+
+* [`focusgroup` works across Shadow DOM boundaries by default](https://github.com/openui/open-ui/issues/521)
+
+## 9. Alternative Solutions
 
 We considered various alternative solutions before arriving at the current proposal:
 
@@ -1139,9 +1164,9 @@ We considered various alternative solutions before arriving at the current propo
    of building a native HTML feature to expose the built-in platform arrow-key
    navigation of certain controls.
 
-## 9. Related Work
+## 10. Related Work
 
-### 9.1. CSS Basic UI 4 Keyboard Navigation properties
+### 10.1. CSS Basic UI 4 Keyboard Navigation properties
 
 [Since at least 2002](https://www.w3.org/TR/2002/WD-css3-ui-20020802/#nav-dir) the CSS WG
 has defined related CSS properties `nav-up`, `nav-right`, `nav-down`, `nav-left` in
@@ -1184,7 +1209,7 @@ Should the two exist simultaneously, the `nav-*` properties might provide overri
 for directional movement, and take precedence over the `focusgroup` attribute. However, we
 hope that such a conflict will not occur.
 
-### 9.2. Spatial Navigation
+### 10.2. Spatial Navigation
 
 Another approach to focusable navigation has been defined in
 [CSS Spatial Navigation](https://drafts.csswg.org/css-nav-1/). This specification enables
@@ -1223,7 +1248,7 @@ navigation modes, while a user not working with an AT (or ATs designed for visua
 would enable the full spatial navigation model. An opt-in for spatial navigation would certainly
 be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=spatial`).
 
-## 10. Open Questions
+## 11. Open Questions
 
 It may not make sense to support focusgroup on every HTML element, especially those
 that already have platform-provide focusgroup-like internal behavior (e.g., `<select>`). Then again,
@@ -1232,7 +1257,7 @@ perhaps the internal behavior should defer to the external specified behavior (u
 would cancel the element's preexisting built-in behavior in favor of the new generic behavior). Implementation
 experience and additional community feedback will be necessary to land a reasonable plan for this case.
 
-### 10.1. Additional Keyboard support
+### 11.1. Additional Keyboard support
 
 In addition to arrow keys, the focusgroup should also enable other navigation keys such as
 pageup/down for paginated movement (TBD on how this could be calculated and in what
