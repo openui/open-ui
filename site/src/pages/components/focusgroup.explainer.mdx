@@ -106,25 +106,30 @@ focus tracking are unchanged with this proposal.
 1. (Child opt-in) Group a set of focusable child elements under a single focusgroup.
 2. (Descendent opt-in) Focusable elements deeply nested can participate in a single focusgroup.
 3. (Wrap) Focusgroup can be configured to have wrap-around focus semantics.
-4. (Horizontal/vertical) A focusgroup can be configured to respond to either horizontal navigation
-   keys or vertical keys or both (to trivially reserve one axis of arrow key behavior for
+4. (Limit directional arrow keys) A focusgroup can be configured to respond to either inline (e.g., horizontal) navigation
+   keys or block (e.g., vertical) keys or both (to trivially reserve one axis of arrow key behavior for
    supplementary actions, such as opening nodes in a tree view control).
-5. (Extend same direction) Focusgroups can be nested to provide arrow navigation into multiple
+5. (Focus movement arrow keys follow content direction) The user's arrow key presses move the focus
+   forward or backward in the DOM according to the writing mode and directionality of the content. 
+   E.g., in RTL, an Arrow-Left key moves the focus forward according to the content direction.
+6. (Extend same direction) Focusgroups can be nested to provide arrow navigation into multiple
    composed widgets (such as lists within lists).
-6. (Extend opposite direction) Focusgroups can be nested to provide arrow navigation into composed
+7. (Extend opposite direction) Focusgroups can be nested to provide arrow navigation into composed
    widgets with orthogonal navigation semantics (such as horizontal-inside-vertical menus).
-7. (Multiple focusgroups) Multiple focusgroups can be established on a single element (advanced CSS
+8. (Multiple focusgroups) Multiple focusgroups can be established on a single element (advanced CSS
    scenario).
-8. (Opt-out) Individual elements can opt-out of focusgroup participation (advanced CSS scenario)
-9. (Grid) Focusgroups can be used for grid-type navigation (`<table>`-structured content or other
+9. (Opt-out) Individual elements can opt-out of focusgroup participation (advanced CSS scenario)
+10. (Grid) Focusgroups can be used for grid-type navigation (`<table>`-structured content or other
    grid-like structured content (advanced CSS scenario), but not "presentation" grids).
 
 ## 6. Focusgroup Concepts
 
 A focusgroup is a group of elements that are related by arrow-key navigation and for which the web
 platform provides the arrow key navigation behavior by default (no JavaScript event handlers needed)!
-Navigation is provided according to order or structure of the DOM (not how the content is presented
-in a user interface).
+Navigation of focusgroup items happens according to order or structure of the DOM (not necessarily 
+how the content is presented in a user interface). The arrow keys controlling the navigation are mapped 
+to "forward" and "reverse" directions according to whether they point in the "block/inline-end" or 
+"block/inline-start" directions, respectively (and are based on the element declaring the focusgroup).
 
 This document describes two kinds of focusgroups: **linear focusgroups** and **grid focusgroups**.
 Linear focusgroups provide arrow key navigation among a _list_ of elements. Grid focusgroups provide
@@ -172,7 +177,7 @@ For the `parent` element which includes the focusgroup definition, the elements 
 (and any other children of `parent` that may be added or removed) are focusgroup candidates and because
 each are focusable, they also become focusgroup items. When one of the focusgroup items is focused, then
 the user can move focus sequentially according to DOM order among all the focusgroup items using the arrow
-keys (up/right moves focus forward, down/left moves focus backwards). Note that only elements `one` and
+keys (up/right moves focus forward, down/left moves focus backwards assuming the `<p>` element has `writing-mode` `horizontal-tb` and `direction` `ltr`). Note that only elements `one` and
 `three` can be focused using the Tab key (because element `two` has `tabindex=-1` set, which takes it out
 of the tabindex sequential navigation ordering).
 
@@ -181,7 +186,7 @@ Focusgroup definitions may include the following (in addition to a name):
 - `extend` -- applies to linear focusgroups only: a mechanism to join this linear focusgroup to an ancestor
   linear focusgroup.
 - `direction` -- applies to linear focusgroups only: constrains the keys used for arrow key navigation to
-  horizontal, vertical, or both (the default).
+  the inline direction, block direction, or both (the default).
 - `wrap` -- what to do when the attempting to move past the end of a focusgroup. The default/initial value is
   nowrap which means that focus is not moved past the end of a focusgroup with the arrow keys.
 
@@ -192,7 +197,7 @@ property for convenience).
 Example 1b:
 
 ```html
-<div focusgroup="wrap horizontal"></div>
+<div focusgroup="wrap inline"></div>
 ```
 
 Example 1c:
@@ -201,7 +206,7 @@ Example 1c:
 div {
   focus-group-name: auto;
   focus-group-wrap: wrap;
-  focus-group-direction: horizontal;
+  focus-group-direction: inline;
 }
 ```
 
@@ -212,13 +217,13 @@ Example 1d:
 
 ```html
 <div
-  focusgroup="wrap horizontal"
+  focusgroup="wrap inline"
   style="focus-group-name: auto; focus-group-wrap: nowrap; focus-group-direction: both"
 ></div>
 ```
 
 The CSS-specified value of 'nowrap' would override the HTML attribute value's "wrap" directive;
-similarly for 'both' overriding "horizontal".
+similarly for 'both' overriding "inline".
 
 There is no change to the way Tab navigation works with `tabindex` nor the Tab ordering behavior. To
 use a focusgroup, focus must enter that element's focusable children somehow: for accessibility
@@ -407,10 +412,10 @@ focusgroup (the toolbar) and will use that value regardless of the presence of `
 
 ### 6.5. Limiting linear focusgroup directionality
 
-In many cases, having multi-axis directional movement (both right arrow and down arrow linked to
+In many cases, having multi-axis directional movement (e.g., both right arrow and down arrow linked to
 the forward direction) is not desirable, such as when implementing a tablist, and it may not make
 sense for the up and down arrows to also move the focus left and right. Likewise, when moving up
-and down in a vertical menu, the author might wish to make use of the left and right arrow keys to
+and down in a vertical menu, the author might wish to make use of JavaScript to handle the left and right arrow keys to
 provide behavior such as opening or closing sub-menus. In these situations, it makes sense to limit
 the linear focusgroup to one-axis traversal.
 
@@ -419,10 +424,10 @@ focusgroups).
 
 | HTML attribute value        | CSS property &amp; value                           | Explanation                                                                                                                                   |
 | --------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| focusgroup="horizontal"     | focus&#8209;group&#8209;direction:&nbsp;horizontal | The focusgroup items will respond to forward and backward movement only with the "horizontal" arrow keys (left and right).                    |
-| focusgroup="vertical"       | focus&#8209;group&#8209;direction:&nbsp;vertical   | The focusgroup items will respond to forward and backward movement only with the "vertical" arrow keys (up and down).                         |
-| focusgroup="block"          | focus&#8209;group&#8209;direction:&nbsp;block      | The focusgroup items will respond to forward and backward movement only with the "vertical" arrow keys or "horizontal" based on writing mode. |
-| focusgroup="inline"         | focus&#8209;group&#8209;direction:&nbsp;inline     | The focusgroup items will respond to forward and backward movement only with the "horizontal" arrow keys or "vertical" based on writing mode. |
+| focusgroup="inline"         | focus&#8209;group&#8209;direction:&nbsp;inline     | The focusgroup items will respond to forward and backward movement only with arrow keys that are parallel to this element's "inline" axis (e.g., left and right arrow keys for `horizontal-tb` writing mode). |
+| focusgroup="block"          | focus&#8209;group&#8209;direction:&nbsp;block      | The focusgroup items will respond to forward and backward movement only with arrow keys that are parallel to this element's "block" axis (e.g., up and down arrow keys for `vertical-*` writing modes). |
+| focusgroup="horizontal"     | focus&#8209;group&#8209;direction:&nbsp;horizontal | The focusgroup items will respond only to left and right arrow keys (regardless of content directionality). ⚠️This value is **NOT RECOMMENDED** for best i18n experiences. Consider using `inline` instead. |
+| focusgroup="vertical"       | focus&#8209;group&#8209;direction:&nbsp;vertical   | The focusgroup items will respond only to up and down arrow keys (regardless of content directionality). ⚠️This value is **NOT RECOMMENDED** for best i18n experiences. Consider using `block` instead. |
 | focusgroup="" (unspecified) | focus&#8209;group&#8209;direction:&nbsp;both       | The focusgroup items will respond to forward and backward movement with both directions (horizontal and vertical). The default/initial value. |
 
 Example 8:
@@ -431,7 +436,7 @@ Example 8:
 <style>
   tab-group {
     focus-group-name: auto;
-    focus-group-direction: horizontal;
+    focus-group-direction: inline;
     focus-group-wrap: wrap;
   }
 </style>
@@ -444,18 +449,18 @@ Example 8:
 ```
 
 In the above example, when the focus is on the first `<a-tab>` element, pressing either the up or
-down arrow key does nothing because the focusgroup is configured to only respond to the left/right
+down arrow key does nothing because the focusgroup is configured to only respond to the inline (left/right in this case)
 arrow keys.
 
-Because 2-axis directionality is the default, specifying both `horizontal` and `vertical` at the
+Because 2-axis directionality is the default, specifying both `inline` and `block` at the
 same time on one focusgroup is not allowed:
 
 Example 9:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<radiobutton-group focusgroup="horizontal vertical wrap" role="radiogroup">
-  This focusgroup configuration is an error--neither constraint will be applied (which is actually
+<radiobutton-group focusgroup="inline block wrap" role="radiogroup">
+  ⚠️This focusgroup configuration is an error--neither constraint will be applied (which is actually
   what the author intended).
 </radiobutton-group>
 ```
@@ -463,14 +468,14 @@ Example 9:
 ### 6.6. Interactions with directionality + extending
 
 Powerful scenarios are possible when extending single-axis linear focusgroups. For example, authors
-can create tiles that are navigated with left and right arrow keys, and within each tile use
-sub-menus that are navigated with the up and down keys (all in one logical focusgroup!). Vertical email
-lists can be navigated with up and down keys, while email actions can be easily accessed with right
-and left keys. Alternating horizontal and vertical interactions can be combined arbitrarily deep
+can create menubars that are navigated with inline (left and right) arrow keys, and within each menu use
+the block (up and down) direction keys (all in one logical focusgroup!). Vertical email
+lists can be navigated with block direction keys, while email actions may be easily accessed with inline arrow
+keys. Alternating inline and block directions can be combined arbitrarily deep
 in the DOM.
 
 When a focusgroup extends another focusgroup, it never extends the parent's directionality values
-(`horizontal` or `vertical`). Each extending focusgroup declares (or take the default)
+(`inline` or `block`). Each extending focusgroup declares (or take the default)
 directionality.
 
 #### 6.6.1. Axis-aligned extending linear focusgroups
@@ -505,7 +510,7 @@ Example 11:
 <style>
   horizontal-menu {
     focus-group-name: auto;
-    focus-group-direction: horizontal;
+    focus-group-direction: inline;
     focus-group-wrap: wrap;
   }
   omni-menu {
@@ -531,7 +536,7 @@ Example 11:
 
 The above is an example of a vertical menu nested inside of a horizontal menu (menubar). When
 "Action 2" is focused and a down arrow key is pressed, the `<horizontal-menu>` focusgroup
-ignores the key because it is configured to only handle `horizontal` keys. However, when
+ignores the key because it is configured to only handle `inline` keys. However, when
 focus moves to "Action 3" and a down arrow key is pressed, the
 `<omni-menu>`'s extending focusgroup (a sibling of the currently focused element) supports
 the given axis ('both' axes is the initial value), and so the focus is moved "forward" to
@@ -553,9 +558,9 @@ keypress that is axis-aligned with the parent's focusgroup (when focus is at the
 child's focusgroup since the child's focusgroup handles both axes). Continuing with Example 11 and
 "Sub-Action A" focused, a left arrow key press (reverse direction) causes an ascension into the parent's
 focusgroup (focusing the "Action 3" menu item). Similarly, when "Sub-Action B" is focused, a right
-arrow key will cause an ascension to the parent's focusgroup and focus "Action 4". The horizontal axis
-is aligned between the focusgroups and so horizontal arrow key requests are extensions of the parent's
-focusgroup, while vertical arrow key presses stay "stuck" in the child focusgroup.
+arrow key will cause an ascension to the parent's focusgroup and focus "Action 4". The inline axis
+is aligned between the focusgroups and so inline arrow key requests are extensions of the parent's
+focusgroup, while block-direction arrow key presses stay "stuck" in the child focusgroup.
 
 When extending focusgroups have orthogonal directionality they create ascender or descender
 relationships.
@@ -567,14 +572,14 @@ linear focusgroups (and vice-versa) as a best practice. The following example is
 Example 12:
 
 ```html
-<horizontal-menu role="menubar" focusgroup="horizontal wrap">
+<horizontal-menu role="menubar" focusgroup="inline wrap">
   <menu-item role="menuitem" tabindex="-1">Action 1</menu-item>
   <menu-item role="menuitem" tabindex="0">Action 2</menu-item>
   <div role="none">
     <menu-item role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="true">
       Action 3
     </menu-item>
-    <vertical-menu role="menu" tabindex="-1" focusgroup="vertical extend">
+    <vertical-menu role="menu" tabindex="-1" focusgroup="block extend">
       <menu-item role="menuitem" tabindex="-1">Sub-Action A</menu-item>
       <menu-item role="menuitem" tabindex="-1">Sub-Action B</menu-item>
     </vertical-menu>
@@ -584,7 +589,7 @@ Example 12:
 ```
 
 When focus is on the "Action 3" menu item, only a down arrow key will descend into the
-nested focusgroup (not a right arrow key because this is disallowed by the vertical extending
+nested focusgroup (not a right arrow key because this is disallowed by the block-direction extending
 focusgroup). Similarly, only a left arrow key will ascend from "Sub-Action A" focusgroup item back
 to "Action 3". Using alternating directions in nested focusgroups ensures
 natural symmetry for users (cross-axis forward to descend, cross-axis reverse to ascend).
@@ -622,22 +627,22 @@ Example 14:
 ```html
 <!-- attributes making these elements focusable are elided -->
 <div focusgroup="wrap">
-  <span focusgroup="extend horizontal">…</span>
+  <span focusgroup="extend inline">…</span>
 </div>
 ```
 
-The above is a case where the focusgroups make an extended linear focusgroup in the horizontal
-direction (`wrap` state cannot be changed by the child for the horizontal direction), and a
-descender/ascender relationship in the vertical direction (it's one-way: from the `<span>` to the
+The above is a case where the focusgroups make an extended linear focusgroup in the inline
+direction (`wrap` state cannot be changed by the child for the inline direction), and a
+descender/ascender relationship in the block direction (it's one-way: from the `<span>` to the
 `<div>` not vice-versa). But because the `<span>`'s focusgroup definition does not support the
-vertical direction, wrapping state is not extended from the parent. Conversely:
+block direction, wrapping state is not extended from the parent. Conversely:
 
 Example 15:
 
 ```html
 <style>
   div {
-    focus-group: auto wrap horizontal;
+    focus-group: auto wrap inline;
   }
   span {
     focus-group: auto extend;
@@ -649,13 +654,13 @@ Example 15:
 </div>
 ```
 
-The focusgroups are axis aligned in the horizontal direction (`wrap` in the horizontal direction cannot
-be changed by the child), and a descender/ascender relationship in the vertical direction (also one-way
-from `<div>` to `<span>` and not vice-versa). The `<span>`'s focusgroup supports a direction (vertical)
-that it doesn't extend from the `<div>`'s focusgroup and so vertical arrow keys (while focused inside
+The focusgroups are axis aligned in the inline direction (`wrap` in the inline direction cannot
+be changed by the child), and a descender/ascender relationship in the block direction (also one-way
+from `<div>` to `<span>` and not vice-versa). The `<span>`'s focusgroup supports a direction (block)
+that it doesn't extend from the `<div>`'s focusgroup and so block-direction arrow keys (while focused inside
 the `<span>`'s focusgroup) can be independently configured to wrap or not wrap (in Example 15 they
-won't wrap because `nowrap` is the initial value). In Example 16, the up/down arrow keys will wrap
-around (exclusively) in the `<span>`'s focusgroup, but not when using the left/right arrow keys:
+won't wrap because `nowrap` is the initial value). In Example 16, the block-direction arrow keys will wrap
+around (exclusively) in the `<span>`'s focusgroup, but not when using the inline-direction arrow keys:
 
 Example 16:
 
@@ -663,7 +668,7 @@ Example 16:
 <style>
   /* spacing aligned for comparison */
   div {
-    focus-group: auto nowrap horizontal;
+    focus-group: auto nowrap inline;
   }
   span {
     focus-group: auto extend wrap both;
@@ -684,10 +689,10 @@ Example 17:
 <style>
   /* spacing aligned for comparison */
   div {
-    focus-group: auto horizontal nowrap;
+    focus-group: auto inline nowrap;
   }
   span {
-    focus-group: auto extend vertical wrap;
+    focus-group: auto extend block wrap;
   }
 </style>
 <!-- … -->
@@ -700,7 +705,7 @@ Example 17:
 
 Nesting focusgroups can be applied to arbitrary depths to create either extended linear groups
 or ascender/descender relationships as needed--all forming a single logical `focusgroup`.
-Consider vertical menus (3) inside of cards oriented horizontally (2) nested inside of row
+Consider vertical menus (3) inside of "cards" oriented horizontally (2) nested inside of row
 structures (1):
 
 ![image of tabular data in four rows, where each row contains four cells, and in each cell is a vertical menu structure of three items](/images/focusgroup-nested-combos.png)
@@ -717,11 +722,11 @@ Example 18:
     focus-group-name: auto extend;
   }
   table-row {
-    focus-group-direction: horizontal;
+    focus-group-direction: inline;
   }
   card-view > ul,
   card-view li > div {
-    focus-group-direction: vertical;
+    focus-group-direction: block;
   }
   table-row,
   card-view > ul {
@@ -729,7 +734,7 @@ Example 18:
   }
 </style>
 <!-- … -->
-<data-table role="treegrid" focusgroup="vertical">
+<data-table role="treegrid" focusgroup="block">
   <table-row role="row" tabindex="-1" aria-label="…">
     <card-view role="gridcell" tabindex="-1" aria-label="…">
       <ul role="menu">
@@ -750,13 +755,13 @@ Example 18:
 </data-table>
 ```
 
-In this example, the `<data-table>`'s rows can be navigated with up/down arrows. When the
-user has focused a row they would like to explore, the right arrow key moves them into
-the `<card-view>` items in the row, and they can use left and right arrow keys (that wrap
-around start-to-end) to cycle through the cards. If desired, while focused on any card, the up
-arrow will take them back to the parent `<table-row>` to move up/down to the next row.
-Alternatively, while looking at a card with a nested vertical list, they can press the
-down arrow to descend into the menu of items in the card and cycle
+In this example, the `<data-table>`'s rows can be navigated with block-direction arrow keys. When the
+user has focused a row they would like to explore, the inline-end direction (e.g., right) arrow key moves them into
+the `<card-view>` items in the row, and they can use inline-direction arrow keys (that wrap
+around start-to-end) to cycle through the cards. If desired, while focused on any card, the block-start direction (e.g., up)
+arrow key will take them back to the parent `<table-row>` to move in the block direction (up/down) to the next row.
+Alternatively, while looking at a card with a nested block-direction list, they can press the
+block-end direction (e.g., down) arrow key to descend into the menu of items in the card and cycle
 through them (with wrapping). The menu contains a submenu structure of menu item radio buttons.
 To "unify" the submenu and the menu items into one logical list for
 arrow navigation, the focusgroup on the `<div>` extends in the same direction as
@@ -877,7 +882,7 @@ Example 21:
 <style>
   my-tabs {
     focus-group-name: redtab, bluetab;
-    focus-group-direction: horizontal, horizontal;
+    focus-group-direction: inline, inline;
   }
   .redtab { focus-group-item: redtab; }
   .bluetab { focus-group-item: bluetab; }
@@ -896,7 +901,7 @@ Example 21:
 ### 6.9. Grid focusgroups
 
 Some focusable data is structured not as a series of nested linear groups, but as a
-2-dimensional grid such as in the Excel app, where focus can move logically from
+2-dimensional grid such as in a spreadsheet app, where focus can move logically from
 cell-to-cell either horizontally or vertically. In these data structures, it makes
 sense to support the user's logical usage of the arrow keys to move around the data.
 
