@@ -1120,7 +1120,13 @@ No considerable privacy concerns are expected, but we welcome community feedback
 
 No significant security concerns are expected.
 
-## 8. Alternative Solutions
+## 8. Design decisions
+
+Here is a short list to issue discussions that led to the current design of focusgroup.
+
+* [arrow key movement and directionality contraints should be aligned with content direction (add inline/block)](https://github.com/openui/open-ui/issues/522)
+
+## 9. Alternative Solutions
 
 We considered various alternative solutions before arriving at the current proposal:
 
@@ -1144,9 +1150,9 @@ We considered various alternative solutions before arriving at the current propo
    of building a native HTML feature to expose the built-in platform arrow-key
    navigation of certain controls.
 
-## 9. Related Work
+## 10. Related Work
 
-### 9.1. CSS Basic UI 4 Keyboard Navigation properties
+### 10.1. CSS Basic UI 4 Keyboard Navigation properties
 
 [Since at least 2002](https://www.w3.org/TR/2002/WD-css3-ui-20020802/#nav-dir) the CSS WG
 has defined related CSS properties `nav-up`, `nav-right`, `nav-down`, `nav-left` in
@@ -1189,7 +1195,7 @@ Should the two exist simultaneously, the `nav-*` properties might provide overri
 for directional movement, and take precedence over the `focusgroup` attribute. However, we
 hope that such a conflict will not occur.
 
-### 9.2. Spatial Navigation
+### 10.2. Spatial Navigation
 
 Another approach to focusable navigation has been defined in
 [CSS Spatial Navigation](https://drafts.csswg.org/css-nav-1/). This specification enables
@@ -1228,7 +1234,7 @@ navigation modes, while a user not working with an AT (or ATs designed for visua
 would enable the full spatial navigation model. An opt-in for spatial navigation would certainly
 be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=spatial`).
 
-## 10. Open Questions
+## 11. Open Questions
 
 It may not make sense to support focusgroup on every HTML element, especially those
 that already have platform-provide focusgroup-like internal behavior (e.g., `<select>`). Then again,
@@ -1237,7 +1243,7 @@ perhaps the internal behavior should defer to the external specified behavior (u
 would cancel the element's preexisting built-in behavior in favor of the new generic behavior). Implementation
 experience and additional community feedback will be necessary to land a reasonable plan for this case.
 
-### 10.1. Additional Keyboard support
+### 11.1. Additional Keyboard support
 
 In addition to arrow keys, the focusgroup should also enable other navigation keys such as
 pageup/down for paginated movement (TBD on how this could be calculated and in what
