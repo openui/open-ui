@@ -1,0 +1,62 @@
+{
+  "$id": "component-anatomy.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Anatomy",
+  "description": "Anatomy of UI Component definition.",
+  "anyOf": [
+    {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Each named part that makes up the whole of the component.",
+        "properties": {
+          "name": { "type": "string" },
+          "optional": { "type": "boolean" },
+          "implicit": { "type": "boolean" },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false,
+        "required": ["name"]
+      },
+      "uniqueItems": true
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "The name of the component as defined in the design system.",
+          "type": "string"
+        },
+        "description": { "type": "string" },
+        "children": {
+          "$ref": "#/$defs/children"
+        }
+      },
+      "required": ["name"]
+    }
+  ],
+  "$defs": {
+    "children": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Each named part that makes up the whole of the component.",
+        "properties": {
+          "name": { "type": "string" },
+          "optional": { "type": "boolean" },
+          "part": { "type": "string" },
+          "legacyPart": { "type": "string" },
+          "description": { "type": "string" },
+          "element": { "type": "string" },
+          "children": {
+            "$ref": "#/$defs/children"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["name"]
+      }
+    }
+  },
+  "required": ["name"]
+}
