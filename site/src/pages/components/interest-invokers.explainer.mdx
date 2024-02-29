@@ -21,8 +21,8 @@ layout: ../../layouts/ComponentLayout.astro
 
 ## Introduction
 
-Following [invokers](../invokers.explainer), adding an `interesttarget`
-attribute to interactive elements: starting with `<button>`, `<input
+Following [invokers](../invokers.explainer), adding an `interesttarget` and `interestaction`
+attributes to interactive elements: starting with `<button>`, `<input
 type="button">`/`<input type="reset">`/`<input type="submit">`, and `<a>` (perhaps
 expanding to `<area>`, `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
 [#14](https://github.com/openui/open-ui/issues/908)). This would allow
@@ -68,12 +68,13 @@ interest.
 
 ## Proposed Plan
 
-In the style of `invoketarget`, this document proposes we add `interesttarget`
-as an available attribute to `<button>`, `<a>`, and `<input>` elements.
+In the style of `invoketarget`, this document proposes we add `interesttarget` and `interestaction`
+as available attributes to `<button>`, `<a>`, and `<input>` elements.
 
 ```webidl
 interface mixin InterestInvokerElement {
   [CEReactions] attribute Element? interestTargetElement;
+  [CEReactions] attribute DOMString interestAction;
 };
 HTMLButtonElement includes InterestInvokerElement
 HTMLInputElement includes InterestInvokerElement
@@ -86,6 +87,20 @@ assign a node to be the invoker target, allowing for cross-root invokers (in
 some cases, see [attr-asociated element
 steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element)
 for more).
+
+The `interestaction` (and the `interestAction` reflected property) is a freeform hint
+to the interestee. InterestAction can be a "built-in" action or a "custom" action.
+If `interestaction` is a false value (`''``, `null`, etc), then it will default to
+an `auto` state.
+
+Built-in interactive elements have built-in behaviours (detailed below) which
+are determined by the `interestaction`. The built-in names _must not_ contain a
+`-`. An `interestaction` without a dash that is not a built-in is considered
+invalid, and will not dispatch an InterestEvent.
+
+Valid interestactions (that is: custom interestaction or a valid built-in) will
+dispatch InterestEvent, allowing custom code to take control of interest invocations (for
+example calling `.preventDefault()` or executing custom side-effects).
 
 Elements with `interesttarget` set will dispatch an `InterestEvent` on the
 _Interestee_ (the element referenced by `interesttarget`) when the element
@@ -102,8 +117,11 @@ a `invoker` property that will reference the _Interest_ element.
 interface InterestEvent : Event {
   constructor(DOMString type, InterestEventInit interestEventInit);
   readonly attribute Element invoker;
+  readonly attribute DOMString type = "interest";
+  readonly attribute DOMString action;
 };
 dictionary InterestEventInit : EventInit {
+  DOMString action = "";
   Element invoker;
 };
 ```
@@ -137,7 +155,7 @@ allowing for custom JavaScript to be triggered without having to wire up manual
 event handlers to the Interest elements.
 
 ```html
-<button interesttarget="my-custom">
+<button interesttarget="my-custom" interestaction="custom-action">
   When this button shows interest, the below div will display.
 </button>
 
@@ -146,9 +164,11 @@ event handlers to the Interest elements.
 <script>
   const custom = document.getElementById("my-custom");
   custom.addEventListener("interest", (e) => {
+    if (e.action !== "custom-action") return;
     custom.classList.add('active')
   });
   custom.addEventListener("loseinterest", (e) => {
+    if (e.action !== "custom-action") return;
     custom.classList.remove('active')
   });
 </script>
@@ -176,10 +196,14 @@ Showing/losing interest on an interesttarget will _always_ dispatch a trusted
 specific element types are handled. Note that this list is ordered and higher
 rules take precedence:
 
-| Interestee Element | Event Type       | Behaviour                            |
-| :----------------- | :--------------- | :----------------------------------- |
-| `<* popover=hint>` | `'interest'`     | Call `.showPopover()` on the invokee |
-| `<* popover=hint>` | `'loseinterest'` | Call `.hidePopover()` on the invokee |
+When the `interestaction` attribute is missing it will default to an auto state.
+
+| Interestee Element | `action` hint    | Event Type       | Behaviour                            |
+| :----------------- | :--------------- | :------------------------------------------------------ |
+| `<* popover=*>`    | (auto)           | `'interest'`     | Call `.showPopover()` on the invokee |
+| `<* popover=*>`    | `togglePopover`  | `'interest'`     | Call `.showPopover()` on the invokee |
+| `<* popover=*>`    | (auto)           | `'loseinterest'` | Call `.hidePopover()` on the invokee |
+| `<* popover=*>`    | `togglePopover`  | `'loseinterest'` | Call `.hidePopover()` on the invokee |
 
 > Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
