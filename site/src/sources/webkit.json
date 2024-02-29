@@ -24,11 +24,86 @@
       "name": "Select"
     },
     {
-      "name": "Meter"
+      "name": "Meter",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "meter-inner-element",
+            "legacyPart": "::-webkit-meter-inner-element",
+            "element": "div",
+            "children": [
+              {
+                "name": "meter-bar",
+                "legacyPart": "::-webkit-meter-bar",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "meter-even-less-good-value",
+                    "legacyPart": "::-webkit-meter-even-less-good-value",
+                    "element": "div",
+                    "optional": true
+                  },
+                  {
+                    "name": "meter-suboptimum-value",
+                    "legacyPart": "::-webkit-meter-suboptimum-value",
+                    "element": "div",
+                    "optional": true
+                  },
+                  {
+                    "name": "meter-optimum-value",
+                    "legacyPart": "::-webkit-meter-optimum-value",
+                    "element": "div",
+                    "optional": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Details",
-      "openUIName": "Disclosure"
+      "openUIName": "Disclosure",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "summaryslot",
+            "element": "summary",
+            "children": [
+              {
+                "name": "details-marker",
+                "legacyPart": "::-webkit-details-marker",
+                "element": "div"
+              },
+              {
+                "name": "summary-content"
+              }
+            ]
+          },
+          {
+            "name": "details-content"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Summary",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "details-marker",
+            "legacyPart": "::-webkit-details-marker",
+            "element": "div"
+          },
+          {
+            "name": "summary-content"
+          }
+        ]
+      }
     },
     {
       "name": "Legend"
@@ -40,14 +115,104 @@
       "name": "A"
     },
     {
-      "name": "Search"
+      "name": "Search",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "textfield-decoration-container",
+            "legacyPart": "::-webkit-textfield-decoration-container",
+            "element": "div",
+            "children": [
+              {
+                "name": "search-decoration",
+                "legacyPart": "::-webkit-search-decoration",
+                "element": "div",
+                "optional": true,
+                "description": "This is the magnifying glass icon"
+              },
+              {
+                "name": "value-container",
+                "description": "This wraps the value of the input",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "value",
+                    "description": "This is holds the value of the input",
+                    "element": "div"
+                  }
+                ]
+              },
+              {
+                "name": "search-cancel-button",
+                "legacyPart": "::-webkit-search-cancel-button",
+                "element": "div"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Range",
-      "openUIName": "Slider"
+      "openUIName": "Slider",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "slider-container",
+            "legacyPart": "::-webkit-slider-container",
+            "element": "div",
+            "children": [
+              {
+                "name": "slider-runnable-track",
+                "legacyPart": "::-webkit-slider-runnable-track",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "slider-thumb",
+                    "legacyPart": "::-webkit-slider-thumb",
+                    "element": "div"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "name": "Number"
+      "name": "Number",
+      "openUIName": "InputNumber",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "textfield-decoration-container",
+            "legacyPart": "::-webkit-textfield-decoration-container",
+            "element": "div",
+            "children": [
+              {
+                "name": "value-container",
+                "description": "This wraps the value of the input",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "value",
+                    "description": "This is holds the value of the input",
+                    "element": "div"
+                  }
+                ]
+              },
+              {
+                "name": "inner-spin-button",
+                "legacyPart": "::-webkit-inner-spin-button",
+                "element": "div"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Text",
@@ -55,10 +220,151 @@
     },
     {
       "name": "Date",
-      "openUIName": "Datepicker"
+      "openUIName": "Datepicker",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "datetime-edit",
+            "legacyPart": "::-webkit-datetime-edit",
+            "element": "div",
+            "children": [
+              {
+                "name": "datetime-edit-fields-wrapper",
+                "legacyPart": "::-webkit-datetime-edit-fields-wrapper",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "datetime-edit-day-field",
+                    "legacyPart": "::-webkit-datetime-edit-day-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-month-field",
+                    "legacyPart": "::-webkit-datetime-edit-month-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-year-field",
+                    "legacyPart": "::-webkit-datetime-edit-year-field",
+                    "element": "div"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "name": "Color"
+      "name": "Datetime-local",
+      "openUIName": "Datepicker",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "datetime-edit",
+            "legacyPart": "::-webkit-datetime-edit",
+            "element": "div",
+            "children": [
+              {
+                "name": "datetime-edit-fields-wrapper",
+                "legacyPart": "::-webkit-datetime-edit-fields-wrapper",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "datetime-edit-day-field",
+                    "legacyPart": "::-webkit-datetime-edit-day-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-month-field",
+                    "legacyPart": "::-webkit-datetime-edit-month-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-year-field",
+                    "legacyPart": "::-webkit-datetime-edit-year-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-hour-field",
+                    "legacyPart": "::-webkit-datetime-edit-hour-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-minute-field",
+                    "legacyPart": "::-webkit-datetime-edit-minute-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div",
+                    "optional": true
+                  },
+                  {
+                    "name": "datetime-edit-second-field",
+                    "legacyPart": "::-webkit-datetime-edit-second-field",
+                    "element": "div",
+                    "optional": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Color",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "color-swatch-wrapper",
+            "legacyPart": "::-webkit-color-swatch-wrapper",
+            "element": "div",
+            "children": [
+              {
+                "name": "color-swatch",
+                "legacyPart": "::-webkit-color-swatch",
+                "element": "div"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Ul",
@@ -72,7 +378,31 @@
       "name": "Nav"
     },
     {
-      "name": "Progress"
+      "name": "Progress",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "progress-bar-inner-element",
+            "legacyPart": "::-webkit-progress-bar-inner-element",
+            "element": "div",
+            "children": [
+              {
+                "name": "progress-bar",
+                "legacyPart": "::-webkit-progress-bar",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "progress-value",
+                    "legacyPart": "::-webkit-progress-value",
+                    "element": "div"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Dialog"
@@ -91,7 +421,19 @@
       "name": "Audio"
     },
     {
-      "name": "File"
+      "name": "File",
+      "anatomy": {
+        "name": "root",
+        "description": "File preview and label are not represented in the DOM.",
+        "children": [
+          {
+            "name": "file-selector-button",
+            "part": "::file-selector-button",
+            "legacyPart": "::-webkit-file-upload-button",
+            "element": "button"
+          }
+        ]
+      }
     },
     {
       "name": "Submit"
@@ -100,7 +442,53 @@
       "name": "Reset"
     },
     {
-      "name": "Time"
+      "name": "Time",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "datetime-edit",
+            "legacyPart": "::-webkit-datetime-edit",
+            "element": "div",
+            "children": [
+              {
+                "name": "datetime-edit-fields-wrapper",
+                "legacyPart": "::-webkit-datetime-edit-fields-wrapper",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "datetime-edit-hour-field",
+                    "legacyPart": "::-webkit-datetime-edit-hour-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-minute-field",
+                    "legacyPart": "::-webkit-datetime-edit-minute-field",
+                    "element": "div"
+                  },
+                  {
+                    "name": "datetime-edit-text",
+                    "legacyPart": "::-webkit-datetime-edit-text",
+                    "element": "div",
+                    "optional": true
+                  },
+                  {
+                    "name": "datetime-edit-second-field",
+                    "legacyPart": "::-webkit-datetime-edit-second-field",
+                    "element": "div",
+                    "optional": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Month"
@@ -112,7 +500,39 @@
       "name": "URL"
     },
     {
-      "name": "Password"
+      "name": "Password",
+      "anatomy": {
+        "name": "root",
+        "children": [
+          {
+            "name": "textfield-decoration-container",
+            "legacyPart": "::-webkit-textfield-decoration-container",
+            "element": "div",
+            "children": [
+              {
+                "name": "value-container",
+                "element": "div",
+                "children": [
+                  {
+                    "name": "value",
+                    "element": "div"
+                  }
+                ]
+              },
+              {
+                "name": "caps-lock-indicator",
+                "legacyPart": "::-webkit-caps-lock-indicator",
+                "element": "div"
+              },
+              {
+                "name": "credentials-auto-fill-button",
+                "legacyPart": "::-webkit-credentials-auto-fill-button",
+                "element": "div"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "name": "Email"

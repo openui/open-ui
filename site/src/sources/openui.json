@@ -1,0 +1,99 @@
+{
+  "$schema": "../schemas/design-system.schema.json",
+  "lastUpdated": "2023-10-15",
+  "name": "OpenUI",
+  "url": "https://open-ui.org/",
+  "by": "",
+  "description": "",
+  "components": [
+    {
+      "name": "File",
+      "url": "https://open-ui.org/components/file/",
+      "anatomy": {
+        "name": "openui-file",
+        "children": [
+          {
+            "name": "file-selector-button",
+            "part": "file-selector-button",
+            "element": "button"
+          },
+          {
+            "name": "label",
+            "part": "label",
+            "element": "label"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Checkbox",
+      "url": "https://open-ui.org/components/checkbox/",
+      "anatomy": {
+        "name": "openui-checkbox",
+        "children": [
+          {
+            "name": "label",
+            "part": "label",
+            "element": "label"
+          },
+          {
+            "name": "indicator",
+            "part": "indicator",
+            "element": "div"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Selectlist",
+      "openUIName": "Select",
+      "url": "https://open-ui.org/components/selectlist/",
+      "anatomy": {
+        "name": "openui-select",
+        "children": [
+          {
+            "name": "button type=selectlist",
+            "part": "button",
+            "element": "button",
+            "children": [
+              {
+                "name": "selectedoption",
+                "part": "selectedoption",
+                "element": "selectedoption",
+                "description": "Currently selected option"
+              },
+              {
+                "name": "marker",
+                "part": "marker"
+              }
+            ]
+          },
+          {
+            "name": "listbox",
+            "part": "listbox",
+            "element": "listbox",
+            "children": [
+              {
+                "name": "optgroup",
+                "element": "optgroup",
+                "optional": true,
+                "children": [
+                  {
+                    "name": "legend",
+                    "element": "legend",
+                    "optional": true,
+                    "description": "Used to provide a label to an <optgroup> element. It must be the first child of the <optgroup>."
+                  },
+                  {
+                    "name": "option",
+                    "element": "option"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

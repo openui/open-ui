@@ -27,17 +27,7 @@
     },
 
     "anatomy": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "description": "Each named part that makes up the whole of the component.",
-        "properties": {
-          "name": { "type": "string" },
-          "description": { "type": "string" }
-        },
-        "required": ["name"]
-      },
-      "uniqueItems": true
+      "$ref": "./component-anatomy.schema.json"
     },
 
     "concepts": {
@@ -57,5 +47,5 @@
     }
   },
 
-  "required": ["name", "url"]
+  "required": ["name"]
 }
