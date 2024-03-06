@@ -106,7 +106,7 @@ focus tracking are unchanged with this proposal.
 1. (Child opt-in) Group a set of focusable child elements under a single focusgroup.
 2. (Descendent opt-in) Focusable elements deeply nested can participate in a single focusgroup.
 3. (Cross Shadow DOM) Focusable elements nested inside a Shadow DOM are discoverable and focusable
-   when their Shadow Host or an ancestor element declares a focusgroup (by default).
+   when their Shadow Host or an ancestor element declares a focusgroup.
 3. (Wrap) Focusgroup can be configured to have wrap-around focus semantics.
 4. (Horizontal/vertical) A focusgroup can be configured to respond to either horizontal navigation
    keys or vertical keys or both (to trivially reserve one axis of arrow key behavior for
@@ -223,9 +223,9 @@ The CSS-specified value of 'nowrap' would override the HTML attribute value's "w
 similarly for 'both' overriding "horizontal".
 
 There is no change to the way Tab navigation works with `tabindex` nor the Tab ordering behavior. To
-use a focusgroup, focus must enter that element's focusable shadow-inclusive children somehow: for accessibility
-and keyboard-only scenarios, the Tab key is typically used--programmatic calls to `element.focus()`
-or user clicks with a pointing device are alternatives.
+use a focusgroup, focus must enter that element's focusable shadow-inclusive children through 
+pre-existing means, e.g., for accessibility and keyboard-only scenarios, the Tab key is typically 
+used--programmatic calls to `element.focus()` or user clicks with a pointing device are alternatives.
 
 The focusgroup can be used to reduce the number of tab stops (`tabindex=0`) necessary in a document
 by converting those into `tabindex=-1` and adding a focusgroup to manage them. The 'roving tabindex'
@@ -272,7 +272,7 @@ from "selection/toggle" state.
 A future extension of this proposal may allow focus entering a focusgroup to jump to the currently
 toggled (or the toggle with the highest value) if any toggles are set in the focusgroup.
 
-Focusgroup definitions apply by default across Shadow DOM boundaries in order to make it easy for component
+Focusgroup definitions apply across Shadow DOM boundaries in order to make it easy for component
 developers to support focusgroup behavior across component boundaries. (Component authors that want to opt-out
 of this behavior can do so according to Section 6.7.)
 
@@ -328,7 +328,7 @@ this purpose.
 
 ### 6.4. Expanding and connecting linear focusgroups together (`extend`)
 
-By default, a focusgroup definition's focusgroup candidates are its direct shadow-inclusive children. There are two
+A focusgroup definition's focusgroup candidates are its direct shadow-inclusive children. There are two
 ways to "extend the reach" of a linear focusgroup's candidates. One way is to use CSS to directly
 assign a focusgroup candidate state to a shadow-inclusive descendant element (explained later). The other is to use
 `extend`. A linear focusgroup definition can declare that it intends to `extend` an ancestor linear
@@ -1250,12 +1250,16 @@ be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=sp
 
 ## 11. Open Questions
 
-It may not make sense to support focusgroup on every HTML element, especially those
-that already have platform-provide focusgroup-like internal behavior (e.g., `<select>`). Then again,
-if the key navigation behavior is explained by the presence of an external attribute on these elements,
-perhaps the internal behavior should defer to the external specified behavior (usage of the attribute
-would cancel the element's preexisting built-in behavior in favor of the new generic behavior). Implementation
-experience and additional community feedback will be necessary to land a reasonable plan for this case.
+* [Issue 995](https://github.com/openui/open-ui/issues/995) - It may not make sense to support 
+   focusgroup on every HTML element, especially those that already have platform-provided 
+   focusgroup-like internal behavior (e.g., `<select>`). Then again, if the key navigation 
+   behavior is explained by the presence of an external attribute on these elements, perhaps
+   the internal behavior should defer to the external specified behavior (usage of the attribute
+   would cancel the element's preexisting built-in behavior in favor of the new generic behavior).
+   Implementation experience and additional community feedback will be necessary to land a 
+   reasonable plan for this case.
+
+See other [open focusgroup issues on Github](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
 
 ### 11.1. Additional Keyboard support
 
