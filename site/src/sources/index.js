@@ -67,7 +67,7 @@ export const sources = [
           componentName: componentOpenUIName,
           openUIName: conceptOpenUIName,
         }
-      })
+      }),
     }
   }),
 }))
@@ -75,13 +75,13 @@ export const sources = [
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/groupBy
 export const groupBy = (items, callbackFn) => {
   return items.reduce((acc, currentValue, currentIndex) => {
-    let groupKey = callbackFn(currentValue, currentIndex);
+    let groupKey = callbackFn(currentValue, currentIndex)
     if (!acc[groupKey]) {
-      acc[groupKey] = [];
+      acc[groupKey] = []
     }
-    acc[groupKey].push(currentValue);
-    return acc;
-  }, {});
+    acc[groupKey].push(currentValue)
+    return acc
+  }, {})
 }
 
 export const get = (obj, path, defValue) => {
@@ -91,10 +91,7 @@ export const get = (obj, path, defValue) => {
   // Regex explained: https://regexr.com/58j0k
   const pathArray = Array.isArray(path) ? path : path.match(/([^[.\]])+/g)
   // Find value
-  const result = pathArray.reduce(
-    (prevObj, key) => prevObj && prevObj[key],
-    obj
-  )
+  const result = pathArray.reduce((prevObj, key) => prevObj && prevObj[key], obj)
   // If found value is undefined return default value; otherwise return the value
   return result === undefined ? defValue : result
 }
@@ -102,12 +99,10 @@ export const get = (obj, path, defValue) => {
 export const uniqBy = (arr, iteratee) => {
   if (typeof iteratee === 'string') {
     const prop = iteratee
-    iteratee = item => item[prop]
+    iteratee = (item) => item[prop]
   }
 
-  return arr.filter(
-    (x, i, self) => i === self.findIndex(y => iteratee(x) === iteratee(y))
-  )
+  return arr.filter((x, i, self) => i === self.findIndex((y) => iteratee(x) === iteratee(y)))
 }
 
 export const sourceNames = sources.map((source) => source.name)
@@ -120,28 +115,40 @@ export const componentsByName = groupBy(componentList, (component) => component.
 
 // Anatomies
 export const anatomiesByComponent = Object.fromEntries(
-  Object.entries(componentsByName).map(([key, value]) =>
-    [key, uniqBy(value.flatMap((component) => component.anatomy).filter(Boolean), "name")])
+  Object.entries(componentsByName).map(([key, value]) => [
+    key,
+    uniqBy(value.flatMap((component) => component.anatomy).filter(Boolean), 'name'),
+  ]),
 )
 
 // Concepts
 const conceptList = componentList.flatMap((component) => component.concepts).filter(Boolean)
 
-export const openUIConceptsByComponent = Object.fromEntries(Object.entries(groupBy(conceptList, concept => concept.componentName)).map(([key, value]) => [key, groupBy(value, concept => concept.openUIName)]))
+export const openUIConceptsByComponent = Object.fromEntries(
+  Object.entries(groupBy(conceptList, (concept) => concept.componentName)).map(([key, value]) => [
+    key,
+    groupBy(value, (concept) => concept.openUIName),
+  ]),
+)
 
-export const conceptsByComponent = Object.fromEntries(Object.entries(groupBy(conceptList, concept => concept.componentName)).map(([key, value]) => [key, groupBy(value, concept => concept.name)]))
+export const conceptsByComponent = Object.fromEntries(
+  Object.entries(groupBy(conceptList, (concept) => concept.componentName)).map(([key, value]) => [
+    key,
+    groupBy(value, (concept) => concept.name),
+  ]),
+)
 
 export const getSourcesWithComponentConcept = (
   componentName,
   conceptName,
   conceptOpenUIName = conceptName,
-) =>
-  [...new Set(
-      get(conceptsByComponent, [componentName, conceptName]).filter(
-        (concept) => concept.name === conceptName && concept.openUIName === conceptOpenUIName,
-      )
-        .map((concept) => concept.sourceName),
-  )]
+) => [
+  ...new Set(
+    get(conceptsByComponent, [componentName, conceptName])
+      .filter((concept) => concept.name === conceptName && concept.openUIName === conceptOpenUIName)
+      .map((concept) => concept.sourceName),
+  ),
+]
 
 // Images
 export const getImagesForComponentConcept = (componentOpenUIName, conceptOpenUIName) =>

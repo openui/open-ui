@@ -31,17 +31,19 @@ const ComponentNameMatrix = (props) => {
   const matchNameToCount = Object.entries(
     matchNames.reduce((acc, value) => {
       if (!acc[value]) {
-        acc[value] = 1;
+        acc[value] = 1
       } else {
-        acc[value]++;
+        acc[value]++
       }
 
-      return acc;
-    }, {})
+      return acc
+    }, {}),
   ).sort(([matchNameA, countA], [matchNameB, countB]) => {
     return sort === SORT_OPTIONS.COMPONENT_NAME
       ? matchNameA.localeCompare(matchNameB)
-      : (SORT_OPTIONS.MATCH_COUNT ? countB - countA : matchNameA.localeCompare(matchNameB));
+      : SORT_OPTIONS.MATCH_COUNT
+      ? countB - countA
+      : matchNameA.localeCompare(matchNameB)
   })
 
   return (
