@@ -42,27 +42,28 @@ recognizers, touch-based ATs, etc.)
 
 The goal of this feature is to "pave the cow path" of an existing authoring practice
 (and accessibility best practice) implemented in nearly every Web UI library: the
-"roving tabindex". Here's a few sources that explain roving tabindex in more detail
-as well as a selection of common libraries implementing the pattern:
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex) 
+[[react](https://www.npmjs.com/package/react-roving-tabindex), 
+[angular](https://material.angular.io/cdk/a11y/overview#listkeymanager), 
+[fluent](https://developer.microsoft.com/en-us/fluentui#/controls/web/focuszone), 
+[elix](https://component.kitchen/elix/KeyboardDirectionMixin)]].
+Note however, that certain design choices have been made to generalize the 
+behavior so that additional scenarios are possible. See 
+[comparing roving tabindex and focusgroup](https://docs.google.com/document/d/1cOxjjZdvFfpexiN1x-MpNJLXrmbrR0xp1sRCTbaQ29c/)
+for further details.
 
-- [What's 'roving tabindex'?](https://www.stefanjudis.com/today-i-learned/roving-tabindex/)
-- [Rob Dodson explains roving tabindex (YouTube)](https://www.youtube.com/watch?v=uCIC2LNt0bk)
-- [ARIA Authoring Practices using roving tabindex in radiogroup example](https://www.w3.org/WAI/ARIA/apg/example-index/radio/radio.html)
-- [React-roving-tabindex](https://www.npmjs.com/package/react-roving-tabindex)
-- [Angular's ListKeyManager in the Component Dev Kit](https://material.angular.io/cdk/a11y/overview#listkeymanager)
-- [FocusZone in Fluent UI](https://developer.microsoft.com/en-us/fluentui#/controls/web/focuszone)
-- [Elix component library's KeyboardDirectionMixin](https://component.kitchen/elix/KeyboardDirectionMixin)
-
-To achieve this goal, we believe that the solution must be done with declarative markup or CSS.
+To achieve this goal, we believe the solution must be available in declarative markup or CSS.
 If JavaScript is required, then there seems little advantage to using a built-in feature over
 what can be implemented completely in author code. Furthermore, a declarative solution provides
-the key signal that allows the platform's accessibility infrastructure to make the group
+the key signal that allows the platform's accessibility infrastructure to make the `focusgroup`
 accessible by default:
 
-- Signaling to the AT that arrow-key navigation can be used on the focused element.
-- Understanding the bounds/extent of the group, providing list context like "X in Y items"
-  (posinset/setsize)
-- Providing a consistent and reliable navigation usage pattern for users with no extra author code
+- signaling to the AT to switch to a 
+   ["Focus mode"](https://www.accessibility-developer-guide.com/knowledge/screen-readers/desktop/browse-focus-modes/) 
+   by default, e.g., that the user has entered a type of control group.
+- allowing user agents to provide visual hints that the use of arrow-key navigation is possible, 
+   e.g., through a recognizable focus-ring or visual indicator.
+- providing a consistent and reliable navigation usage pattern for users with no extra author code
   required.
 
 ## 3. Non-Goals
