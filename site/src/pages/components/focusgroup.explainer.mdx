@@ -38,6 +38,125 @@ navigation, we acknowledge that there are other input modalities that work (or c
 to work) equally well for focusgroup navigation behavior (e.g., game controllers, gesture
 recognizers, touch-based ATs, etc.)
 
+## Quickstart
+
+`focusgroup` enables authors to provide keyboard "roving tabindex" with almost no code. Compare the
+web platform's native [radio button group](https://html.spec.whatwg.org/multipage/input.html#radio-button-group)
+with a custom control using the [radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
+
+<small>Note, this is for illustrative purposes only (see the 
+[first rule of ARIA](https://www.w3.org/WAI/ARIA/apg/practices/read-me-first/)).</small>
+
+A platform native radio group:
+
+```html
+<p>Choose your pet:</p>
+<div id=radiogroup>
+  <label>Dog <input type=radio name=mygroup value=dog></label>
+  <label>Cat <input type=radio name=mygroup value=cat></label>
+  <label>Turtle <input type=radio name=mygroup value=turtle></label>
+</div>
+```
+
+A custom radio group using `focusgroup`:
+
+```html
+<p id=label>Choose your pet:</p>
+<div role=radiogroup focusgroup onfocusin="/*update aria-checked values*/" aria-labelledby=label>
+  <span role=radio aria-checked=false tabindex=-1>Dog</span>
+  <span role=radio aria-checked=false tabindex=-1>Cat</span>
+  <span role=radio aria-checked=false tabindex=-1>Turtle</span>
+</div>
+```
+
+Observe:
+* `focusgroup` enables down/right arrow keys to advance the focus to the next focusable element in
+   DOM order (up/left keys will move the focus in reverse) just like in the native radio group.
+* `tabindex` is still required to make the `<span>` elements focusable (the `focusgroup` attribute
+   doesn't make any elements focusable by default, including the `<div>` it's declared on).
+* All the `tabindex` values are set to "-1" and no code has to update those values. `focusgroup` can
+   set keyboard focus on elements declared focusable via `tabindex="-1"` via arrow keys. 
+   `tabindex="-1"` still prevents these elements from being part of sequential focus navigation 
+   (e.g., the "tab sequence")--with one exception: `focusgroup` provides a special behavior that 
+   enables one focusable item within the group to get keyboard focus via sequential focus
+   navigation even if all the focusable elements within are opting out of sequential focus 
+   navigation (i.e., all "focusables" are setting `tabindex=-1`).
+* The `onfocusin` event handler is present because `focusgroup` **does not** manage selection state
+   (and native radio groups do have selection linked to focus).
+* In the native radio group, repeatedly pressing the down arrow key will eventualy wrap the focus
+   back around to the first focusable element. In the `focusgroup` example, focus will stop on the
+   last focusable element. (But there's an option to turn on wrapping if desired.)
+* If the user leaves the focusgroup (via tab key) and returns again, the last element that was 
+   focused previously will be the focused element on reentrance (it is remembered).
+
+In this next example, the author is creating a 
+[tab control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) where the tab activation 
+behavior is decoupled from selection ("manual tab activation"):
+
+```html
+<div role=tablist focusgroup="inline wrap no-memory" aria-label="Common Operating Systems">
+  <button id=tab-1 type=button role=tab aria-selected=false aria-controls=tabpanel-1 tabindex=-1>Mac</button>
+  <button id=tab-2 type=button role=tab aria-selected=true aria-controls=tabpanel-2 tabindex=0>Windows</button>
+  <button id=tab-3 type=button role=tab aria-selected=false aria-controls=tabpanel-3 tabindex=-1>Linux</button>
+</div>
+<div id=tabpanel-1 role=tabpanel tabindex=0 aria-labelledby=tab-1 hidden> … </div>
+<div id=tabpanel-2 role=tabpanel tabindex=0 aria-labelledby=tab-2> … </div>
+<div id=tabpanel-3 role=tabpanel tabindex=0 aria-labelledby=tab-3 hidden> … </div>
+```
+
+Observe:
+* Sequential focus navigation within a `focusgroup` is respected. When entering the `focusgroup`, 
+   focus will always go to the first selected tab (with `tabindex=0`). The `no-memory` value prevents
+   the focusgroup from remembering the last focused tab so that focus will always go to the 
+   selected tab on reentrance regardless of which element was focused last.
+* If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to the selected
+   tab, which is next in sequential focus navigation order. Pressing tab again moves the focus to
+   `tabpanel-2` which is next in sequential focus navigation order (because the other 
+   `role=tabpanel`s are `hidden`).
+* focus will `wrap` from one end of the tablist to the other because of `focusgroup=wrap` attribute 
+   value.
+* the up and down arrow keys **will not** move the focus because of `focusgroup=inline` which 
+   restricts the axis of movement to keyboard directional arrow keys in the `role=tablist`'s
+   **inline** direction (assuming the `<div>`'s `writing-mode` is `horizontal-tb`).
+* The author code required to manage the selection of a tab is omitted. Such code on tab selection 
+   change would update `aria-selected` values, the `hidden` state of the controlled `role=tabpanel`
+   and the `tabindex` values of tabs such that the newly selected `role=tab` element is `tabindex=0`
+   while all others are `tabindex=-1`.
+
+In a third example, the author is creating a 
+[navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/).
+Both `menuitem`s in the `menubar` ("About" and "Admissions") have popover `menu`s. The "Admissions"
+menu has an additional submenu under "Tuition".
+
+```html
+<ul role=menubar aria-label="Mythical University" focusgroup="inline wrap">
+  <li role=none>
+    <a role=menuitem popovertarget=aboutpop href="…" tabindex=-1 title="">About</a>
+    <ul role=menu focusgroup="block wrap" id=aboutpop aria-label=About tabindex=-1 popover>
+      <li role=none><a role=menuitem href="…" tabindex=-1 title="">Overview</a></li>
+      <li role=none><a role=menuitem href="…" tabindex=-1 title="">Administration</a></li>
+    </ul>
+  </li>
+  <li role=none>
+    <a role=menuitem popovertarget=admitpop href="…" tabindex=-1 title="">Admissions</a>
+    <ul role=menu focusgroup="block wrap" id=admitpop aria-label=Admissions tabindex=-1 popover>
+      <li role=none><a role=menuitem href="…" tabindex=-1 title="">Apply</a></li>
+      <li role=none>
+        <a role=menuitem popovertarget=tuitpop href="…" tabindex=-1 title="">Tuition</a>
+        <ul role=menu focusgroup="block wrap" id=tuitpop aria-label=Tuition tabindex=-1 popover>
+          <li role=none><a role=menuitem href="…" tabindex=-1 title="">Undergraduate</a></li>
+          <li role=none><a role=menuitem href="…" tabindex=-1 title="">Graduate</a></li>
+        </ul>
+      </li>
+      <li role=none><a role=menuitem href="…" tabindex=-1 title="">Visit</a></li>
+    </ul>
+  </li>
+</ul>
+```
+
+Observe:
+* Menubars are typically
+
 ## Goal
 
 The goal of this feature is to "pave the cow path" of an existing authoring practice
