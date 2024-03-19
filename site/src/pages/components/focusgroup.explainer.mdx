@@ -23,14 +23,14 @@ among a list or grid of focusable elements without having to write common boiler
 
 Authors may use the proposed `focusgroup` HTML attribute (or related CSS properties) to declare that
 a subtree of focusable elements will get:
-1. focus navigation (not selection) using keyboard directional arrow keys (for lists or grids)
+1. focus navigation ([not selection](#non-goals)) using keyboard directional arrow keys (for lists or grids)
 2. a guaranteed tab stop (when at least one focusable element is present)
 3. automatic return to the last focused focusable element
 4. start/end navigation (with Home/End keys)
 5. optional limited-axis arrow key navigation and optional wrap-around semantics
 
 By standardizing `focusgroup`, authors can leverage these behaviors in 
-[control patterns]((https://www.w3.org/WAI/ARIA/apg/)) to provide users with keyboard consistency,
+[control patterns](https://www.w3.org/WAI/ARIA/apg/) to provide users with keyboard consistency,
 default accessibility, and interoperability over existing solutions.
 
 While this document emphasizes the usage of the keyboard arrow keys for accessibility
@@ -68,18 +68,17 @@ accessible by default:
 
 ## Non-Goals
 
-In most roving tabindex implementations, the notion of moving _focus_ is
-tightly coupled with the notion of _selection_. In some cases, it makes sense to have selection follow
-the focus, but in other scenarios these need to be decoupled. For this proposed standard, we decouple
-selection from focus and only focus (cough) on the focus aspect: moving focus using the
-keyboard among eligible focus targets. Adding selection state, e.g., tracking the currently selected
-option in a list, will be a separate feature. To handle selection-based scenarios, we defer to the
-CSS proposal [**Toggles**](https://tabatkins.github.io/css-toggle/) which can work nicely with focusgroups.
+In some [control patterns](https://www.w3.org/WAI/ARIA/apg/) (such as radio groups or tablists) 
+moving the focus to an element also toggles its **selection** state. While some use cases will 
+require the selection state to follow the focus, in others these need to be decoupled. `focusgroup`
+is decoupled from selection. Tracking and changing selection based on focus will require author 
+code. Note that a related proposal for tracking selection state,
+[**CSS Toggles**](https://tabatkins.github.io/css-toggle/), is
+[no longer being pursued](https://docs.google.com/document/d/10JxXgeDAJ5zerOdxoWM9ZU9d5iMOdzGJt0EhlhkOkxM/).
 
-No additional UI (e.g., a "focus ring") is associated with focusgroups. A focusgroup
-is wholly intended as a logical (transparent) grouping mechanism for a set of already focusable child elements,
-providing arrow key navigation among them. All the pre-existing styling/ native UI affordances for
-focus tracking are unchanged with this proposal.
+Implementations are welcome to experiment with additional UI (e.g., a "focusgroup focus ring") in
+order to help make users aware of focusgroups, however this proposal does not include any 
+specific guidelines or recommendations.
 
 ## Principles
 
