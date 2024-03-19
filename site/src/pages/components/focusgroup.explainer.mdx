@@ -14,28 +14,24 @@ Authors: [Travis Leithead](https://github.com/travisleithead),
 
 ## 1. Introduction
 
-When writing custom controls, authors need to implement the semantics of various known
-controls (see [ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)) to
-enable proper (and expected) keyboard support. Control examples include tab widgets,
-comboboxes, accordion panels, carousels, focusable grid tables, etc. Many of these
-patterns expect or can benefit from arrow-key navigation, as well as support for
-page down/up, home/end, even "type ahead" behavior.
+Authors create many interactive control [patterns](https://www.w3.org/WAI/ARIA/apg/) that expect
+or can benefit from keyboard-accessible behavior such as arrow-key navigation.
 
-The native web platform supports _some_ of these linear navigation behaviors in native
-controls like radio button groups (wrap-around arrow key movement that changes both focus
-and linked selection), `<select>` element popups (up/down movement among options), and
-date-time controls (arrow key movement among the components of the date), but **does not
-expose a primitive** that can be used independently to get this behavior.
+This proposal enables authors to add a set of built-in keyboard behaviors for moving focus
+among a list or grid of focusable elements without having to write common boilerplate code
+(e.g., roving tabindex) to do so in their custom controls.
 
-We propose exposing a new web platform primitive—'focusgroup'—to facilitate focus navigation (not selection)
-using arrow keys among a set of focusable elements. This feature can then be used
-(**without any JavaScript**) to easily supply platform-provided focusgroup navigation into
-custom-authored controls in a standardized and predictable way for users.
+Authors may use the proposed `focusgroup` HTML attribute (or related CSS properties) to declare that
+a subtree of focusable elements will get:
+1. focus navigation (not selection) using keyboard directional arrow keys (for lists or grids)
+2. a guaranteed tab stop (when at least one focusable element is present)
+3. automatic return to the last focused focusable element
+4. start/end navigation (with Home/End keys)
+5. optional limited-axis arrow key navigation and optional wrap-around semantics
 
-Customers like Microsoft's Fluent UI team are excited to leverage this built-in capacity
-for its keyboard consistency, default accessibility (provides a signal to ATs for alternate
-keyboard navigation), and promised interoperability
-over existing solutions.
+By standardizing `focusgroup`, authors can leverage these behaviors in 
+[control patterns]((https://www.w3.org/WAI/ARIA/apg/)) to provide users with keyboard consistency,
+default accessibility, and interoperability over existing solutions.
 
 While this document emphasizes the usage of the keyboard arrow keys for accessibility
 navigation, we acknowledge that there are other input modalities that work (or can be adapted
