@@ -12,7 +12,7 @@ Authors: [Travis Leithead](https://github.com/travisleithead),
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
 {/* END doctoc generated TOC please keep comment here to allow auto update */}
 
-## 1. Introduction
+## Introduction
 
 Authors create many interactive control [patterns](https://www.w3.org/WAI/ARIA/apg/) that expect
 or can benefit from keyboard-accessible behavior such as arrow-key navigation.
@@ -38,7 +38,7 @@ navigation, we acknowledge that there are other input modalities that work (or c
 to work) equally well for focusgroup navigation behavior (e.g., game controllers, gesture
 recognizers, touch-based ATs, etc.)
 
-## 2. Goal
+## Goal
 
 The goal of this feature is to "pave the cow path" of an existing authoring practice
 (and accessibility best practice) implemented in nearly every Web UI library: the
@@ -66,7 +66,7 @@ accessible by default:
 - providing a consistent and reliable navigation usage pattern for users with no extra author code
   required.
 
-## 3. Non-Goals
+## Non-Goals
 
 In most roving tabindex implementations, the notion of moving _focus_ is
 tightly coupled with the notion of _selection_. In some cases, it makes sense to have selection follow
@@ -81,7 +81,7 @@ is wholly intended as a logical (transparent) grouping mechanism for a set of al
 providing arrow key navigation among them. All the pre-existing styling/ native UI affordances for
 focus tracking are unchanged with this proposal.
 
-## 4. Principles
+## Principles
 
 1. Intuitive use in declarative scenarios. Focusgroups
    - are easy to reason about (self-documenting) in the source markup or CSS.
@@ -98,7 +98,7 @@ focus tracking are unchanged with this proposal.
      behavior under changing layouts. Enables some advanced use cases where selector-based
      matching is advantageous.
 
-## 5. Use Cases
+## Use Cases
 
 1. (Child opt-in) Group a set of focusable child elements under a single focusgroup.
 2. (Descendent opt-in) Focusable elements deeply nested can participate in a single focusgroup.
@@ -127,7 +127,7 @@ focus tracking are unchanged with this proposal.
 10. (Grid) Focusgroups can be used for grid-type navigation (`<table>`-structured content or other
    grid-like structured content (advanced CSS scenario), but not "presentation" grids).
 
-## 6. Focusgroup Concepts
+## Focusgroup Concepts
 
 A focusgroup is a group of elements that are related by arrow-key navigation and for which the web
 platform provides the arrow key navigation behavior by default (no JavaScript event handlers needed)!
@@ -281,8 +281,8 @@ A future extension of this proposal may allow focus entering a focusgroup to jum
 toggled (or the toggle with the highest value) if any toggles are set in the focusgroup.
 
 Focusgroup definitions apply across Shadow DOM boundaries in order to make it easy for component
-developers to support focusgroup behavior across component boundaries. (Component authors that want to opt-out
-of this behavior can do so according to Section 6.7.)
+developers to support focusgroup behavior across component boundaries. (Component authors that want to 
+[opt-out of this behavior](#opting-in--opting-out) can do so.)
 
 Example 4:
 
@@ -296,7 +296,7 @@ Example 4:
 </list-component>
 ```
 
-### 6.1. Key conflicts
+### Key conflicts
 
 The focusgroup handles keystrokes (keydown) with a default behavior to move the focus within
 focusgroup items. This default keyboard handling could interfere with other actions the application would like
@@ -304,13 +304,13 @@ to take. Therefore, authors may cancel the focusgroup's default behavior by canc
 (`preventDefault()`) on the keydown event. These events will be dispatched by the focused element, and
 bubble through the focusgroup parent element, which is a convenient place to handle the event.
 
-### 6.2. Key traps
+### Key traps
 
 Some built-in controls like `<input type=text>` "trap" nearly all keys that would be handled by the
 focusgroup. This proposal does not provide a way to prevent this from happening (Tab should continue
 to be used to "exit" these trapping elements).
 
-### 6.3. Enabling wrapping behaviors
+### Enabling wrapping behaviors
 
 By default, focusgroup traversal with arrow keys ends at boundaries of the focusgroup (the start and
 end of a linear focusgroup, and the start and end of both rows and columns in a grid focusgroup). The
@@ -334,7 +334,7 @@ this purpose.
 | focusgroup="row&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;flow                     | Rows "flow" from row ends to the next/prior row as described above, but column flowing/wrapping is disabled.                                                                                                                                                    |
 | focusgroup="col&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;col&#8209;flow                     | Columns "flow" from column ends to the next/prior column as described above, but row flowing/wrapping is disabled.                                                                                                                                              |
 
-### 6.4. Expanding and connecting linear focusgroups together (`extend`)
+### Expanding and connecting linear focusgroups together (`extend`)
 
 A focusgroup definition's focusgroup candidates are its direct shadow-inclusive children. There are two
 ways to "extend the reach" of a linear focusgroup's candidates. One way is to use CSS to directly
@@ -431,7 +431,7 @@ In this, `wrap` specified on the extending focusgroup definition (the radiogroup
 behavior to apply. The radiogroup extended a "nowrap" state from its ancestor
 focusgroup (the toolbar) and will use that value regardless of the presence of `wrap`.
 
-### 6.5. Limiting linear focusgroup directionality
+### Limiting linear focusgroup directionality
 
 In many cases, having multi-axis directional movement (e.g., both right arrow and down arrow linked to
 the forward direction) is not desirable, such as when implementing a tablist, and it may not make
@@ -484,7 +484,7 @@ Example 10:
 </radiobutton-group>
 ```
 
-### 6.6. Interactions with directionality + extending
+### Interactions with directionality + extending
 
 Powerful scenarios are possible when extending single-axis linear focusgroups. For example, authors
 can create menubars that are navigated with inline (left and right) arrow keys, and within each menu use
@@ -497,7 +497,7 @@ When a focusgroup extends another focusgroup, it never extends the parent's dire
 (`inline` or `block`). Each extending focusgroup declares (or take the default)
 directionality.
 
-#### 6.6.1. Axis-aligned extending linear focusgroups
+#### Axis-aligned extending linear focusgroups
 
 When a focusgroup is processing an arrow keypress, if it has an extending
 focusgroup that supports the direction requested, then the arrow keypress is forwarded to that
@@ -521,7 +521,7 @@ Example 11:
 Because the parent and the extending focusgroup are axis-aligned, they form an **extended
 linear focusgroup**.
 
-#### 6.6.2. Orthogonal-axis extending linear focusgroups
+#### Orthogonal-axis extending linear focusgroups
 
 Example 12:
 
@@ -621,7 +621,7 @@ _any_ of a focusgroup's focused shadow-inclusive children will check the parent 
 extremities of the focusgroup's children perform this check as in Example 11). This means that
 ascending to the parent focusgroup is possible from any extending shadow-inclusive children.
 
-#### 6.6.3. Notes about wrapping while extending
+#### Notes about wrapping while extending
 
 As noted previously, the wrapping state of a focusgroup definition is extended only when two
 focusgroups have an axis-aligned relationship:
@@ -720,7 +720,7 @@ Example 18:
 </div>
 ```
 
-##### 6.6.4. Deep combinations
+##### Deep combinations
 
 Nesting focusgroups can be applied to arbitrary depths to create either extended linear groups
 or ascender/descender relationships as needed--all forming a single logical `focusgroup`.
@@ -786,7 +786,7 @@ To "unify" the submenu and the menu items into one logical list for
 arrow navigation, the focusgroup on the `<div>` extends in the same direction as
 the focusgroup on the menu (and the wrapping value is also extended).
 
-### 6.7. Opting-in &amp; opting-out
+### Opting-in &amp; opting-out
 
 Focusgroup definitions are assigned to an element in order to set the behavior for
 their _shadow-inclusive child elements_ which become focusgroup candidates. Because all _shadow-inclusive child elements_
@@ -868,7 +868,7 @@ Example 21:
 </div>
 ```
 
-### 6.8. Multiple focusgroups among siblings
+### Multiple focusgroups among siblings
 
 Similar to how some focusgroup candidates can opt-in or opt-out (see prior section), other
 focusgroup candidates among a set of sibling elements may desire to participate in a
@@ -918,7 +918,7 @@ Example 22:
 </tab>
 ```
 
-### 6.9. Grid focusgroups
+### Grid focusgroups
 
 Some focusable data is structured not as a series of nested linear groups, but as a
 2-dimensional grid such as in a spreadsheet app, where focus can move logically from
@@ -928,7 +928,7 @@ sense to support the user's logical usage of the arrow keys to move around the d
 Grid navigation is expected to happen within well-structured content with consistent
 rows and columns where DOM structure reflects this organization.
 
-#### 6.9.1. Applicability to tabular data
+#### Applicability to tabular data
 
 The arrow navigation in the grid (and in the previous non-grid scenarios) should
 reflect the accessible structure of the document, not the presentation view made
@@ -957,7 +957,7 @@ only exist for row-major grid types, this proposal does **not define** grid focu
 organization for column-major data structures (and assumes row-major data structures
 throughout).
 
-#### 6.9.2. Grid isolation
+#### Grid isolation
 
 As noted previously the `extend` value is not applicable to grid focusgroups, and
 grid focusgroups cannot be combined with linear focusgroups. While it is obviously
@@ -966,7 +966,7 @@ vice-versa (a grid as a value of a list), this proposal does not allow these dif
 focusgroup types to be connected automatically. Some additional scripting may be
 necessary to add explicit "cell enter/exit" behavior (or just use the Tab key).
 
-#### 6.9.3. Setting up a grid focusgroup
+#### Setting up a grid focusgroup
 
 Grid focusgroups can be created "automatically" or manually. HTML only supports
 the "automatic" grid, while CSS can be used to do the same or to manually
@@ -1013,7 +1013,7 @@ arrow keys in this grid focusgroup will navigate between cells in the table, and
 up/down arrow keys will compute the new target based on the DOM position of the
 current focusgroup candidate cell in relation to the focusgroup candidate row.
 
-#### 6.9.4. Manual grids: row and cell connections
+#### Manual grids: row and cell connections
 
 A manual grid is declared in a focusgroup definition with the name `manual-grid`.
 With a manual grid, the rows and cells must be explicitly indicated using
@@ -1113,14 +1113,14 @@ Example 25:
 </div>
 ```
 
-#### 6.9.5. Empty Cell data
+#### Empty Cell data
 
 Like linear focusgroups, focus is only set on elements that are focusable.
 The arrow key navigation algorithms look for grid focusgroup cells in the
 direction the arrow was pressed. Non-focusable grid focusgroup candidate cells
 are passed over in the search.
 
-#### 6.9.6. Non-uniform cells
+#### Non-uniform cells
 
 It is entirely possible to have rows with non-uniform numbers of cells. In these
 cases, focusgroup navigation behaviors may not work as visibly desired. Algorithms
@@ -1130,24 +1130,24 @@ move to (e.g., in a grid with two rows, and the bottom row has three cells, and 
 top row only two, if the focus is on the 3rd cell, a request to move "up" to the prior
 row cannot be honored because there is no "3rd cell" in that row.
 
-## 7. Privacy and Security Considerations
+## Privacy and Security Considerations
 
-### 7.1. Privacy
+### Privacy
 
 No considerable privacy concerns are expected, but we welcome community feedback.
 
-### 7.2. Security
+### Security
 
 No significant security concerns are expected.
 
-## 8. Design decisions
+## Design decisions
 
 Here is a short list to issue discussions that led to the current design of focusgroup.
 
 * [`focusgroup` works across Shadow DOM boundaries by default](https://github.com/openui/open-ui/issues/521)
 * [arrow key movement and directionality contraints should be aligned with content direction (add inline/block)](https://github.com/openui/open-ui/issues/522)
 
-## 9. Alternative Solutions
+## Alternative Solutions
 
 We considered various alternative solutions before arriving at the current proposal:
 
@@ -1171,9 +1171,9 @@ We considered various alternative solutions before arriving at the current propo
    of building a native HTML feature to expose the built-in platform arrow-key
    navigation of certain controls.
 
-## 10. Related Work
+## Related Work
 
-### 10.1. CSS Basic UI 4 Keyboard Navigation properties
+### CSS Basic UI 4 Keyboard Navigation properties
 
 [Since at least 2002](https://www.w3.org/TR/2002/WD-css3-ui-20020802/#nav-dir) the CSS WG
 has defined related CSS properties `nav-up`, `nav-right`, `nav-down`, `nav-left` in
@@ -1216,7 +1216,7 @@ Should the two exist simultaneously, the `nav-*` properties might provide overri
 for directional movement, and take precedence over the `focusgroup` attribute. However, we
 hope that such a conflict will not occur.
 
-### 10.2. Spatial Navigation
+### Spatial Navigation
 
 Another approach to focusable navigation has been defined in
 [CSS Spatial Navigation](https://drafts.csswg.org/css-nav-1/). This specification enables
@@ -1255,7 +1255,7 @@ navigation modes, while a user not working with an AT (or ATs designed for visua
 would enable the full spatial navigation model. An opt-in for spatial navigation would certainly
 be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=spatial`).
 
-## 11. Open Questions
+## Open Questions
 
 * [Issue 995](https://github.com/openui/open-ui/issues/995) - It may not make sense to support 
    focusgroup on every HTML element, especially those that already have platform-provided 
@@ -1268,7 +1268,7 @@ be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=sp
 
 See other [open focusgroup issues on Github](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
 
-### 11.1. Additional Keyboard support
+### Additional Keyboard support
 
 In addition to arrow keys, the focusgroup should also enable other navigation keys such as
 pageup/down for paginated movement (TBD on how this could be calculated and in what
