@@ -23,7 +23,8 @@ among a list or grid of focusable elements without having to write common boiler
 
 Authors may use the proposed `focusgroup` HTML attribute (or related CSS properties) to declare that
 a subtree of focusable elements will get:
-1. focus navigation ([not selection](#non-goals)) using keyboard directional arrow keys (for lists or grids)
+1. focus navigation ([not selection](#non-goals)) using keyboard directional arrow keys (for lists
+   or grids)
 2. a guaranteed tab stop (when at least one focusable element is present)
 3. automatic return to the last focused focusable element
 4. start/end navigation (with Home/End keys)
@@ -41,8 +42,10 @@ recognizers, touch-based ATs, etc.)
 ## Quickstart
 
 `focusgroup` enables authors to provide keyboard "roving tabindex" with almost no code. Compare the
-web platform's native [radio button group](https://html.spec.whatwg.org/multipage/input.html#radio-button-group)
-with a custom control using the [radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
+web platform's native 
+[radio button group](https://html.spec.whatwg.org/multipage/input.html#radio-button-group)
+with a custom control using the 
+[radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
 
 <small>Note, this is for illustrative purposes only (see the 
 [first rule of ARIA](https://www.w3.org/WAI/ARIA/apg/practices/read-me-first/)).</small>
@@ -69,7 +72,7 @@ A custom radio group using `focusgroup`:
 </div>
 ```
 
-Observe:
+What to notice:
 * `focusgroup` enables down/right arrow keys to advance the focus to the next focusable element in
    DOM order (up/left keys will move the focus in reverse) just like in the native radio group.
 * `tabindex` is still required to make the `<span>` elements focusable (the `focusgroup` attribute
@@ -89,7 +92,7 @@ Observe:
 * If the user leaves the focusgroup (via tab key) and returns again, the last element that was 
    focused previously will be the focused element on reentrance (it is remembered).
 
-In this next example, the author is creating a 
+In this next example, the author is using a 
 [tab control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) where the tab activation 
 behavior is decoupled from selection ("manual tab activation"):
 
@@ -104,7 +107,7 @@ behavior is decoupled from selection ("manual tab activation"):
 <div id=tabpanel-3 role=tabpanel tabindex=0 aria-labelledby=tab-3 hidden> … </div>
 ```
 
-Observe:
+What to notice:
 * Sequential focus navigation within a `focusgroup` is respected. When entering the `focusgroup`, 
    focus will always go to the first selected tab (with `tabindex=0`). The `no-memory` value prevents
    the focusgroup from remembering the last focused tab so that focus will always go to the 
@@ -132,18 +135,18 @@ menu has an additional submenu under "Tuition".
 <ul role=menubar aria-label="Mythical University" focusgroup="inline wrap">
   <li role=none>
     <a role=menuitem popovertarget=aboutpop href="…" tabindex=-1 title="">About</a>
-    <ul role=menu focusgroup="block wrap" id=aboutpop aria-label=About tabindex=-1 popover>
+    <ul role=menu focusgroup="block wrap" autofocus id=aboutpop aria-label=About popover>
       <li role=none><a role=menuitem href="…" tabindex=-1 title="">Overview</a></li>
       <li role=none><a role=menuitem href="…" tabindex=-1 title="">Administration</a></li>
     </ul>
   </li>
   <li role=none>
     <a role=menuitem popovertarget=admitpop href="…" tabindex=-1 title="">Admissions</a>
-    <ul role=menu focusgroup="block wrap" id=admitpop aria-label=Admissions tabindex=-1 popover>
+    <ul role=menu focusgroup="block wrap" autofocus id=admitpop aria-label=Admissions popover>
       <li role=none><a role=menuitem href="…" tabindex=-1 title="">Apply</a></li>
       <li role=none>
         <a role=menuitem popovertarget=tuitpop href="…" tabindex=-1 title="">Tuition</a>
-        <ul role=menu focusgroup="block wrap" id=tuitpop aria-label=Tuition tabindex=-1 popover>
+        <ul role=menu focusgroup="block wrap" autofocus id=tuitpop aria-label=Tuition popover>
           <li role=none><a role=menuitem href="…" tabindex=-1 title="">Undergraduate</a></li>
           <li role=none><a role=menuitem href="…" tabindex=-1 title="">Graduate</a></li>
         </ul>
@@ -154,8 +157,90 @@ menu has an additional submenu under "Tuition".
 </ul>
 ```
 
-Observe:
-* Menubars are typically
+What to notice:
+* menuitems in `role=menubar` are limited to inline-direction arrow keys (e.g., left and right), 
+   while menuitems in `role=menu` are limited to block-direction arrow keys (e.g., up and down). 
+   This allows the orthogonal arrow keys (e.g., up and down on the menubar, left and right on the 
+   menus) to be used for activation purposes (extra code that is not shown in the example).
+* Placement of focus on the menus (the nested focusgroups) from the menubar is not a feature of 
+   `focusgroup` (nested focusgroups are completely independent of their parent focusgroup). In this
+   case, the focus placement is handled by built-in `popover` and `autofocus` attribute behaviors.
+* the "memory" of the nested `focusgroup`s is reset when the content is hidden/shown--this allows
+   the `autofocus` attribute to pick the first focusable element each time a menu is shown--the 
+   desired behavior in this case.
+   
+
+Here, the author is adding up/down arrow key behavior to focusable headings using an 
+[accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/). The arrow keys move the
+focus between the headings, but skip anything in the accordion bodies.
+
+```html
+<div focusgroup=block>
+  <h3><button type=button aria-expanded=true aria-controls=sec1 id=h1>Heading 1</button></h3>
+  <div focusgroup=none role=region aria-labelledby=h1 id=sec1>
+     … accordion panel w/form controls that are Tab focusable … 
+  </div>
+  <h3><button type=button aria-expanded=false aria-controls=sec2 id=h2>Heading 2</button></h3>
+  <div focusgroup=none role=region aria-labelledby=h2 id=sec2>
+     … 2nd panel … 
+  </div>
+  <h3><button type=button aria-expanded=false aria-controls=sec3 id=h3>Heading 3</button></h3>
+  <div focusgroup=none role=region aria-labelledby=h3 id=sec3>
+     … 3rd panel … 
+  </div>
+</div>
+```
+
+What to notice:
+* The accordion headers only respond to up/down arrow keys because the `focusgroup` is limited to
+   the 'block' direction (assuming this content has a `writing-mode` `horizontal-tb`). The headers
+   also participate in the sequential focus navigation (i.e., tab order)--`focusgroup` does not 
+   change that.
+* Any focusable content in the accordion's `role=region` sections is excluded from arrow key 
+   navigation via the inclusive opt-out `focusgroup=none`.
+* Content in the accordion's `role=region` is still available via sequential focus navigation 
+   (e.g., tab order). The tab order is unaffected by `focusgroup=none` declarations.
+
+Finally, the author is creating a data grid following the 
+[data grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/examples/data-grids/) where each
+of the cells in the table are focusable.
+
+```html
+<table focusgroup=grid role=grid aria-label=Transactions>
+  <tbody><tr>
+    <th>Date</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Amount</th>
+    <th>Balance</th>
+  </tr>
+  <tr>
+    <td tabindex=-1>01-Jan-16</td>
+    <td tabindex=-1>Deposit</td>
+    <td><a tabindex=-1 href=#>Cash Deposit</a></td>
+    <td tabindex=-1>$1,000,000.00</td>
+    <td tabindex=-1>$1,000,000.00</td>
+  </tr>
+  <tr>
+    <td tabindex=-1>02-Jan-16</td>
+    <td tabindex=-1>Debit</td>
+    <td><a tabindex=-1 href=#>Down Town Grocery</a></td>
+    <td tabindex=-1>$250.00</td>
+    <td tabindex=-1>$999,750.00</td>
+  </tr>
+</tbody></table>
+```
+
+What to notice:
+* `focusgroup=grid` understands table layout and will provide logical cell navigation with arrow
+   keys around all the focusable grid cells.
+* `<th>` header cells are not made focusable in this example, and so are not navigable by the
+   `focusgroup`.
+* all focusable elements are declared with `tabindex=-1` to take them out of sequential focus 
+   navigation. The `focusgroup` ensures that at least one of these focusable elements participates
+   in the sequential focus navigation order regardless. The `focusgroup` also remembers the last 
+   focused element, and returns the user to that element when they re-enter the table via sequential
+   focus navigation.
 
 ## Goal
 
