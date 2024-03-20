@@ -302,12 +302,12 @@ specific guidelines or recommendations.
 
 ## Use Cases
 
-1. (Child opt-in) Group a set of focusable child elements under a single focusgroup.
-2. (Descendent opt-in) Focusable elements deeply nested can participate in a single focusgroup.
-3. (Cross Shadow DOM) Focusable elements nested inside a Shadow DOM are discoverable and focusable
-   when their Shadow Host or an ancestor element declares a focusgroup.
-3. (Wrap) Focusgroup can be configured to have wrap-around focus semantics.
-4. (Limit directional arrow keys) A focusgroup can be configured to respond to either the logical
+1. (Element and subtree opt-in) A focusable element and its entire subtree can participate in a
+   single focusgroup.
+1. (Cross Shadow DOM) Focusable elements contained inside a Shadow DOM are discoverable and 
+   focusable when their Shadow Host or an ancestor element declares a focusgroup.
+1. (Wrap) Focusgroup can be configured to have wrap-around focus semantics.
+1. (Limit directional arrow keys) A focusgroup can be configured to respond to either the logical
    [inline-axis](https://drafts.csswg.org/css-writing-modes-4/#inline-axis) navigation keys (e.g., 
    left and right arrow keys when the focusgroup is in a `horizontal-tb` 
    [writing mode](https://drafts.csswg.org/css-writing-modes/#block-flow)) or 
@@ -316,18 +316,16 @@ specific guidelines or recommendations.
    nodes in a tree view control). See 
    [CSS Logical Properties and Values](https://drafts.csswg.org/css-logical/) for more about logical 
    directions.
-5. (Focus movement arrow keys follow content direction) The user's arrow key presses move the focus
+1. (Focus movement arrow keys follow content direction) The user's arrow key presses move the focus
    forward or backward in the DOM according to the writing mode and directionality of the content. 
    E.g., in RTL, an Arrow-Left key moves the focus forward according to the content direction.
-6. (Extend same direction) Focusgroups can be nested to provide arrow navigation into multiple
-   composed widgets (such as lists within lists).
-7. (Extend opposite direction) Focusgroups can be nested to provide arrow navigation into composed
-   widgets with orthogonal navigation semantics (such as horizontal-inside-vertical menus).
-8. (Multiple focusgroups) Multiple focusgroups can be established on a single element (advanced CSS
-   scenario).
-9. (Opt-out) Individual elements can opt-out of focusgroup participation (advanced CSS scenario)
-10. (Grid) Focusgroups can be used for grid-type navigation (`<table>`-structured content or other
-   grid-like structured content (advanced CSS scenario), but not "presentation" grids).
+1. (Opt-out) Individual elements can opt-out of focusgroup participation
+1. (Grid) Focusgroups can be used for grid-type navigation (`<table>`-structured content or other
+   grid-like structured content.
+
+A use case we are evaluating:
+
+1. (Grid) Focusgroups can be used on elements with `display: grid` to provide 2d grid navigation.
 
 ## Focusgroup Concepts
 
