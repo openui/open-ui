@@ -158,14 +158,17 @@ menu has an additional submenu under "Tuition".
 ```
 
 What to notice:
-* menuitems in `role=menubar` are limited to inline-direction arrow keys (e.g., left and right), 
+- `focusgroup` declarations can be nested inside of other focusgroups. When a nested focusgroup
+   is declared on an element, it creates a new focusgroup and [opts-out](#opting-out) of its
+   ancestor focusgroup.
+- menuitems in `role=menubar` are limited to inline-direction arrow keys (e.g., left and right), 
    while menuitems in `role=menu` are limited to block-direction arrow keys (e.g., up and down). 
    This allows the orthogonal arrow keys (e.g., up and down on the menubar, left and right on the 
    menus) to be used for activation purposes (extra code that is not shown in the example).
-* Placement of focus on the menus (the nested focusgroups) from the menubar is not a feature of 
+- Placement of focus on the menus (the nested focusgroups) from the menubar is not a feature of 
    `focusgroup` (nested focusgroups are completely independent of their ancestor focusgroup). In this
    case, the focus placement is handled by built-in `popover` and `autofocus` attribute behaviors.
-* the "memory" of the nested `focusgroup`s is reset when the content is hidden/shown--this allows
+- the "memory" of the nested `focusgroup`s is reset when the content is hidden/shown--this allows
    the `autofocus` attribute to pick the first focusable element each time a menu is shown--the 
    desired behavior in this case.
    
@@ -232,11 +235,11 @@ of the cells in the table are focusable.
 ```
 
 What to notice:
-* `focusgroup=grid` understands table layout and will provide logical cell navigation with arrow
+- `focusgroup=grid` understands table layout and will provide logical cell navigation with arrow
    keys around all the focusable grid cells.
-* `<th>` header cells are not made focusable in this example, and so are not navigable by the
+- `<th>` header cells are not made focusable in this example, and so are not navigable by the
    `focusgroup`.
-* all focusable elements are declared with `tabindex=-1` to take them out of sequential focus 
+- all focusable elements are declared with `tabindex=-1` to take them out of sequential focus 
    navigation. The `focusgroup` ensures that at least one of these focusable elements participates
    in the sequential focus navigation order regardless. The `focusgroup` also remembers the last 
    focused element, and returns the user to that element when they re-enter the table via sequential
@@ -290,11 +293,11 @@ specific guidelines or recommendations.
    - are easy to reason about (self-documenting) in the source markup or CSS.
    - provide a rational behavior when nested.
    - integrate well with other related platform semantics (e.g., `tabindex`).
-2. Focusgroups are easy to maintain and configure.
+1. Focusgroups are easy to maintain and configure.
    - Configuration is managed in one place.
    - Provide easy to understand usage into HTML and CSS patterns.
    - Avoid "spidery connections" e.g., using IDRefs or custom names that are hard to maintain.
-3. Complimentary declarative representations in HTML and CSS
+1. Complimentary declarative representations in HTML and CSS
    - HTML attributes offers focusgroup usage directly with impacted content and provide for
      the most straightforward scenarios.
    - CSS properties allow for responsive design patterns and can avoid redundant markup in some
@@ -470,7 +473,7 @@ Example:
 
 Focusgroup definitions apply across Shadow DOM boundaries in order to make it easy for component
 developers to support focusgroup behavior across component boundaries. (Component authors that want
-to [opt-out of this behavior](#opting-in--opting-out) can do so.)
+to [opt-out of this behavior](#opting-out) can do so.)
 
 Example:
 
@@ -540,7 +543,7 @@ Fortunately, there are several solutions to this problem:
 - Move the "Increase/Decrease Font" buttons before the `combobox`. (Refer to "Avoid including 
    controls whose operation requires the pair of arrow keys used for toolbar navigation" in the 
    [Toolbar control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/).) Additionally, 
-   [opt-out](#opting-in--opting-out) the `<input>` control from focusgroup participation so that 
+   [opt-out](#opting-out) the `<input>` control from focusgroup participation so that 
    arrow keys skip it. Alternatively, 
    [turn off the focusgroup's memory](#disabling-focusgroup-memory) so that focus isn't 
    automatically returned to the `combobox`.
@@ -575,7 +578,7 @@ Focusgroups have the following additional features:
    focusgroups only; respond to arrow keys in one axis only (either up/down or left/right when the
    arrow key pressed matches the corresponding flow of the content). By default, linear focusgroups
    respond to all four arrow keys.
-- [Focusgroup candidacy opt-out](#opting-in--opting-out) - prevent an element and its 
+- [Focusgroup candidacy opt-out](#opting-out) - prevent an element and its 
    shadow-inclusive descendants from participating in an anscester's focusgroup.
 - [Memory opt-out](#disabling-focusgroup-memory) - prevent the focusgroup from remembering what the 
    last focused element was when focus leaves a focusgroup. By default focusgroups remember that 
@@ -665,87 +668,70 @@ Example:
 ```
 
 
-### Opting-in &amp; opting-out
+### Opting-out
 
-Focusgroup definitions are assigned to an element in order to set the behavior for
-their _shadow-inclusive child elements_ which become focusgroup candidates. Because all _shadow-inclusive child elements_
-are focusgroup candidates, any child element that is (or becomes) focusable will
-automatically become a focusgroup item belonging to it's parent's focusgroup.
+Focusgroup definitions assigned to an element create focusgroup candidates that include 
+the element itself and all its _shadow-inclusive descendant elements_. Any element within that
+focusgroup scope that is (or becomes) focusable will automatically become a focusgroup item 
+belonging to its ancestor's focusgroup.
 
-What if an element should be focusable, exists as a child of an element with a focusgroup
-definition (because some of its other focusable siblings _should_ belong to the focusgroup),
-but does not want to participate in the focusgroup? Or what if a component nested across a 
-Shadow DOM boundary want to opt-out of focusgroup participation?
+With such an expansive opt-in behavior, it is important to provide an opt-out for elements or
+element subtrees. For example: focusable elements that wish to remain in sequential focus 
+navigation and have arrow key navigation pass them over; or, components nested across a 
+Shadow DOM boundary that wish to be excluded from focusgroup participation.
 
-Conversely, what if an element that is not a direct child of a linear focusgroup (but is
-a shadow-inclusive descendant) would like to become a member of a focusgroup without using `extend`?
+Opting-out applies to the element making the declaration as well as its shadow-inclusive 
+descendants.
 
-Individual focusgroup candidates can "opt-out" or "opt-in" to participation in any
-focusgroup. Opting-in or out is a local focusgroup item decision (it is not be managed at
-the focusgroup definition attached to the parent element). In order for a focusgroup item to
-opt-in or out, a new (local) mechanism is needed.
+To opt-out:
 
-In this proposal, there is no way for a _focusgroup candidate_ to opt-in or out using HTML
-alone (a proposal would likely require a new attribute with different focusgroup semantics,
-and opt-in or opt-out scenarios are considered edge-cases).
+| HTML | CSS | Explanation |
+|---|---|---|
+| `focusgroup=none` | `focus-group-type: none` | Opt-out of a focusgroup: this element and its shadow-inclusive descendants will not be considered focusgroup candidates. |
 
-To opt-in or opt-out, a CSS property is used, which applies only to focusgroup candidates (not
-focusgroup definitions):
+In the following example of an [accordion pattern](), the accordion's panels opt-out of `focusgroup`
+behavior so that any interactive content in a panel is bypassed when navigating among the 
+accordion headers.
 
-| CSS property &amp; value                | Explanation                                                                                                                                                                                                                                                                                                                                                                                        |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| focus&#8209;group&#8209;item:&nbsp;auto | Opt-in to a focusgroup: this element becomes a focusgroup candidate for the **nearest ancestor** that defines a linear focusgroup matching `auto`. The element will "search" its parent nodes looking for a matching focusgroup definition and will become an "extension" of that group (i.e., similar to using `extend`, but without the opportunity to re-establish a new focusgroup definition) |
-| focus&#8209;group&#8209;item:&nbsp;none | Opt-out of a focusgroup: this element will not participate in **any** focusgroup. (`none` is the initial value when there is no focusgroup definition on a parent element; `auto` is the initial value when there is a parent focusgroup definition.)                                                                                                                                              |
-
-In the following example, the `options-widget` opts-out of participation in the focusgroup.
-
-Example 20:
+Example:
 
 ```html
-<style>
-  #container {
-    focus-group: auto;
-  }
-  .optout {
-    focus-group-item: none;
-  }
-</style>
-<!-- … -->
-<control-row role="toolbar" id="container">
-  <options-widget class="optout">…</options-widget>
-  <action-button>…</action-button>
-  <action-button>…</action-button>
-  <action-button>…</action-button>
-  <action-button>…</action-button>
-</control-row>
+<div focusgroup=block>
+  <h3>
+    <button type=button aria-expanded=true aria-controls=sec1 id=h1>Heading 1</button>
+  </h3>
+  <div focusgroup=none role=region aria-labelledby=h1 id=sec1> … accordion panel w/form controls that are Tab focusable … </div>
+  <h3>
+    <button type=button aria-expanded=false aria-controls=sec2 id=h2>Heading 2</button>
+  </h3>
+  <div focusgroup=none role=region aria-labelledby=h2 id=sec2> .. 2nd panel … </div>
+  <h3>
+    <button type=button aria-expanded=false aria-controls=sec3 id=h3>Heading 3</button>
+  </h3>
+  <div focusgroup=none role=region aria-labelledby=h3 id=sec3> .. 3rd panel … </div>
+</div>
 ```
 
-In the following example, the `<deep-child>` element opts-in to the focusgroup defined on "ancestor".
+When a focusgroup definition is appled to an element, it implicicly opts out of any ancestor's 
+focusgroups. This ensures that every element can only belong in one focusgroup at a time.
 
-Example 21:
+Example:
 
 ```html
-<style>
-  #ancestor {
-    focus-group: auto;
-  }
-  .optin {
-    focus-group-item: auto;
-  }
-</style>
-<!-- … -->
-<div id="ancestor">
-  <div>
-    <div>
-      <div>
-        <div>
-          <deep-child class="optin" tabindex="0">…</deep-child>
-        </div>
-      </div>
-    </div>
+<div focusgroup> <!-- Parent -->
+  <div focusgroup> <!-- implicit focusgroup=none -->
+    <button>Am I a candidate, if yes, for which group?</button>
+    <div focusgroup></div> <!-- what happens here? -->
   </div>
 </div>
 ```
+
+- `<-- Parent -->` is a `focusgroup` that currently has no focusable candidates in it. If other 
+   children are added to it, then they and their descendants would be candidates for inclusion in
+   that Parent focusgroup.
+- `<button>` is in the focusgroup declared by its parent.
+- `<-- what happens here? -->` declares another focusgroup with no focusable candidates. At the same
+   time it is also opting itself out of inclusion in the focusgroup that includes the `<button>`.
 
 
 ## Disabling focusgroup memory
