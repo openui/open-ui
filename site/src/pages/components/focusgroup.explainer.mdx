@@ -369,7 +369,7 @@ other mechanism (e.g., `contenteditable`, being a scroll-container).
 An element can only have _one_ **focusgroup definition** added via the `focusgroup` attribute or 
 CSS `focus-group-type: linear` property:
 
-Example 1:
+Example:
 
 ```html
 <p id="ancestor" focusgroup>
@@ -425,7 +425,7 @@ Focusgroups can therefore be used to provide a
 [roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
 among a set of related focusable controls such as this menubar:
 
-Example 2:
+Example:
 
 ```html
 <div role="toolbar" focusgroup aria-label="Text Formatting" aria-controls="…">
@@ -454,7 +454,7 @@ Alternatively, focusgroup can be used to supplement existing tab-stop behavior t
 navigational support **in addition** to tab navigation. No problem: just ensure the deisred elements
 are sequentially focusable via `tabindex=0` (or stop excluding them via `tabindex=-1`):
 
-Example 3:
+Example:
 
 ```html
 <div role="toolbar" focusgroup aria-label="Text Formatting" aria-controls="…">
@@ -472,7 +472,7 @@ Focusgroup definitions apply across Shadow DOM boundaries in order to make it ea
 developers to support focusgroup behavior across component boundaries. (Component authors that want
 to [opt-out of this behavior](#opting-in--opting-out) can do so.)
 
-Example 4:
+Example:
 
 ```html
 <list-component focusgroup role="listbox" aria-label="Cute dogs">
@@ -575,7 +575,9 @@ Focusgroups have the following additional features:
    focusgroups only; respond to arrow keys in one axis only (either up/down or left/right when the
    arrow key pressed matches the corresponding flow of the content). By default, linear focusgroups
    respond to all four arrow keys.
-- [Last-focused opt-out](#disabling-focusgroup-memory) - prevent the focusgroup from remembering what the 
+- [Focusgroup candidacy opt-out](#opting-in--opting-out) - prevent an element and its 
+   shadow-inclusive descendants from participating in an anscester's focusgroup.
+- [Memory opt-out](#disabling-focusgroup-memory) - prevent the focusgroup from remembering what the 
    last focused element was when focus leaves a focusgroup. By default focusgroups remember that 
    element and will restore the focus to that element when the focusgroup is re-entered via 
    sequential focus navigation.
@@ -616,65 +618,47 @@ Specifying both `row-wrap` and `row-flow` in one HTML focusgroup definition is a
 one declaration for row behavior is allowed. Similarily for `col-wrap` and `col-flow`.
 
 
+## Limiting linear focusgroup directionality
 
-## Disabling focusgroup memory
-
-TBD
-
-
-## Adjustments to sequential focus navigation
-
-Content in progress...
-
-
-### Limiting linear focusgroup directionality
-
-In many cases, having multi-axis directional movement (e.g., both right arrow and down arrow linked to
-the forward direction) is not desirable, such as when implementing a tablist, and it may not make
-sense for the up and down arrows to also move the focus left and right. Likewise, when moving up
-and down in a vertical menu, the author might wish to make use of JavaScript to handle the left and right arrow keys to
-provide behavior such as opening or closing sub-menus. In these situations, it makes sense to limit
-the linear focusgroup to one-axis traversal.
+In many cases, having multi-axis directional movement (e.g., both right arrow and down arrow linked
+to the forward direction) is not desirable, such as when implementing a 
+[tablist control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/), in which case it may not
+make sense for the up and down arrows to also move the focus left and right. Likewise, when moving
+up and down in a vertical menu, the author might wish to use JavaScript to provide other behavior
+for the left and right arrow keys such as opening or closing sub-menus. In these situations, authors
+can limit the linear focusgroup to one-axis traversal.
 
 Note that the following only apply to linear focusgroup definitions (they have no effect on grid
 focusgroups).
 
-| HTML attribute value        | CSS property &amp; value                           | Explanation                                                                                                                                   |
-| --------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| focusgroup="inline"         | focus&#8209;group&#8209;direction:&nbsp;inline     | The focusgroup items will respond to forward and backward movement only with arrow keys that are parallel to this element's "inline" axis (e.g., left and right arrow keys for `horizontal-tb` writing mode). |
-| focusgroup="block"          | focus&#8209;group&#8209;direction:&nbsp;block      | The focusgroup items will respond to forward and backward movement only with arrow keys that are parallel to this element's "block" axis (e.g., up and down arrow keys for `vertical-*` writing modes). |
-| focusgroup="" (unspecified) | focus&#8209;group&#8209;direction:&nbsp;both       | The focusgroup items will respond to forward and backward movement with both directions (horizontal and vertical). The default/initial value. |
+| HTML | CSS | Explanation |
+|---|---|---|
+| (default) `focusgroup=""` (unspecified) | `focus-group-direction: both` | The focusgroup items will respond to forward and backward movement with both directions (horizontal and vertical). The default/initial value. |
+| `focusgroup=inline` | `focus-group-direction: inline` | The focusgroup items will respond to forward and backward movement only with arrow keys that are parallel to this element's "inline" axis (e.g., left and right arrow keys for `horizontal-tb` writing mode). |
+| `focusgroup=block` | `focus-group-direction: block` | The focusgroup items will respond to forward and backward movement only with arrow keys that are parallel to this element's "block" axis (e.g., up and down arrow keys for `vertical-*` writing modes). |
 
-Example 9:
+Example:
 
 ```html
-<style>
-  tab-group {
-    focus-group-name: auto;
-    focus-group-direction: inline;
-    focus-group-wrap: wrap;
-  }
-</style>
-<!-- … -->
-<tab-group role="tablist">
-  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+<tab-group role=tablist focusgroup="inline wrap">
+  <a-tab role=tab tabindex=0 aria-selected=true aria-controls="…">…</a-tab>
+  <a-tab role=tab tabindex=-1 aria-selected=false aria-controls="…">…</a-tab>
+  <a-tab role=tab tabindex=-1 aria-selected=false aria-controls="…">…</a-tab>
 </tab-group>
 ```
 
 In the above example, when the focus is on the first `<a-tab>` element, pressing either the up or
-down arrow key does nothing because the focusgroup is configured to only respond to the inline (left/right in this case)
-arrow keys.
+down arrow key does nothing because the focusgroup is configured to only respond to the inline
+(left/right in this case) arrow keys.
 
 Because 2-axis directionality is the default, specifying both `inline` and `block` at the
 same time on one focusgroup is not allowed:
 
-Example 10:
+Example:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<radiobutton-group focusgroup="inline block wrap" role="radiogroup">
+<radiobutton-group focusgroup="inline block wrap" role=radiogroup>
   ⚠️This focusgroup configuration is an error--neither constraint will be applied (which is actually
   what the author intended).
 </radiobutton-group>
@@ -762,6 +746,16 @@ Example 21:
   </div>
 </div>
 ```
+
+
+## Disabling focusgroup memory
+
+TBD
+
+
+## Adjustments to sequential focus navigation
+
+Content in progress...
 
 ### Multiple focusgroups among siblings
 
