@@ -329,165 +329,145 @@ A use case we are evaluating:
 
 ## Focusgroup Concepts
 
-A focusgroup is a group of elements that are related by arrow-key navigation and for which the web
-platform provides the arrow key navigation behavior by default (no JavaScript event handlers needed)!
-Navigation of focusgroup items happens according to order or structure of the DOM (not how it is
-visually rendered). The arrow keys controlling the navigation are mapped 
+A focusgroup is a group of related elements that can be navigated by directional arrow keys and 
+home/end keys and for which the web platform provides the navigation behavior by default (no 
+JavaScript event handlers needed)! The arrow keys controlling the navigation are mapped 
 to "forward" and "reverse" directions according to whether they point in the "block/inline-end" or 
-"block/inline-start" directions, respectively (and are based on the element declaring the focusgroup).
+"block/inline-start" directions, respectively (based on the element's directionality that declares 
+the focusgroup).
 
-This document describes two kinds of focusgroups: **linear focusgroups** and **grid focusgroups**.
+There are two kinds of focusgroups: **linear focusgroups** and **grid focusgroups**.
 Linear focusgroups provide arrow key navigation among a _list_ of elements. Grid focusgroups provide
 arrow key navigation behavior for tabular (or 2-dimensional) data structures.
 
-Multiple linear focusgroups can be combined together into one logical focusgroup, but linear focusgroups
-cannot be combined with grid focusgroups and vice-versa (and grid focusgroups cannot be combined with
-each other).
+| HTML | CSS | Explanation |
+|---|---|---|
+| `focusgroup` or `focusgroup=""` (no value specified) | `focus-group-type: linear` | Defines a **linear focusgroup** |
+| `focusgroup="grid"` or `focusgroup="manual-grid"` | `focus-group-type: grid` or `focus-group-type: manual-grid` | Defines an automatic grid or manual grid focusgroup. Grid focusgroup are covered in more detail [below](#grid-focusgroups) |
 
-Focusgroups consist of a **focusgroup definition** that establish **focusgroup candidates** and
+Focusgroups consist of a **focusgroup definition** that establishes **focusgroup candidates** and
 **focusgroup items**. Focusgroup definitions manage the desired behavior for the associated focusgroup
-items. Focusgroup items are the elements that actually participate in the focusgroup (among the possible
-focusgroup candidates).
-
-When a linear focusgroup definition is associated with an element, all of that element's shadow-inclusive direct children
-become focusgroup candidates. Focusgroup candidates become focusgroup items if they are focusable, e.g.,
+items. Focusgroup items are the elements that actually participate in the focusgroup (among the 
+possible focusgroup candidates). The element with a focusgroup definition is also a focusgroup
+candidate. Focusgroup candidates include all of that element's shadow-inclusive descendants. 
+Focusgroup candidates become focusgroup items if they are focusable, e.g.,
 implicitly focusable elements like `<button>`, or explicitly made focusable via `tabindex` or some
-other mechanism (e.g., `contenteditable`).
+other mechanism (e.g., `contenteditable`, being a scroll-container).
 
-In HTML, _one_ **focusgroup definition** can be added to an element using the `focusgroup` attribute:
+An element can only have _one_ **focusgroup definition** added via the `focusgroup` attribute or 
+CSS `focus-group-type: linear` property:
 
 Example 1:
 
 ```html
 <p id="parent" focusgroup>
-  Some text
-  <a id="one" href="…">a link</a>
-  . Some more text.
-  <span id="two" tabindex="-1">focusable span</span>
-  .
-  <a id="three" href="…">another link</a>
+  <span>
+    <span>
+      <span>
+        Some text and
+        <a id="one" href="…">a link</a>. A
+        <span id="two" tabindex="-1">focusable span</span> and
+        <a id="three" href="…">another link</a>.
+      </span>
+    </span>
+  </span>
 </p>
 ```
 
-Using CSS, a focusgroup definition can be applied with selectors, and must include a name. `auto` is
-a reserved name that corresponds to the same focusgroup implied by the HTML `focusgroup` attribute.
+The `parent` element has the **focusgroup definition**. The elements with `id=one`, `two`, and 
+`three` (and any other shadow-inclusive descendants of `parent` that may be added or removed) are 
+**focusgroup candidates**. Because each of these candidates are focusable, they are also 
+**focusgroup items**. When one of the focusgroup items becomes focused, the user can move focus 
+sequentially among all the focusgroup items using the arrow keys (up/right moves focus forward, 
+down/left moves focus backwards assuming the `<p>` element has `writing-mode` `horizontal-tb` and
+`direction` `ltr`). 
 
-```css
-#parent {
-  focus-group: auto;
-}
-```
+Note that only elements with `id=one` and `three` can be focused using the Tab key. The `<span>` has
+`tabindex=-1` set, which takes it out of the tabindex sequential navigation ordering).
 
-For the `parent` element which includes the focusgroup definition, the elements `one`, `two`, and `three`
-(and any other shadow-inclusive children of `parent` that may be added or removed) are focusgroup candidates and because
-each are focusable, they also become focusgroup items. When one of the focusgroup items is focused, then
-the user can move focus sequentially according to DOM order among all the focusgroup items using the arrow
-keys (up/right moves focus forward, down/left moves focus backwards assuming the `<p>` element has `writing-mode` `horizontal-tb` and `direction` `ltr`). Note that only elements `one` and
-`three` can be focused using the Tab key (because element `two` has `tabindex=-1` set, which takes it out
-of the tabindex sequential navigation ordering).
+Focusgroups have the following features:
 
-Focusgroup definitions may include the following (in addition to a name):
+- [Wrap-around semantics](#enabling-wrapping-behaviors) - what to do when attempting to move past
+   the end of a focusgroup. The default/initial value is `no-wrap`, which means that focus is
+   not moved past the ends of a focusgroup with the arrow keys. `wrap` and other tabular wrapping
+   behaviors are available for `grid` focusgroups.
+- [Directional axis limits](#limiting-linear-focusgroup-directionality) - applies to linear
+   focusgroups only; respond to arrow keys in one axis only (either up/down or left/right when the
+   arrow key pressed matches the corresponding flow of the content). By default, linear focusgroups
+   respond to all four arrow keys.
+- [Last-focused opt-out](#last-focused-memory) - prevent the focusgroup from remembering what the 
+   last focused element was when focus leaves a focusgroup. By default focusgroups remember that 
+   element and will restore the focus to that element when the focusgroup is re-entered via 
+   sequential focus navigation.
 
-- `extend` -- applies to linear focusgroups only: a mechanism to join this linear focusgroup to an ancestor
-  linear focusgroup.
-- `direction` -- applies to linear focusgroups only: constrains the keys used for arrow key navigation to
-  the inline direction, block direction, or both (the default).
-- `wrap` -- what to do when the attempting to move past the end of a focusgroup. The default/initial value is
-  nowrap which means that focus is not moved past the end of a focusgroup with the arrow keys.
-
-In HTML these focusgroup definitions are applied as space-separated token values to the `focusgroup`
-attribute. In CSS, these definitions are specified as properties (including a `focus-group` shorthand
-property for convenience).
-
-Example 1b:
-
-```html
-<div focusgroup="wrap inline"></div>
-```
-
-Example 1c:
-
-```css
-div {
-  focus-group-name: auto;
-  focus-group-wrap: wrap;
-  focus-group-direction: inline;
-}
-```
+In HTML these feature options are applied as space-separated token values to the `focusgroup`
+attribute. In CSS, these definitions are specified as properties (including a `focus-group` 
+shorthand property for convenience).
 
 In the case that HTML attribute values conflict with CSS properties, the CSS values override the
-HTML-defined values. For example:
+HTML-defined values.
 
-Example 1d:
+Focusgroups provide a special behavior when used in conjunction with sequential focus navigation 
+("tab navigation"). Focusgroups ensure that **at least one** focusgroup item will participate in 
+sequential focus navigation even if all focusgroup items are declared to opt-out via `tabindex=-1`.
+This behavior ensures that a focusgroup can always be entered via sequential focus naviation. 
+[See below for further details](#adjustments-to-sequential-focus-navigation). 
+Aside from this one behavior change, there is no other impact to the way tab navigation works with
+`tabindex` nor the tab ordering behavior.
 
-```html
-<div
-  focusgroup="wrap inline"
-  style="focus-group-name: auto; focus-group-wrap: nowrap; focus-group-direction: both"
-></div>
-```
-
-The CSS-specified value of 'nowrap' would override the HTML attribute value's "wrap" directive;
-similarly for 'both' overriding "inline".
-
-There is no change to the way Tab navigation works with `tabindex` nor the Tab ordering behavior. To
-use a focusgroup, focus must enter that element's focusable shadow-inclusive children through 
-pre-existing means, e.g., for accessibility and keyboard-only scenarios, the Tab key is typically 
-used--programmatic calls to `element.focus()` or user clicks with a pointing device are alternatives.
-
-The focusgroup can be used to reduce the number of tab stops (`tabindex=0`) necessary in a document
-by converting those into `tabindex=-1` and adding a focusgroup to manage them. The 'roving tabindex'
-scenario is accomplished by picking an entry point to the focusgroup (a child with `tabindex=0`), and
-setting the rest of the focusable elements to `tabindex=-1`. This is the same pattern needed to setup
-the roving tabindex, but by adding `focusgroup`, no JavaScript is necessary to manage it afterward:
+Focusgroups can therefore be used to provide a 
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
+among a set of related focusable controls such as this menubar:
 
 Example 2:
 
 ```html
-<ul focusgroup role="menubar">
-  <li tabindex="0" role="menuitem">…</li>
-  <li tabindex="-1" role="menuitem">…</li>
-  <li tabindex="-1" role="menuitem">…</li>
-  <li tabindex="-1" role="menuitem">…</li>
-  <li tabindex="-1" role="menuitem">…</li>
-</ul>
+<div role="toolbar" focusgroup aria-label="Text Formatting" aria-controls="…">
+  <div>
+    <button type="button" aria-pressed="false" value="bold" tabindex="-1"><span>Bold</span></button>
+    <button type="button" aria-pressed="false" value="italic" tabindex="-1"><span>Italic</span></button>
+    <button type="button" aria-pressed="false" value="underline" tabindex="-1"><span>Underline</span></button>
+  </div>
+</div>
 ```
 
-From outside of the above markup, assume a Tab key press lands focus on the first `<li role=menuitem>`. From
-this point, the user can use the arrow keys to move from the beginning of the menubar to the end, or press
-Tab again to move outside of this grouping. Alternatively, maybe you have another instance of where
-support both Tab _and_ Arrow key navigation may be necessary. No problem, just change the setup so
-that all the focusable elements participate in the tab order:
+When pressing tab to enter this "toolbar" focusgroup from an element _before_ it, focus will go to
+the first `<button>` because:
+- There is no other element within the focusgroup with a `tabindex` >= 0 or that is sequentially
+   focusable by default (these `<button`s are taken out of sequential focus navigation with 
+   `tabindex=-1`).
+- This focusgroup has no "memory" of a last-focused element within (e.g., it has not been entered
+   before).
+- Since neither of the above cases chose an alternate element, then the first focusgroup item in
+   the group is focused.
+
+At this point, the user can use the arrow keys to move from the beginning of the toolbar to the end,
+or press tab again to move outside of the focusgroup.
+
+Alternatively, focusgroup can be used to supplement existing tab-stop behavior to provide arrow key
+navigational support **in addition** to tab navigation. No problem: just ensure the deisred elements
+are sequentially focusable via `tabindex=0` (or stop excluding them via `tabindex=-1`):
 
 Example 3:
 
 ```html
-<ul focusgroup role="toolbar">
-  <li tabindex="0" role="button" …>…</li>
-  <li tabindex="0" role="button" …>…</li>
-  <li tabindex="0" role="checkbox" …>…</li>
-  <li tabindex="0" role="checkbox" …>…</li>
-</ul>
+<div role="toolbar" focusgroup aria-label="Text Formatting" aria-controls="…">
+  <div>
+    <button type="button" aria-pressed="false" value="bold"><span>Bold</span></button>
+    <button type="button" aria-pressed="false" value="italic"><span>Italic</span></button>
+    <button type="button" aria-pressed="false" value="underline"><span>Underline</span></button>
+  </div>
+</div>
 ```
 
-The focusgroup doesn't "remember" the last element that was focused when focus leaves the group
-and returns later. Instead, the "leaving" and "returning" logic (for keyboard scenarios) depends on the
-preexisting _tabindex sequential focus navigation_ only (those with `tabindex=0` for example). The
-[CSS Toggles](https://tabatkins.github.io/css-toggle/) proposal could be used in this same scenario to
-track the "toggle state" among this group of toggle-able elements, allowing focus changes to be decoupled
-from "selection/toggle" state.
-
-A future extension of this proposal may allow focus entering a focusgroup to jump to the currently
-toggled (or the toggle with the highest value) if any toggles are set in the focusgroup.
-
 Focusgroup definitions apply across Shadow DOM boundaries in order to make it easy for component
-developers to support focusgroup behavior across component boundaries. (Component authors that want to 
-[opt-out of this behavior](#opting-in--opting-out) can do so.)
+developers to support focusgroup behavior across component boundaries. (Component authors that want
+to [opt-out of this behavior](#opting-in--opting-out) can do so.)
 
 Example 4:
 
 ```html
-<list-component focusgroup role="listbox" aria-label="cute dogs">
+<list-component focusgroup role="listbox" aria-label="Cute dogs">
   <template shadowrootmode="open">
     <my-listitem role="option" tabindex="0" aria-selected="true">Terrier</my-listitem>
     <my-listitem role="option" tabindex="-1" aria-selected="false">Dalmation</my-listitem>
@@ -533,6 +513,14 @@ this purpose.
 | focusgroup="flow"                              | focus&#8209;group&#8209;wrap:&nbsp;flow                               | Movement past the end of a row wraps the focus to the beginning of **the next row**. Movement past the beginning of a row wraps focus back to the end of **the prior row**. Same for columns. The last row/column wraps to the first row/column and vice versa. |
 | focusgroup="row&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;flow                     | Rows "flow" from row ends to the next/prior row as described above, but column flowing/wrapping is disabled.                                                                                                                                                    |
 | focusgroup="col&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;col&#8209;flow                     | Columns "flow" from column ends to the next/prior column as described above, but row flowing/wrapping is disabled.                                                                                                                                              |
+
+### Last-focused memory
+
+TBD
+
+### Adjustments to sequential focus navigation
+
+Content in progress...
 
 ### Expanding and connecting linear focusgroups together (`extend`)
 
