@@ -343,7 +343,7 @@ arrow key navigation behavior for tabular (or 2-dimensional) data structures.
 | HTML | CSS | Explanation |
 |---|---|---|
 | `focusgroup` or `focusgroup=""` (no value specified) | `focus-group-type: linear` | Defines a **linear focusgroup** |
-| `focusgroup="grid"` or `focusgroup="manual-grid"` | `focus-group-type: grid` or `focus-group-type: manual-grid` | Defines an automatic grid or manual grid focusgroup. Grid focusgroup are covered in more detail [below](#grid-focusgroups) |
+| `focusgroup=grid` or `focusgroup=manual-grid` | `focus-group-type: grid` or `focus-group-type: manual-grid` | Defines an automatic grid or manual grid focusgroup. Grid focusgroup are covered in more detail [below](#grid-focusgroups) |
 
 In the case that HTML attribute values conflict with CSS properties, the CSS values override the
 HTML-defined values.
@@ -593,22 +593,28 @@ The following focusgroup definition values change this behavior:
 
 | HTML | CSS | Explanation |
 |---|---|---|
-| (default) `focusgroup=""` (unspecified) | `focus-group-wrap: nowrap` | Disables any kind of wrapping |
-| `focusgroup=wrap` | focus&#8209;group&#8209;wrap:&nbsp;wrap   | **linear focusgroup**: causes movement beyond the ends of the focusgroup to wrap around to the other side; **grid focusgroup**: causes focus movement at the ends of the rows/columns to wrap around to the opposite side of the same rows/columns |
+| (default) `focusgroup=""` (unspecified) | `focus-group-wrap: none` | Disables any kind of wrapping. |
+| `focusgroup=wrap` | `focus-group-wrap: wrap` | Causes movement beyond the ends of the focusgroup to wrap around to the other side. |
 
-
-The following are only applicable to grid focusgroups. Note, row and column-specific wrapping
+Additional values are available for grid focusgroups. Note, row and column-specific wrapping
 and flowing can be specified together: `focus-group-wrap` supports two-token specifiers for
 this purpose.
 
-| HTML attribute value                           | CSS property &amp; value                                              | Explanation                                                                                                                                                                                                                                                     |
-| ---------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| focusgroup="row&#8209;wrap"                    | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;wrap                     | Rows wrap around, column wrapping [and flowing as described below] is disabled.                                                                                                                                                                                 |
-| focusgroup="col&#8209;wrap"                    | focus&#8209;group&#8209;wrap:&nbsp;col&#8209;wrap                     | Columns wrap around, but row wrapping [and flowing as described below] is disabled.                                                                                                                                                                             |
-| focusgroup="row&#8209;wrap&nbsp;col&#8209;flow | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;wrap&nbsp;col&#8209;flow | Rows wrap around, and columns flow (as described below). Similar combination possible for `row-flow` and `col-wrap`. Using `row-wrap` and `col-wrap` is equivalent to specifying `wrap`                                                                         |
-| focusgroup="flow"                              | focus&#8209;group&#8209;wrap:&nbsp;flow                               | Movement past the end of a row wraps the focus to the beginning of **the next row**. Movement past the beginning of a row wraps focus back to the end of **the prior row**. Same for columns. The last row/column wraps to the first row/column and vice versa. |
-| focusgroup="row&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;flow                     | Rows "flow" from row ends to the next/prior row as described above, but column flowing/wrapping is disabled.                                                                                                                                                    |
-| focusgroup="col&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;col&#8209;flow                     | Columns "flow" from column ends to the next/prior column as described above, but row flowing/wrapping is disabled.                                                                                                                                              |
+| HTML | CSS | Explanation |
+|---|---|---|
+| (default) `focusgroup="grid"` | `focus-group-wrap: none` or `focus-group-wrap: row-none col-none` | Rows and columns do not wrap or flow (default). |
+| `focusgroup="grid wrap"` | `focus-group-wrap: wrap` or `focus-group-wrap: row-wrap col-wrap` | Movement at the ends of the rows/columns wrap around to the opposite side of the same rows/columns. |
+| `focusgroup="grid row-wrap"` | `focus-group-wrap: row-wrap` or `focus-group-wrap: row-wrap col-none` | Rows wrap around, columns do not wrap. |
+| `focusgroup="grid col-wrap"` | `focus-group-wrap: col-wrap` or `focus-group-wrap: col-wrap row-none` | Columns wrap around, rows do not wrap. |
+| `focusgroup="grid flow"` | `focus-group-wrap: flow` or `focus-group-wrap: row-flow col-flow` | Movement past the end of a row wraps the focus to the beginning of **the next row**. Movement past the beginning of a row wraps focus back to the end of **the prior row**. Same for columns. The last row/column wraps to the first row/column and vice versa. |
+| `focusgroup="grid row-flow"` | `focus-group-wrap: row-flow` or `focus-group-wrap: row-flow col-none` | Rows "flow" from row ends to the next/prior row as described above, columns don't wrap or flow. |
+| `focusgroup="grid col-flow"` | `focus-group-wrap: col-flow` or `focus-group-wrap: col-flow row-none` | Columns "flow" from column ends to the next/prior column as described above, rows don't wrap or flow. |
+| `focusgroup="grid row-wrap col-flow"` | `focus-group-wrap: row-wrap col-flow` | Rows wrap around, and columns flow (as described above). |
+| `focusgroup="grid row-flow col-wrap"` | `focus-group-wrap: row-flow col-wrap` | Rows flow (as described below) and columns wrap around. |
+
+Specifying both `row-wrap` and `row-flow` in one HTML focusgroup definition is an author error. Only
+one declaration for row behavior is allowed. Similarily for `col-wrap` and `col-flow`.
+
 
 
 ## Disabling focusgroup memory
