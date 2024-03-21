@@ -743,55 +743,7 @@ TBD
 
 Content in progress...
 
-### Multiple focusgroups among siblings
 
-Similar to how some focusgroup candidates can opt-in or opt-out (see prior section), other
-focusgroup candidates among a set of sibling elements may desire to participate in a
-separate focusgroup from their other siblings.
-
-We elect to only provide this advanced scenario with CSS. Using `focus-group-item`, a
-focusgroup candidate can specify the custom identifier of a matching parent focusgroup
-definition it would like to belong to (assuming it is focusable).
-
-CSS quite easily allows multiple focusgroup definitions to be applied to a single
-container element via custom identifiers (this would be less elegant with HTML
-attributes). The name `auto` (and the grid focusgroup name) is reserved, but other
-values are treated as custom identifiers and define new focusgroup definitions that
-focusgroup candidates can opt-into.
-
-**Note**: a focusgroup candidate can **only** be in one focusgroup at a time, and the
-focusgroup it belongs to is the one specified by its `focus-group-item` value.
-
-| CSS property &amp; value                                                                          | Explanation                                                                                                                                                                                                                                                                                                                                      |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| focus&#8209;group&#8209;name:&nbsp;&lt;custom&nbsp;ident>                                         | Gives the focusgroup a custom identifiers. Only focusgroup candidates that opt-in to this named identifier will belong to this focusgroup.                                                                                                                                                                                                       |
-| focus&#8209;group&#8209;item:&nbsp;&lt;custom&nbsp;ident>                                         | Declares this focusgroup candidate's intention to belong to a focusgroup definition with the given identifier. If there is no matching focusgroup definition with this name in its ancestry, then this is an error and this item will revert to focus-group-item: `none` (or `auto` if it is a child of an element defining a linear focusgroup. |
-| focus&#8209;group&#8209;name, focus&#8209;group&#8209;direction, and focus&#8209;group&#8209;wrap | Each allows comma-separated list to accommodate multiple definitions.                                                                                                                                                                                                                                                                            |
-
-The following example shows one parent element that has two focusgroups defined, and
-opts half of the children into one and half into the other.
-
-Example 22:
-
-```html
-<style>
-  my-tabs {
-    focus-group-name: redtab, bluetab;
-    focus-group-direction: inline, inline;
-  }
-  .redtab { focus-group-item: redtab; }
-  .bluetab { focus-group-item: bluetab; }
-</style>
-<!-- … -->
-<my-tabs role=tablist focusgroup>
-  <my-tab class=redtab role=tab aria-controls="…" aria-selected=true tabindex="0">…</tab>
-  <my-tab class=redtab role=tab aria-controls="…" aria-selected=false tabindex="-1">…</tab>
-  <my-tab class=redtab role=tab aria-controls="…" aria-selected=false tabindex="-1">…</tab>
-  <my-tab class=bluetab role=tab aria-controls="…" aria-selected=false tabindex="-1">…</tab>
-  <my-tab class=bluetab role=tab aria-controls="…" aria-selected=false tabindex="-1">…</tab>
-  <my-tab class=bluetab role=tab aria-controls="…" aria-selected=false tabindex="-1">…</tab>
-</tab>
-```
 
 ### Grid focusgroups
 
@@ -871,7 +823,7 @@ the definition is ignored (i.e., there is no fallback to a linear grid).
 | -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | focusgroup="grid"    | focus&#8209;group&#8209;name:&nbsp;grid | Establishes the root of an automatic grid focusgroup. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-item: row` and `focus-group-item: cell` focusgroup candidate status automatically. |
 
-Example 23:
+Example:
 
 ```html
 <table role="grid" focusgroup="grid">
@@ -911,7 +863,7 @@ their nearest manual-grid root.
 In the following example, the `<my-cell>`s are all meant to be on the same row of the
 grid, and the rows are designated by `<my-row>` elements:
 
-Example 24:
+Example:
 
 ```html
 <style>
@@ -946,7 +898,7 @@ Example 24:
 The following non-uniform structure can still have grid semantics added
 via `manual-grid`:
 
-Example 25:
+Example:
 
 ```html
 <style>
