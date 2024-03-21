@@ -163,7 +163,7 @@ What to notice:
    This allows the orthogonal arrow keys (e.g., up and down on the menubar, left and right on the 
    menus) to be used for activation purposes (extra code that is not shown in the example).
 * Placement of focus on the menus (the nested focusgroups) from the menubar is not a feature of 
-   `focusgroup` (nested focusgroups are completely independent of their parent focusgroup). In this
+   `focusgroup` (nested focusgroups are completely independent of their ancestor focusgroup). In this
    case, the focus placement is handled by built-in `popover` and `autofocus` attribute behaviors.
 * the "memory" of the nested `focusgroup`s is reset when the content is hidden/shown--this allows
    the `autofocus` attribute to pick the first focusable element each time a menu is shown--the 
@@ -330,8 +330,8 @@ A use case we are evaluating:
 ## Focusgroup Concepts
 
 A focusgroup is a group of related elements that can be navigated by directional arrow keys and 
-home/end keys and for which the web platform provides the navigation behavior by default (no 
-JavaScript event handlers needed)! The arrow keys controlling the navigation are mapped 
+home/end keys and for which the web platform provides the navigation behavior by default. No 
+JavaScript event handlers needed in many cases! The arrow keys controlling the navigation are mapped 
 to "forward" and "reverse" directions according to whether they point in the "block/inline-end" or 
 "block/inline-start" directions, respectively (based on the element's directionality that declares 
 the focusgroup).
@@ -345,11 +345,23 @@ arrow key navigation behavior for tabular (or 2-dimensional) data structures.
 | `focusgroup` or `focusgroup=""` (no value specified) | `focus-group-type: linear` | Defines a **linear focusgroup** |
 | `focusgroup="grid"` or `focusgroup="manual-grid"` | `focus-group-type: grid` or `focus-group-type: manual-grid` | Defines an automatic grid or manual grid focusgroup. Grid focusgroup are covered in more detail [below](#grid-focusgroups) |
 
+In the case that HTML attribute values conflict with CSS properties, the CSS values override the
+HTML-defined values.
+
 Focusgroups consist of a **focusgroup definition** that establishes **focusgroup candidates** and
-**focusgroup items**. Focusgroup definitions manage the desired behavior for the associated focusgroup
-items. Focusgroup items are the elements that actually participate in the focusgroup (among the 
-possible focusgroup candidates). The element with a focusgroup definition is also a focusgroup
-candidate. Focusgroup candidates include all of that element's shadow-inclusive descendants. 
+**focusgroup items**. Focusgroup definitions manage the desired behavior for the associated 
+focusgroup items. Focusgroup items are the elements that actually participate in the focusgroup 
+(from the set of focusgroup candidates). Focusgroup candidates are all the elements under the scope
+of a focusgroup definition. The **focusgroup scope** consists of the element with the focusgroup 
+definition and its shadow-inclusive descendants, excluding elements that have opted out.
+
+The minimal focusgroup below demonstrates that the element declaring a focusgroup is also a
+focusgroup candidate and (in this case) the single focusgroup item.
+
+```html
+<p tabindex=0 focusgroup>World's smallest, but least useful focusgroup</p>
+```
+
 Focusgroup candidates become focusgroup items if they are focusable, e.g.,
 implicitly focusable elements like `<button>`, or explicitly made focusable via `tabindex` or some
 other mechanism (e.g., `contenteditable`, being a scroll-container).
@@ -360,7 +372,7 @@ CSS `focus-group-type: linear` property:
 Example 1:
 
 ```html
-<p id="parent" focusgroup>
+<p id="ancestor" focusgroup>
   <span>
     <span>
       <span>
@@ -374,8 +386,8 @@ Example 1:
 </p>
 ```
 
-The `parent` element has the **focusgroup definition**. The elements with `id=one`, `two`, and 
-`three` (and any other shadow-inclusive descendants of `parent` that may be added or removed) are 
+The `ancestor` element has the **focusgroup definition**. The elements with `id=one`, `two`, and 
+`three` (and any other shadow-inclusive descendants of `ancestor` that may be added or removed) are 
 **focusgroup candidates**. Because each of these candidates are focusable, they are also 
 **focusgroup items**. When one of the focusgroup items becomes focused, the user can move focus 
 sequentially among all the focusgroup items using the arrow keys (up/right moves focus forward, 
@@ -385,27 +397,21 @@ down/left moves focus backwards assuming the `<p>` element has `writing-mode` `h
 Note that only elements with `id=one` and `three` can be focused using the Tab key. The `<span>` has
 `tabindex=-1` set, which takes it out of the tabindex sequential navigation ordering).
 
-Focusgroups have the following features:
+### Last-focused memory
 
-- [Wrap-around semantics](#enabling-wrapping-behaviors) - what to do when attempting to move past
-   the end of a focusgroup. The default/initial value is `no-wrap`, which means that focus is
-   not moved past the ends of a focusgroup with the arrow keys. `wrap` and other tabular wrapping
-   behaviors are available for `grid` focusgroups.
-- [Directional axis limits](#limiting-linear-focusgroup-directionality) - applies to linear
-   focusgroups only; respond to arrow keys in one axis only (either up/down or left/right when the
-   arrow key pressed matches the corresponding flow of the content). By default, linear focusgroups
-   respond to all four arrow keys.
-- [Last-focused opt-out](#last-focused-memory) - prevent the focusgroup from remembering what the 
-   last focused element was when focus leaves a focusgroup. By default focusgroups remember that 
-   element and will restore the focus to that element when the focusgroup is re-entered via 
-   sequential focus navigation.
+By default, focusgroups will remember the last-focused element, and for sequential focus navigation,
+will restore focus to that element when a focusgroup is re-entered. This is important for large 
+lists or tables so that users are returned the the context they previously left without having to 
+navigate from the start or end sequentially.
 
-In HTML these feature options are applied as space-separated token values to the `focusgroup`
-attribute. In CSS, these definitions are specified as properties (including a `focus-group` 
-shorthand property for convenience).
+The focusgroup's memory is initially empty. In that state, focus will be placed on the first 
+focusgroup item in DOM order.
 
-In the case that HTML attribute values conflict with CSS properties, the CSS values override the
-HTML-defined values.
+The focusgroup's memory is cleared whenever there is any change to the focusability of its 
+remembered element or the relationship that the element has with its focusgroup definition element
+(such as either one being removed from the tree).
+
+### Guaranteed tab stop
 
 Focusgroups provide a special behavior when used in conjunction with sequential focus navigation 
 ("tab navigation"). Focusgroups ensure that **at least one** focusgroup item will participate in 
@@ -438,8 +444,8 @@ the first `<button>` because:
    `tabindex=-1`).
 - This focusgroup has no "memory" of a last-focused element within (e.g., it has not been entered
    before).
-- Since neither of the above cases chose an alternate element, then the first focusgroup item in
-   the group is focused.
+- Since neither of the above cases resulted in focusing an alternate element, then the first 
+   focusgroup item in the group is focused.
 
 At this point, the user can use the arrow keys to move from the beginning of the toolbar to the end,
 or press tab again to move outside of the focusgroup.
@@ -460,6 +466,8 @@ Example 3:
 </div>
 ```
 
+### Shadow DOM boundaries
+
 Focusgroup definitions apply across Shadow DOM boundaries in order to make it easy for component
 developers to support focusgroup behavior across component boundaries. (Component authors that want
 to [opt-out of this behavior](#opting-in--opting-out) can do so.)
@@ -478,28 +486,116 @@ Example 4:
 
 ### Key conflicts
 
-The focusgroup handles keystrokes (keydown) with a default behavior to move the focus within
-focusgroup items. This default keyboard handling could interfere with other actions the application would like
-to take. Therefore, authors may cancel the focusgroup's default behavior by canceling
-(`preventDefault()`) on the keydown event. These events will be dispatched by the focused element, and
-bubble through the focusgroup parent element, which is a convenient place to handle the event.
+The focusgroup is a default handler for certain keystrokes (keydown events for arrow keys, home/end,
+etc.) that will cause focus to move among focusgroup items. This default keyboard handling could
+interfere with other actions the application would like to take. A common pattern is to 
+[limit focusgroup directionality](#limiting-linear-focusgroup-directionality) so that certain 
+cross-axis keystrokes won't trigger focusgroup behavior. However, if these doesn't address the use
+case, then authors may cancel the focusgroup's default behavior at any time by canceling
+(`preventDefault()`) the specific keydown event. Keydown events are dispatched by the currently 
+focused element, and bubble through the focusgroup ancestor element in most cases.
 
-### Key traps
+### Interactive content inside focusgroups
 
-Some built-in controls like `<input type=text>` "trap" nearly all keys that would be handled by the
-focusgroup. This proposal does not provide a way to prevent this from happening (Tab should continue
-to be used to "exit" these trapping elements).
+Some built-in controls like `<input type=text>` provide keyboard behaviors that "trap" nearly all 
+keys that would be handled by the focusgroup. Others such as `<input type=number>` trap only certain
+keys like the arrow keys that are also used for focusgroup navigation. This proposal **does not** 
+provide a built-in workaround to prevent this from happening. Instead, authors are advised to be 
+sure users can "escape" these elements. Built-in elements provide this via the tab key. Other
+strategies might include requiring an "activation" step before putting focus into the interactive
+control (and an Esc key exit to leave).
 
-### Enabling wrapping behaviors
+The focusgroup's [memory](#last-focused-memory) may also cause unexpected user interactions if 
+authors are not careful. For example, without any author mitigations, an interactive control inside
+a focusgroup may inadvertently prevent the user from accessing other focusgroup items:
+
+```html
+<div role=toolbar focusgroup aria-label="Font Adjustment" aria-controls="…">
+  <label for=font-input>Font</label>
+  <div>
+    <div>
+      <input type=text id=font-input role=combobox aria-autocomplete=both aria-expanded=false aria-controls=font-listbox aria-activedescendant="">
+      <button type=button aria-label="Font List" aria-expanded=false aria-controls=font-listbox tabindex=-1>🔽</button>
+    </div>
+    <ul id=font-listbox role=listbox aria-label="Font List">
+      <li role=option>Ariel</li>
+      <li role=option>Monospace</li>
+      <li role=option>Verdana</li>
+    </ul>
+  </div>
+  <button type=button value="bigger" tabindex=-1><span>Increase Font</span></button>
+  <button type=button value="smaller" tabindex=-1><span>Decrease Font</span></button>
+</div>
+```
+
+When the `combobox` input element is focused, it becomes the last-focused element in the focusgroup.
+The `<input>` element traps nearly all keystrokes by default, including the arrow keys that might 
+have been used to reach the "Increase/Decrease Font" buttons. When the user presses tab, focus
+exits the focusgroup. Later, when focus re-enters, the focusgroup will put focus back on the 
+`<input>` element, and the cycle continues with no way to get to the two following buttons via 
+keyboard interaction alone.
+
+Fortunately, there are several solutions to this problem:
+- Remove `tabindex=-1` from the "Increase/Decrease Font" buttons.
+- Move the "Increase/Decrease Font" buttons before the `combobox`. (Refer to "Avoid including 
+   controls whose operation requires the pair of arrow keys used for toolbar navigation" in the 
+   [Toolbar control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/).) Additionally, 
+   [opt-out](#opting-in--opting-out) the `<input>` control from focusgroup participation so that 
+   arrow keys skip it. Alternatively, 
+   [turn off the focusgroup's memory](#disabling-focusgroup-memory) so that focus isn't 
+   automatically returned to the `combobox`.
+- Use script to intercept focusgroup-related keydown events on the `<input>` and move focus 
+   manually. Also consider [limiting the focusgroup](#limiting-linear-focusgroup-directionality) to
+   one axis and reserving the other axis for operating the `<input>`.   
+
+### Restricted elements
+
+Because focusgroup definitions are intended for grouping related controls, it does not make sense
+to provide focusgroup functionality on all elements. While the focusgroup attribute may de defined
+as a global attribute, it's applicability is limited to a subset of elements.
+
+At the time of writing, we are evaluating which elements will honor a focusgroup attribute 
+definition. We welcome comments on this section. To submit your feedback, please see the issue
+[Restrict usage of focusgroup on certain elements](https://github.com/openui/open-ui/issues/1007).
+
+The current proposal is to limit focusgroup to only the elements whose name match the DOM's 
+[valid shadow host names](https://dom.spec.whatwg.org/#valid-shadow-host-name) (which are the 
+elements allowed to call `attachShadow()`). However, `<table>` and some table parts will need to
+be an exception in order to properly support grid focusgroups.
+
+### Additional features
+
+Focusgroups have the following additional features:
+
+- [Wrap-around semantics](#enabling-wrapping-behaviors) - what to do when attempting to move past
+   the end of a focusgroup. The default/initial value is `no-wrap`, which means that focus is
+   not moved past the ends of a focusgroup with the arrow keys. `wrap` and other tabular wrapping
+   behaviors are available for `grid` focusgroups.
+- [Directional axis limits](#limiting-linear-focusgroup-directionality) - applies to linear
+   focusgroups only; respond to arrow keys in one axis only (either up/down or left/right when the
+   arrow key pressed matches the corresponding flow of the content). By default, linear focusgroups
+   respond to all four arrow keys.
+- [Last-focused opt-out](#disabling-focusgroup-memory) - prevent the focusgroup from remembering what the 
+   last focused element was when focus leaves a focusgroup. By default focusgroups remember that 
+   element and will restore the focus to that element when the focusgroup is re-entered via 
+   sequential focus navigation.
+
+In HTML these feature options are applied as space-separated token values to the `focusgroup`
+attribute. In CSS, these definitions are specified as properties (including a `focus-group` 
+shorthand property for convenience).
+
+
+## Enabling wrapping behaviors
 
 By default, focusgroup traversal with arrow keys ends at boundaries of the focusgroup (the start and
-end of a linear focusgroup, and the start and end of both rows and columns in a grid focusgroup). The
-following focusgroup definition values can configure this:
+end of a linear focusgroup, and the start and end of both rows and columns in a grid focusgroup). 
+The following focusgroup definition values change this behavior:
 
-| HTML attribute value        | CSS property &amp; value                  | Explanation                                                                                                                                                                                                                                        |
-| --------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| focusgroup="wrap"           | focus&#8209;group&#8209;wrap:&nbsp;wrap   | **linear focusgroup**: causes movement beyond the ends of the focusgroup to wrap around to the other side; **grid focusgroup**: causes focus movement at the ends of the rows/columns to wrap around to the opposite side of the same rows/columns |
-| focusgroup="" (unspecified) | focus&#8209;group&#8209;wrap:&nbsp;nowrap | Disables any kind of wrapping (the initial/default value)                                                                                                                                                                                          |
+| HTML | CSS | Explanation |
+|---|---|---|
+| (default) `focusgroup=""` (unspecified) | `focus-group-wrap: nowrap` | Disables any kind of wrapping |
+| `focusgroup=wrap` | focus&#8209;group&#8209;wrap:&nbsp;wrap   | **linear focusgroup**: causes movement beyond the ends of the focusgroup to wrap around to the other side; **grid focusgroup**: causes focus movement at the ends of the rows/columns to wrap around to the opposite side of the same rows/columns |
+
 
 The following are only applicable to grid focusgroups. Note, row and column-specific wrapping
 and flowing can be specified together: `focus-group-wrap` supports two-token specifiers for
@@ -514,13 +610,17 @@ this purpose.
 | focusgroup="row&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;row&#8209;flow                     | Rows "flow" from row ends to the next/prior row as described above, but column flowing/wrapping is disabled.                                                                                                                                                    |
 | focusgroup="col&#8209;flow"                    | focus&#8209;group&#8209;wrap:&nbsp;col&#8209;flow                     | Columns "flow" from column ends to the next/prior column as described above, but row flowing/wrapping is disabled.                                                                                                                                              |
 
-### Last-focused memory
+
+## Disabling focusgroup memory
 
 TBD
 
-### Adjustments to sequential focus navigation
+
+## Adjustments to sequential focus navigation
 
 Content in progress...
+
+
 
 ### Expanding and connecting linear focusgroups together (`extend`)
 
