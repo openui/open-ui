@@ -778,9 +778,48 @@ change:
 
 ## Adjustments to sequential focus navigation
 
-Content in progress...
+To ensure that a focusgroup always has at least one tab stop in the sequential focus navigation 
+order, and to provide the appropriate "hook" for a focusgroup's "memory" to redirect focus to the
+last-focused element in a focusgroup, a change to sequential focus navigation is needed.
 
+This change is intended to ensure that focus is directed to one of the following focusgroup
+candidates whenever focus enters a focusgroup. The first matching condition is always taken:
 
+1. If there is an element in the focusgroup memory, focus is set on that element.
+1. If there is an element with `tabindex=0` (or other built-in element with UA-defined keyboard 
+    focusability like `<input>`, `<button>`, etc.) that is also a focusgroup candidate for the
+    current focusgroup, focus will be set on the first such element in DOM order (regardless of
+    the direction of traversal, i.e., via `tab` or `Shift+tab`). Note: this provides authors with a 
+    predictable "entry" of their choosing within a focusgroup.
+1. The first focusable element (even if not intended for sequential focus navigation) if sequential
+    focus navigation is moving "forward", or the last focusable element if sequential focus
+    navigation is traversing "backward".
+
+Specifically, each focusgroup definition must maintain a:
+* first focusable focusgroup candidate - in DOM order, the first focusable element that is also a 
+   focusgroup candidate (e.g., not excluded from focusgroup participation or in another focusgroup).
+* last focusable focusgroup candidate - see previous, but the **last** focusable in DOM order.
+* first sequentially-focusable focusgroup candidate - in DOM order, the first focusable element that
+   would participate in sequential focus navigation order (e.g., the element with the lowest 
+   positive value of `tabindex`, or with `tabindex=0`, or that is a built-in sequentially focusable
+   element that has not opted-out via `tabindex=-1`).
+
+Algorithmically, during "forward" sequential focus navigation, if the element being considered is:
+1. a member of a focusgroup AND is the first focusable focusgroup candidate of that focusgroup THEN:
+   1. if the focusgroup's memory is available and not empty, then move focus to the element referred
+       to by the focusgroup's memory.
+   1. otherwise, if there is NO first sequentially-focusable focusgroup candidate in that 
+       focusgroup, then move focus to this element.
+1. otherwise, continue with the sequential focus navigation algorithm as normal.
+
+For "reverse" sequential focus navigation, the algorithm is similar, but swap occurances of the
+"first focusable focusgroup candidate" for "last focusable focusgroup candidate".
+
+Because this algorithm applies only when interrogating the first (or last) focusable focusgroup
+candidate, then any descendants that preceed (or follow) the first (or last) focusable 
+focusgroup candidate that themselves define a focusgroup are considered first. In other words,
+broad-reaching ancestral focusgroups won't necessarily "steal" focus from descendant focusgroups 
+during sequential focus navigation.
 
 ## Grid focusgroups
 
