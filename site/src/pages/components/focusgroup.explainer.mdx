@@ -829,9 +829,14 @@ cell-to-cell either horizontally or vertically. In these data structures, it mak
 sense to support the user's logical usage of the arrow keys to move around the data.
 
 Grid navigation is expected to happen within well-structured content with consistent
-rows and columns where DOM structure reflects this organization.
+rows and columns where DOM structure reflects this organization. In focusgroup grid 
+navigation, only the cells in the grid are focusgroup candidates and only the focusable 
+cells become focusgroup items. It is not currently possible to use grid focusgroups to 
+support other focusable tabular parts such as focusable row elements (see 
+[comment in issue 1018](https://github.com/openui/open-ui/issues/1018#issuecomment-2013053227) for
+a possible future addition for this use case).
 
-#### Applicability to tabular data
+### Applicability to tabular data
 
 The arrow navigation in the grid (and in the previous non-grid scenarios) should
 reflect the accessible structure of the document, not the presentation view made
@@ -855,33 +860,21 @@ like a grid and that the structure makes semantic sense in two dimensions (and n
 just for a particular layout or presentation).
 
 Tabular data can be structured using column-major or row-major organization. Given
-that HTML tables and ARIA attributes for grids (role=grid, role=row, role=gridcell)
+that HTML tables and ARIA attributes for grids (`role=grid`, `role=row`, `role=gridcell`)
 only exist for row-major grid types, this proposal does **not define** grid focusgroup
 organization for column-major data structures (and assumes row-major data structures
 throughout).
 
-#### Grid isolation
+### Setting up a grid focusgroup
 
-As noted previously the `extend` value is not applicable to grid focusgroups, and
-grid focusgroups cannot be combined with linear focusgroups. While it is obviously
-possible to create linear focusgroups inside of a grid cell data structure, and
-vice-versa (a grid as a value of a list), this proposal does not allow these different
-focusgroup types to be connected automatically. Some additional scripting may be
-necessary to add explicit "cell enter/exit" behavior (or just use the Tab key).
+Grid focusgroups can be created "automatically" or manually. Automatic grids use the context
+of existing HTML semantics for tables as the structural components necessary to provide grid-based
+navigation. Any elements with computed table layout are suitable for an automatic grid (e.g.,
+`display: table-row` in place of using a `<tr>` elements). 
+[Manual grid](#manual-grids-row-and-cell-connections) creation requires 
+annotating specific elements with their focusgroup grid component names.
 
-#### Setting up a grid focusgroup
-
-Grid focusgroups can be created "automatically" or manually. HTML only supports
-the "automatic" grid, while CSS can be used to do the same or to manually
-describe the parts of the grid.
-
-Automatic grids use the context of existing HTML semantics for tables as the
-structural components necessary to provide grid-based navigation. Any elements
-with computed table layout are suitable for an automatic grid (e.g.,
-`display: table-row` in place of using a `<tr>` elements).
-
-(We are evaluating the suitability for other grid-like patterns including CSS
-`display: grid` or ARIA `role=grid`.)
+Note: We are evaluating the suitability for CSS `display: grid` to create automatic grids.
 
 The automatic grid approach will be preferable when the grid contents are uniform
 and consistent and when re-using semantic elements for grids (typical). The manual
@@ -895,46 +888,56 @@ the structure of the grid to ensure it has appropriate row and cell structures. 
 event that the implementation cannot automatically determine the grid structure, then
 the definition is ignored (i.e., there is no fallback to a linear grid).
 
-| HTML attribute value | CSS property &amp; value                | Explanation                                                                                                                                                                                                         |
-| -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| focusgroup="grid"    | focus&#8209;group&#8209;name:&nbsp;grid | Establishes the root of an automatic grid focusgroup. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-item: row` and `focus-group-item: cell` focusgroup candidate status automatically. |
+| HTML | CSS | Explanation |
+|---|---|---|
+| `focusgroup=grid` | `focus-group-type: grid` | Establishes the root of an automatic grid focusgroup. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-type: grid-row` and `focus-group-type: grid-cell` focusgroup candidate status automatically. |
 
 Example:
 
 ```html
-<table role="grid" focusgroup="grid">
-  <tr>…</tr>
-  <tr>…</tr>
-  <tr>…</tr>
+<table aria-label="Tic tac toe grid" role=grid focusgroup=grid>
+  <tr>
+    <td tabindex=-1></td>
+    <td tabindex=-1></td>
+    <td tabindex=-1></td>
+  </tr>
+  <tr>
+    <td tabindex=-1></td>
+    <td tabindex=-1></td>
+    <td tabindex=-1></td>
+  </tr>
+  <tr>
+    <td tabindex=-1></td>
+    <td tabindex=-1></td>
+    <td tabindex=-1></td>
+  </tr>
 </table>
 ```
 
-The `<table>`'s "grid" focusgroup definition automatically establishes each of its
-descendant `<tr>`s as focusgroup candidate rows (the parser-generated `<tbody>` is
-accounted for) and `<td>`s as focusgroup candidate cells. Left/right
-arrow keys in this grid focusgroup will navigate between cells in the table, and
-up/down arrow keys will compute the new target based on the DOM position of the
+The `<table>`'s grid focusgroup definition automatically establishes each of its
+descendant `<tr>`s as focusgroup rows (the parser-generated `<tbody>` is
+accounted for) and `<td>`s as focusgroup cells. Each focusgroup cell is a scope
+root for one focusgroup item per cell, and the cell and its shadow-inclusive decendants are all
+focusgroup candidates. Among all focusgroup cells, the left/right arrow keys navigate between cells
+in the table, and up/down arrow keys will compute the new target based on the DOM position of the
 current focusgroup candidate cell in relation to the focusgroup candidate row.
 
-#### Manual grids: row and cell connections
+### Manual grids: row and cell connections
 
 A manual grid is declared in a focusgroup definition with the name `manual-grid`.
-With a manual grid, the rows and cells must be explicitly indicated using
-`focus-group-item: row` and `focus-group-item: cell`.
+With a manual grid, the rows and cells must be explicitly indicated using `grid-row` and 
+`grid-cell`:
 
-| HTML attribute value | CSS property &amp; value                       | Explanation                                                                                                                                                                     |
-| -------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| n/a                  | focus&#8209;group&#8209;name:&nbsp;manual-grid | Establishes the root of a manual grid focusgroup. Shadow-inclusive descendants of the manual grid must be identified with `focus-group-item: row` and `focus-group-item: cell` explicitly.       |
-| n/a                  | focus&#8209;group&#8209;item:&nbsp;row         | Must be a shadow-inclusive descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element).                                                                              |
-| n/a                  | focus&#8209;group&#8209;item:&nbsp;cell        | Must be a shadow-inclusive descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element). Must also be a shadow-inclusive descendant of a `focus-group-item: row` focusgroup candidate. |
+| HTML | CSS | Explanation |
+|---|---|---|
+| `focusgroup=manual-grid` | `focus-group-type: manual-grid` | Establishes the root of a manual grid focusgroup. Shadow-inclusive descendants of the manual grid must be identified with `focus-group-type: grid-row` and `focus-group-type: grid-cell` explicitly. |
+| `focusgruop=grid-row` | `focus-group-type: grid-row` | Must be a shadow-inclusive descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element). |
+| `focusgroup=grid-cell` | `focus-group-type: grid-cell` | Must be a shadow-inclusive descendant of a grid focusgroup root (i.e., the `manual-grid`-named focusgroup element). Must also be a shadow-inclusive descendant of a `focus-group-type: grid-row` focusgroup candidate. |
 
-Cells cannot be children of other cells, and rows cannot be children of rows.
+Cells cannot be descendants of other cells, and rows cannot be descendants of other rows.
 
-Manual grid focusgroup rows and cells do not need to be direct children of the element
-that includes the manual grid focusgroup definition in order to participate in the grid
-structure. Each focusgroup candidate will perform an ancestor search to locate its nearest
-grid structural component: cells will look for their nearest row, and rows will look for
-their nearest manual-grid root.
+Each focusgroup candidate will perform an ancestor search to locate its nearest grid structural
+component: cells will look for their nearest row, and rows will look for their nearest grid root.
 
 In the following example, the `<my-cell>`s are all meant to be on the same row of the
 grid, and the rows are designated by `<my-row>` elements:
@@ -942,31 +945,19 @@ grid, and the rows are designated by `<my-row>` elements:
 Example:
 
 ```html
-<style>
-  my-root {
-    focus-group-name: manual-grid;
-  }
-  my-row {
-    focus-group-item: row;
-  }
-  my-cell {
-    focus-group-name: cell;
-  }
-</style>
-<!-- … -->
-<my-root role="grid">
-  <div role="none" class="presentational_wrapper">…</div>
-  <my-row role="row">
-    <first-thing role="gridcell">…</first-thing>
-    <cell-container role="none">
-      <my-cell role="gridcell">…</my-cell>
-      <my-cell role="gridcell">…</my-cell>
+<my-root role=grid focusgroup=manual-grid>
+  <div role=none class=presentational_wrapper>…</div>
+  <my-row role=row focusgroup=grid-row>
+    <first-thing role=gridcell focusgroup=grid-cell>…</first-thing>
+    <cell-container role=none>
+      <my-cell role=gridcell focusgroup=grid-cell>…</my-cell>
+      <my-cell role=gridcell focusgroup=grid-cell>…</my-cell>
     </cell-container>
-    <cell-container role="none">
-      <my-cell role="gridcell">…</my-cell>
-      <my-cell role="gridcell">…</my-cell>
+    <cell-container role=none>
+      <my-cell role=gridcell focusgroup=grid-cell>…</my-cell>
+      <my-cell role=gridcell focusgroup=grid-cell>…</my-cell>
     </cell-container>
-  </my-row>
+  </my-row focusgroup=grid-row>
   <!-- repeat pattern of div/my-row pairs... -->
 </my-root>
 ```
@@ -977,38 +968,25 @@ via `manual-grid`:
 Example:
 
 ```html
-<style>
-  [role='grid'] {
-    focus-group-name: manual-grid;
-    focus-group-wrap: flow;
-  }
-  [role='row'] {
-    focus-group-item: row;
-  }
-  [role='gridcell'] {
-    focus-group-item: cell;
-  }
-</style>
-<!-- … -->
-<div role="grid">
-  <div role="row">
+<div role=grid focusgroup="manual-grid flow">
+  <div role=row focusgroup=grid-row>
     <div>
-      <div role="gridcell"></div>
-      <div role="gridcell"></div>
+      <div role=gridcell focusgroup=grid-cell></div>
+      <div role=gridcell focusgroup=grid-cell></div>
     </div>
   </div>
   <div>
-    <div role="row">
-      <div role="gridcell"></div>
-      <div role="gridcell"></div>
+    <div role="row" focusgroup=grid-row>
+      <div role=gridcell focusgroup=grid-cell></div>
+      <div role=gridcell focusgroup=grid-cell></div>
     </div>
   </div>
   <div>
     <div>
-      <div role="row">
+      <div role="row" focusgroup=grid-row>
         <div>
-          <div role="gridcell"></div>
-          <div role="gridcell"></div>
+          <div role=gridcell focusgroup=grid-cell></div>
+          <div role=gridcell focusgroup=grid-cell></div>
         </div>
       </div>
     </div>
@@ -1016,19 +994,31 @@ Example:
 </div>
 ```
 
-#### Empty Cell data
+### Grid focusgroup nesting
 
-Like linear focusgroups, focus is only set on elements that are focusable.
-The arrow key navigation algorithms look for grid focusgroup cells in the
-direction the arrow was pressed. Non-focusable grid focusgroup candidate cells
+Unlike linear focusgroups, an automatic or manual grid focusgroup requires a small degree of DOM
+structure to work correctly. Unless the proper structure exists, the grid focusgroup won't work.
+
+Attempts to define new grid or linear focusgroups among the DOM elements that makeup the
+structure of a grid focusgroup (such as on or between elements defining the root grid
+container, the grid-rows and the grid-cells) will be ignored. However new grid or linear
+focusgroups **can be defined** on elements that are shadow-inclusive descendants of grid-cell
+elements (e.g., that are outside the set of elements making up the grid's DOM structure).
+
+
+### Empty Cell data
+
+Like linear focusgroups, focus is only set on elements that are focusable. The arrow key navigation
+algorithms look for the first focusgroup item (in DOM order) of a grid focusgroup cell in the
+direction the arrow was pressed. Non-focusable grid focusgroup candidates of a focusgroup cell
 are passed over in the search.
 
-#### Non-uniform cells
+### Non-uniform cells
 
 It is entirely possible to have rows with non-uniform numbers of cells. In these
 cases, focusgroup navigation behaviors may not work as visibly desired. Algorithms
 for navigating grid focusgroups will work based on content the grid content structure
-as specified. If the algorithms conclude that there is not "next candidate cell" to
+as specified. If the algorithms conclude that there is no "next candidate cell" to
 move to (e.g., in a grid with two rows, and the bottom row has three cells, and the
 top row only two, if the focus is on the 3rd cell, a request to move "up" to the prior
 row cannot be honored because there is no "3rd cell" in that row.
@@ -1049,6 +1039,7 @@ Here is a short list to issue discussions that led to the current design of focu
 
 * [`focusgroup` works across Shadow DOM boundaries by default](https://github.com/openui/open-ui/issues/521)
 * [arrow key movement and directionality contraints should be aligned with content direction (add inline/block)](https://github.com/openui/open-ui/issues/522)
+
 
 ## Alternative Solutions
 
@@ -1171,7 +1162,7 @@ be a requirement and could be an extension to `focusgroup` (e.g., `focusgroup=sp
 
 See other [open focusgroup issues on Github](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
 
-### Additional Keyboard support
+## Additional Keyboard support
 
 In addition to arrow keys, the focusgroup should also enable other navigation keys such as
 pageup/down for paginated movement (TBD on how this could be calculated and in what
@@ -1181,8 +1172,47 @@ It might also be interesting to add support for typeahead scenarios (though what
 look for when building an index would need to be worked out, and may ultimately prove to be
 too complicated).
 
+## Index of focusgroup values
+
+***Focusgroup types:***
+
+| Description | HTML syntax | CSS syntax |
+|---|---|---|
+| no focusgroup | (missing/invalid attribute) | `focus-group-type: none` |
+| linear focusgroup | (unspecified value; default value) | `focus-group-type: linear` |
+| automatic grid focusgroup | `grid` | `focus-group-type: grid` |
+| manual grid focusgroup root | `manual-grid` | `focus-group-type: manual-grid` |
+| manual grid focusgroup row | `grid-row` | `focus-group-type: grid-row` |
+| manual grid focusgroup cell | `grid-cell` | `focus-group-type: grid-cell` |
+
+***Focusgroup directions:***
+
+| Description | HTML syntax | CSS syntax |
+|---|---|---|
+| both directions for a linear focusgroup | (unspecified value; default value) | `focus-group-direction: both` |
+| inline direction for a linear focusgroup | `inline` | `focus-group-direction: inline` |
+| block direction for a linear focusgroup | `block` | `focus-group-direction: block` |
+
+***Focusgroup wrapping:***
+
+| Description | HTML syntax | CSS syntax |
+|---|---|---|
+| no wrap | (unspecified value; default value) | `focus-group-wrap: none` |
+| wrap | `wrap` | `focus-group-wrap: wrap` |
+| flow (grid focusgroups only) | `flow` | `focus-group-wrap: flow` |
+| column specific | `col-wrap`, `col-flow`, `col-none` | `focus-group-wrap: col-wrap` or `col-flow` or `col-none` |
+| row specific | `row-wrap`, `row-flow`, `row-none` | `focus-group-wrap: row-wrap` or `row-flow` or `row-none` |
+
+***Focusgroup memory:***
+
+| Description | HTML syntax | CSS syntax |
+|---|---|---|
+| enable memory | (unspecified value; default value) | `focus-group-memory: auto` |
+| disable memory | `no-memory` | `focus-group-memory: none` |
+
+
 ## Acknowledgments
 
-Special thanks to those who have reviewed, commented on, filed issues, and talked with us
-offline about focusgroup. Your insight and ideas and contributions have helped dramatically
-improve this proposal.
+Thanks to the members of the OpenUI Community Group for their many contributions. Special thanks to
+those who have reviewed, commented on, filed issues, and talked with us offline about focusgroup. 
+Your insight and ideas and contributions have been indispensible.
