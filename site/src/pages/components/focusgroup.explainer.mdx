@@ -19,7 +19,9 @@ or can benefit from keyboard-accessible behavior such as arrow-key navigation.
 
 This proposal enables authors to add a set of built-in keyboard behaviors for moving focus
 among a list or grid of focusable elements without having to write common boilerplate code
-(e.g., roving tabindex) to do so in their custom controls.
+(e.g., 
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex))
+to do so in their custom controls.
 
 Authors may use the proposed `focusgroup` HTML attribute (or related CSS properties) to declare that
 a subtree of focusable elements will get:
@@ -41,8 +43,9 @@ recognizers, touch-based ATs, etc.)
 
 ## Quickstart
 
-`focusgroup` enables authors to provide keyboard "roving tabindex" with almost no code. Compare the
-web platform's native 
+`focusgroup` enables authors to provide keyboard
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
+with almost no code. Compare the web platform's native
 [radio button group](https://html.spec.whatwg.org/multipage/input.html#radio-button-group)
 with a custom control using the 
 [radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/).
@@ -109,9 +112,10 @@ behavior is decoupled from selection ("manual tab activation"):
 
 What to notice:
 * Sequential focus navigation within a `focusgroup` is respected. When entering the `focusgroup`, 
-   focus will always go to the first selected tab (with `tabindex=0`). The `no-memory` value prevents
-   the focusgroup from remembering the last focused tab so that focus will always go to the 
-   selected tab on reentrance regardless of which element was focused last.
+   focus will always go to the first selected tab (with `tabindex=0`). The `no-memory` value 
+   [prevents the focusgroup from remembering the last focused tab](#disabling-focusgroup-memory) so
+   that focus will always go to the selected tab on reentrance regardless of which element was 
+   focused last.
 * If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to the selected
    tab, which is next in sequential focus navigation order. Pressing tab again moves the focus to
    `tabpanel-2` which is next in sequential focus navigation order (because the other 
@@ -736,7 +740,40 @@ Example:
 
 ## Disabling focusgroup memory
 
-TBD
+By default, when a linear or grid focusgroup is defined it includes a "memory" of the
+last-focused element within its scope, initially empty. Each time the focus is changed
+within a focusgroup, the "memory" is updated to refer to that element. This behavior is
+akin to the 
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
+in which the "memory" is the statefull `tabindex=0` value assigned to the currently
+focused element.
+
+In some scenarios it is not desireable to have a focusgroup maintain a memory. Usually this
+is because there is a more relevant element which should take focus when entering the focusgroup
+instead of the most-recently-focused element. For example, an active (selected) tab in a 
+`role=tablist` container, rather than the last-focused tab (when selection does not follow focus).
+
+To disable the focusgroup's default memory, use the value `no-memory`:
+
+| HTML | CSS | Explanation |
+|---|---|---|
+| (default) `focusgroup=""` (unspecified) | `focus-group-memory: auto` | The focusgroup will remember the last-focused element and redirect focus to it when entered via sequential focus navigation. |
+| `focusgroup=no-memory` | `focus-group-memory: none` | The focusgroup will not remember the last-focused element. |
+
+After the focusgroup's memory has been set, it must be cleared whenever any one of the following
+change:
+
+* The element with the focusgroup definition is `hidden` or un-hidden; or if the currently-remembered
+   element is `hidden` or un-hidden.
+* The element with the focusgroup definition has its `disabled` or `inert` status changed; or if the 
+   currently-remembered element has its `disabled` or `inert` status changed.
+* The element with the focusgroup definition is removed from the shadow-inclusive tree; or if the 
+   currently-remembered element is removed from the shadow-inclusive tree.
+* The currently-remembered element stops being focusable (e.g., a `<div>` with a `tabindex` has its
+   `tabindex` attribute removed).
+* The currently-remembered element is changed to become excluded from the focusgroup (through 
+   `focusgroup=none` on itself or a shadow-inclusive ancester, or by changing focusgroups: if a new
+   focusgroup definition appears on itself or one of its shadow-inclusive ancestor elements).
 
 
 ## Adjustments to sequential focus navigation
@@ -745,7 +782,7 @@ Content in progress...
 
 
 
-### Grid focusgroups
+## Grid focusgroups
 
 Some focusable data is structured not as a series of nested linear groups, but as a
 2-dimensional grid such as in a spreadsheet app, where focus can move logically from
