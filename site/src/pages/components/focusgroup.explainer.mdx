@@ -411,8 +411,9 @@ will restore focus to that element when a focusgroup is re-entered. This is impo
 lists or tables so that users are returned the the context they previously left without having to 
 navigate from the start or end sequentially.
 
-The focusgroup's memory is initially empty. In that state, focus will be placed on the first 
-focusgroup item in DOM order.
+The focusgroup's memory is initially empty. In that state, sequential focus navigation will pick
+the next element to focus using existing platform behavior 
+[with the exception noted below](#guaranteed-tab-stop).
 
 The focusgroup's memory is cleared whenever there is any change to the focusability of its 
 remembered element or the relationship that the element has with its focusgroup definition element
