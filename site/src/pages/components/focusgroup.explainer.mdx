@@ -537,12 +537,12 @@ a focusgroup may inadvertently prevent the user from accessing other focusgroup 
 </div>
 ```
 
-When the `combobox` input element is focused, it becomes the last-focused element in the focusgroup.
+When the `combobox` input element is focused, it is remembered by the focusgroup's memory.
 The `<input>` element traps nearly all keystrokes by default, including the arrow keys that might 
 have been used to reach the "Increase/Decrease Font" buttons. When the user presses tab, focus
 exits the focusgroup. Later, when focus re-enters, the focusgroup will put focus back on the 
-`<input>` element, and the cycle continues with no way to get to the two following buttons via 
-keyboard interaction alone.
+`<input>` element (because of the memory), and the cycle continues with no way to get to the two
+following buttons via keyboard interaction alone.
 
 Fortunately, there are several solutions to this problem:
 - Remove `tabindex=-1` from the "Increase/Decrease Font" buttons.
