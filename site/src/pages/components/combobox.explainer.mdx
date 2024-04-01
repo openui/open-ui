@@ -25,6 +25,7 @@ import Image from '../../components/image.astro'
 - [Introducing **search** attribute](#introducing-search-attribute)
 - [Future: Introduction of **multiple** attribute](#future-introduction-of-multiple-attribute)
 - [Keyboard Behavior](#keyboard-behavior)
+- [Key decisions](#key-decisions)
 - [Appendix](#appendix)
   - [Explored Anatomy Options for `<combobox>`](#explored-anatomy-options-for-combobox)
 
@@ -35,7 +36,10 @@ From the early days of the web, form controls have been pivotal in creating inte
 
 The `<select>` element, for instance, while functional, lacks flexibility. It offers limited customization, which often leads developers to craft their own solutions. These custom implementations, while visually appealing, often come at the cost of performance, reliability, and most importantly, accessibility.
 
-Recognizing these limitations, the [`<selectlist>`](https://open-ui.org/components/selectlist/) was introduced. This element builds on the foundation of the `<select>` but provides greater flexibility. The `<selectlist>` lets developers create a button-triggered dropdown with customizable appearance and behavior. Paired with `<listbox>`, and inclusive of `<option>` and `<optgroup>`, it offers a modern, adaptable, yet accessible web control.
+
+To address these limitations, the concept of a [Stylable Select Element](https://open-ui.org/components/selectlist/) has emerged. This element, inspired by the traditional `<select>` but with enhanced flexibility and customizability, allows developers to create button-triggered dropdowns with unique appearances and behaviors. Paired with `<datalist>` and including `<option>` and `<optgroup>` for structuring choices, the Stylable Select Element presents a modern, adaptable, and accessible solution for web controls.
+
+
 
 Right now, many websites have their own type of **'combobox'**, but they're all a bit different. We often see a mix of `<input>` fields and `<datalist>` elements trying to do the job, but it's not quite perfect. By creating a standard **`<combobox>`**, we're aiming to simplify things. 
 
@@ -46,18 +50,16 @@ Further highlighting the need for such a solution, a recent [Twitter poll](https
 />
 
 
-This proposal for `<combobox>` builds upon the strengths of `<selectlist>` and `<listbox>`. It aims to offer a control that is versatile for developers, intuitive for users, and, above all, accessible to all.
-
-By standardizing such elements, we hope to bridge the gap between design demands and the need for performant, reliable, and accessible web controls. 
+This proposal for `<combobox>` leverages the strengths of the Stylable Select Element and `<datalist>`, offering developers a versatile control that is intuitive for users and accessible to all. By establishing such a standard, we strive to bridge the gap between design requirements and the necessity for performant, reliable, and universally accessible web controls.
 
 ### Scope of this document
 
-This document aims to provide a complete view of combo-box utilisation across the web to inform a potential proposal within Open UI. The goal of this document is to propose a very basic anatomy to simplify the initial shipment of `<combobox>` (or some other name) in the web platform. It will heavily build upon `selectlist` but provide a better accessible and extensible solution than that of an `input` bound with `datalist`.
+This document aims to provide a complete view of combo-box utilisation across the web to inform a potential proposal within Open UI. The goal of this document is to propose a very basic anatomy to simplify the initial shipment of `<combobox>` (or some other name) in the web platform. It will heavily build upon stylable `select` but provide a better accessible and extensible solution than that of an `input` bound with `datalist`.
 
 
 ### Out of scope of this document
 
-This document will not be attempting some of the complex scenarios found across the web that leverage various ways in which to represent multi-selected options. Additionally, it does not intend to cover the addition of options that are not available in a `<listbox>`. It will not cover multi-select but will leverage the resolutions defined by `selectlist`.
+This document will not be attempting some of the complex scenarios found across the web that leverage various ways in which to represent multi-selected options. Additionally, it does not intend to cover the addition of options that are not available in a `<datalist>`. It will not cover multi-select in the initial proposal.
 
 A good analogy for what this document will result in looking like is the [Tabs research document.](https://open-ui.org/components/tabs.research.parts/)
 
@@ -65,11 +67,11 @@ A good analogy for what this document will result in looking like is the [Tabs r
 
 ```
 <combobox>
-   <input type=selectlist>
-   <listbox>
+   <input type=select>
+   <datalist>
 	<option>One</option>
 	<option>Two</option>
-   </listbox>
+   </datalist>
 </combobox>
 ```
 
@@ -80,32 +82,32 @@ A good analogy for what this document will result in looking like is the [Tabs r
 </div>
 
 
-- `<combobox>`: The root container that encapsulates the entire `combobox` structure. It provides context for the interaction between the `input` and the `listbox`.
+- `<combobox>`: The root container that encapsulates the entire `combobox` structure. It provides context for the interaction between the `input` and the `datalist`.
   - Slots:
     - `<input>`
-    - `<listbox>`
+    - `<datalist>`
   - Attributes:
     - **search**: Indicates the combobox will actively fetch results based on user input.
     - **filter**: Indicates the combobox will narrow down visible options based on user input.
-    - **multiple**: Allows multiple options to be selected (will be added in future revisions in alignment with `selectlist`).
-- `<input type=selectlist>`: This is where the user can type input or view the selected option. It acts as the trigger to display the listbox.
+    - **multiple**: Allows multiple options to be selected.
+- `<input type=select>`: This is where the user can type input or view the selected option. It acts as the trigger to display the datalist.
   - Slots:
-    - **selectedoption** (optional): To display the currently selected option from the `listbox`. 
+    - **selectedoption** (optional): To display the currently selected option from the `datalist`. 
       - Note: Currently input doesn't support slots
-- `<listbox>`: The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<selectlist>` will automatically create one.
+- `<datalist>`: The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<combobox>` will automatically create one.
   - Slots:
     - `<option>`
     - `<optgroup>` (optional)
-- `<option>`: Represents an individual selectable item within the `listbox`.
+- `<option>`: Represents an individual selectable item within the `datalist`.
 - `<optgroup>` (Optional): A container to group related options together.
   - Slots:
     - `<legend>`: To label the group.
     - `<option>`: The options within this group.
-- `<legend>` (Optional, within `<optgroup>`): Provides a label or title for a group of options within the `listbox`.
+- `<legend>` (Optional, within `<optgroup>`): Provides a label or title for a group of options within the `datalist`.
 
 ## Default Behavior
 
-Just like [`<selectlist>`](#https://open-ui.org/components/selectlist/#default-behavior) default behavior, the `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
+Just like [stylable `<select>`](#https://open-ui.org/components/selectlist/#default-behavior) default behavior, the `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
 
 
 ```
@@ -117,7 +119,7 @@ Just like [`<selectlist>`](#https://open-ui.org/components/selectlist/#default-b
 ```
 
 
-When an author uses it like this, the combobox creates the parts they need: an input to drop down the list, a place showing your selected option, and the `listbox` itself.
+When an author uses it like this, the combobox creates the parts they need: an input to drop down the list, a place showing your selected option, and the `datalist` itself.
 
 ## Combobox with selectedoption/optgroup
 
@@ -125,9 +127,9 @@ To showcase the selected option within a `combobox`, you can include a `<selecte
 
 ```
 <combobox>
-    <input type="selectlist" placeholder="Select or type an item...">
+    <input type="select" placeholder="Select or type an item...">
     <selectedoption></selectedoption>
-    <listbox>
+    <datalist>
         <option>Apple</option>
         <option>Banana</option>
         <!-- Group of options with a legend -->
@@ -142,7 +144,7 @@ To showcase the selected option within a `combobox`, you can include a `<selecte
             <option>Strawberry</option>
             <option>Blueberry</option>
         </optgroup>
-    </listbox>
+    </datalist>
 </combobox>
 ```
 
@@ -153,13 +155,13 @@ The `filter` [_bool_ attribute](https://html.spec.whatwg.org/#boolean-attributes
 
 ```
 <combobox filter>
-    <input type="selectlist" placeholder="Select fruit">
-    <listbox>
+    <input type="select" placeholder="Select fruit">
+    <datalist>
         <option>Apple</option>
         <option>Apricot</option>
         <option>Banana</option>
         <!-- ... -->
-    </listbox>
+    </datalist>
 </combobox>
 ```
 
@@ -192,13 +194,13 @@ The `search` attribute adds smart search features to `<combobox>`. It lets users
 
 ```
 <combobox search>
-    <input type="selectlist" placeholder="Select fruit">
-    <listbox>
+    <input type="select" placeholder="Select fruit">
+    <datalist>
        <option>Apple</option>
         <option>Apricot</option>
         <option>Banana</option>
         <!-- ... -->
-    </listbox>
+    </datalist>
 </combobox>
 ```
 <Image
@@ -210,12 +212,14 @@ Join the conversation on the naming and values of the `search` attribute in [Iss
 
 ## Future: Introduction of `multiple` attribute
 
-The `multiple` attribute will be specified in detail in a forthcoming update, in sync with the `<selectlist>` element's multi-selection capabilities.
+The `multiple` attribute will be specified in detail in a forthcoming update.
 
 
 ## Keyboard Behavior
 Details regarding keyboard interaction for the combobox will follow the [W3C ARIA Authoring Practices for combobox patterns](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). For further development and discussions, please see the [filed issue](https://github.com/openui/open-ui/issues/929).
 
+## Key decisions
+ - Naming of `combobox` element: [Issue #930](https://github.com/openui/open-ui/issues/930)
 
 ## Appendix
 ### Explored Anatomy Options for ``<combobox>``
@@ -250,13 +254,13 @@ Details regarding keyboard interaction for the combobox will follow the [W3C ARI
 
 
 ```
-<selectlist combobox>
-  <input type=selectlist>
-  <listbox>
+<select combobox>
+  <input type=select>
+  <datalist>
 	<option>One</option>
 	<option>Two</option>
-  </listbox>
-</selectlist>
+  </datalist>
+</select>
 ```
 
 
@@ -264,10 +268,10 @@ Details regarding keyboard interaction for the combobox will follow the [W3C ARI
 
 
 
-* Leveraging the existing `<selectlist>`
+* Leveraging the existing `<select>`
 
 **Cons:**
 
 
 
-* Need to rely on an opt-in attribute(`combobox`) to modify the behavior of `<selectlist>`.
+* Need to rely on an opt-in attribute(`combobox`) to modify the behavior of `<select>`.
