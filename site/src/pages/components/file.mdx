@@ -28,8 +28,8 @@ cloud storage services.
 
 ### Non-goals
 
-The file input does not provide a way to programatically invoke access to a
-user's filesystem, other than invoking `click()`.
+The file input does not provide a way to programmatically invoke access to a
+user's filesystem, other than invoking `showPicker()`.
 
 ### Features
 
@@ -75,15 +75,15 @@ button invokes the file selection prompt.
 
 | Signature            | Description                                                           |
 | ---------------------| ----------------------------------------------------------------------|
-| `click(): void`      | Triggers the system file picker UI to show. Requires user activation. |
 | `showPicker(): void` | Triggers the system file picker UI to show. Requires user activation. |
 
 ## Events
 
-| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                       |
-| ---------- | ----------- | ------- | -------- | ----------- | ------------------------------------------------------- |
-| `change`   | none        | `true`  | `true`   | `false`     | Fired when the input's `value` is commited by the user. |
-| `input`    | none        | `true`  | `true`   | `false`     | Fired when the input's `value` changes.                 |
+| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                            |
+| ---------- | ----------- | ------- | -------- | ----------- | ------------------------------------------------------------ |
+| `cancel`   | none        | `true`  | `true`   | `false`     | Fired when the when the user does not change their selection.|
+| `change`   | none        | `true`  | `true`   | `false`     | Fired when the input's `value` is commited by the user.      |
+| `input`    | none        | `true`  | `true`   | `false`     | Fired when the input's `value` changes.                      |
 
 ### Anatomy
 
@@ -169,7 +169,7 @@ RTL (right-to-left).
 
 ### Security
 
-The `<input type="file">` element doesn't allow applictions access to the
+The `<input type="file">` element doesn't allow applications access to the
 filesystem, and the value is prefixed with a [fake path](https://html.spec.whatwg.org/multipage/input.html#fakepath-srsly).
 
 ## Performance
@@ -183,10 +183,10 @@ No third party dependencies are required.
 ### Platform Requirements
 
 To implement a custom file input, a developer must create a hidden
-`<input type="file">` element, and call `click()` or `showPicker()` on that element to invoke
+`<input type="file">` element, and call `showPicker()` on that element to invoke
 that input's behaviour.
 
-The [Native File System API](https://wicg.github.io/native-file-system/)
+The [File System Access API](https://wicg.github.io/file-system-access/#local-filesystem)
 will allow for implementations of file input controls without the above
 workaround.
 
@@ -205,5 +205,5 @@ No additional tooling is required for the file input.
 ## Next steps
 
 Some file input implementations list selected files for the user to review,
-deselect/remove, and possibly rename. There is not specification for this
+deselect/remove, and possibly rename. There is no specification for this
 behaviour.

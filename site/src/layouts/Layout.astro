@@ -15,6 +15,24 @@ const title = name ? `${name} | Open UI` : 'Open UI'
   margin: 0 auto;
   max-width: 1200px;
 }
+.skip-to-content {
+  position: fixed;
+  background: #fff;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: .5rem;
+  border: 0;
+  text-align: center;
+  font-size: 1rem;
+  transform: translateY(-105%);
+  transition: transform 0.3s;
+  color: #333;
+}
+
+.skip-to-content:focus {
+  transform: translateY(0%);
+}
 
 @media (max-width: 640px) {
   .page-wrapper {
@@ -26,10 +44,11 @@ const title = name ? `${name} | Open UI` : 'Open UI'
 
 <BaseLayout title={title}>
   <div>
+    <a href="#page-main" class="skip-to-content">Skip to content</a>
     <Header />
     <div class="page-wrapper">
       <Navigation />
-      <main class="page-content">
+      <main class="page-content" id="page-main">
         <slot />
       </main>
     </div>
