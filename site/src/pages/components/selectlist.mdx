@@ -42,7 +42,7 @@ The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archive
 
 The `<select>` element will continue to behave as it currently does unless a `<button>` or `<datalist>` element is provided as a child of the `<select>`. `<button>` elements replace the native button which opens the listbox, and `<datalist>` replaces popup listbox. By replacing the native components with regular web content, the contents are fully stylable and customizable.
 
-The current behavior in the HTML parser for `<select>` is to remove all tags which arent `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`.
+The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`.
 
 Here is a basic `<select>` element today:
 ```html
@@ -468,12 +468,11 @@ Consider the following example:
   <button>
     <span class="label">Choose a plant</span>
     <selectedoption></selectedoption>
-
   </button>
   <div class="buttoncontainer">
     <span class="label">Choose a plant</span>
     <selectedoption></selectedoption>
-    <span class="button></span>
+    <span class="button"></span>
   </div>
   <datalist>
     <div class="section">
@@ -511,7 +510,7 @@ When a custom `<datalist>` element is provided, the `<select>` element has unifi
 When the listbox is closed and the button is focused:
 * Spacebar opens the listbox.
 * Enter submits the form associated with the select if one exists. Otherwise, enter does nothing.
-* The up, down, left, and right arrow keys all open the listbox without changing the selcted value.
+* The up, down, left, and right arrow keys all open the listbox without changing the selected value.
 
 When the listbox is open:
 * Escape closes the listbox without changing the selected value.
