@@ -12,6 +12,7 @@ import Image from '../../components/image.astro'
 
 - [Background](#background)
 - [Opting in to the new behavior](#opting-in-to-the-new-behavior)
+- [HTML parser changes](#html-parser-changes)
 - [Use cases](#use-cases)
   - [Customizing basic styles](#customizing-basic-styles)
   - [Rich content in `<option>`s](#rich-content-in-options)
@@ -20,7 +21,7 @@ import Image from '../../components/image.astro'
   - [Putting custom content in the listbox](#putting-custom-content-in-the-listbox)
   - [Animations](#animations)
   - [Split buttons](#split-buttons)
-- [Button behavior and type=popover](#button-behavior-and-type=popover)
+- [Button behavior and type=popover](#button-behavior-and-typepopover)
 - [The selectedoption element](#the-selectedoption-element)
 - [Testing out the stylable select element](#testing-out-the-stylable-select-element)
 - [Anatomy of the stylable select element](#anatomy-of-the-stylable-select-element)
@@ -41,9 +42,7 @@ The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archive
 
 ## Opting in to the new behavior
 
-The `<select>` element will continue to behave as it currently does unless a `<button>` or `<datalist>` element is provided as a child of the `<select>`. `<button>` elements replace the native button which opens the listbox, and `<datalist>` replaces popup listbox. By replacing the native components with regular web content, the contents are fully stylable and customizable.
-
-The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`.
+The `<select>` element will continue to behave as it currently does unless it has the `appearance:base-select` CSS property. Previously proposed opt-ins included a new tag name, an additional HTML attribute, and the presence of a child `<button>` or `<datalist>`.
 
 Here is a basic `<select>` element today:
 ```html
@@ -55,7 +54,19 @@ Here is a basic `<select>` element today:
 
 And here the same `<select>` with opt ins to the new stylability behavior which this explainer proposes:
 ```html
-<select>
+<select style="appearance:base-select">
+  <option>one</option>
+  <option>two</option>
+</select>
+```
+
+## HTML parser changes
+
+The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`. The `<button>` allows authors to replace the in-page button which opens the popup, and the `<datalist>` allows authors to replace the popup element containing the options.
+
+Here is a basic example which uses the parser changes:
+```html
+<select style="appearance:base-select">
   <button>
     <selectedoption></selectedoption>
   </button>
@@ -544,3 +555,6 @@ The HTML parser will not allow `<button>` or `<datalist>` children when the `mul
 - [Why `<button type=popover>`](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
 - [Why add the `<selectedoption>` element](https://github.com/openui/open-ui/issues/571)
 - [`<selectedoption>` name bikeshedding](https://github.com/openui/open-ui/issues/808)
+- Why opt-in with CSS
+  - https://github.com/whatwg/html/issues/9799#issuecomment-1789202391
+  - https://github.com/whatwg/html/issues/9799#issuecomment-1926411811
