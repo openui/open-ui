@@ -21,6 +21,7 @@ import Image from '../../components/image.astro'
   - [Animations](#animations)
   - [Split buttons](#split-buttons)
 - [Button behavior and type=popover](#button-behavior-and-type=popover)
+- [The selectedoption element](#the-selectedoption-element)
 - [Testing out the stylable select element](#testing-out-the-stylable-select-element)
 - [Anatomy of the stylable select element](#anatomy-of-the-stylable-select-element)
 - [Styling](#styling)
@@ -307,6 +308,14 @@ Here is another example with custom content in the listbox: [codepen](https://co
 
 The first child `<button>` of a `<select>` will open the popup list of options, unless one of them has `type=popover` on it. In that case, only the `<button>` with `type=popover` on it will open the popup. This enables use cases like split buttons but doesn't require the author to add `type=popover` for most use cases where there is only one button.
 
+## The `<selectedoption>` element
+
+The `<selectedoption>` element enables developers to declaratively clone the content of the selected `<option>` element to the button and to style it distinctly from the `<option>`. This use case is shown in the [rendering the option differently in the button](#rendering-the-option-differently-in-the-button) example.
+
+When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>` or when there is a DOM mutation inside of the selected `<option>`, the browser will update the contents of `<selectedoption>` by internally calling `cloneNode()` again.
+
+Since the contents of the `<selectedoption>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedoption>`.
+
 ## Testing out the stylable select element
 
 Stylable `<select>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
@@ -443,8 +452,10 @@ Consider the following example:
     display: flex;
     align-items: center;
     gap: 1rem;
+    border: none;
+    background-color: transparent;
   }
-  .my-custom-select .button {
+  .my-custom-select .icon {
     border: none;
     margin: 0;
     padding: 0;
@@ -453,8 +464,9 @@ Consider the following example:
     border-radius: 50%;
     display: grid;
     place-content: center;
+    background-color: buttonface;
   }
-  .my-custom-select .button::before {
+  .my-custom-select .icon::before {
     content: '\25BC';
   }
   .my-custom-select datalist {
@@ -474,16 +486,12 @@ Consider the following example:
     padding: 0.5rem;
   }
 </style>
-<select class="my-custom-select">
+<label for=plant>Choose a plant</label>
+<select id=plant class="my-custom-select">
   <button>
-    <span class="label">Choose a plant</span>
     <selectedoption></selectedoption>
+    <span class=icon></span>
   </button>
-  <div class="buttoncontainer">
-    <span class="label">Choose a plant</span>
-    <selectedoption></selectedoption>
-    <span class="button"></span>
-  </div>
   <datalist>
     <div class="section">
       <h3>Flowers</h3>
@@ -544,6 +552,8 @@ The HTML parser will not allow `<button>` or `<datalist>` children when the `mul
 - [Why not make selection follow focus](https://github.com/openui/open-ui/issues/742)
 - [Why not allow select or datalist in size/multiple select](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971)
 - [Why `<button type=popover>`](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
+- [Why add the `<selectedoption>` element](https://github.com/openui/open-ui/issues/571)
+- [`<selectedoption>` name bikeshedding](https://github.com/openui/open-ui/issues/808)
 - Why opt-in with CSS
   - https://github.com/whatwg/html/issues/9799#issuecomment-1789202391
   - https://github.com/whatwg/html/issues/9799#issuecomment-1926411811

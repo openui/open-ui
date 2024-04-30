@@ -80,6 +80,7 @@ HTMLButtonElement includes InterestInvokerElement
 HTMLInputElement includes InterestInvokerElement
 HTMLAnchorElement includes InterestInvokerElement
 HTMLAreaElement includes InterestInvokerElement
+SVGAElement includes InterestInvokerElement
 ```
 
 The `interesttarget` value should be an IDREF pointing to an element within the
@@ -199,12 +200,12 @@ rules take precedence:
 
 When the `interestaction` attribute is missing it will default to an auto state.
 
-| Interestee Element | `action` hint    | Event Type       | Behaviour                            |
-| :----------------- | :--------------- | :------------------------------------------------------ |
-| `<* popover=*>`    | (auto)           | `'interest'`     | Call `.showPopover()` on the invokee |
-| `<* popover=*>`    | `togglePopover`  | `'interest'`     | Call `.showPopover()` on the invokee |
-| `<* popover=*>`    | (auto)           | `'loseinterest'` | Call `.hidePopover()` on the invokee |
-| `<* popover=*>`    | `togglePopover`  | `'loseinterest'` | Call `.hidePopover()` on the invokee |
+| Interestee Element | `action` hint    | Event Type       | Behaviour                              |
+| :----------------- | :--------------- | :--------------- | :--------------------------------------|
+| `<* popover=*>`    | (auto)           | `'interest'`     | Call `.togglePopover()` on the invokee |
+| `<* popover=*>`    | `togglePopover`  | `'interest'`     | Call `.togglePopover()` on the invokee |
+| `<* popover=*>`    | (auto)           | `'loseinterest'` | Call `.togglePopover()` on the invokee |
+| `<* popover=*>`    | `togglePopover`  | `'loseinterest'` | Call `.togglePopover()` on the invokee |
 
 > Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
