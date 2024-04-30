@@ -442,8 +442,10 @@ Consider the following example:
     display: flex;
     align-items: center;
     gap: 1rem;
+    border: none;
+    background-color: transparent;
   }
-  .my-custom-select .button {
+  .my-custom-select .icon {
     border: none;
     margin: 0;
     padding: 0;
@@ -452,8 +454,9 @@ Consider the following example:
     border-radius: 50%;
     display: grid;
     place-content: center;
+    background-color: buttonface;
   }
-  .my-custom-select .button::before {
+  .my-custom-select .icon::before {
     content: '\25BC';
   }
   .my-custom-select datalist {
@@ -473,16 +476,12 @@ Consider the following example:
     padding: 0.5rem;
   }
 </style>
-<select class="my-custom-select">
+<label for=plant>Choose a plant</label>
+<select id=plant class="my-custom-select">
   <button>
-    <span class="label">Choose a plant</span>
     <selectedoption></selectedoption>
+    <span class=icon></span>
   </button>
-  <div class="buttoncontainer">
-    <span class="label">Choose a plant</span>
-    <selectedoption></selectedoption>
-    <span class="button"></span>
-  </div>
   <datalist>
     <div class="section">
       <h3>Flowers</h3>
