@@ -9,7 +9,7 @@ import ComboboxAnatomy from '../../components/combobox-anatomy'
 import Image from '../../components/image.astro'
 
 - [@sudheer-gowrgiari](https://github.com/sudheer-gowrigari), [@gregwhitworth](https://github.com/gregwhitworth)
-- Last updated: April 1, 2024
+- Last updated: May 1, 2024
 - Feedback: https://github.com/openui/open-ui/issues/924
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
@@ -21,9 +21,6 @@ import Image from '../../components/image.astro'
 - [Anatomy](#anatomy)
 - [Default Behavior](#default-behavior)
 - [Combobox with selectedoption/optgroup](#combobox-with-selectedoptionoptgroup)
-- [Introducing **filter** attribute](#introducing-filter-attribute)
-- [Introducing **search** attribute](#introducing-search-attribute)
-- [Future: Introduction of **multiple** attribute](#future-introduction-of-multiple-attribute)
 - [Keyboard Behavior](#keyboard-behavior)
 - [Key decisions](#key-decisions)
 - [Appendix](#appendix)
@@ -56,58 +53,27 @@ This proposal for `<combobox>` leverages the strengths of the Stylable Select El
 
 This document aims to provide a complete view of combo-box utilisation across the web to inform a potential proposal within Open UI. The goal of this document is to propose a very basic anatomy to simplify the initial shipment of `<combobox>` (or some other name) in the web platform. It will heavily build upon stylable `select` but provide a better accessible and extensible solution than that of an `input` bound with `datalist`.
 
-
-### Out of scope of this document
-
-This document will not be attempting some of the complex scenarios found across the web that leverage various ways in which to represent multi-selected options. Additionally, it does not intend to cover the addition of options that are not available in a `<datalist>`. It will not cover multi-select in the initial proposal.
-
-A good analogy for what this document will result in looking like is the [Tabs research document.](https://open-ui.org/components/tabs.research.parts/)
-
 ## Anatomy
-
 ```
 <combobox>
-   <input type=select>
-   <datalist>
-	<option>One</option>
-	<option>Two</option>
-   </datalist>
+  <input type="text"/>
+  <button><selectedoption></selectedoption></button>
+  <datalist>
+    <option>Create a merge commit</option>
+    <option>Squash and merge</option>
+    <option>Rebase and merge</option>
+  </datalist>
 </combobox>
 ```
-
 <ComboboxAnatomy />
 
-<div class="question">
-  <em>This anatomy would require `input` to be supported by invokertarget, see issue [#839](https://github.com/openui/open-ui/issues/839)  ?</em>
-</div>
-
-
 - `<combobox>`: The root container that encapsulates the entire `combobox` structure. It provides context for the interaction between the `input` and the `datalist`.
-  - Slots:
-    - `<input>`
-    - `<datalist>`
-  - Attributes:
-    - **search**: Indicates the combobox will actively fetch results based on user input.
-    - **filter**: Indicates the combobox will narrow down visible options based on user input.
-    - **multiple**: Allows multiple options to be selected.
-- `<input type=select>`: This is where the user can type input or view the selected option. It acts as the trigger to display the datalist.
-  - Slots:
-    - **selectedoption** (optional): To display the currently selected option from the `datalist`. 
-      - Note: Currently input doesn't support slots
-- `<datalist>`: The wrapper that contains the `<option>`(s) and `<optgroup>`(s). If this part was not provided by the author, then `<combobox>` will automatically create one.
-  - Slots:
-    - `<option>`
-    - `<optgroup>` (optional)
-- `<option>`: Represents an individual selectable item within the `datalist`.
-- `<optgroup>` (Optional): A container to group related options together.
-  - Slots:
-    - `<legend>`: To label the group.
-    - `<option>`: The options within this group.
-- `<legend>` (Optional, within `<optgroup>`): Provides a label or title for a group of options within the `datalist`.
+- `<input type=text>`: This is where the user can type input or view the selected option. It acts as the trigger to display the datalist.
+In addition to the commonly used [**text**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text) type, other supported [**input  types**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types) that could be effectively utilized within the combobox including, [**search**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search) for query inputs, [**email**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email) for email addresses, [**url**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/url) for web addresses, and [**tel**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/tel) for telephone numbers, each tailored to optimize user interaction and data entry specific to its context.
 
 ## Default Behavior
 
-Just like [stylable `<select>`](#https://open-ui.org/components/selectlist/#default-behavior) default behavior, the `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
+The `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
 
 
 ```
@@ -127,8 +93,8 @@ To showcase the selected option within a `combobox`, you can include a `<selecte
 
 ```
 <combobox>
-    <input type="select" placeholder="Select or type an item...">
-    <selectedoption></selectedoption>
+    <input type="text" placeholder="Select or type an item...">
+    <button><selectedoption></selectedoption></button>
     <datalist>
         <option>Apple</option>
         <option>Banana</option>
@@ -147,73 +113,6 @@ To showcase the selected option within a `combobox`, you can include a `<selecte
     </datalist>
 </combobox>
 ```
-
-## Introducing `filter` attribute
-
-The `filter` [_bool_ attribute](https://html.spec.whatwg.org/#boolean-attributes) enhances the `<combobox>` by dynamically narrowing down choices to match user input, making selection faster and more intuitive.
-
-
-```
-<combobox filter>
-    <input type="select" placeholder="Select fruit">
-    <datalist>
-        <option>Apple</option>
-        <option>Apricot</option>
-        <option>Banana</option>
-        <!-- ... -->
-    </datalist>
-</combobox>
-```
-
-Here's how the `filter` attribute simplifies finding and selecting options in a `combobox`:
-
-1. When the combobox loads, it's ready to filter options.
-2. Start typing, and it will only show you matching options.
-3. Only options that start with what you've typed will show up.
-4. Click or press enter to select from the shorter list.
-5. When you select, the list closes and shows your choice.
-
-<Image
-  src="/images/combobox/comobobox-filter.gif"
-  alt="Combobox showing filtered values"
-  style="width:30%"
-/>
-
-For discussion and suggestions on the naming of the `filter` attribute, please see [Issue #932](https://github.com/openui/open-ui/issues/932).
-
-## Introducing `search` attribute
-
-The `search` attribute adds smart search features to `<combobox>`. It lets users find options in different ways:
-
-**Attribute values:**
-
-* **pattern**: Matches options against a pattern. For example, typing "**^a**" finds options starting with "**a**". definition [here](https://html.spec.whatwg.org/#the-pattern-attribute).
-* **startswith**: Shows options that start with the user’s input. Typing "**Ap**" will display "Apple" and "Apricot" but not "Banana". This is the default behavior for **`<selectlist>`** definition [here](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.startswith).
-* **includes** : Searches anywhere in the option text. Typing "**a**" will display "Apple", "Apricot", and "Banana". definition [here](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.includes).
-
-
-```
-<combobox search>
-    <input type="select" placeholder="Select fruit">
-    <datalist>
-       <option>Apple</option>
-        <option>Apricot</option>
-        <option>Banana</option>
-        <!-- ... -->
-    </datalist>
-</combobox>
-```
-<Image
-  src="/images/combobox/combo-search.gif"
-  alt="Combobox showing search results"
-  style="width:30%"
-/>
-Join the conversation on the naming and values of the `search` attribute in [Issue #931](https://github.com/openui/open-ui/issues/931).
-
-## Future: Introduction of `multiple` attribute
-
-The `multiple` attribute will be specified in detail in a forthcoming update.
-
 
 ## Keyboard Behavior
 Details regarding keyboard interaction for the combobox will follow the [W3C ARIA Authoring Practices for combobox patterns](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). For further development and discussions, please see the [filed issue](https://github.com/openui/open-ui/issues/929).
@@ -236,9 +135,6 @@ Details regarding keyboard interaction for the combobox will follow the [W3C ARI
 
 
 **Pros:**
-
-
-
 * Native elements
 
 **Cons:**
@@ -255,7 +151,7 @@ Details regarding keyboard interaction for the combobox will follow the [W3C ARI
 
 ```
 <select combobox>
-  <input type=select>
+  <input type=text>
   <datalist>
 	<option>One</option>
 	<option>Two</option>
