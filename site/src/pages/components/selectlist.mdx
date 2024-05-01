@@ -12,6 +12,7 @@ import Image from '../../components/image.astro'
 
 - [Background](#background)
 - [Opting in to the new behavior](#opting-in-to-the-new-behavior)
+- [HTML parser changes](#html-parser-changes)
 - [Use cases](#use-cases)
   - [Customizing basic styles](#customizing-basic-styles)
   - [Rich content in `<option>`s](#rich-content-in-options)
@@ -19,6 +20,9 @@ import Image from '../../components/image.astro'
   - [Rendering the `<option>` differently in the button](#rendering-the-option-differently-in-the-button)
   - [Putting custom content in the listbox](#putting-custom-content-in-the-listbox)
   - [Animations](#animations)
+  - [Split buttons](#split-buttons)
+- [Button behavior and type=popover](#button-behavior-and-typepopover)
+- [The selectedoption element](#the-selectedoption-element)
 - [Testing out the stylable select element](#testing-out-the-stylable-select-element)
 - [Anatomy of the stylable select element](#anatomy-of-the-stylable-select-element)
 - [Styling](#styling)
@@ -38,9 +42,7 @@ The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archive
 
 ## Opting in to the new behavior
 
-The `<select>` element will continue to behave as it currently does unless a `<button>` or `<datalist>` element is provided as a child of the `<select>`. `<button>` elements replace the native button which opens the listbox, and `<datalist>` replaces popup listbox. By replacing the native components with regular web content, the contents are fully stylable and customizable.
-
-The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`.
+The `<select>` element will continue to behave as it currently does unless it has the `appearance:base-select` CSS property. Previously proposed opt-ins included a new tag name, an additional HTML attribute, and the presence of a child `<button>` or `<datalist>`.
 
 Here is a basic `<select>` element today:
 ```html
@@ -52,8 +54,20 @@ Here is a basic `<select>` element today:
 
 And here the same `<select>` with opt ins to the new stylability behavior which this explainer proposes:
 ```html
-<select>
-  <button type=select>
+<select style="appearance:base-select">
+  <option>one</option>
+  <option>two</option>
+</select>
+```
+
+## HTML parser changes
+
+The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`. The `<button>` allows authors to replace the in-page button which opens the popup, and the `<datalist>` allows authors to replace the popup element containing the options.
+
+Here is a basic example which uses the parser changes:
+```html
+<select style="appearance:base-select">
+  <button>
     <selectedoption></selectedoption>
   </button>
   <datalist>
@@ -73,7 +87,7 @@ This example changes the fonts and colors of various parts of the button and lis
 <div className="code-container">
 ```html
 <select>
-  <button type=select>
+  <button>
     <selectedoption></selectedoption>
   </button>
   <datalist>
@@ -139,7 +153,7 @@ This example replaces the button which opens the listbox with an author provided
 <div>
 ```html
 <select>
-  <button type=select>
+  <button>
     selected option: <selectedoption></selectedoption>
   </button>
   <option>one</option>
@@ -163,7 +177,7 @@ This example uses the stylable `<select>` element with custom CSS to target it w
 <div>
 ```html
 <select>
-  <button type=select>
+  <button>
     <selectedoption></selectedoption>
   </button>
   <datalist>
@@ -266,6 +280,43 @@ Here is another example with custom content in the listbox: [codepen](https://co
 </div>
 </div>
 
+### Split buttons
+
+<div className="code-image-container">
+<div>
+  This example uses the [type=popover](#button-behavior-and-type=popover) attribute on one of the buttons in order to have a button which opens the select's popup and another one which submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
+```html
+<select>
+  <button><selectedoption></selectedoption></button>
+  <button type=popover>⬇️</button>
+  <datalist>
+    <option>Create a merge commit</option>
+    <option>Squash and merge</option>
+    <option>Rebase and merge</option>
+  </datalist>
+</select>
+```
+</div>
+<div>
+  <Image
+    src="/images/select-split-button.png"
+    alt="A stylable select element with a split button"
+  />
+</div>
+</div>
+
+## Button behavior and type=popover
+
+The first child `<button>` of a `<select>` will open the popup list of options, unless one of them has `type=popover` on it. In that case, only the `<button>` with `type=popover` on it will open the popup. This enables use cases like split buttons but doesn't require the author to add `type=popover` for most use cases where there is only one button.
+
+## The `<selectedoption>` element
+
+The `<selectedoption>` element enables developers to declaratively clone the content of the selected `<option>` element to the button and to style it distinctly from the `<option>`. This use case is shown in the [rendering the option differently in the button](#rendering-the-option-differently-in-the-button) example.
+
+When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>` or when there is a DOM mutation inside of the selected `<option>`, the browser will update the contents of `<selectedoption>` by internally calling `cloneNode()` again.
+
+Since the contents of the `<selectedoption>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedoption>`.
+
 ## Testing out the stylable select element
 
 Stylable `<select>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
@@ -280,7 +331,7 @@ Because the various parts of the select element can be styled, it's important to
 
 - `<select>` - The root element that contains the button and listbox.
 - button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox.
-- `<button type=select>` - The button which opens the listbox when clicked. The `type=select` attribute indicates to the browser that this button should open the listbox.
+- `<button>` - The button which opens the listbox when clicked.
 - `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
 - `<datalist>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
@@ -298,7 +349,7 @@ The select element supports the `:open` and `:closed` pseudo selectors as specif
 When the select's listbox is showing, the select element will match `:open`, and when it is not showing, it will match `:closed`. Here is an example which makes the button red when the listbox is closed and green when it is open:
 ```html
 <select>
-  <button id=custombutton type=select>
+  <button id=custombutton>
     <selectedoption></selectedoption>
   </button>
   <option>one</option>
@@ -339,7 +390,7 @@ Here is an example which has a custom button with custom CSS:
   }
 </style>
 <select class="my-custom-select">
-  <button type=select>
+  <button>
     <span class="open">Open</span>
     <span class="label">Choose an option</span>
   </button>
@@ -402,8 +453,10 @@ Consider the following example:
     display: flex;
     align-items: center;
     gap: 1rem;
+    border: none;
+    background-color: transparent;
   }
-  .my-custom-select .button {
+  .my-custom-select .icon {
     border: none;
     margin: 0;
     padding: 0;
@@ -412,8 +465,9 @@ Consider the following example:
     border-radius: 50%;
     display: grid;
     place-content: center;
+    background-color: buttonface;
   }
-  .my-custom-select .button::before {
+  .my-custom-select .icon::before {
     content: '\25BC';
   }
   .my-custom-select datalist {
@@ -433,17 +487,12 @@ Consider the following example:
     padding: 0.5rem;
   }
 </style>
-<select class="my-custom-select">
-  <button type=select>
-    <span class="label">Choose a plant</span>
+<label for=plant>Choose a plant</label>
+<select id=plant class="my-custom-select">
+  <button>
     <selectedoption></selectedoption>
-
+    <span class=icon></span>
   </button>
-  <div class="buttoncontainer">
-    <span class="label">Choose a plant</span>
-    <selectedoption></selectedoption>
-    <span class="button></span>
-  </div>
   <datalist>
     <div class="section">
       <h3>Flowers</h3>
@@ -503,3 +552,9 @@ The HTML parser will not allow `<button>` or `<datalist>` children when the `mul
 - [Why allow interactive content in `<listbox>` but with strong warnings](https://github.com/openui/open-ui/issues/540)
 - [Why not make selection follow focus](https://github.com/openui/open-ui/issues/742)
 - [Why not allow select or datalist in size/multiple select](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971)
+- [Why `<button type=popover>`](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
+- [Why add the `<selectedoption>` element](https://github.com/openui/open-ui/issues/571)
+- [`<selectedoption>` name bikeshedding](https://github.com/openui/open-ui/issues/808)
+- Why opt-in with CSS
+  - https://github.com/whatwg/html/issues/9799#issuecomment-1789202391
+  - https://github.com/whatwg/html/issues/9799#issuecomment-1926411811

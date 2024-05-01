@@ -23,8 +23,8 @@ layout: ../../layouts/ComponentLayout.astro
 
 Following [invokers](../invokers.explainer), adding an `interesttarget` and `interestaction`
 attributes to interactive elements: starting with `<button>`, `<input
-type="button">`/`<input type="reset">`/`<input type="submit">`, and `<a>` (perhaps
-expanding to `<area>`, `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
+type="button">`/`<input type="reset">`/`<input type="submit">`, `<a>`, and `<area>` (perhaps
+expanding to `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
 [#14](https://github.com/openui/open-ui/issues/908)). This would allow
 disclosure of high fidelity tooltips in a more accessible and declarative way.
 Elements with `interesttarget` will - when hovered, or focussed (or an equivalent
@@ -69,7 +69,7 @@ interest.
 ## Proposed Plan
 
 In the style of `invoketarget`, this document proposes we add `interesttarget` and `interestaction`
-as available attributes to `<button>`, `<a>`, and `<input>` elements.
+as available attributes to `<button>`, `<a>`, `<area>` and `<input>` elements.
 
 ```webidl
 interface mixin InterestInvokerElement {
@@ -79,6 +79,8 @@ interface mixin InterestInvokerElement {
 HTMLButtonElement includes InterestInvokerElement
 HTMLInputElement includes InterestInvokerElement
 HTMLAnchorElement includes InterestInvokerElement
+HTMLAreaElement includes InterestInvokerElement
+SVGAElement includes InterestInvokerElement
 ```
 
 The `interesttarget` value should be an IDREF pointing to an element within the
@@ -198,12 +200,12 @@ rules take precedence:
 
 When the `interestaction` attribute is missing it will default to an auto state.
 
-| Interestee Element | `action` hint    | Event Type       | Behaviour                            |
-| :----------------- | :--------------- | :------------------------------------------------------ |
-| `<* popover=*>`    | (auto)           | `'interest'`     | Call `.showPopover()` on the invokee |
-| `<* popover=*>`    | `togglePopover`  | `'interest'`     | Call `.showPopover()` on the invokee |
-| `<* popover=*>`    | (auto)           | `'loseinterest'` | Call `.hidePopover()` on the invokee |
-| `<* popover=*>`    | `togglePopover`  | `'loseinterest'` | Call `.hidePopover()` on the invokee |
+| Interestee Element | `action` hint    | Event Type       | Behaviour                              |
+| :----------------- | :--------------- | :--------------- | :--------------------------------------|
+| `<* popover=*>`    | (auto)           | `'interest'`     | Call `.togglePopover()` on the invokee |
+| `<* popover=*>`    | `togglePopover`  | `'interest'`     | Call `.togglePopover()` on the invokee |
+| `<* popover=*>`    | (auto)           | `'loseinterest'` | Call `.togglePopover()` on the invokee |
+| `<* popover=*>`    | `togglePopover`  | `'loseinterest'` | Call `.togglePopover()` on the invokee |
 
 > Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
