@@ -332,7 +332,7 @@ Because the various parts of the select element can be styled, it's important to
 - `<select>` - The root element that contains the button and listbox.
 - button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox.
 - `<button>` - The button which opens the listbox when clicked.
-- `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the text content of this element with the text content of the selected option.
+- `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the children of this element with the result of calling `cloneNode()` on the newly selected `<option>`.
 - `<datalist>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
