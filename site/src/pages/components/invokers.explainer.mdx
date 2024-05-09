@@ -44,6 +44,16 @@ concerns. Some frameworks attempt to reintroduce the developer experience of
 inline handlers by introducing new JavaScript or HTML shorthands, such as
 React's `onClick={...}`, Vue's `@click=".."` or HTMX's `hx-trigger="click"`.
 
+Handling clicking is only half of the problem though, and this proposal doesn't
+seek to re-invent click handlers. Dispatching an action to a related element on
+the click can also become chore-like depending on the framework of choice. Many
+frameworks recommend associating a click event with a state change and having
+the element to be invoked react to that state change. For example [the React
+docs on Adding Interactivity][1] attach click handlers which set state.
+
+
+[1]: https://react.dev/learn/adding-interactivity#state-a-components-memory
+
 There has also been a rise in the desire to customise controls for components.
 Many sites, for example, introduce custom controls for File Uploads or dropdown
 menus. These often require a large amount of work to _reintroduce_ the built in
@@ -346,13 +356,31 @@ behaviours. Consider the following:
 
 ### PAQ (Potentially Asked Questions)
 
-#### Why the name `invoker`? Why not `click`?
+#### Why the name `invoke`? Why not `click`?
 
 While `click` is a fairly well established name in the world of the web, it is
-quite specific to certain types of HID and is not a term which encompasses all
-viable methods of interaction. In addition a `clickaction` attribute is deemed
-to be a little too ambiguous as it conflates existing concepts. Given the
-opportunity to supply a new name, `invoke` was settled on.
+quite specific to the action from a user gesture, whereas invoke events notify
+a related element that an interactive control is requesting action. In other
+words, a `click` happens on the element being interacted with - the _invoker_,
+while an `invoke` happens on the element the interactive control points to -
+the _invokee_.
+
+If the invokee were to recieve click events from the interactive control, this
+would make it difficult to differentiate user interaction on the element vs on
+invoking elements. Take for example a video player; clicking on the area which
+renders the video may play/pause the video, but clicking on a video control may
+cause different behaviours on the video. The extra controls _invoke an action
+on the video_ but the user gesture was performed on the controls themselves.
+
+Invokers _rely_ on click events for their behavior to work, and they are not
+intended to replace them. Instead, invokers enhance click events to drive
+behaviour on a different element. Consequently they need a new conceptual name
+for this. Given the opportunity to supply a new name, `invoke` was settled on.
+
+Given the new conceptual model of "invoke" it stands to reason that all related
+concepts share the same name, as such `invoketarget` and `invokeaction` were
+chosen rather than, say, `clicktarget`/`clickaction`. Similarly the event class
+is named `InvokeEvent` and the event name `invoke`.
 
 #### What about adding Invoker defaults for `<form>`?
 
