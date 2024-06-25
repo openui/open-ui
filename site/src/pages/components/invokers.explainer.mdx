@@ -1,6 +1,6 @@
 ---
 menu: Active Proposals
-name: Invokers (Explainer)
+name: Invoker Commands (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
@@ -14,7 +14,7 @@ layout: ../../layouts/ComponentLayout.astro
 ## Pitch in Code
 
 ```html
-<button invoketarget="my-dialog">This opens a dialog</button>
+<button command="showModal" commandfor="my-dialog">This opens a dialog</button>
 
 <dialog id="my-dialog">This is the dialog</dialog>
 ```
@@ -22,13 +22,13 @@ layout: ../../layouts/ComponentLayout.astro
 
 ## Introduction
 
-Adding `invoketarget` and `invokeaction` attributes to `<button>` and
+Adding `commandfor` and `command` attributes to `<button>` and
 `<input type="button">` / `<input type="reset">` elements would allow authors to
 assign behaviour to buttons in a more accessible and declarative way, while
 reducing bugs and simplifying the amount of JavaScript pages are required to
-ship for interactivity. Buttons with `invoketarget` will - when clicked,
-touched, or enacted via keypress - dispatch an `InvokeEvent` on the element
-referenced by `invoketarget`, with some default behaviours.
+ship for interactivity. Buttons with `command` will - when clicked, touched, or
+enacted via keypress - dispatch a `CommandEvent` on the element referenced by
+`commandfor`, with some default behaviours.
 
 ## Background
 
@@ -82,90 +82,91 @@ the balance.
   as eye tracking or pedals or game controllers, the equivalent expected "click"
   action should be used to invoke the element.
 - Invoker: An invoker is a button element (that is a `<button>`,
-  `<input type="button">`, or `<input type="reset">`) that has an `invoketarget`
-  attribute set.
-- Invokee: An element which is referenced to by an Invoker, via the
-  `invoketarget` attribute.
+  `<input type="button">`, or `<input type="reset">`) that has an `commandfor`
+  and `command` attribute set.
+- Invoker Target: An element which is referenced to by an Invoker, via the
+  `commandfor` attribute.
 
 ## Proposed Plan
 
-In the style of `popovertarget`, this document proposes we add `invoketarget`,
-and `invokeaction` as available attributes to `<button>`,
+In the style of `popovertarget`, this document proposes we add
+`commandForElement`, and `command` as available attributes to `<button>`,
 `<input type="button">` and `<input type="reset">` elements.
 
 ```webidl
 interface mixin InvokerElement {
-  [CEReactions] attribute Element? invokeTargetElement;
-  [CEReactions] attribute DOMString invokeAction;
+  [CEReactions] attribute Element? commandForElement;
+  [CEReactions] attribute DOMString command;
 };
 
 HTMLButtonElement extends InvokerElement
 HTMLInputElement extends InvokerElement
 ```
 
-The `invoketarget` value should be an IDREF pointing to an element within the
-document. `.invokeTargetElement` also exists on the element to imperatively
+The `commandfor` value should be an IDREF pointing to an element within the
+document. `.commandForElement` also exists on the element to imperatively
 assign a node to be the invoker target, allowing for cross-root invokers (in
 some cases, see
 [the popovertarget attr-asociated element steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element)
 for more).
 
-The `invokeaction` (and the `.invokeAction` reflected property) is a freeform
-hint to the Invokee. InvokeAction can be a "built-in" action or a "custom"
-action. If `invokeaction` is a falsey value (`''`, `null`, etc.) then it will
-default to `'auto'`.
+The `command` (and the `.command` reflected property) is a freeform hint to the
+invoker target. Command can be a "built-in" action or a "custom" action. If
+`command` is not supplied then it is considered invalid and no action will take
+place, and no event will be fired.
 
-Custom values _must_ contain a `-`. They will _never_ trigger a browser default
-behaviour, aside from dispatching an `InvokeEvent`. This allows web developers
-to create custom Invoke actions for their components.
+Custom command values _must_ contain a `-`. They will _never_ trigger a browser
+default behaviour, aside from dispatching an `CommandEvent`. This allows web
+developers to create custom Invoke actions for their components.
 
 Built-in interactive elements have built-in behaviours (detailed below) which
-are determined by the `invokeaction`. The built-in names _must not_ contain a
-`-`. An `invokeaction` without a dash that is not a built-in is considered
-invalid, and will not dispatch an InvokeEvent.
+are determined by the `command` attribue/property. The built-in names _must not_
+contain a `-`. A `command` without a dash that is not a built-in is considered
+invalid, and will not dispatch an CommandEvent.
 
-Valid invokeactions (that is: custom invokeactions or a valid built-in) will
-dispatch InvokeEvents, allowing custom code to take control of invocations (for
+Valid commands (that is: custom commands or a valid built-in) will
+dispatch CommandEvents, allowing custom code to take control of invocations (for
 example calling `.preventDefault()` or executing custom side-effects).
 
-Elements with `invoketarget` set will dispatch an `InvokeEvent` on the
-_Invokee_ (the element referenced by `invoketarget`) when the element is
-_Invoked_. The `InvokeEvent`'s `type` is always `invoke`. The event also
-contains an `invoker` property that will reference the _Invoker_ element.
-`InvokeEvents` are always non-bubbling, composed, trusted, cancellable events.
+Invokers will dispatch an `CommandEvent` on the _Invokee_ (the element referenced
+by `commandfor`) when the element is _Invoked_. The `CommandEvent`'s `type` is
+always `command`. The event also contains an `invoker` property that will reference
+the _Invoker_ element. `CommandEvents` are always non-bubbling, composed, trusted,
+cancellable events.
 
 ```webidl
 [Exposed=Window]
-interface InvokeEvent : Event {
-  constructor(InvokeEventInit invokeEventInit);
+interface CommandEvent : Event {
+  constructor(CommandEventInit invokeEventInit);
   readonly attribute Element invoker;
-  readonly attribute DOMString type = "invoke";
-  readonly attribute DOMString action;
+  readonly attribute DOMString type = "command";
+  readonly attribute DOMString command;
 };
-dictionary InvokeEventInit : EventInit {
+dictionary CommandEventInit : EventInit {
   DOMString action = "";
   Element invoker;
 };
 ```
 
-If an element also has both a `popovertarget` and `invoketarget` attribute, then
-`popovertarget` _must_ be ignored: `invoketarget` takes precedence.
+If an element also has both a `popovertarget` and the `commandfor`/`command`
+attributes set, then `popovertarget` _must_ be ignored: `command` takes
+precedence.
 
-If a `<button>` is a form participant, or has `type=submit`, then `invoketarget`
+If a `<button>` is a form participant, or has `type=submit`, then `command`
 _must_ be ignored.
 
 If an `<input>` is a form participant, or has a `type` other than `reset` or
-`button`, then `invoketarget` and `interesttarget` _must_ be ignored.
+`button`, then `command` _must_ be ignored.
 
 ### Example Code
 
 #### Popovers
 
-When pointing to a `popover`, `invoketarget` acts much like
-`popovertarget`, allowing the toggling of popovers.
+When pointing to a `popover`, `commandfor` acts much like `popovertarget`,
+allowing the toggling of popovers.
 
 ```html
-<button invoketarget="my-popover">Open Popover</button>
+<button commandfor="my-popover" command="togglePopover">Open Popover</button>
 <!-- Effectively the same as popovertarget="my-popover" -->
 
 <div id="my-popover" popover="auto">Hello world</div>
@@ -173,16 +174,16 @@ When pointing to a `popover`, `invoketarget` acts much like
 
 #### Dialogs
 
-When pointing to a `<dialog>`, `invoketarget` can toggle a `<dialog>`'s
+When pointing to a `<dialog>`, `command` can toggle a `<dialog>`'s
 openness.
 
 ```html
-<button invoketarget="my-dialog">Open Dialog</button>
+<button commandfor="my-dialog" command="showModal">Open Dialog</button>
 
 <dialog id="my-dialog">
   Hello world!
 
-  <button invoketarget="my-dialog" invokeaction="close">Close</button>
+  <button commandfor="my-dialog" command="close">Close</button>
 </dialog>
 ```
 
@@ -190,11 +191,11 @@ openness.
 
 > Note: Invokers targeting a `<details>` element has been deferred from the initial release.
 
-When pointing to a `<details>`, `invoketarget` can toggle a `<details>`'
+When pointing to a `<details>`, `commandfor` can toggle a `<details>`'
 openness.
 
 ```html
-<button invoketarget="my-details">Open Details</button>
+<button commandfor="my-details" command="open">Open Details</button>
 <!-- Can be used to replicate the `<summary>` interaction -->
 
 <details id="my-details">
@@ -207,12 +208,12 @@ openness.
 
 > Note: Invokers targeting a `<input>` element has been deferred from the initial release.
 
-Pointing an `invoketarget` to an `<input type="file">` acts the same as the
+Pointing `commandfor` to an `<input type="file">` can act the same as the
 rendered button _within_ the input; and can be used to declare a customised
 alternative button to the input's button.
 
 ```html
-<button invoketarget="my-file" invokeaction="showPicker">Pick a file...</button>
+<button commandfor="my-file" command="showPicker">Pick a file...</button>
 
 <input id="my-file" type="file" />
 ```
@@ -221,13 +222,13 @@ alternative button to the input's button.
 
 > Note: Invokers targeting `<audio>` and `<video>` elements has been deferred from the initial release.
 
-The `<video>` and `<audio>` tags have many interactions, here `invokeaction`
+The `<video>` and `<audio>` tags have many interactions, here `commandfor`
 shines, allowing multiple buttons to handle different interactions with the
 video player.
 
 ```html
-<button invoketarget="my-video" invokeaction="playpause">Play/Pause</button>
-<button invoketarget="my-video" invokeaction="toggleMuted">Mute/Unmute</button>
+<button commandfor="my-video" command="playpause">Play/Pause</button>
+<button commandfor="my-video" command="toggleMuted">Mute/Unmute</button>
 
 <video id="my-video"></video>
 ```
@@ -235,18 +236,17 @@ video player.
 #### Custom behaviour
 
 _Invokers_ will dispatch events on the _Invokee_ element. Using a dash in the
-invokeaction allows for custom JavaScript to be triggered without having to
-wire up manual event handlers to the Invokers.
+command allows for custom JavaScript to be triggered without having to wire up
+manual event handlers to the Invokers.
 
 ```html
-<button invoketarget="my-custom">Invoke a div... to do something?</button>
 <!-- Custom invokeactions must contain a dash! -->
-<button invoketarget="my-custom" invokeaction="my-frobulate">Frobulate</button>
+<button commandfor="my-custom" commandfor="my-frobulate">Frobulate</button>
 
 <div id="my-custom"></div>
 
 <script>
-  document.getElementById("my-custom").addEventListener("invoke", (e) => {
+  document.getElementById("my-custom").addEventListener("command", (e) => {
     if (e.action === "my-frobulate") {
       alert("Successfully frobulated the div");
     }
@@ -280,20 +280,18 @@ will be `aria-expanded=true` when the _Invokee_ is open and
 
 ### Defaults
 
-Depending on the target set by `invoketarget`, invoking the button will trigger
-additional behaviours alongside the event dispatch. In addition the following
-table represents how built-in invocations on specific element types are
-handled. Note that this list is ordered and higher rules take precedence:
+Depending on the target set by `commandfor`, invoking the button will trigger
+additional behaviours alongside the event dispatch, depending on the value of
+`command`. The following table represents how built-in invocations on specific
+element types are handled.
 
-When the `invokeaction` attribute is missing it will default to an auto state.
+When the `command` attribute is missing it will default to an invalid state.
 
 | Invokee Element | `action` hint         | Behaviour                                                                            |
 | :-------------- | :-------------------- | :----------------------------------------------------------------------------------- |
-| `<* popover>`   | (auto)                | Same as `'togglePopover'`                                                            |
 | `<* popover>`   | `'togglePopover'`     | Call `.togglePopover()` on the invokee                                               |
 | `<* popover>`   | `'hidePopover'`       | Call `.hidePopover()` on the invokee                                                 |
 | `<* popover>`   | `'showPopover'`       | Call `.showPopover()` on the invokee                                                 |
-| `<dialog>`      | (auto)                | If the `<dialog>` is not `open`, call `showModal()`, otherwise close and use the button `value` for returnValue     |
 | `<dialog>`      | `'showModal'`         | If the `<dialog>` is not `open`, call `showModal()`                                  |
 | `<dialog>`      | `'close'`             | If the `<dialog>` is `open`, close and use the button `value` for returnValue        |
 
@@ -302,7 +300,6 @@ Invokers, the names and exact semantics may be subject to change:
 
 | Invokee Element | `action` hint         | Behaviour                                                                            |
 | :-------------- | :-------------------- | :----------------------------------------------------------------------------------- |
-| `<details>`     | (auto)                | Same as `'toggle'`                                                                   |
 | `<details>`     | `'toggle'`            | If the `<details>` is `open`, then close it, otherwise open it                       |
 | `<details>`     | `'open'`              | If the `<details>` is not `open`, then open it                                       |
 | `<details>`     | `'close'`             | If the `<details>` is `open`, then close it                                          |
@@ -326,14 +323,16 @@ Invokers, the names and exact semantics may be subject to change:
 
 > Note: The above tables are an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
+Further to the initial ship we're also exploring implicit `command` or implicit
+`commandfor` values where the value can easily be inferred.
+
 ### Invokers and Custom Elements
 
-As the underlying system for invoke/interest elements uses event dispatch,
-Custom Elements can make use of `InvokeEvent`/`InterestEvent`s for their own
-behaviours. Consider the following:
+As the underlying system for invoke elements uses event dispatch, Custom Elements
+can make use of `CommandEvent` for their own behaviours. Consider the following:
 
 ```html
-<button invoketarget="my-element" invokeaction="spin-widget">
+<button commandfor="my-element" command="spin-widget">
   Spin the widget
 </button>
 
@@ -343,7 +342,7 @@ behaviours. Consider the following:
     "spin-widget",
     class extends HTMLElement {
       connectedCallback() {
-        this.addEventListener("invoke", (e) => {
+        this.addEventListener("command", (e) => {
           if (e.action === "spin-widget") {
             this.spin();
           }
@@ -356,7 +355,7 @@ behaviours. Consider the following:
 
 ### PAQ (Potentially Asked Questions)
 
-#### Why the name `invoke`? Why not `click`?
+#### Why the name `command`? Why not `click`?
 
 While `click` is a fairly well established name in the world of the web, it is
 quite specific to the action from a user gesture, whereas invoke events notify
@@ -377,10 +376,31 @@ intended to replace them. Instead, invokers enhance click events to drive
 behaviour on a different element. Consequently they need a new conceptual name
 for this. Given the opportunity to supply a new name, `invoke` was settled on.
 
-Given the new conceptual model of "invoke" it stands to reason that all related
-concepts share the same name, as such `invoketarget` and `invokeaction` were
-chosen rather than, say, `clicktarget`/`clickaction`. Similarly the event class
-is named `InvokeEvent` and the event name `invoke`.
+Given the new conceptual model of "command" it stands to reason that all related
+concepts share the same name, as such `commandfor` and `command` were chosen
+rather than, say, `clickfor`/`clickaction`. Similarly the event class is named
+`CommandEvent` and the event name `command`.
+
+#### Didn't this used to be called `invoke`? What happened?
+
+The original proposal for Invoke Commands was to use the term `invoke`
+exhaustively through the API, and so the attributes were originally named
+`invoketarget`/`invokeaction` and the event named `InvokeEvent` with a type of
+`invoke`. This was deemed too abstract, and standards groups and web developers
+desired a simpler name. For those interested in the history, some conversation
+that lead to changing `invoke` to `command` starts around here:
+https://github.com/whatwg/html/issues/9625#issuecomment-2115718679
+
+#### Do we have to always supply both? Can't we make `command` or `commandfor` implicit?
+
+The original proposal had the concept of an "auto" `command` value which would
+determine an exlicit command based on various heuristics, such as the target
+element. This has been deferred for the initial ship, but may be explored
+further. This is considred out of scope for the initial ship, however.
+
+We may also explore the possibility of making `commandfor` implicit, for example
+if a button is a descendant of a dialog, omitting `commandfor` may make sense.
+This is also considered out of scope for the initial ship.
 
 #### What about adding Invoker defaults for `<form>`?
 
@@ -392,13 +412,13 @@ replace Reset or Submit buttons. If you want to control forms, use those.
 Defaults for `<a>` are intentionally omitted as this proposal does not aim to
 replace anchors. If you intend to produce a page navigation, use an `<a>` tag.
 
-### Why is `invoketarget` limited to buttons?
+### Why is `command`/`commandfor` limited to buttons?
 
 This is by design, to allow for a "pit of success"; invoking actions on
 non-button elements such as `<div>`s or `<a>`s creates many problems, especially
 for non-interactive elements. While `<a>`s _are_ interactive, they should _only_
 be used for page navigation and not for invoking other behaviours, and so
-`invoketarget` should not be allowed.
+`command`/`commandfor` should not be allowed.
 
 #### Why isn't `input[type=submit]` included?
 
@@ -419,22 +439,22 @@ a form:
   <form>
     <input type="text" />
     <!-- This button closes the dialog _and_ resets the form -->
-    <input type="reset" invoketarget="my-dialog" value="Cancel" />
+    <input type="reset" commandfor="my-dialog" command="close" value="Cancel" />
   </form>
 </dialog>
 ```
 
 #### What does this mean for `popovertarget`?
 
-Whilst `invoketarget` _does_ replicate `popovertarget`'s functionality, the two will co-exist side by side for
-some while to enable a smooth transition.
+Whilst `command`/`commandfor` _does_ replicate `popovertarget`'s functionality,
+the two will co-exist side by side for some while to enable a smooth transition.
 
-It is, however, intended that `invoketarget` will replace `popovertarget`
-leading to `popovertarget`'s eventual deprecation.
+It is, however, intended that `commandfor` will replace `popovertarget` leading
+to `popovertarget`'s eventual deprecation.
 
 #### InvokeTarget seems limited, what if I wanted to add arguments?
 
-Custom `invokeaction`s can be used in a freeform way, for your own elements. If
+Custom `command`s can be used in a freeform way, for your own elements. If
 you feel it necessary you can invent your own DSLs for passing extra data using
 this hint. For example:
 
@@ -447,10 +467,30 @@ this hint. For example:
 
 <script>
   const counter = document.getElementById("my-counter");
-  counter.addEventListener("invoke", (e) => {
+  counter.addEventListener("command", (e) => {
     let addMatch = /^add-(\d+)$/.match(e.action);
     if (addMatch) {
       counter.value = Number(counter.value) + Number(addMatch[1]);
+    }
+  });
+</script>
+```
+
+You can also leverage the buttons `value` attribute to effectively parameterise
+certain commands:
+
+```html
+<button invoketarget="my-counter" invokeaction="add-num" value="1">Add 1</button>
+<button invoketarget="my-counter" invokeaction="add-num" value="2">Add 2</button>
+<button invoketarget="my-counter" invokeaction="add-num" value="10">Add 10</button>
+
+<input readonly id="my-counter" value="0" />
+
+<script>
+  const counter = document.getElementById("my-counter");
+  counter.addEventListener("command", (e) => {
+    if (e.command == 'add-num') {
+      counter.value = Number(counter.value) + Number(e.invoker.value);
     }
   });
 </script>
