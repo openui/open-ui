@@ -240,7 +240,7 @@ command allows for custom JavaScript to be triggered without having to wire up
 manual event handlers to the Invokers.
 
 ```html
-<!-- Custom invokeactions must contain a dash! -->
+<!-- Custom commands must contain a dash! -->
 <button commandfor="my-custom" command="my-frobulate">Frobulate</button>
 
 <div id="my-custom"></div>
@@ -452,16 +452,16 @@ the two will co-exist side by side for some while to enable a smooth transition.
 It is, however, intended that `commandfor` will replace `popovertarget` leading
 to `popovertarget`'s eventual deprecation.
 
-#### InvokeTarget seems limited, what if I wanted to add arguments?
+#### Command seems limited, what if I wanted to add arguments?
 
 Custom `command`s can be used in a freeform way, for your own elements. If
 you feel it necessary you can invent your own DSLs for passing extra data using
 this hint. For example:
 
 ```html
-<button invoketarget="my-counter" invokeaction="add-1">Add 1</button>
-<button invoketarget="my-counter" invokeaction="add-2">Add 2</button>
-<button invoketarget="my-counter" invokeaction="add-10">Add 10</button>
+<button commandfor="my-counter" command="add-1">Add 1</button>
+<button commandfor="my-counter" command="add-2">Add 2</button>
+<button commandfor="my-counter" command="add-10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
@@ -480,9 +480,9 @@ You can also leverage the buttons `value` attribute to effectively parameterise
 certain commands:
 
 ```html
-<button invoketarget="my-counter" invokeaction="add-num" value="1">Add 1</button>
-<button invoketarget="my-counter" invokeaction="add-num" value="2">Add 2</button>
-<button invoketarget="my-counter" invokeaction="add-num" value="10">Add 10</button>
+<button commandfor="my-counter" command="add-num" value="1">Add 1</button>
+<button commandfor="my-counter" command="add-num" value="2">Add 2</button>
+<button commandfor="my-counter" command="add-num" value="10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
