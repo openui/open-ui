@@ -21,7 +21,7 @@ import Image from '../../components/image.astro'
   - [Putting custom content in the listbox](#putting-custom-content-in-the-listbox)
   - [Animations](#animations)
   - [Split buttons](#split-buttons)
-- [Button behavior and type=popover](#button-behavior-and-typepopover)
+- [Button behavior](#button-behavior)
 - [The selectedoption element](#the-selectedoption-element)
 - [Testing out the stylable select element](#testing-out-the-stylable-select-element)
 - [Anatomy of the stylable select element](#anatomy-of-the-stylable-select-element)
@@ -281,11 +281,11 @@ Here is another example with custom content in the listbox: [codepen](https://co
 
 <div className="code-image-container">
 <div>
-  This example uses the [type=popover](#button-behavior-and-type=popover) attribute on one of the buttons in order to have a button which opens the select's popup and another one which submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
+  This example uses the [selectedoptionelement](#the-selectedoptionelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
 ```html
-<select>
-  <button><selectedoption></selectedoption></button>
-  <button type=popover>⬇️</button>
+<button><selectedoption id=myselectedoption></selectedoption></button>
+<select selectedoptionelement=myselectedoption>
+  <button>⬇️</button>
   <datalist>
     <option>Create a merge commit</option>
     <option>Squash and merge</option>
