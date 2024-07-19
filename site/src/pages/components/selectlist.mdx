@@ -1,6 +1,6 @@
 ---
 menu: Active Proposals
-name: Stylable Select Element (Explainer)
+name: Customizable Select Element (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
@@ -23,8 +23,8 @@ import Image from '../../components/image.astro'
   - [Split buttons](#split-buttons)
 - [Button behavior and type=popover](#button-behavior-and-typepopover)
 - [The selectedoption element](#the-selectedoption-element)
-- [Testing out the stylable select element](#testing-out-the-stylable-select-element)
-- [Anatomy of the stylable select element](#anatomy-of-the-stylable-select-element)
+- [Testing out the customizable select element](#testing-out-the-customizable-select-element)
+- [Anatomy of the customizable select element](#anatomy-of-the-customizable-select-element)
 - [Styling](#styling)
   - [`:open` and `:closed` pseudo-selectors](#open-and-closed-pseudo-selectors)
 - [Additional examples](#additional-examples)
@@ -38,7 +38,7 @@ import Image from '../../components/image.astro'
 
 The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
 
-The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-form://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-forms) that form controls are neither interoperable nor stylable. Stylable `<select>` will be fully interoperable and stylable.
+The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-form://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-forms) that form controls are neither interoperable nor customizable. Customizable `<select>` will be fully interoperable and customizable.
 
 ## Opting in to the new behavior
 
@@ -104,7 +104,7 @@ select button {
 <div className="image-container">
   <Image
     src="/images/selectlist-usecase-basic.png"
-    alt="The rendering of a stylable select element with monospaced font and red colors"
+    alt="The rendering of a customizable select element with monospaced font and red colors"
   />
 </div>
 </div>
@@ -137,7 +137,7 @@ This example adds "rich content" inside option elements in the form of country f
 <div>
   <Image
     src="/images/selectlist-usecase-rich.png"
-    alt="The rendering of a stylable select element with country flags next to the options"
+    alt="The rendering of a customizable select element with country flags next to the options"
   />
 </div>
 </div>
@@ -161,14 +161,14 @@ This example replaces the button which opens the listbox with an author provided
 <div>
   <Image
     src="/images/selectlist-usecase-button.png"
-    alt="The rendering of a stylable select element with an author-provided button"
+    alt="The rendering of a customizable select element with an author-provided button"
   />
 </div>
 </div>
 
 ### Rendering the `<option>` differently in the button
 
-This example uses the stylable `<select>` element with custom CSS to target it which renders the option differently in the listbox vs in the button.
+This example uses the customizable `<select>` element with custom CSS to target it which renders the option differently in the listbox vs in the button.
 
 <div className="code-image-container">
 <div>
@@ -196,7 +196,7 @@ selectedoption .description {
 <div>
   <Image
     src="/images/selectlist-usecase-selectedoption.png"
-    alt="The rendering of a stylable select element with a custom selectedoption element"
+    alt="The rendering of a customizable select element with a custom selectedoption element"
   />
 </div>
 </div>
@@ -255,7 +255,7 @@ This example has a `<datalist>` which enables it to put arbitrary content into t
 <div>
   <Image
     src="/images/selectlist-usecase-listbox.png"
-    alt="The rendering of a stylable select element with a custom listbox element"
+    alt="The rendering of a customizable select element with a custom listbox element"
   />
 </div>
 </div>
@@ -272,7 +272,7 @@ Here is another example with custom content in the listbox: [codepen](https://co
 <div>
   <Image
     src="/images/selectlist-animation.gif"
-    alt="A stylable select element with a listbox that animates open and closed"
+    alt="A customizable select element with a listbox that animates open and closed"
   />
 </div>
 </div>
@@ -297,7 +297,7 @@ Here is another example with custom content in the listbox: [codepen](https://co
 <div>
   <Image
     src="/images/select-split-button.png"
-    alt="A stylable select element with a split button"
+    alt="A customizable select element with a split button"
   />
 </div>
 </div>
@@ -314,13 +314,13 @@ When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>
 
 Since the contents of the `<selectedoption>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedoption>`.
 
-## Testing out the stylable select element
+## Testing out the customizable select element
 
-Stylable `<select>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
+Customizable `<select>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
 
 If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select). Here is a list of [open select bugs in open-ui](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Aselect).
 
-## Anatomy of the stylable select element
+## Anatomy of the customizable select element
 
 Because the various parts of the select element can be styled, it's important to understand the anatomy of this UI control.
 
@@ -337,7 +337,7 @@ Because the various parts of the select element can be styled, it's important to
 
 ## Styling 
 
-Stylable `<select>` provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
+Customizable `<select>` provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
 
 ### `:open` and `:closed` pseudo-selectors
 
@@ -517,7 +517,7 @@ Using custom markup to wrap the list of options, the above example creates secti
 
 ### Demo page
 
-You can find multiple examples of stylable select on our [demo page](https://microsoftedge.github.io/Demos/selectmenu/).
+You can find multiple examples of customizable select on our [demo page](https://microsoftedge.github.io/Demos/selectmenu/).
 
 ## Keyboard Behavior
 
@@ -538,7 +538,7 @@ When the listbox is open:
 
 ## `multiple` and `size` attributes
 
-The HTML parser will not allow `<button>` or `<datalist>` children when the `multiple` or `size` attributes are present on `<select>`. This will ensure that the old rendering behavior of `multiple` and `size` is used. If the author adds a `<datalist>` or `<button>` via script to a `<select multiple>` or `<select size>`, the old rendering will still be used. In the future, we would like to upgrade `<select multiple>` to become stylable, at which time we will change the HTML parser again to allow `<button>` and `<datalist>` children. This also allows feature detection to know whether `<select multiple>` improvements are ready to be used. More detail in [this issue](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971).
+The HTML parser will not allow `<button>` or `<datalist>` children when the `multiple` or `size` attributes are present on `<select>`. This will ensure that the old rendering behavior of `multiple` and `size` is used. If the author adds a `<datalist>` or `<button>` via script to a `<select multiple>` or `<select size>`, the old rendering will still be used. In the future, we would like to upgrade `<select multiple>` to become customizable, at which time we will change the HTML parser again to allow `<button>` and `<datalist>` children. This also allows feature detection to know whether `<select multiple>` improvements are ready to be used. More detail in [this issue](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971).
 
 ## Checkmark
 
