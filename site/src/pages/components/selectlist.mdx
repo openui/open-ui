@@ -21,7 +21,7 @@ import Image from '../../components/image.astro'
   - [Putting custom content in the listbox](#putting-custom-content-in-the-listbox)
   - [Animations](#animations)
   - [Split buttons](#split-buttons)
-- [Button behavior and type=popover](#button-behavior-and-typepopover)
+- [Button behavior](#button-behavior)
 - [The selectedoption element](#the-selectedoption-element)
 - [Testing out the customizable select element](#testing-out-the-customizable-select-element)
 - [Anatomy of the customizable select element](#anatomy-of-the-customizable-select-element)
@@ -281,11 +281,11 @@ Here is another example with custom content in the listbox: [codepen](https://co
 
 <div className="code-image-container">
 <div>
-  This example uses the [type=popover](#button-behavior-and-type=popover) attribute on one of the buttons in order to have a button which opens the select's popup and another one which submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
+  This example uses the [selectedoptionelement](#the-selectedoptionelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
 ```html
-<select>
-  <button><selectedoption></selectedoption></button>
-  <button type=popover>⬇️</button>
+<button><selectedoption id=myselectedoption></selectedoption></button>
+<select selectedoptionelement=myselectedoption>
+  <button>⬇️</button>
   <datalist>
     <option>Create a merge commit</option>
     <option>Squash and merge</option>
@@ -302,9 +302,9 @@ Here is another example with custom content in the listbox: [codepen](https://co
 </div>
 </div>
 
-## Button behavior and type=popover
+## Button behavior
 
-The first child `<button>` of a `<select>` will open the popup list of options, unless one of them has `type=popover` on it. In that case, only the `<button>` with `type=popover` on it will open the popup. This enables use cases like split buttons but doesn't require the author to add `type=popover` for most use cases where there is only one button.
+The first child `<button>` of a `<select>` will be slotted into the `<select>`'s UA ShadowRoot and will open the popup list of options.
 
 ## The `<selectedoption>` element
 
@@ -313,6 +313,10 @@ The `<selectedoption>` element enables developers to declaratively clone the con
 When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>` or when there is a DOM mutation inside of the selected `<option>`, the browser will update the contents of `<selectedoption>` by internally calling `cloneNode()` again.
 
 Since the contents of the `<selectedoption>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedoption>`.
+
+## The `selectedoptionelement` attribute
+
+`<select>` will support the `selectedoptionelement` attribute, which is an IDref which points to a single `<selectedoption>` element to update. This allows the `<selectedoption>` to exist outside of `<select>` in order to support the split buttons use case.
 
 ## Testing out the customizable select element
 
@@ -558,10 +562,11 @@ option::before {
 - [Why allow interactive content in `<listbox>` but with strong warnings](https://github.com/openui/open-ui/issues/540)
 - [Why not make selection follow focus](https://github.com/openui/open-ui/issues/742)
 - [Why not allow select or datalist in size/multiple select](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971)
-- [Why `<button type=popover>`](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
 - [Why add the `<selectedoption>` element](https://github.com/openui/open-ui/issues/571)
 - [`<selectedoption>` name bikeshedding](https://github.com/openui/open-ui/issues/808)
 - Why opt-in with CSS
   - https://github.com/whatwg/html/issues/9799#issuecomment-1789202391
   - https://github.com/whatwg/html/issues/9799#issuecomment-1926411811
 - [Why include a checkmark next to options by default](https://github.com/openui/open-ui/issues/863)
+- [Why `<button type=popover>` (overturned by `selectedoptionelement`)](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
+- [Why `selectedoptionelement`](https://github.com/openui/open-ui/issues/1063#issuecomment-2195407344)
