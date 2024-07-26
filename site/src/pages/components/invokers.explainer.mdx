@@ -112,11 +112,12 @@ hint to the invoker target. Command can be a "built-in" action or a "custom"
 action. If `command` is not supplied then it is considered invalid and no
 action will take place, and no event will be fired.
 
-Custom command values _must_ start with a `-`. This is a safe namespace to use,
-and browsers guarantee to _never_ have built-in values starting with a `-`.
-The only browser behaviour for those values will be dispatching a `CommandEvent`
-on the invokee. This allows web developers to create custom Invoke actions for
-their components.
+Custom command values _must_ start with a double dash (`--`), similar to the CSS
+["dashed-ident"](https://developer.mozilla.org/en-US/docs/Web/CSS/dashed-ident)
+syntax. This is a safe namespace to use, and browsers guarantee to _never_ have
+built-in values starting with `--`. The only browser behaviour for those values
+will be dispatching a `CommandEvent` on the invokee. This allows web developers
+to create custom Invoke actions for their components.
 
 Built-in interactive elements have built-in behaviours (detailed below) which
 are determined by the `command` attribue/property. The built-in names _must not_
@@ -166,7 +167,7 @@ When pointing to a `popover`, `commandfor` acts much like `popovertarget`,
 allowing the toggling of popovers.
 
 ```html
-<button commandfor="my-popover" command="togglePopover">Open Popover</button>
+<button commandfor="my-popover" command="toggle-popover">Open Popover</button>
 <!-- Effectively the same as popovertarget="my-popover" -->
 
 <div id="my-popover" popover="auto">Hello world</div>
@@ -213,7 +214,7 @@ rendered button _within_ the input; and can be used to declare a customised
 alternative button to the input's button.
 
 ```html
-<button commandfor="my-file" command="showPicker">Pick a file...</button>
+<button commandfor="my-file" command="show-picker">Pick a file...</button>
 
 <input id="my-file" type="file" />
 ```
@@ -227,8 +228,8 @@ shines, allowing multiple buttons to handle different interactions with the
 video player.
 
 ```html
-<button commandfor="my-video" command="playpause">Play/Pause</button>
-<button commandfor="my-video" command="toggleMuted">Mute/Unmute</button>
+<button commandfor="my-video" command="play-pause">Play/Pause</button>
+<button commandfor="my-video" command="toggle-muted">Mute/Unmute</button>
 
 <video id="my-video"></video>
 ```
@@ -240,14 +241,14 @@ command allows for custom JavaScript to be triggered without having to wire up
 manual event handlers to the Invokers.
 
 ```html
-<!-- Custom commands must contain a dash! -->
-<button commandfor="my-custom" command="my-frobulate">Frobulate</button>
+<!-- Custom commands must contain a double dash! -->
+<button commandfor="my-custom" command="--my-frobulate">Frobulate</button>
 
 <div id="my-custom"></div>
 
 <script>
   document.getElementById("my-custom").addEventListener("command", (e) => {
-    if (e.action === "my-frobulate") {
+    if (e.action === "--my-frobulate") {
       alert("Successfully frobulated the div");
     }
   });
@@ -334,7 +335,7 @@ As the underlying system for invoke elements uses event dispatch, Custom Element
 can make use of `CommandEvent` for their own behaviours. Consider the following:
 
 ```html
-<button commandfor="my-element" command="spin-widget">
+<button commandfor="my-element" command="--spin-widget">
   Spin the widget
 </button>
 
@@ -345,7 +346,7 @@ can make use of `CommandEvent` for their own behaviours. Consider the following:
     class extends HTMLElement {
       connectedCallback() {
         this.addEventListener("command", (e) => {
-          if (e.action === "spin-widget") {
+          if (e.action === "--spin-widget") {
             this.spin();
           }
         });
@@ -454,6 +455,45 @@ the two will co-exist side by side for some while to enable a smooth transition.
 It is, however, intended that `commandfor` will replace `popovertarget` leading
 to `popovertarget`'s eventual deprecation.
 
+#### Why doesn't command just call the JS API method?
+
+HTML attribute values have different casing to method names, so for example an
+attribute value of `show-modal` does not match the method name `showModal()`.
+This requires manual mapping to the respective methods, but browsers - under the
+hood - effectively map from these values to the respective methods. Similarly,
+custom commands must be prefixed with a double dash (`--`). It is possible to
+convert the dashed value to camel case, and use computed properties to call
+methods, if that's desired:
+
+
+```html
+<button commandfor="my-element" command="--spin-widget">
+  Spin the widget
+</button>
+
+<spin-widget id="my-element"></spin-widget>
+<script>
+  customElements.define(
+    "spin-widget",
+    class extends HTMLElement {
+      connectedCallback() {
+        this.addEventListener("command", (e) => {
+          const method = e.command
+            .slice(2) // remove the double dash
+            .replace(/(-\w)/g, c => c[1].toUpperCase()); // dash-to-camel case
+          if (method in this) {
+            this[method](event);
+          }
+        });
+      }
+      spinWidget(event) {
+        // ...
+      }
+    },
+  );
+</script>
+```
+
 #### Command seems limited, what if I wanted to add arguments?
 
 Custom `command`s can be used in a freeform way, for your own elements. If
@@ -461,16 +501,16 @@ you feel it necessary you can invent your own DSLs for passing extra data using
 this hint. For example:
 
 ```html
-<button commandfor="my-counter" command="add-1">Add 1</button>
-<button commandfor="my-counter" command="add-2">Add 2</button>
-<button commandfor="my-counter" command="add-10">Add 10</button>
+<button commandfor="my-counter" command="--add-1">Add 1</button>
+<button commandfor="my-counter" command="--add-2">Add 2</button>
+<button commandfor="my-counter" command="--add-10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
 <script>
   const counter = document.getElementById("my-counter");
   counter.addEventListener("command", (e) => {
-    let addMatch = /^add-(\d+)$/.match(e.action);
+    let addMatch = /^--add-(\d+)$/.match(e.action);
     if (addMatch) {
       counter.value = Number(counter.value) + Number(addMatch[1]);
     }
@@ -482,16 +522,16 @@ You can also leverage the buttons `value` attribute to effectively parameterise
 certain commands:
 
 ```html
-<button commandfor="my-counter" command="add-num" value="1">Add 1</button>
-<button commandfor="my-counter" command="add-num" value="2">Add 2</button>
-<button commandfor="my-counter" command="add-num" value="10">Add 10</button>
+<button commandfor="my-counter" command="--add-num" value="1">Add 1</button>
+<button commandfor="my-counter" command="--add-num" value="2">Add 2</button>
+<button commandfor="my-counter" command="--add-num" value="10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
 <script>
   const counter = document.getElementById("my-counter");
   counter.addEventListener("command", (e) => {
-    if (e.command == 'add-num') {
+    if (e.command == '--add-num') {
       counter.value = Number(counter.value) + Number(e.invoker.value);
     }
   });
