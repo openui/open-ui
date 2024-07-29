@@ -62,7 +62,7 @@ And here the same `<select>` with opt ins to the new stylability behavior which 
 
 ## HTML parser changes
 
-The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow `<datalist>` and `<button>` as a child of `<select>`, and allow any other content within that `<datalist>` or `<button>`. The `<button>` allows authors to replace the in-page button which opens the popup, and the `<datalist>` allows authors to replace the popup element containing the options.
+The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow almost all tags as descendants of `<select>`. Adding `<button>` as a child of `<select>` allows authors to replace the in-page button which opens the popup, and all other tags are put in the popup element containing the options.
 
 Here is a basic example which uses the parser changes:
 ```html
@@ -70,10 +70,8 @@ Here is a basic example which uses the parser changes:
   <button>
     <selectedoption></selectedoption>
   </button>
-  <datalist>
-    <option>one</option>
-    <option>two</option>
-  </datalist>
+  <option><img src="..." alt="">one</option>
+  <option><img src="..." alt="">two</option>
 </select>
 ```
 
@@ -87,14 +85,11 @@ This example changes the fonts and colors of various parts of the button and lis
 <div className="code-container">
 ```html
 <select>
-  <datalist>
-    <option>one</option>
-    <option>two</option>
-  </datalist>
+  <option>one</option>
+  <option>two</option>
 </select>
 <style>
-select datalist,
-select button {
+select, select::select-fallback-button {
   font-family: monospace;
   font-size: 12px;
 }
@@ -117,20 +112,18 @@ This example adds "rich content" inside option elements in the form of country f
 <div>
 ```html
 <select>
-  <datalist>
-    <option>
-      <img src="usa.jpg" alt="flag of USA">
-      USA
-    </option>
-    <option>
-      <img src="germany.jpg" alt="flag of Germany">
-      Germany
-    </option>
-    <option>
-      <img src="spain.jpg" alt="flag of Spain">
-      Spain
-    </option>
-  </datalist>
+  <option>
+    <img src="usa.jpg" alt="flag of USA">
+    USA
+  </option>
+  <option>
+    <img src="germany.jpg" alt="flag of Germany">
+    Germany
+  </option>
+  <option>
+    <img src="spain.jpg" alt="flag of Spain">
+    Spain
+  </option>
 </select>
 ```
 </div>
@@ -177,14 +170,12 @@ This example uses the customizable `<select>` element with custom CSS to target 
   <button>
     <selectedoption></selectedoption>
   </button>
-  <datalist>
-    <option>
-      ❤️ <span class=description>heart</span>
-    </option>
-    <option>
-      🙂 <span class=description>smile</span>
-    </option>
-  </datalist>
+  <option>
+    ❤️ <span class=description>heart</span>
+  </option>
+  <option>
+    🙂 <span class=description>smile</span>
+  </option>
 </select>
 <style>
 selectedoption .description {
@@ -203,40 +194,38 @@ selectedoption .description {
 
 ### Putting custom content in the listbox
 
-This example has a `<datalist>` which enables it to put arbitrary content into the listbox rather than just `<option>`s.
+This example has a complex structure wrapping the `<option>`s which is all slotted into the popover element.
 
 <div className="code-image-container">
 <div>
 ```html
 <select>
-  <datalist>
-    <div class=container>
-      <div>
-        <optgroup label="1-2">
-          <option>one</option>
-          <option>two</option>
-        </optgroup>
-      </div>
-      <div>
-        <optgroup label="3-4">
-          <option>three</option>
-          <option>four</option>
-        </optgroup>
-      </div>
-      <div>
-        <optgroup label="5-6">
-          <option>five</option>
-          <option>six</option>
-        </optgroup>
-      </div>
-      <div>
-        <optgroup label="7-8">
-          <option>seven</option>
-          <option>eight</option>
-        </optgroup>
-      </div>
+  <div class=container>
+    <div>
+      <optgroup label="1-2">
+        <option>one</option>
+        <option>two</option>
+      </optgroup>
     </div>
-  </datalist>
+    <div>
+      <optgroup label="3-4">
+        <option>three</option>
+        <option>four</option>
+      </optgroup>
+    </div>
+    <div>
+      <optgroup label="5-6">
+        <option>five</option>
+        <option>six</option>
+      </optgroup>
+    </div>
+    <div>
+      <optgroup label="7-8">
+        <option>seven</option>
+        <option>eight</option>
+      </optgroup>
+    </div>
+  </div>
 </select>
 <style>
 .container {
@@ -286,11 +275,9 @@ Here is another example with custom content in the listbox: [codepen](https://co
 <button><selectedoption id=myselectedoption></selectedoption></button>
 <select selectedoptionelement=myselectedoption>
   <button>⬇️</button>
-  <datalist>
-    <option>Create a merge commit</option>
-    <option>Squash and merge</option>
-    <option>Rebase and merge</option>
-  </datalist>
+  <option>Create a merge commit</option>
+  <option>Squash and merge</option>
+  <option>Rebase and merge</option>
 </select>
 ```
 </div>
