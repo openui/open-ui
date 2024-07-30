@@ -254,30 +254,6 @@ manual event handlers to the Invokers.
 </script>
 ```
 
-### Accessibility
-
-> Warning: This section is incomplete PRs welcome.
-
-The _Invoker_ implicitly receives `aria-controls=IDREF` or `aria-details=IDREF`
-(tbd) to expose the _Invoker_ controls another element (the _Invokee_) for
-instances where the invokee is not a sibling to the invoker element.
-
-If the _Invokee_ has the `popover` attribute, the _Invoker_ implicitly receives
-an `aria-expanded` state, as well as an `aria-details` association (for
-instances where the elements are not DOM siblings) which will match the state of
-the popover's openness. It will be `aria-expanded=true` when the `popover` is
-`:popover-open` and `aria-expanded=false` otherwise.
-
-If the _Invokee_ is a `<details>` element the _Invoker_ implicitly receives an
-`aria-expanded` state which will match the state of the _Invokee_'s openness. It
-will be `aria-expanded=true` when the _Invokee_ is open and
-`aria-expanded=false` otherwise.
-
-If the _Invokee_ is a `<dialog>` element the _Invoker_ implicitly receives an
-`aria-expanded` state which will match the state of the _Invokee_'s openness. It
-will be `aria-expanded=true` when the _Invokee_ is open and
-`aria-expanded=false` otherwise.
-
 ### Defaults
 
 Depending on the target set by `commandfor`, invoking the button will trigger
@@ -326,6 +302,302 @@ Invokers, the names and exact semantics may be subject to change:
 Further to the initial ship we're also exploring implicit `command` or implicit
 `commandfor` values where the value can easily be inferred.
 
+### Accessibility
+
+For built-in behaviours `command` attribute maps to specific accessibility
+mappings which are placed on the button. The button may also use the
+`commandfor` referenced element to gather other details (for example the state
+of the element) to reflect that state on the button.
+
+These mappings will happen implicitly on the browsers Accessible Nodes, and so
+while (for simplicity) this secion refers to various `aria-` attributes,
+buttons will not sprout these attributes in the DOM, but the effective
+equivalent will be exposed to Assistive Technologies.
+
+#### Buttons with `command=toggle-popover`, `command=hide-popover`, or `command=show-popover`
+
+Buttons with these popover commands will implicitly receive
+`aria-details=IDREF`, where `IDREF` matches that of the `commandfor` attribute,
+while the popover is in the showing state.
+
+<details>
+
+<summary>Why?</summary>
+
+Some Assistive Technologes allow users to press a keyboard shortcut to navigate
+to the element pointed to by `aria-details`. This is useful in scenarios where
+the next focusable control is _not_ the popover, such as if there are buttons
+or other controls between the invoking button and the popover.
+
+</details>
+
+<br/><br/>
+
+Browsers should omit `aria-details` based on heuristics where it is redundant,
+such as the contents of the popover being the next focusable control, or while
+the popover's contents are not traversable, such as when it is hidden, or not
+in the DOM.
+
+Browsers should also omit `aria-details` when the invoking button is a descendant
+of the popover it refers to, for example a close button inside the popover.
+
+Buttons will also implicitly receive an `aria-expanded` value. The state of the 
+`aria-expanded` value will map to the state of the popover. When the popover is
+open the button will have `aria-expanded="true"`, when closed,
+`aria-expanded="false". This will be recomputed whenever the popover changes
+state, such that the button always reflects the state of expansion.
+
+<details>
+<summary>Why?</summary>
+
+Some Assistive Technologies will announce the state of expansion while the
+button is focussed, for example a `<button aria-expanded=false>File</button>`
+may be announced in a screen reader as "File, button, collapsed", while
+`<button aria-expanded=true>File</button>` may be announced in a screen reader
+as `File, button, expanded`. This is helpful information for users who require
+an alternative of the visual confirmation of the popover being rendered on
+screen.
+
+If the popover element is not in the DOM, browsers should ensure the button has
+the `aria-expanded=false` state. Some websites may chose to render such
+elements only when they are open, often referred to as "conditional rendering".
+Browsers should aim to do their best to cater for this, and as such provide the
+state under the assumpsion that a popover element may appear in the DOM on
+press.
+
+</details>
+
+<br/><br/>
+
+If the `commandfor=` element is a `<dialog>` the button will also recieve an
+`aria-haspopup=dialog`.
+
+<details>
+<summary>Why?</summary>
+
+Some Assistive Technologies will announce that the button will open a dialog,
+for example `<button aria-haspopup=dialog>Delete</button>` may be announced in
+a screen reader as "Delete, button, opens dialog". This can be important
+information for a user as it allows them to anticipate a focus change or a
+change in the pages navigable elements which may otherwise not be quite as
+apparent.
+
+However, we may revisit this decision based on more evidence, research and
+discussion. Buttons that open dialogs rarely come with additional visual
+treatment, and so the lack of a visual analog may allude to the presence of
+`aria-haspopup=dialog` being redundant.
+
+This decision _may also_ be revisited in light of any new elements proposals
+that have the role of `menu`, `listbox`, `tree` or `grid`. It may be proposed
+that, when connected to those elements via `commandfor`, buttons will
+implicitly recieve `aria-haspopup` of the matching type.
+
+</details>
+
+<br/><br/>
+
+If `commandfor=` does not point to an element connected to the DOM then this
+attribute must not be present.
+
+Buttons with these popover commands will also have focus restored to the
+button when the popover closes. This will require the popover keeping a
+reference to the opening button so that it can return the focus to that button.
+
+<details>
+<summary>Why?</summary>
+
+It is important for keyboard users (or other users who rely on focus) to not
+have their focus state lost when performing actions on the page. If the page
+shows a new piece of navigable UI, and shifts the user's focus to that UI,
+then it is important to restore focus when that UI closes, so that the user's
+journey is maintained.
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-pressed
+
+Given elements will have `aria-expanded`, adding `aria-pressed` would be
+confusing or redundant, and as such won't be proposed for these buttons.
+
+##### aria-controls
+
+While `aria-controls` attempts to establish a similar style of relationship to
+`aria-details`, it is largely intented for parent-child relationships. Buttons
+that open popovers do not necessarily represent a parent-child relationship.
+
+</details>
+
+<br/><br/>
+
+#### Buttons with `command=show-modal`
+
+Buttons with this dialog commands will implicitly receive `aria-haspopup=dialog`.
+
+<details>
+<summary>Why?</summary>
+
+Some Assistive Technologies will announce that the button will open a dialog,
+for example `<button aria-haspopup=dialog>Delete</button>` may be announced in
+a screen reader as "Delete, button, opens dialog". This can be important
+information for a user as it allows them to anticipate a focus change or a
+change in the pages navigable elements which may otherwise not be quite as
+apparent.
+
+However, we may revisit this decision based on more evidence, research and
+discussion. Buttons that open dialogs rarely come with additional visual
+treatment, and so the lack of a visual analog may allude to the presence of
+`aria-haspopup=dialog` being redundant.
+
+This decision _may also_ be revisited in light of any new elements proposals
+that have the role of `menu`, `listbox`, `tree` or `grid`. It may be proposed
+that, when connected to those elements via `commandfor`, buttons will
+implicitly recieve `aria-haspopup` of the matching type.
+
+</details>
+
+<br/><br/>
+
+Buttons with this dialog command will also have focus restored to the button
+when the dialog closes. This will require the dialog keeping a reference to the
+opening button so that it can return the focus to that button.
+
+<details>
+<summary>Why?</summary>
+
+It is important for keyboard users (or other users who rely on focus) to not
+have their focus state lost when performing actions on the page. If the page
+shows a new piece of navigable UI, and shifts the user's focus to that UI,
+then it is important to restore focus when that UI closes, so that the user's
+journey is maintained.
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-details
+
+Exposing an `aria-details` relationship between the button and the dialog is
+redundant. These relationships are useful only when the related element is
+open and present on the page and the invoking button is still navigable. A
+modal dialog renders the rest of the page inert meaning that it won't be
+possible to navigate to the invoking button.
+
+##### aria-pressed
+
+The `aria-pressed` state is the incorrect type of association for elements
+which conditionally appear on the page. The correct type of association would
+be `aria-expanded`...
+
+##### aria-expanded
+
+Similar to `aria-details`, the `aria-expanded` state redundant, given the
+dialog is opened as modal. For the user to have navigated to a button that
+opens a modal dialog, the dialog must not be open. If the dialog is open then
+the button will be inert, therefore non-navigable, therefore it is redundant
+to provide it an implicit `aria-expanded=true` state also.
+
+##### aria-controls
+
+While `aria-controls` attempts to establish a similar style of relationship to
+`aria-details`, it is largely intented for parent-child relationships. Buttons
+that open modal dialogs would not represent a parent-child relationship.
+
+</details>
+
+<br/><br/>
+
+#### Buttons with `command=close`
+
+Buttons with this dialog command will implicitly receive `aria-details=IDREF`,
+where `IDREF` matches that of the `commandfor` attribute, while the dialog is
+in the showing state, and the button is not a descendant of the dialog.
+
+<details>
+<summary>Why?</summary>
+
+A button that closes a dialog is very typically found inside of the dialog, but
+in some cases it may be found outside, perhaps as a "toggle" style button which
+opens and closes a dialog as non-modal. This button may be used to close an open
+dialog that is shown as non-modal. It may be useful for a user to traverse into
+the dialog before closing it, for example to check if they have unsaved changes
+within the dialog.
+
+</details>
+
+<br/><br/>
+
+Buttons will also implicitly receive an `aria-expanded` value, if they are not a
+descendant of the `commandfor=` referenced element. The state of the
+`aria-expanded` value will map to the state of the dialog's openness. When the
+dialog is open the button will have `aria-expanded="true"`, when closed,
+`aria-expanded="false"`. This will be recomputed whenever the dialog changes
+state, such that the button always reflects the state of openness.
+
+<details>
+<summary>Why?</summary>
+
+A button that closes a dialog is very typically found inside of the dialog, but
+in some cases it may be found outside, perhaps as a "toggle" style button which
+opens and closes a dialog as non-modal.
+
+Buttons outside of the dialog may be used to close an open dialog that is shown
+as non-modal. It may be useful for a user to traverse into the dialog before
+closing it, for example to check if they have unsaved changes within the dialog.
+It may also be useful to know if the dialog is already closed (as in its
+`aria-expanded` state is false), as this may help the user make a decision to
+whether or not they action the close button. 
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-pressed
+
+Given elements will have `aria-expanded`, adding `aria-pressed` would be
+confusing or redundant, and as such won't be proposed for these buttons.
+
+##### aria-controls
+
+While `aria-controls` attempts to establish a similar style of relationship to
+`aria-details`, it is largely intented for parent-child relationships. Buttons
+that open dialogs would not represent such a relationship outside of the
+dialog, and if they were a child of the dialog then that parent-child
+relationship is explicit.
+
+</details>
+
+<br/><br/>
+
+#### Other built-in `command=` types
+
+The above commands are the core built-in command types which will be initially
+shipping. Further built-in commands will be proposed on a case-per-case basis,
+and additional aria or other logic will be considered with those at the time.
+
+#### Custom `command=` types
+
+Custom command types have accessibility requirements which will be hard to
+determine based on the presence of the button and invokee alone. Consequently,
+it is left to the implementer or user of the custom command to assign
+appropriate aria markup to these buttons.
+
+#### Elements with `commandfor=` but no `command=`
+
+In this current proposal, elements without a `command=` attribute are
+considered "author errors"; they will do nothing when invoked. These buttons
+will recieve no additional implicit aria states.
+
 ### Invokers and Custom Elements
 
 As the underlying system for invoke elements uses event dispatch, Custom Elements
@@ -338,7 +610,8 @@ can make use of `CommandEvent` for their own behaviours. Consider the following:
 
 <spin-widget id="my-element"></spin-widget>
 <script>
-  customElements.define(
+
+customElements.define(
     "spin-widget",
     class extends HTMLElement {
       connectedCallback() {
