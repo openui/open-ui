@@ -62,7 +62,7 @@ And here the same `<select>` with opt ins to the new stylability behavior which 
 
 ## HTML parser changes
 
-The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow almost all tags as descendants of `<select>`. Adding `<button>` as a child of `<select>` allows authors to replace the in-page button which opens the popup, and all other tags are put in the popup element containing the options.
+The current behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We will change the HTML parser to allow almost all tags as descendants of `<select>`. Adding `<button>` as a child of `<select>` allows authors to replace the in-page button which opens the popup, and all other tags are slotted into the popover element containing the options.
 
 Here is a basic example which uses the parser changes:
 ```html
