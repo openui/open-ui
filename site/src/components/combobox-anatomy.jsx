@@ -5,11 +5,13 @@ const ComboboxAnatomy = () => {
   return (
     <AnatomyWrapper>
       <Host name="combobox">
-        <Part name="input type=selectlist">
+        <Part name="input type=text"></Part>
+        <Part name="button">
           <Part name="selectedoption">Currently selected option</Part>
         </Part>
-        <Slot name="listbox">
-          <Part name="listbox">
+
+        <Slot name="datalist">
+          <Part name="datalist">
             <Slot>
               <Part name="optgroup (optional)">
                 <Part name="legend (optional)">Optgroup label</Part>
