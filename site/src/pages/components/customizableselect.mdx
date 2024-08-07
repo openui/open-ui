@@ -266,29 +266,6 @@ Here is another example with custom content in the listbox: [codepen](https://co
 </div>
 </div>
 
-### Split buttons
-
-<div className="code-image-container">
-<div>
-  This example uses the [selectedoptionelement](#the-selectedoptionelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
-```html
-<button><selectedoption id=myselectedoption></selectedoption></button>
-<select selectedoptionelement=myselectedoption>
-  <button>⬇️</button>
-  <option>Create a merge commit</option>
-  <option>Squash and merge</option>
-  <option>Rebase and merge</option>
-</select>
-```
-</div>
-<div>
-  <Image
-    src="/images/select-split-button.png"
-    alt="A customizable select element with a split button"
-  />
-</div>
-</div>
-
 ## Button behavior
 
 The first child `<button>` of a `<select>` will be slotted into the `<select>`'s UA ShadowRoot and will open the popup list of options.
@@ -303,7 +280,7 @@ Since the contents of the `<selectedoption>` element are maintained by the brows
 
 ## The `selectedoptionelement` attribute
 
-`<select>` will support the `selectedoptionelement` attribute, which is an IDref which points to a single `<selectedoption>` element to update. This allows the `<selectedoption>` to exist outside of `<select>` in order to support the split buttons use case.
+`<select>` will support the `selectedoptionelement` attribute, which is an IDref which points to a single `<selectedoption>` element to update. This allows the `<selectedoption>` to exist outside of `<select>` in order to support the other use cases.
 
 ## Testing out the customizable select element
 
