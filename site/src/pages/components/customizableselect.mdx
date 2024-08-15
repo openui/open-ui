@@ -12,6 +12,7 @@ import Image from '../../components/image.astro'
 
 - [Background](#background)
 - [Opting in to the new behavior](#opting-in-to-the-new-behavior)
+- [Testing out the customizable select element](#testing-out-the-customizable-select-element)
 - [HTML parser changes](#html-parser-changes)
 - [Use cases](#use-cases)
   - [Customizing basic styles](#customizing-basic-styles)
@@ -23,7 +24,6 @@ import Image from '../../components/image.astro'
   - [Split buttons](#split-buttons)
 - [Button behavior](#button-behavior)
 - [The selectedoption element](#the-selectedoption-element)
-- [Testing out the customizable select element](#testing-out-the-customizable-select-element)
 - [Anatomy of the customizable select element](#anatomy-of-the-customizable-select-element)
 - [Styling](#styling)
   - [`:open` and `:closed` pseudo-selectors](#open-and-closed-pseudo-selectors)
@@ -59,6 +59,13 @@ And here the same `<select>` with opt ins to the new stylability behavior which 
   <option>two</option>
 </select>
 ```
+
+## Testing out the customizable select element
+
+Customizable `<select>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags. Using [chrome canary](https://www.google.com/chrome/canary/) is recommended to get the latest state of the API.
+
+If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select). Here is a list of [open select bugs in open-ui](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Aselect).
+
 
 ## HTML parser changes
 
@@ -304,12 +311,6 @@ Since the contents of the `<selectedoption>` element are maintained by the brows
 ## The `selectedoptionelement` attribute
 
 `<select>` will support the `selectedoptionelement` attribute, which is an IDref which points to a single `<selectedoption>` element to update. This allows the `<selectedoption>` to exist outside of `<select>` in order to support the split buttons use case.
-
-## Testing out the customizable select element
-
-Customizable `<select>` is currently implemented behind a flag in [Chromium](https://chromestatus.com/feature/5737365999976448). To use it, enable the **Experimental Web Platform features** flag in about:flags.
-
-If you encouter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select). Here is a list of [open select bugs in open-ui](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Aselect).
 
 ## Anatomy of the customizable select element
 
