@@ -318,7 +318,7 @@ equivalent will be exposed to Assistive Technologies.
 
 Buttons with these popover commands will implicitly receive
 `aria-details=IDREF`, where `IDREF` matches that of the `commandfor` attribute,
-while the popover is in the showing state.
+under certain conditions while the popover is in the showing state.
 
 <details>
 
@@ -326,15 +326,15 @@ while the popover is in the showing state.
 
 Some Assistive Technologes allow users to press a keyboard shortcut to navigate
 to the element pointed to by `aria-details`. This is useful in scenarios where
-the next focusable control is _not_ the popover, such as if there are buttons
+the popover is _not_ the invoking element's next accessibility sibling, such as if there are buttons
 or other controls between the invoking button and the popover.
 
 </details>
 
 <br/><br/>
 
-Browsers should omit `aria-details` based on heuristics where it is redundant,
-such as the contents of the popover being the next focusable control, or while
+Browsers are expected to omit `aria-details` based on heuristics where it is redundant,
+such as the contents of the popover being the next accessibility sibling to the invoking element, or while
 the popover's contents are not traversable, such as when it is hidden, or not
 in the DOM.
 
@@ -352,8 +352,8 @@ state, such that the button always reflects the state of expansion.
 
 Some Assistive Technologies will announce the state of expansion while the
 button is focussed, for example a `<button aria-expanded=false>File</button>`
-may be announced in a screen reader as "File, button, collapsed", while
-`<button aria-expanded=true>File</button>` may be announced in a screen reader
+may be announced by a screen reader as "File, button, collapsed", while
+`<button aria-expanded=true>File</button>` may be announced by a screen reader
 as `File, button, expanded`. This is helpful information for users who require
 an alternative of the visual confirmation of the popover being rendered on
 screen.
