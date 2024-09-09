@@ -42,19 +42,16 @@ The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archive
 
 ## Opting in to the new behavior
 
-The `<select>` element will continue to behave as it currently does unless it has the `appearance:base-select` CSS property. Previously proposed opt-ins included a new tag name, an additional HTML attribute, and the presence of a child `<button>` or `<datalist>`.
+The `<select>` element will continue to behave as it currently does unless it has the `appearance:base-select` CSS property. Based on standardization discussions, `appearance:base-select` must also be applied to the `select::picker(select)` pseudo-element in order to opt in the picker popup element. Previously proposed opt-ins included a new tag name, an additional HTML attribute, and the presence of a child `<button>` or `<datalist>`.
 
-Here is a basic `<select>` element today:
+Here is a basic `<select>` element with the appropriate CSS to opt in to customizable `<select>`:
 ```html
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
 <select>
-  <option>one</option>
-  <option>two</option>
-</select>
-```
-
-And here the same `<select>` with opt ins to the new stylability behavior which this explainer proposes:
-```html
-<select style="appearance:base-select">
   <option>one</option>
   <option>two</option>
 </select>
@@ -73,7 +70,12 @@ The current behavior in the HTML parser for `<select>` is to remove all tags whi
 
 Here is a basic example which uses the parser changes:
 ```html
-<select style="appearance:base-select">
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
+<select>
   <button>
     <selectedoption></selectedoption>
   </button>
@@ -96,7 +98,10 @@ This example changes the fonts and colors of various parts of the button and lis
   <option>two</option>
 </select>
 <style>
-select, select::select-fallback-button {
+select, select::picker(select) {
+  appearance: base-select;
+}
+select {
   font-family: monospace;
   font-size: 12px;
 }
@@ -132,6 +137,11 @@ This example adds "rich content" inside option elements in the form of country f
     Spain
   </option>
 </select>
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
 ```
 </div>
 <div>
@@ -156,6 +166,11 @@ This example replaces the button which opens the listbox with an author provided
   <option>one</option>
   <option>two</option>
 </select>
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
 ```
 </div>
 <div>
@@ -187,6 +202,9 @@ This example uses the customizable `<select>` element with custom CSS to target 
 <style>
 selectedoption .description {
   display: none;
+}
+select, select::picker(select) {
+  appearance: base-select;
 }
 </style>
 ```
@@ -245,6 +263,9 @@ This example has a complex structure wrapping the `<option>`s which is all slott
 .container > div {
   background-color: lightgray;
 }
+select, select::picker(select) {
+  appearance: base-select;
+}
 </style>
 ```
 </div>
@@ -260,6 +281,7 @@ Here is another example with custom content in the listbox: [codepen](https://co
 
 ### Animations
 
+{/* TODO: Replace this with top layer animations. View transitions are not going to be well supported. */}
 <div className="code-image-container">
 <div>
   This example uses view transitions to animate the opening and closing of the listbox.
@@ -286,6 +308,11 @@ Here is another example with custom content in the listbox: [codepen](https://co
   <option>Squash and merge</option>
   <option>Rebase and merge</option>
 </select>
+<style>
+select, select::picker(select) {
+  appearance: base-select;
+}
+</style>
 ```
 </div>
 <div>
@@ -331,7 +358,11 @@ Because the various parts of the select element can be styled, it's important to
 
 Customizable `<select>` provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
 
-### `:open` and `:closed` pseudo-selectors
+### `select::picker(select)`
+
+This pseudo-element targets the popover element representing the popup list of options in the UA ShadowRoot of the `<select>` element. Putting `appearance:base-select` on this pseudo-element is necessary in order to opt-in to using the popover. You can put additional styles on it to control popover animations, border styling, and more.
+
+### `select:open` and `select:closed` pseudo-selectors
 
 The select element supports the `:open` and `:closed` pseudo selectors as specified by CSS here: https://drafts.csswg.org/selectors/#open-state
 
@@ -377,6 +408,9 @@ Here is an example which has a custom button with custom CSS:
     border: 1px solid #f06;
     border-radius: 0 5px 5px 0;
   }
+  select, select::picker(select) {
+    appearance: base-select;
+  }
 </style>
 <select class="my-custom-select">
   <button>
@@ -410,6 +444,9 @@ Here is an example which has a custom listbox with custom CSS:
     margin: 10px 0;
     border: 1px solid;
     background: #f7f7f7;
+  }
+  select, select::picker(select) {
+    appearance: base-select;
   }
 </style>
 <select class="my-custom-select">
@@ -474,6 +511,9 @@ Consider the following example:
   .my-custom-select option {
     text-align: center;
     padding: 0.5rem;
+  }
+  select, select::picker(select) {
+    appearance: base-select;
   }
 </style>
 <label for=plant>Choose a plant</label>
@@ -558,3 +598,4 @@ option::before {
 - [Why include a checkmark next to options by default](https://github.com/openui/open-ui/issues/863)
 - [Why `<button type=popover>` (overturned by `selectedoptionelement`)](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
 - [Why `selectedoptionelement`](https://github.com/openui/open-ui/issues/1063#issuecomment-2195407344)
+- [Why require `appearance:base-select` on both `select` and `select::picker(select)`](https://github.com/w3c/csswg-drafts/issues/10440)
