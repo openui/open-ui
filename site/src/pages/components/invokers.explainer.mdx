@@ -344,8 +344,11 @@ of the popover it refers to, for example a close button inside the popover.
 Buttons will also implicitly receive an `aria-expanded` value. The state of the 
 `aria-expanded` value will map to the state of the popover. When the popover is
 open the button will have `aria-expanded="true"`, when closed,
-`aria-expanded="false". This will be recomputed whenever the popover changes
-state, such that the button always reflects the state of expansion.
+`aria-expanded="false"`. If the button is an descendant of the popover then it
+will be explictly set to `aria-expanded="undefined"`, indicating to assistive
+technology that the expanded state is not applicable to this button.
+This attribute will be recomputed whenever the popover changes state, such that
+the button always reflects the state of expansion.
 
 <details>
 <summary>Why?</summary>
@@ -368,36 +371,6 @@ press.
 </details>
 
 <br/><br/>
-
-If the `commandfor=` element is a `<dialog>` the button will also recieve an
-`aria-haspopup=dialog`.
-
-<details>
-<summary>Why?</summary>
-
-Some Assistive Technologies will announce that the button will open a dialog,
-for example `<button aria-haspopup=dialog>Delete</button>` may be announced in
-a screen reader as "Delete, button, opens dialog". This can be important
-information for a user as it allows them to anticipate a focus change or a
-change in the pages navigable elements which may otherwise not be quite as
-apparent.
-
-However, we may revisit this decision based on more evidence, research and
-discussion. Buttons that open dialogs rarely come with additional visual
-treatment, and so the lack of a visual analog may allude to the presence of
-`aria-haspopup=dialog` being redundant.
-
-This decision _may also_ be revisited in light of any new elements proposals
-that have the role of `menu`, `listbox`, `tree` or `grid`. It may be proposed
-that, when connected to those elements via `commandfor`, buttons will
-implicitly recieve `aria-haspopup` of the matching type.
-
-</details>
-
-<br/><br/>
-
-If `commandfor=` does not point to an element connected to the DOM then this
-attribute must not be present.
 
 Buttons with these popover commands will also have focus restored to the
 button when the popover closes. This will require the popover keeping a
@@ -427,40 +400,28 @@ confusing or redundant, and as such won't be proposed for these buttons.
 ##### aria-controls
 
 While `aria-controls` attempts to establish a similar style of relationship to
-`aria-details`, it is largely intented for parent-child relationships. Buttons
-that open popovers do not necessarily represent a parent-child relationship.
+`aria-details`, `aria-details` sees broader support among various assistive
+technologies, and it would be redundant to add both.
+
+##### aria-haspopup=dialog
+
+When the `commandfor=` element is a `<dialog>`, adding aria-haspopup=dialog is
+a potentially viable attribute to add. Some Assistive Technologies will announce
+that the button will open a dialog, for example
+`<button aria-haspopup=dialog>Delete</button>` may be announced by a screen
+reader as "Delete, button, opens dialog". However, buttons that open dialogs
+rarely come with additional visual treatment, and so the lack of a visual
+analog means that using this attribute likely provides surplus information
+to users of assistive technologies that isn't otherwise provided. Additionally,
+the _intent_ for `aria-haspopup` is more focused towards combobox popovers,
+where the type of popover may be ambigious. As command buttons can be used for
+more than just combobox controls, `aria-haspopup` is not present by default.
 
 </details>
 
 <br/><br/>
 
 #### Buttons with `command=show-modal`
-
-Buttons with this dialog commands will implicitly receive `aria-haspopup=dialog`.
-
-<details>
-<summary>Why?</summary>
-
-Some Assistive Technologies will announce that the button will open a dialog,
-for example `<button aria-haspopup=dialog>Delete</button>` may be announced in
-a screen reader as "Delete, button, opens dialog". This can be important
-information for a user as it allows them to anticipate a focus change or a
-change in the pages navigable elements which may otherwise not be quite as
-apparent.
-
-However, we may revisit this decision based on more evidence, research and
-discussion. Buttons that open dialogs rarely come with additional visual
-treatment, and so the lack of a visual analog may allude to the presence of
-`aria-haspopup=dialog` being redundant.
-
-This decision _may also_ be revisited in light of any new elements proposals
-that have the role of `menu`, `listbox`, `tree` or `grid`. It may be proposed
-that, when connected to those elements via `commandfor`, buttons will
-implicitly recieve `aria-haspopup` of the matching type.
-
-</details>
-
-<br/><br/>
 
 Buttons with this dialog command will also have focus restored to the button
 when the dialog closes. This will require the dialog keeping a reference to the
@@ -490,11 +451,16 @@ open and present on the page and the invoking button is still navigable. A
 modal dialog renders the rest of the page inert meaning that it won't be
 possible to navigate to the invoking button.
 
+##### aria-controls
+
+Similar to `aria-details`, `aria-controls` is not useful for a dialog that
+is closed, and non-navigable for a dialog that is open as modal, so it would be
+useless to add.
+
 ##### aria-pressed
 
 The `aria-pressed` state is the incorrect type of association for elements
-which conditionally appear on the page. The correct type of association would
-be `aria-expanded`...
+which conditionally appear on the page.
 
 ##### aria-expanded
 
@@ -504,11 +470,19 @@ opens a modal dialog, the dialog must not be open. If the dialog is open then
 the button will be inert, therefore non-navigable, therefore it is redundant
 to provide it an implicit `aria-expanded=true` state also.
 
-##### aria-controls
+##### aria-haspopup=dialog
 
-While `aria-controls` attempts to establish a similar style of relationship to
-`aria-details`, it is largely intented for parent-child relationships. Buttons
-that open modal dialogs would not represent a parent-child relationship.
+When the `commandfor=` element is a `<dialog>`, adding aria-haspopup=dialog is
+a potentially viable attribute to add. Some Assistive Technologies will announce
+that the button will open a dialog, for example
+`<button aria-haspopup=dialog>Delete</button>` may be announced by a screen
+reader as "Delete, button, opens dialog". However, buttons that open dialogs
+rarely come with additional visual treatment, and so the lack of a visual
+analog means that using this attribute likely provides surplus information
+to users of assistive technologies that isn't otherwise provided. Additionally,
+the _intent_ for `aria-haspopup` is more focused towards combobox popovers,
+where the type of popover may be ambigious. As command buttons can be used for
+more than just combobox controls, `aria-haspopup` is not present by default.
 
 </details>
 
@@ -570,10 +544,8 @@ confusing or redundant, and as such won't be proposed for these buttons.
 ##### aria-controls
 
 While `aria-controls` attempts to establish a similar style of relationship to
-`aria-details`, it is largely intented for parent-child relationships. Buttons
-that open dialogs would not represent such a relationship outside of the
-dialog, and if they were a child of the dialog then that parent-child
-relationship is explicit.
+`aria-details`, `aria-details` sees broader support among various assistive
+technologies, and it would be redundant to add both.
 
 </details>
 
