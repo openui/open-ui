@@ -454,8 +454,8 @@ possible to navigate to the invoking button.
 ##### aria-controls
 
 Similar to `aria-details`, `aria-controls` is not useful for a dialog that
-is closed, and non-navigable for a dialog that is open as modal, so it would be
-useless to add.
+is closed, and non-navigable for a dialog that is open as modal, so it would 
+provide no benefit to add.
 
 ##### aria-pressed
 
@@ -472,13 +472,13 @@ to provide it an implicit `aria-expanded=true` state also.
 
 ##### aria-haspopup=dialog
 
-When the `commandfor=` element is a `<dialog>`, adding aria-haspopup=dialog is
-a potentially viable attribute to add. Some Assistive Technologies will announce
+When the `commandfor=` element is a `<dialog>` it might seem `aria-haspopup=dialog` 
+would be a potentially viable attribute to add. Some Assistive Technologies will announce
 that the button will open a dialog, for example
 `<button aria-haspopup=dialog>Delete</button>` may be announced by a screen
 reader as "Delete, button, opens dialog". However, buttons that open dialogs
-rarely come with additional visual treatment, and so the lack of a visual
-analog means that using this attribute likely provides surplus information
+rarely come with additional visual treatment, and so the [lack of a visual
+analog means that using this attribute likely provides surplus information](https://w3c.github.io/aria/#h-note-50)
 to users of assistive technologies that isn't otherwise provided. Additionally,
 the _intent_ for `aria-haspopup` is more focused towards combobox popovers,
 where the type of popover may be ambigious. As command buttons can be used for
