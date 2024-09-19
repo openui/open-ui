@@ -17,7 +17,7 @@ experiences developers ultimately have two techniques at their disposal: to
 "hack" inputs by surrounding or overlaying/underlaying elements which, aside 
 from the difficulty to implement, can be extremely fragile and error prone. 
 The other solution is to make the leap to using `contenteditable` which brings
-its own set of problems, leading to an out-of-the box inacessbile experience
+its own set of problems, leading to an out-of-the box inaccessible experience
 and requiring a large amount of remediation work to get to net-zero.
 
 This proposal introduces a set of smaller functionality around `<input>`s and
@@ -29,13 +29,13 @@ input controls for the web. They can be roughly broken down into four themes:
 - In turn, allow developers to apply CSS Highlights to those ranges, to allow
   for parts of an inputs value to be styled.
 - Provide "input masking" to allow for presentational characters to be added
-  to inputs, improving usabiltiy for complex constrained inputs, for example
+  to inputs, improving usability for complex constrained inputs, for example
   dates, currencies, PINs, and so on.
 - Provide an API for making "suggestions" within an input which users can
   accept or reject to aid in data entry.
 
 While each of these is a *discrete* proposal for new APIs, and each has
-descrete use cases, the combination of these features unlock additional use
+discrete use cases, the combination of these features unlock additional use
 cases and can allow developers to solve novel problems far more easily.
 
 ## A note on contenteditable
@@ -52,7 +52,7 @@ and has various longstanding compatibility issues
 [2](https://bugs.webkit.org/show_bug.cgi?id=258052),
 [3](https://issues.chromium.org/issues/40824135),
 [4](https://issues.chromium.org/issues/40788742)). While it's possible to
-resolve cross-browser issues, the fundemental design of `contenteditable`
+resolve cross-browser issues, the fundamental design of `contenteditable`
 requires a significant amount of work to migrate from traditional form fields.
 
 This proposal (or set of proposals) aims to bridge the gap; extending existing
@@ -88,7 +88,7 @@ Range information is useful for two main reasons:
 </figure>
 
 <figure>
-  <figcaption>Fig 2. A screenshot of the QuillBot website, showing a popover hint for correcting gramatical errors.</figcaption>
+  <figcaption>Fig 2. A screenshot of the QuillBot website, showing a popover hint for correcting grammatical errors.</figcaption>
   <img src="/images/rich-inputs/quill-suggestion.png" style="border-radius:10px" alt="A screenshot of the QuillBot editor. The prose inside reads 'I take for granite some peoples poor grammar.'. The words 'granite' and 'peoples' have red underlines indicating they're incorrect. The mouse cursor is placed over the top of the word granite which has opened a popup with the content 'Correct the spelling error, granite (strikethrough), granted'." />
 </figure>
 
@@ -247,11 +247,11 @@ mitigated:
 ### How we'd like to solve this in the future
 
 Extending the `CSS.highlights` API to accepting ranges from input elements (see
-above proposal on `InputRage`) would solve this simply and effectively.
+above proposal on `InputRange`) would solve this simply and effectively.
 
 It would also be useful (though not necessary) to extend the CSS highlights API
 to allow for styling the `cursor`, `caret-color` & `outline` properties in the
-way that both `::spelling-error` and `::gramma-error` allow today.
+way that both `::spelling-error` and `::grammar-error` allow today.
 
 ---
 
@@ -315,7 +315,7 @@ break anti-aliasing fonts:
 
 - In some cases a suggestion can cause a line break as the word needs to wrap,
 but the users currently input text does not cause a wrap, this is especially
-noticable with "follow through" typing (typing the characters matching the
+noticeable with "follow through" typing (typing the characters matching the
 presented suggestion):
 
 <figure>
@@ -401,7 +401,7 @@ https://github.com/whatwg/html/issues/7794
 
 [Input masking](https://en.wikipedia.org/wiki/Input_mask) is a technique used
 to separate fragments of a text input into a more recognisable pattern. This
-long contigous strings (such as large numbers or product keys) much easier to
+makes contiguous strings (such as large numbers or product keys) much easier to
 read, as they can be formatted to aid in pattern recognition. For example:
 
 - Credit card numbers separated into 4 segements of 4 characters each,
