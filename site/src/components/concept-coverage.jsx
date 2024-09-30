@@ -4,7 +4,7 @@ import './concept-coverage.css'
 
 const ConceptCoverage = ({ component, conceptName, openUIConceptName }) => {
   const withConcept = getSourcesWithComponentConcept(component, conceptName, openUIConceptName)
-  const withoutConcept = sourceNames.filter(x => !withConcept.includes(x))
+  const withoutConcept = sourceNames.filter((x) => !withConcept.includes(x))
 
   return (
     <div className="concept-coverage">
