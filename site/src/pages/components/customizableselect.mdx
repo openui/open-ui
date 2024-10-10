@@ -27,6 +27,7 @@ import Image from '../../components/image.astro'
 - [Anatomy of the customizable select element](#anatomy-of-the-customizable-select-element)
 - [Styling](#styling)
   - [`:open` and `:closed` pseudo-selectors](#open-and-closed-pseudo-selectors)
+  - [UA stylesheet](#ua-stylesheet)
 - [Additional examples](#additional-examples)
   - [Extending the markup](#extending-the-markup)
   - [Demo page](#demo-page)
@@ -385,6 +386,96 @@ select:closed #custombutton {
 </style>
 ```
 
+### UA Stylesheet
+
+The UA stylesheet for customizable select is currently under discussion in the CSSWG [here](https://github.com/w3c/csswg-drafts/issues/10857). Here is what we have so far:
+
+```css
+select {
+  border: 1px solid currentColor;
+  background-color: color-mix(in lab, currentColor 10%, transparent);
+  color: inherit;
+  font: inherit;
+  padding: 0.25em .5em;
+  text-box: trim-both;
+
+  border-radius: 0.25em;
+  display: inline-block;
+  box-sizing: border-box;
+  min-block-size: max(24px, 1.2em);
+  min-inline-size: 24px;
+  white-space: normal;
+}
+
+select:enabled:hover {
+  background-color: color-mix(in lab, currentColor 20%, transparent);
+}
+
+select:enabled:active  {
+  background-color: color-mix(in lab, currentColor 30%, transparent);
+}
+
+select::picker(select) {
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25em;
+  padding-block: 0.25em;
+  padding-inline: 0;
+  background-color: Field;
+  margin: 0;
+  inset: auto;
+  min-inline-size: anchor-size(self-inline);
+  min-block-size: 1lh;
+  position-area: block-end span-inline-end;
+  position-try-fallbacks:
+    block-start span-inline-end,
+    block-end span-inline-start,
+    block-start span-inline-start;
+}
+
+select option {
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  align-content: center;
+  display: block;
+  padding-block-start: 0;
+  padding-block-end: 1px;
+  padding-inline: 2px;
+  white-space: nowrap;
+}
+
+select option:hover {
+  background-color: SelectedItem;
+  color: SelectedItemText;
+}
+
+select option::before {
+  content: '\2713' / '';
+}
+select option:not(:checked)::before {
+  visibility: hidden;
+}
+
+select::after {
+  padding-inline-start: 0.5em;
+  display: block;
+  content: counter(fake-counter-name, disclosure-open);
+}
+select:not(:open)::after {
+  content: counter(fake-counter-name, disclosure-closed);
+}
+
+select optgroup {
+  padding-inline: 2px;
+}
+
+select optgroup option {
+  padding-inline-start: 20px;
+}
+```
+
 ## Additional examples
 
 Here is an example which has a custom button with custom CSS:
@@ -564,8 +655,8 @@ When the listbox is open:
 * Escape closes the listbox without changing the selected value.
 * Spacebar is used for typeahead.
 * Enter changes the selected value to the currently focused option and closes the listbox.
-* The up arrow key moves focus backwards in the list of options and changes the selected value to the newly selected option.
-* The down arrow key moves focus forwards in the list of options and changes the selected value to the newly selected option.
+* The up arrow key moves focus backwards in the list of options.
+* The down arrow key moves focus forwards in the list of options.
 * The left and right arrow keys do nothing.
 
 ## `multiple` and `size` attributes
