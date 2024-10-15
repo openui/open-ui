@@ -18,7 +18,7 @@ The whole card is clickable and would lead to the Reddit post, but the buttons (
 
 ## Existing ways to achieve this
 Today, achieving this is done using two alternatives, each with its own tradeoffs:
-1. Stacking: put the card *behind* the buttons, so that it catches clicks that are not handled by the buttons.
+1. Stacking: put the link *behind* the buttons, so that it catches clicks that are not handled by the buttons.
 2. Capturing: have the card capture clicks, and delegate them to the main link only if the original target is not one of the buttons.\
 
 These are imperfect and brittle ways to achieve this kind of experience, however this became a common enough pattern in the web, so perhaps it is time it became a first class citizen.
