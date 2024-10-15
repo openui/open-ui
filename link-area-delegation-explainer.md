@@ -39,7 +39,7 @@ This can mean two things in terms of UI:
 2. The card's context menu behavior is augmented with the link descendant's context menu behavior (e.g. "Open in a new tab")
 3. Potentially, the UA can expand the hit-testing area for some of the descendants, to prioritize clicking them vs. clicking on the card.
 4. This feature has no effect on keyboard navigation.
-5. At first, this feature is not exposed to the accessibility tree, and should have no effect on assistive technologies. We can research in the future whether this card/link relationship can be expressed in these technologies in a useful way.
+6. At first, this feature is not exposed to the accessibility tree, and should have no effect on assistive technologies. We can research in the future whether this card/link relationship can be expressed in these technologies in a useful way.
 
 ### Link delegation attributes
 Expressing link area delegation in HTML can look something like this:
@@ -117,6 +117,24 @@ Something like:
 
 This has nice ergonomics because the selection of link area can be done outside of the main structure of the page using CSS selectors.
 However, something about this feels limiting, as it is constrained to click areas in advance, and doesn't lend itself to future UA enhancements of this experience, such as context menus.
+
+### Use invokers
+One interesting alternative from @jaffathecake is to use [invokers](https://open-ui.org/components/invokers.explainer/) for this, e.g.:
+```html
+<section class="card" commandfor="card123-title" command="click">
+  <a href="/post?id=123" id="card123-title">Post Title</a>
+  <img>
+  <button>Join</button>
+  <button>Share</button>
+</section>
+```
+
+This has the nice effect of being more general purpose, e.g. delegating any click rather than just links, but perhaps the special-purpose link delegation has some other added value.
+
+## Open questions
+- Do link area ancestors have a default UA styles (probably not?)
+- Can you nest link areas? (probably?)
+- Do link areas also delegate hover? 
 
 ## Summary
 Link area delegation is a common pattern on the web. This proposes graduating it from a userland CSS/JS issue to a first class web platform primitive.
