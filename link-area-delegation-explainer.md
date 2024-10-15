@@ -7,7 +7,7 @@ We are currently incubating and exploring a new idea. Chime in!
 Historically and for very good reasons, interactive elements in the web cannot include other interactive elements, and specifically nested links.
 This is a well established [HTML ARIA guideline]([https://w3c.github.io/html-aria/](https://w3c.github.io/html-aria/#allowed-descendants-of-aria-roles)).
 
-Despite this, many websites, [Walmart](https://walmart.ca), [Reddit](https://reddit.com), [Rotten Tomatoes](https://rottentomatoes.com), to name a few prominent ones),
+Despite this, many websites, [Walmart](https://walmart.ca), [Reddit](https://reddit.com), [Rotten Tomatoes](https://rottentomatoes.com), to name a few prominent ones,
 use CSS and JS to express something that feels like nested links. 
 
 ## The card pattern
