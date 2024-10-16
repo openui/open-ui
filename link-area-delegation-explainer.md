@@ -4,31 +4,31 @@
 We are currently incubating and exploring a new idea. Chime in!
 
 ## Overview
-Historically and for very good reasons, interactive elements in the web cannot include other interactive elements, and specifically nested links.
+Historically and for very good reasons, interactive elements on the web cannot be nested within other interactive elements, and specifically nested links.
 This is a well established [HTML ARIA guideline]([https://w3c.github.io/html-aria/](https://w3c.github.io/html-aria/#allowed-descendants-of-aria-roles)).
 
 Despite this, many websites, [Walmart](https://walmart.ca), [Reddit](https://reddit.com), [Rotten Tomatoes](https://rottentomatoes.com), to name a few prominent ones,
 use CSS and JS to express something that feels like nested links. 
 
 ## The card pattern
-The common pattern for nested links is usually a clickable "card" with internal clickable links, like this:
+A common pattern for nested links is usually a clickable "card" with internal clickable links, like this:
 <img src="https://github.com/user-attachments/assets/27e5076d-bc98-4fb8-a429-e8462ff9024c" width=400>
 
 The whole card is clickable and would lead to the Reddit post, but the buttons (Download, comments, join etc) are also clickable.
 
 ## Existing ways to achieve this
-Today, achieving this is done using two alternatives, each with its own tradeoffs:
+Today, this is achieved with one of two approaches, each with its own tradeoffs:
 1. Stacking: put the link *behind* the buttons, so that it catches clicks that are not handled by the buttons.
 2. Capturing: have the card capture clicks, and delegate them to the main link only if the original target is not one of the buttons.\
 
 These are imperfect and brittle ways to achieve this kind of experience, however this became a common enough pattern in the web, so perhaps it is time it became a first class citizen.
 
 ## Don't panic (a11y concerns)
-The ARIA guidelines discussed earlier are still valid, so this needs to be treaded carefully. However, it doesn't seem like the websites that introduce this pattern break ARIA in any way.
+The ARIA guidelines discussed earlier are still valid. However, using this pattern doesn't break ARIA in any way.
 That's because this pattern doesn't modify the interactive structure of the page (AKA semantics, AKA the accessibility tree), it only gives cards enhanced behavior when they are clicked,
 allowing their clicks to be handled as if its target was the main link.
 
-One accessibility issue that can be caused by using this (and any of the existing methods) is creating clickable targets that are too close together (see [these guidelines](https://www.w3.org/WAI/perspective-videos/controls/)).
+One accessibility issue that can be enabled by using this (and any of the existing methods) is creating clickable targets that are too close together (see [these guidelines](https://www.w3.org/WAI/perspective-videos/controls/)).
 This is indeed a concern, but it's debatable whether enabling this feature in HTML makes a difference for this concern vs. the current approaches.
 The contrary might be true, where giving this information to the UA might give it a chance to intervene when the clickable nested target is too small.
 
@@ -121,7 +121,7 @@ However, something about this feels limiting, as it is constrained to click area
 ### Use invokers
 One interesting alternative from @jaffathecake is to use [invokers](https://open-ui.org/components/invokers.explainer/) for this, e.g.:
 ```html
-<section class="card" commandfor="card123-title" command="click">
+<section class="card" commandfor="card123-title" commands="click contextmenu">
   <a href="/post?id=123" id="card123-title">Post Title</a>
   <img>
   <button>Join</button>
