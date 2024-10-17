@@ -17,7 +17,7 @@ layout: ../../layouts/ComponentLayout.astro
 We are currently incubating and exploring a new idea. Chime in!
 
 ## Overview
-Historically and for very good reasons, interactive elements on the web cannot be nested within other interactive elements, including hyperlinks.
+Historically and for very good reasons, interactive elements on the web cannot be nested within other interactive elements. Examples of interactive elements include links and buttons.
 Interactive elements not allowing descendent interactive elements is a well established rule in HTML for various interactive elements - where descendent interactive elements or elements with a `tabindex` attribute are specifically called out as invalid (see [the `a` element's content model](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element). Additionally, the [ARIA in HTML guideline]([https://w3c.github.io/html-aria/](https://w3c.github.io/html-aria/#allowed-descendants-of-aria-roles)) specification provides further guidance to discourage the use of interactive elements as descendent of ARIA roles which are themselves considered "widget" (interactive) roles.
 
 Despite this long-standing rule, there are websites which ignore it. In doing so, these sites end up with UI which will be difficult, if not blocking, for people using assistive technology, such as screen readers. On the flip-side, there are also websites such as [Walmart](https://walmart.ca), [Reddit](https://reddit.com), [Rotten Tomatoes](https://rottentomatoes.com), to name a few prominent ones, that use specific markup patterns and CSS or JS to present content that visually appears to have nested targets, as the larger container appears to be clickable - but inspecting the markup patterns would show otherwise.
