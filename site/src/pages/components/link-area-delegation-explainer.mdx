@@ -1,0 +1,195 @@
+---
+menu: Active Proposals
+name: Link Area Delegation (Explainer)
+##path: /components/...
+##pathToResearch: /components/...
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors and contributors: [@noamr](https://github.com/noamr), [@scottaohara](https://github.com/scottaohara), [@nmn](https://github.com/nmn), [@jakearchibald](https://github.com/jakearchibald)
+- Last updated: October 16, 2024
+- Feedback: https://github.com/openui/open-ui/issues/
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+## State of this explainer
+We are currently incubating and exploring a new idea. Chime in!
+
+## Overview
+Historically and for very good reasons, interactive elements on the web cannot be nested within other interactive elements. Examples of interactive elements include links and buttons.
+Interactive elements (such as buttons and hyperlinks) not allowing descendent interactive elements is a well established rule in HTML - where interactive elements or elements with a `tabindex` attribute within such elements are specifically called out as invalid (for instance, see [the `a` element's content model](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element). Additionally, the [ARIA in HTML specification]([https://w3c.github.io/html-aria/](https://w3c.github.io/html-aria/#allowed-descendants-of-aria-roles)) provides additional guidance to discourage the use of interactive elements as descendent of ARIA roles which are themselves considered "widget" (interactive) roles.
+
+Despite this long-standing rule, there are websites which ignore it. In doing so, these sites end up with UI which can be difficult if not impossible to use with assistive technology, such as a screen reader. On the flip-side, there are websites which have created clickable containers in a way that passes HTML validation, and often with the goal of making the pattern, at least, keyboard and screen reader accessible. This can be achieved by implementing such markup patterns in specific ways, along with using CSS, JS, or both to extend a primary target's (often link, sometimes button) clikcable area. The end UX/accessibility of such endevors is commonly variable, due to a lack of standardization and common lack of knowledge about how assistive technology accesses content through the browser's accessibility APIs.
+
+As some quick examples of websites which have variant instances of such patterns, one can look for them on [Walmart](https://walmart.com), [Best Buy](https://www.bestbuy.com/) [Reddit](https://reddit.com), and [Amazon](https://www.amazon.com/), to name a few.
+
+## The clikcable container or "card" pattern
+Commonly a clickable container, often referred to as a "card", will present a graphic or other media, text, a primary call to action (link or button) as well as other supplementary interactive elements:
+
+<figure>
+  <img src="https://github.com/user-attachments/assets/27e5076d-bc98-4fb8-a429-e8462ff9024c" 
+       width="400" 
+       alt="Screenshot of a Reddit topic 'card' from the r/cats subreddit. Shows time of publication, r/cats as a hyperlink, a join and more options button, followed by the title of the post and a graphic of a cat peering out a window while its owner takes its picture. up/down vote, comment, award and share buttons follow the graphic." />
+
+  <figcaption>
+    <p>With this Reddit example, the whole card is clickable and doing so and would navigate a user to the Reddit post. But there are also other interactive elements (up/down vote, comments, join, the sub-reddit link, etc.) are also clickable. These appear to be "nested" within the clickable card, but due to work arounds, this is not the case.</p>
+  </figcaption>
+</figure>
+
+### Existing ways to achieve clickable containers
+Today, making a container/card clickable can be achieved with a few different approaches, each with its own tradeoffs:
+1. Using the `a` element to wrap the content that needs to be clickable.  The issue with this is:
+  a. doesn't support nested interactive elements without creating accessibility issues.
+  b. using an `a` element to wrap content is not supported in certain contexts - e.g., such as trying to wrap a row within a table.  The HTML parser will remove such hyperlinks from the rendered table markup.
+  c. even without nested interactive elements, the accessible name of the hyperlink can become overly verbose, or may not be exposed as all depending on the roles of the elements that are descendents of the hyperlink.
+2. Using CSS to position / stack interactive elements. For instance, using CSS to put a duplicate hyperlink, or the call to action of the container's `::before` or `::after` pseudo element "behind" the "nested" interactive elements, so that the link catches clicks that are not handled by these other interactive targets. The issue with these can be:
+  a. again, no standardized way to do this, with some version of this implementation better than others. For instance, implementations that use duplicate links, creating redundancy for keyboard and/or screen reader users (even if the duplicate link is `tabindex=-1`), being some of the worst.
+  b. this sort of stacking/overlaying implementation often makes it difficult if not impossible for some users to select what appears to be static text, and can lead to some instances of accidental activation of the hyperlink. For instance, due to lack of interactive affordance that the static text / white space areas of the component are clickable.
+  c. Such a pattern usually relies on all intermediate elements between the container/card and the primary action within to have `display: static`. Depending on the visual design requirements, this may not be feasible.
+3. Using JavaScript to Capture clicks: have the container element capture clicks, and delegate them to the main link only if the original target is not another interactive target.
+   a. requires the use of JS, which in itself is not a bad thing, but may undesired by some developers - leading them to use alternate patterns, or,
+   b. can lead to other UX issues, such as activation on `mousedown` rather than 'up', or people forgoing the inclusion of a nested hyperlink in favor of only using the JS, leading to the element being accessible to pointer events, but often not to keyboard or assistive techology users.
+   c. additionally, some JS implementations have the potential to conflict with default browser behaviors - such as context menus, or popup blocking.
+
+These are ways to achieve this kind of experience that have their own constraints and compromises. At this point, this became a common enough pattern in the web, so perhaps it is time it became a first class citizen.
+
+
+## Proposal: Link Area Delegation
+At a high level, the proposed mental model of this problem is "the container is delegating its interactive area to one of its link descendants". By introducing a standardized feature to allow a container to be "clickable", allowing a user to activate a required nested target within the container, web authors can be provided a solution that mitigates the pitfalls of currently available solutions (transparent hyperlinks), as well as the less desireable UX and variability of the CSS positioning/stack or JavaScript approaches available today.
+
+Some more detailed points on what this means for the UI and UX of the feature:
+1. The default click action for the container would be the default click action of a required hyperlink descendant.
+2. The container's context menu behavior could be augmented with the descendant hyperlink's context menu behavior (e.g., "Open in a new window/tab" or "Save as...", etc.).
+3. Potentially, user agents can expand the hit-testing area for some of the descendants, to prioritize clicking them vs. clicking on the card (see [WCAG 2.5.8: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)).
+4. This feature has no effect on keyboard navigation, and would prevent the potential for otherwise unnecessary duplicate hyperlinks. It's a pointer click affordance, and would not affect the "semantics" of the container element (see also [the `popover` attribute](https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute:~:text=The%20popover%20attribute%20is%20a%20global%20attribute%20that%20allows%20authors%20flexibility%20to%20ensure%20popover%20functionality%20can%20be%20applied%20to%20elements%20with%20the%20most%20relevant%20semantics.)). 
+5. At this time, it is not expected that this feature would be exposed to the accessibility tree, much like a `label` element is not overtly exposed to the accessibility tree/to assistive technology users. It's purpose is to extend the clickable area of the referenced hyperlink - which is expected to be the accessibile object for people using AT/keyboard to interact with.
+   a. **NOTE:** some screen readers, such as NVDA, may announce "clickable" for current instances of the JS variant of this pattern. This is not necessarily because it's important for users to know the container is clickable in this specific context - but because the screen reader is _only_ aware there is a click event on the container, but not what the click event will do. If the screen reader were aware of the relationship between the container and the nested hyperlink, and that they would perform the same function, it is far more likely that such instances of the "clickable" announcement would not be needed.
+
+### Approach 1: Link delegation attributes
+Expressing link area delegation in HTML can look something like this:
+```html
+<div class="card" linkarea>
+  <a href="/post?id=123" defaultlink>Post Title</a>
+  <img ...>
+  <button>Join</button>
+  <button>Share</button>
+</div>
+```
+
+In the above example, the `div` element has a `linkarea` attribute, which would delegate its click to the first descendant with a `defaultlink` attribute, in this case the first `a` element.
+
+Additionally, we could have a similar alternatives to this with different ergonomic tradeoffs, e.g., using ID references:
+```html
+<section class="card" linkarea="card123-cta">
+  <h2><a href="#topic-123" id="card123-title">Post Title</a></h2>
+  <img ... alt=">
+  <p>...</p>
+  <a href="/post?id=123" id="card123-cta" aria-labelledby="card123-cta card123-title">Learn More</a>
+  <button>Join</button>
+  <button>Share</button>
+</section>
+```
+
+In this modified example, the first hyperlink now serves as an in-page permalink. The primary action instead being the "Learn More" link, whose `id` is referenced by the containing `section` element's `linkarea` attribute.
+
+Note that in this example, the hyperlink still has to be a descendant of the card. This is to guide web authors to an interactive structure where the links are in the appropriate place in the tree.
+
+### Approach 2: a new element type
+One of the alternatives that may initially sound natural is a new element type:
+```html
+<section class="card">
+  <linkarea>
+    <a href="/post?id=123" defaultlink>Post Title</a>
+    <img ...>
+    <button>Join</button>
+    <button>Share</button>
+  </linkarea>
+</section>
+```
+
+This can feel compelling in a semantic sense, but becomes undesirable when we think of the flexibility of attributes vs HTML elements.
+For example, a use case for link area delegation is making table rows clickable.
+
+```html
+<table>
+  ...
+  <tr linkarea>
+    <th><a href="/details?id=1" defaultlink>Title</a></th>
+    <td>...</td>
+    <td>...</td>
+    <td><button>Edit</button></td>
+  </tr>
+  ...
+</table>
+```
+
+This would likely not be possible with a new element, as a `tr` within a `table` (and some other container elements) have special HTML parser behavior. Modifying their parsing behavior to include new types of elements would break the page in browsers that don't support the new element type. Whereas taking the attribute approach, legacy browsers could support the new behavior via a polyfill, mitigating any parsing issues that might otherwise result in unwanted DOM rendering.
+
+### Approach 3: CSS instead of HTML
+
+Since this proposal focuses on click areas, another option might be using CSS rather than HTML?
+Instead of a new attribute, providing a new CSS property:
+
+```html
+<section class="card">
+  <a href="/post?id=123">Post Title</a>
+  <img ...>
+  <button>Join</button>
+  <button>Share</button>
+</section>
+```
+
+```css
+.card { pointer-area: contain; }
+.card a:nth-child(1) { pointer-area: expand; }
+```
+
+This has nice ergonomics because the selection of link area can be done outside of the main structure of the page using CSS selectors.
+However, something about this feels limiting, as it is constrained to click areas in advance, and doesn't lend itself to future UA enhancements of this experience, such as context menus. Identifying the hyperlink or interactive control to expand its click area might also become difficult if needing to apply this feature to markup beyond one's immediate control - e.g., syndicated content created by other product teams. 
+
+### Approach 4: Use invokers 
+An interesting alternative from @jaffathecake is to use [invokers](https://open-ui.org/components/invokers.explainer/). 
+The prior "card" example has been modified to use `commandfor` and `commands` attributes, instead of a `linkarea` attribute or CSS:
+```html
+<section class="card" commandfor="card123-title" commands="click contextmenu">
+  <a href="/post?id=123" id="card123-title">Post Title</a>
+  <img ...>
+  <button>Join</button>
+  <button>Share</button>
+</section>
+```
+
+This a nice idea as it could allow delegation of clicks to more than just "links". For instance, delegating to a `button` element instead. 
+The tradeoff here might be that this would need two attributes to declare, rather than just one. And that the `id` of the desired element to delegate to might be necessary to declare more often than the common case of extending the click-area of the first hyperlink within a container.
+
+
+## Potential accessibility concerns
+Regarding click delegation to links (and potentially buttons) there should be no "new" accessibility concerns with this proposal. 
+As mentioned, the semantics of the containing element would not be expected to be altered, so there should be no unexpected modifications to the exposure of the element in the accessibility tree.  Optionally, a new a11y object attribute could be added in the accessibility mappings so AT _could_ do something special with it, if they so chose.
+
+If this proposal (as an attribute) were to be accepted, there would likely need to be new rules added to the ARIA in HTML spec, limiting the allowed roles for elements this attribute was used with.  E.g., `<div role=button linkarea>` - presently a `div` allows for any ARIA role to be set, but this instance should likely produce a validation message of some sort.
+
+
+### Issues with existing patterns and this proposal
+One existing accessibility issue that can be exacerbated by extending target areas (and exists with any of the current non-standardized methods) is the potential to create targets that are too close together / small in comparison to the entire clickable area of the container/card.
+
+This is indeed a concern, but at least with a standardized approach the following is more likely to occur:
+1. Spec / MDN auhorizing guidance can be provided to inform authors to ensure nested targets meet at least the minimum sizing requirements (at least 24x24px).
+2. User agents _could_ employ heuristics to reasonably extend the click areas for even the "nested" targets, helping to ensure at least some minimum target sizes could be met.
+3. If there were to be any UA style sheet updates, arguably min-height, min-width, or padding adjustments could be made for interactive elemnts within a `linkarea` container could be made. These _should_ be able to be overwritten, but doing so could then produce browser console errors to warn authors they have undersized targets within their larger clickable container. Console errors could be provided regardless of any UA style changes as well, since the height/width of targets is already known by the browser, and thus if undersized targets exist within a clickable container, this could already be known/exposed as an author error.
+
+For more information, please review 
+- [WAI: Large Links, Buttons, and Controls](https://www.w3.org/WAI/perspective-videos/controls/)
+- [WCAG 2.2: Target Size (Minimum) Level AA requirement](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
+
+
+## Open questions
+- Should this proposal extend beyond link delegation?  Both "cards" and clickable table rows can have variants where a function represented by a button might be the preferred target to have the full-container click area.  E.g., opening a dialog, or performing an edit function that toggles the apperance of a side panel.  Extending delegation to a button might be a good idea - but are there good use cases to allow delegation for other interactive elements?
+- Do link area ancestors have a default UA styles?  Or should at least the pointer cursor change to match the hyperlink hover cursor?
+- Can you nest link areas? (probably?)
+- Do link areas also delegate hover? Possible pros/cons. What is the use case?
+
+## Summary
+Link area delegation is a common pattern on the web. This proposes graduating it from a userland CSS/JS issue to a first class web platform primitive.
+Given that, we have to be careful to make the right choice around accessibility and ergonomics, especially around target sizes for interactive elements within the nested clickable container having the potential to not meet WCAG requirements.
