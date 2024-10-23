@@ -525,8 +525,15 @@ The switch element can be associated with the existing `role="switch"`.
 ### Globalization
 
 <div class="question">
-  Is thumb in the "on" position on the left in a `rtl` directional environment?
+  How should the switch behave in writing modes other than `horizontal-tb`?
 </div>
+
+The switch should adapt to the current text direction[^11].
+
+| Writing mode  | Direction     | "on" position |
+| ------------- | ------------- | ------------- |
+| horizontal-tb | Right to left | left side     |
+| horizontal-tb | Left to right | right side    |
 
 ### Security
 
@@ -564,3 +571,4 @@ References:
 [^8]: Elements approach resolution https://github.com/openui/open-ui/issues/702#issuecomment-1664464531
 [^9]: Thumb content resolution https://github.com/openui/open-ui/issues/979
 [^10]: Track content resolution https://github.com/openui/open-ui/issues/978
+[^11]: Direction change resolution https://github.com/openui/open-ui/issues/1098
