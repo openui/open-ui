@@ -332,7 +332,7 @@ The first child `<button>` of a `<select>` will be slotted into the `<select>`'s
 
 The `<selectedoption>` element enables developers to declaratively clone the content of the selected `<option>` element to the button and to style it distinctly from the `<option>`. This use case is shown in the [rendering the option differently in the button](#rendering-the-option-differently-in-the-button) example.
 
-When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>` or when there is a DOM mutation inside of the selected `<option>`, the browser will update the contents of `<selectedoption>` by internally calling `cloneNode()` again.
+When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>`, the browser will update the contents of `<selectedoption>` by internally calling `cloneNode()` again. If the DOM contents of the currently selected `<option>` are modified, then the browser will not re-clone into `<selectedoption>`.
 
 Since the contents of the `<selectedoption>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedoption>`.
 
@@ -690,3 +690,4 @@ option::before {
 - [Why `<button type=popover>` (overturned by `selectedoptionelement`)](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
 - [Why `selectedoptionelement`](https://github.com/openui/open-ui/issues/1063#issuecomment-2195407344)
 - [Why require `appearance:base-select` on both `select` and `select::picker(select)`](https://github.com/w3c/csswg-drafts/issues/10440)
+- [Why not observe mutations in selected `<option>`](https://github.com/openui/open-ui/issues/825#issuecomment-2436124668)
