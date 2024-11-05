@@ -23,7 +23,7 @@ import Image from '../../components/image.astro'
   - [Animations](#animations)
   - [Split buttons](#split-buttons)
 - [Button behavior](#button-behavior)
-- [The selectedoption element](#the-selectedoption-element)
+- [The selectedcontent element](#the-selectedcontent-element)
 - [Anatomy of the customizable select element](#anatomy-of-the-customizable-select-element)
 - [Styling](#styling)
   - [`:open` and `:closed` pseudo-selectors](#open-and-closed-pseudo-selectors)
@@ -78,7 +78,7 @@ select, ::picker(select) {
 </style>
 <select>
   <button>
-    <selectedoption></selectedoption>
+    <selectedcontent></selectedcontent>
   </button>
   <option><img src="..." alt="">one</option>
   <option><img src="..." alt="">two</option>
@@ -162,7 +162,7 @@ This example replaces the button which opens the listbox with an author provided
 ```html
 <select>
   <button>
-    selected option: <selectedoption></selectedoption>
+    selected option: <selectedcontent></selectedcontent>
   </button>
   <option>one</option>
   <option>two</option>
@@ -191,7 +191,7 @@ This example uses the customizable `<select>` element with custom CSS to target 
 ```html
 <select>
   <button>
-    <selectedoption></selectedoption>
+    <selectedcontent></selectedcontent>
   </button>
   <option>
     ❤️ <span class=description>heart</span>
@@ -201,7 +201,7 @@ This example uses the customizable `<select>` element with custom CSS to target 
   </option>
 </select>
 <style>
-selectedoption .description {
+selectedcontent .description {
   display: none;
 }
 select, ::picker(select) {
@@ -213,7 +213,7 @@ select, ::picker(select) {
 <div>
   <Image
     src="/images/selectlist-usecase-selectedoption.png"
-    alt="The rendering of a customizable select element with a custom selectedoption element"
+    alt="The rendering of a customizable select element with a custom selectedcontent element"
   />
 </div>
 </div>
@@ -300,10 +300,10 @@ Here is another example with custom content in the listbox: [codepen](https://co
 
 <div className="code-image-container">
 <div>
-  This example uses the [selectedoptionelement](#the-selectedoptionelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
+  This example uses the [selectedcontentelement](#the-selectedcontentelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
 ```html
-<button><selectedoption id=myselectedoption></selectedoption></button>
-<select selectedoptionelement=myselectedoption>
+<button><selectedcontent id=myselectedcontent></selectedcontent></button>
+<select selectedcontentelement=myselectedcontent>
   <button>⬇️</button>
   <option>Create a merge commit</option>
   <option>Squash and merge</option>
@@ -328,17 +328,17 @@ select, ::picker(select) {
 
 The first child `<button>` of a `<select>` will be slotted into the `<select>`'s UA ShadowRoot and will open the popup list of options.
 
-## The `<selectedoption>` element
+## The `<selectedcontent>` element
 
-The `<selectedoption>` element enables developers to declaratively clone the content of the selected `<option>` element to the button and to style it distinctly from the `<option>`. This use case is shown in the [rendering the option differently in the button](#rendering-the-option-differently-in-the-button) example.
+The `<selectedcontent>` element enables developers to declaratively clone the content of the selected `<option>` element to the button and to style it distinctly from the `<option>`. This use case is shown in the [rendering the option differently in the button](#rendering-the-option-differently-in-the-button) example.
 
-When the `<selectedoption>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>`, the browser will update the contents of `<selectedoption>` by internally calling `cloneNode()` again. If the DOM contents of the currently selected `<option>` are modified, then the browser will not re-clone into `<selectedoption>`.
+When the `<selectedcontent>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>`, the browser will update the contents of `<selectedcontent>` by internally calling `cloneNode()` again. If the DOM contents of the currently selected `<option>` are modified, then the browser will not re-clone into `<selectedcontent>`.
 
-Since the contents of the `<selectedoption>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedoption>`.
+Since the contents of the `<selectedcontent>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedcontent>`.
 
-## The `selectedoptionelement` attribute
+## The `selectedcontentelement` attribute
 
-`<select>` will support the `selectedoptionelement` attribute, which is an IDref which points to a single `<selectedoption>` element to update. This allows the `<selectedoption>` to exist outside of `<select>` in order to support the split buttons use case.
+`<select>` will support the `selectedcontentelement` attribute, which is an IDref which points to a single `<selectedcontent>` element to update. This allows the `<selectedcontent>` to exist outside of `<select>` in order to support the split buttons use case.
 
 ## Anatomy of the customizable select element
 
@@ -349,7 +349,7 @@ Because the various parts of the select element can be styled, it's important to
 - `<select>` - The root element that contains the button and listbox.
 - button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox.
 - `<button>` - The button which opens the listbox when clicked.
-- `<selectedoption>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the children of this element with the result of calling `cloneNode()` on the newly selected `<option>`.
+- `<selectedcontent>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the children of this element with the result of calling `cloneNode()` on the newly selected `<option>`.
 - `<datalist>` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
 - `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
 - `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
@@ -371,7 +371,7 @@ When the select's listbox is showing, the select element will match `:open`, and
 ```html
 <select>
   <button id=custombutton>
-    <selectedoption></selectedoption>
+    <selectedcontent></selectedcontent>
   </button>
   <option>one</option>
   <option>two</option>
@@ -610,7 +610,7 @@ Consider the following example:
 <label for=plant>Choose a plant</label>
 <select id=plant class="my-custom-select">
   <button>
-    <selectedoption></selectedoption>
+    <selectedcontent></selectedcontent>
     <span class=icon></span>
   </button>
   <datalist>
@@ -691,3 +691,4 @@ option::before {
 - [Why `selectedoptionelement`](https://github.com/openui/open-ui/issues/1063#issuecomment-2195407344)
 - [Why require `appearance:base-select` on both `select` and `select::picker(select)`](https://github.com/w3c/csswg-drafts/issues/10440)
 - [Why not observe mutations in selected `<option>`](https://github.com/openui/open-ui/issues/825#issuecomment-2436124668)
+- [Renaming `<selectedoption>` to `<selectedcontent>`](https://github.com/openui/open-ui/issues/1112)
