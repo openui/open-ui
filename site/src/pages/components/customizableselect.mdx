@@ -303,6 +303,34 @@ Here is another example with custom content in the listbox: [codepen](https://co
 </div>
 </div>
 
+### Split buttons
+
+<div className="code-image-container">
+<div>
+  This example uses the [selectedcontentelement](#the-selectedcontentelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
+```html
+<button><selectedcontent id=myselectedcontent></selectedcontent></button>
+<select selectedcontentelement=myselectedcontent>
+  <button>⬇️</button>
+  <option>Create a merge commit</option>
+  <option>Squash and merge</option>
+  <option>Rebase and merge</option>
+</select>
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/select-split-button.png"
+    alt="A customizable select element with a split button"
+  />
+</div>
+</div>
+
 ## Button behavior
 
 The first child `<button>` of a `<select>` will be slotted into the `<select>`'s UA ShadowRoot and will open the popup list of options.
@@ -334,7 +362,7 @@ Because the various parts of the select element can be styled, it's important to
 - `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
-## Styling
+## Styling 
 
 Customizable `<select>` provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
 
