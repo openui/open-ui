@@ -187,7 +187,7 @@ select, ::picker(select) {
 
 To replace the select's built-in button, a native `<button>` element is used. That tells the browser that everything inside the `<button>` should be included in the in-page display of the `<select>` element. I.e. it's just a simple placeholder/container. Normal button activities and attributes, e.g. form submission, are routed to the `<select>` to handle.
 
-To ensure the behavior described above, the nested `<button>` is rendered `inert`. It is also set to `display:contents` by the UA stylesheet, so that there aren't two sets of box decorations. The button and it's descendants do not participate in the a11y tree; therefore, any attributes on the button or descendants have no effect in the a11y tree.
+To ensure the behavior described above, the nested `<button>` is rendered `inert`. It is also set to `display:contents` by the UA stylesheet, so that there aren't two sets of box decorations. The button and it's descendants do not participate in the a11y tree; therefore, any attributes on the button or descendants have no effect on a11y.
 
 ### Rendering the `<option>` differently in the button
 
@@ -362,7 +362,7 @@ Because the various parts of the select element can be styled, it's important to
 - `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
 - `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
 
-## Styling 
+## Styling
 
 Customizable `<select>` provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
 
