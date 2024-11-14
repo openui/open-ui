@@ -9,7 +9,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@aleventhal](https://github.com/aleventhal)
 - Last updated: January 19, 2024
 
-A followup proposal to the [original Popover proposal](https://open-ui.org/components/popover.research.explainer/), which adds several features related to building hints/tooltips.
+A followup proposal to the [original Popover proposal](../popover.research.explainer/), which adds several features related to building hints/tooltips.
 
 {/* <!-- START doctoc generated TOC please keep comment here to allow auto update --> */}
 {/* <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE --> */}
@@ -33,7 +33,7 @@ A followup proposal to the [original Popover proposal](https://open-ui.org/compo
 
 # Background
 
-The [Popover API](https://html.spec.whatwg.org/multipage/C#the-popover-attribute) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), [OpenUI Explainer](https://open-ui.org/components/popover.research.explainer/)) is now part of the HTML standard. It allows developers to create popovers of varying types and also easily trigger them from buttons, without using Javascript.
+The [Popover API](https://html.spec.whatwg.org/multipage/C#the-popover-attribute) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API), [OpenUI Explainer](../popover.research.explainer/)) is now part of the HTML standard. It allows developers to create popovers of varying types and also easily trigger them from buttons, without using Javascript.
 
 One very common use case for popovers that isn't well covered by the existing Popover API is building "tooltips". This explainer discusses a proposal (`popover=hint`) to assist developers in building tooltips, and other similar use cases.
 
@@ -102,7 +102,7 @@ As described above, there are many behaviors associated with tooltips.
 
 The Interest Invokers & Invokers proposals cover hover/focus/etc triggering all kinds of things, including popovers, dialogs and more. They fully handle the behaviors described in sections [1](#1-triggering-a-tooltip) and [3](#3-dismissing-a-tooltip). Since those proposals are very general, and include many non-popover use cases, it makes sense to discuss them separately.
 
-**Note also** that this proposal is **orthogonal** to the [invokers](https://open-ui.org/components/invokers.explainer) and [interest invokers](https://open-ui.org/components/interest-invokers.explainer) proposals. The behaviors described here can function on their own, via the existing `popovertarget=idref` mechanism, or even via Javascript. Of course, very much like the [Anchor Positioning](https://drafts.csswg.org/css-anchor-position-1/) feature, hint popovers will become even more powerful once the [invokers](https://open-ui.org/components/invokers.explainer) mechanism has landed. But these two features do not need to be dependent on each other, or land together.
+**Note also** that this proposal is **orthogonal** to the [invokers](../invokers.explainer) and [interest invokers](../interest-invokers.explainer) proposals. The behaviors described here can function on their own, via the existing `popovertarget=idref` mechanism, or even via Javascript. Of course, very much like the [Anchor Positioning](https://drafts.csswg.org/css-anchor-position-1/) feature, hint popovers will become even more powerful once the [invokers](../invokers.explainer) mechanism has landed. But these two features do not need to be dependent on each other, or land together.
 
 # Proposal: popover=hint
 
@@ -148,6 +148,10 @@ For a screen reader user, there already exists simple settings and commands to r
 
 However, when a hint is used for something more complex, such as a dialog that appears on hover, or a data table, then the user needs to be able to learn it’s there and navigate to it, so that they can use additional screen reader commands to interact with it.
 
+## Invoking elements are buttons, not hover-triggered things
+
+As noted in the [Scope of this explainer](#scope-of-this-explainer) section above, this explainer is only about the `popover=hint` behaviors, and has nothing to do with the **hover- or "interest-" triggering** of popovers. (That is detailed in the [interest invokers explainer](../interest-invokers.explainer/).) Therefore, in the sections below, note that "invoking element" refers to an element such as `<button popovertarget=foo>` which is triggered by activating the button, not hovering it.
+
 ## A11y API support
 
 For the best screen reading experience, the implementation will need to expose different properties for a plain hint vs a rich hint (classification described above).
@@ -161,8 +165,7 @@ For the best screen reading experience, the implementation will need to expose d
 
     1. Add `aria-expanded` on the triggering element: the same treatment as for `popover=auto`.
     2. Minimum role of `tooltip` on the target — see [spec PR describing minimum role](https://github.com/w3c/html-aam/pull/454).
-    3. Add `aria-details` pointing from the trigger to the popover. This allows screen readers to announce the presence of the popover and a command for navigating to it.
-    4. Problem: in general, the details relation does not work for hidden objects, and we can’t necessarily expect the hint to be complete before it becomes visible, as that may happen on-demand. So what happens if the user navigates to a hint popover’s trigger, and it’s not open. If they tabbed there, then we can make sure the popover is shown on focus. But, if they are navigating with a virtual buffer as is likely, how will they trigger the hint popover to open (the user would need to know to focus the trigger, or JAWS/NVDA would need to start focusing objects during navigation as other screen readers do), and then and how will the user know it’s there (should we use a new value of the haspopup object attribute for these, e.g. haspopup=hint)?
+    3. Add `aria-details` pointing from the trigger to the popover: the same treatment as for `popover=auto`. This allows screen readers to announce the presence of the popover and a command for navigating to it.
 
 # ::tooltip pseudo element
 
