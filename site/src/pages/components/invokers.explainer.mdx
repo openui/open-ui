@@ -142,7 +142,7 @@ interface CommandEvent : Event {
   readonly attribute DOMString command;
 };
 dictionary CommandEventInit : EventInit {
-  DOMString action = "";
+  DOMString command = "";
   Element source;
 };
 ```
@@ -248,7 +248,7 @@ manual event handlers to the Invokers.
 
 <script>
   document.getElementById("my-custom").addEventListener("command", (e) => {
-    if (e.action === "--my-frobulate") {
+    if (e.command === "--my-frobulate") {
       alert("Successfully frobulated the div");
     }
   });
@@ -264,7 +264,7 @@ element types are handled.
 
 When the `command` attribute is missing it will default to an invalid state.
 
-| Invokee Element | `action` hint         | Behaviour                                                                                                  |
+| Invokee Element | `command` hint         | Behaviour                                                                                                  |
 | :-------------- | :-------------------- | :--------------------------------------------------------------------------------------------------------- |
 | `<* popover>`   | `'toggle-popover'`    | Shows the `popover` if closed, otherwise hides. Similar to `.togglePopover()`                              |
 | `<* popover>`   | `'hide-popover'`      | Hides the `popover` if open, otherwise does nothing. Similar to `.hidePopover()`                           |
@@ -276,7 +276,7 @@ Further behaviours have been proposed, but need further design on exactly how
 they will behave based on implications such as accessibility, security,
 interactivity, and how the button may need to respond to such actions.
 
-| Invokee Element       | `action` hint          | Behaviour                                                                                                      |
+| Invokee Element       | `command` hint          | Behaviour                                                                                                      |
 | :-------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------- |
 | `<details>`           | `'toggle'`             | If the `<details>` is `open`, then close it, otherwise open it                                                 |
 | `<details>`           | `'open'`               | If the `<details>` is not `open`, then open it                                                                 |
@@ -591,7 +591,7 @@ customElements.define(
     class extends HTMLElement {
       connectedCallback() {
         this.addEventListener("command", (e) => {
-          if (e.action === "--spin-widget") {
+          if (e.command === "--spin-widget") {
             this.spin();
           }
         });
@@ -696,7 +696,7 @@ fullscreen may now declare a button that can fullscreen. Consider the following:
 ```html
 <iframe sandbox allow="fullscreen">
   <html id="invokee">
-    <button invoketarget="invokee" invokeaction="toggleFullscreen">Invoke</button> 
+    <button commandfor="invokee" command="toggleFullscreen">Invoke</button> 
     <button onclick="invokee.requestFullscreen()">Go fullscreen</button>
   </html>
 </iframe>
@@ -897,7 +897,7 @@ this hint. For example:
 <script>
   const counter = document.getElementById("my-counter");
   counter.addEventListener("command", (e) => {
-    let addMatch = /^--add-(\d+)$/.match(e.action);
+    let addMatch = /^--add-(\d+)$/.match(e.command);
     if (addMatch) {
       counter.value = Number(counter.value) + Number(addMatch[1]);
     }
