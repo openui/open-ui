@@ -21,7 +21,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 ## Introduction
 
-Following [invokers](../invokers.explainer), adding an `interesttarget` and `interestaction`
+Following [invokers](../invokers.explainer), adding an `interesttarget`
 attributes to interactive elements: starting with `<button>`, `<input
 type="button">`/`<input type="reset">`/`<input type="submit">`, `<a>`, and `<area>` (perhaps
 expanding to `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
@@ -68,13 +68,12 @@ interest.
 
 ## Proposed Plan
 
-In the style of `invoketarget`, this document proposes we add `interesttarget` and `interestaction`
+In the style of `commandfor`, this document proposes we add `interesttarget`
 as available attributes to `<button>`, `<a>`, `<area>` and `<input>` elements.
 
 ```webidl
 interface mixin InterestInvokerElement {
   [CEReactions] attribute Element? interestTargetElement;
-  [CEReactions] attribute DOMString interestAction;
 };
 HTMLButtonElement includes InterestInvokerElement
 HTMLInputElement includes InterestInvokerElement
@@ -89,20 +88,6 @@ assign a node to be the invoker target, allowing for cross-root invokers (in
 some cases, see [attr-asociated element
 steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element)
 for more).
-
-The `interestaction` (and the `interestAction` reflected property) is a freeform hint
-to the interestee. InterestAction can be a "built-in" action or a "custom" action.
-If `interestaction` is a false value (`''``, `null`, etc), then it will default to
-an `auto` state.
-
-Built-in interactive elements have built-in behaviours (detailed below) which
-are determined by the `interestaction`. The built-in names _must not_ contain a
-`-`. An `interestaction` without a dash that is not a built-in is considered
-invalid, and will not dispatch an InterestEvent.
-
-Valid interestactions (that is: custom interestaction or a valid built-in) will
-dispatch InterestEvent, allowing custom code to take control of interest invocations (for
-example calling `.preventDefault()` or executing custom side-effects).
 
 Elements with `interesttarget` set will dispatch an `InterestEvent` on the
 _Interestee_ (the element referenced by `interesttarget`) when the element
@@ -128,15 +113,14 @@ dictionary InterestEventInit : EventInit {
 };
 ```
 
-Both `interesttarget` and `invoketarget` can exist on the same element at the
+Both `interesttarget` and `commandfor` can exist on the same element at the
 same time, and both should be respected.
 
-If a `<button>` is a form participant, or has `type=submit`, then `invoketarget`
+If a `<button>` is a form participant, or has `type=submit`, then `commandfor`
 _must_ be ignored. `interesttarget` is still valid in these scenarios.
 
-If an `<input>` is a form participant, or has a `type` other than `reset` or
-`button`, then `invoketarget` and `interesttarget` _must_ be ignored. `interesttarget`
-additionally works with `type` of `submit`.
+If an `<input>` is a form participant, or has a `type` other than `reset`, `submit`, or
+`button`, then `interesttarget` _must_ be ignored.
 
 ### Example Code
 
@@ -157,7 +141,7 @@ allowing for custom JavaScript to be triggered without having to wire up manual
 event handlers to the Interest elements.
 
 ```html
-<button interesttarget="my-custom" interestaction="custom-action">
+<button interesttarget="my-custom">
   When this button shows interest, the below div will display.
 </button>
 
@@ -166,11 +150,9 @@ event handlers to the Interest elements.
 <script>
   const custom = document.getElementById("my-custom");
   custom.addEventListener("interest", (e) => {
-    if (e.action !== "custom-action") return;
     custom.classList.add('active')
   });
   custom.addEventListener("loseinterest", (e) => {
-    if (e.action !== "custom-action") return;
     custom.classList.remove('active')
   });
 </script>
@@ -202,14 +184,10 @@ Showing/losing interest on an interesttarget will _always_ dispatch a trusted
 specific element types are handled. Note that this list is ordered and higher
 rules take precedence:
 
-When the `interestaction` attribute is missing it will default to an auto state.
-
-| Interestee Element | `action` hint    | Event Type       | Behaviour                              |
-| :----------------- | :--------------- | :--------------- | :--------------------------------------|
-| `<* popover=*>`    | (auto)           | `'interest'`     | Call `.togglePopover()` on the invokee |
-| `<* popover=*>`    | `togglePopover`  | `'interest'`     | Call `.togglePopover()` on the invokee |
-| `<* popover=*>`    | (auto)           | `'loseinterest'` | Call `.togglePopover()` on the invokee |
-| `<* popover=*>`    | `togglePopover`  | `'loseinterest'` | Call `.togglePopover()` on the invokee |
+| Interestee Element | Event Type       | Behaviour                              |
+| :----------------- | :--------------- | :--------------------------------------|
+| `<* popover=*>`    | `'interest'`     | Call `.showPopover()` on the invokee |
+| `<* popover=*>`    | `'loseinterest'` | Call `.hidePopover()` on the invokee |
 
 > Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
 
@@ -223,7 +201,7 @@ are not terms which encompass all viable methods of interaction. Lots of
 it was deemed that `interest` is the best name to explain the concept of a
 "hover or focus or equivalent".
 
-#### Why is `interesttarget` on a lot more elements than `invoketarget`?
+#### Why is `interesttarget` on a lot more elements than `commandfor`?
 
 While _invocation_ should only be limited to buttons, disclosure of
 supplementary information can be expanded to _all_ interactive elements. There
