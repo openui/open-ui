@@ -80,9 +80,8 @@ the balance.
   `Space` or `Enter` (Carriage Return) key on the keyboard. For other HIDs such
   as eye tracking or pedals or game controllers, the equivalent expected "click"
   action should be used to invoke the element.
-- Invoker: An invoker is a button element (that is a `<button>`,
-  `<input type="button">`, or `<input type="reset">`) that has an `commandfor`
-  and `command` attribute set.
+- Invoker: An invoker is a button control (that is a `<button type="button">`) that has a
+  `commandfor` and `command` attribute set.
 - Invoker Target: An element which is referenced to by an Invoker, via the
   `commandfor` attribute.
 
@@ -167,7 +166,7 @@ When pointing to a `popover`, `commandfor` acts much like `popovertarget`,
 allowing the toggling of popovers.
 
 ```html
-<button commandfor="my-popover" command="toggle-popover">Open Popover</button>
+<button type="button" commandfor="my-popover" command="toggle-popover">Open Popover</button>
 <!-- Effectively the same as popovertarget="my-popover" -->
 
 <div id="my-popover" popover="auto">Hello world</div>
@@ -179,12 +178,12 @@ When pointing to a `<dialog>`, `command` can toggle a `<dialog>`'s
 openness.
 
 ```html
-<button commandfor="my-dialog" command="show-modal">Open Dialog</button>
+<button type="button" commandfor="my-dialog" command="show-modal">Open Dialog</button>
 
 <dialog id="my-dialog">
   Hello world!
 
-  <button commandfor="my-dialog" command="close">Close</button>
+  <button type="button" commandfor="my-dialog" command="close">Close</button>
 </dialog>
 ```
 
@@ -196,7 +195,7 @@ When pointing to a `<details>`, `commandfor` can toggle a `<details>`'
 openness.
 
 ```html
-<button commandfor="my-details" command="open">Open Details</button>
+<button type="button" commandfor="my-details" command="open">Open Details</button>
 <!-- Can be used to replicate the `<summary>` interaction -->
 
 <details id="my-details">
@@ -214,7 +213,7 @@ rendered button _within_ the input; and can be used to declare a customised
 alternative button to the input's button.
 
 ```html
-<button commandfor="my-file" command="show-picker">Pick a file...</button>
+<button type="button" commandfor="my-file" command="show-picker">Pick a file...</button>
 
 <input id="my-file" type="file" />
 ```
@@ -228,8 +227,8 @@ shines, allowing multiple buttons to handle different interactions with the
 video player.
 
 ```html
-<button commandfor="my-video" command="play-pause">Play/Pause</button>
-<button commandfor="my-video" command="toggle-muted">Mute/Unmute</button>
+<button type="button" commandfor="my-video" command="play-pause">Play/Pause</button>
+<button type="button" commandfor="my-video" command="toggle-muted">Mute/Unmute</button>
 
 <video id="my-video"></video>
 ```
@@ -242,7 +241,7 @@ manual event handlers to the Invokers.
 
 ```html
 <!-- Custom commands must contain a double dash! -->
-<button commandfor="my-custom" command="--my-frobulate">Frobulate</button>
+<button type="button" commandfor="my-custom" command="--my-frobulate">Frobulate</button>
 
 <div id="my-custom"></div>
 
@@ -579,7 +578,7 @@ As the underlying system for invoke elements uses event dispatch, Custom Element
 can make use of `CommandEvent` for their own behaviours. Consider the following:
 
 ```html
-<button commandfor="my-element" command="--spin-widget">
+<button type="button" commandfor="my-element" command="--spin-widget">
   Spin the widget
 </button>
 
@@ -696,7 +695,7 @@ fullscreen may now declare a button that can fullscreen. Consider the following:
 ```html
 <iframe sandbox allow="fullscreen">
   <html id="invokee">
-    <button commandfor="invokee" command="toggleFullscreen">Invoke</button> 
+    <button type="button" commandfor="invokee" command="toggleFullscreen">Invoke</button>
     <button onclick="invokee.requestFullscreen()">Go fullscreen</button>
   </html>
 </iframe>
@@ -810,29 +809,25 @@ for non-interactive elements. While `<a>`s _are_ interactive, they should _only_
 be used for page navigation and not for invoking other behaviours, and so
 `command`/`commandfor` should not be allowed.
 
-#### Why isn't `input[type=submit]` included?
+#### Why isn't `button[type=submit]` included?
 
 This is not added by design. Submit inputs already have a default action:
 submitting forms. If you want a button to control the submission of a form, use
-`input[type=submit]`, if you want a button to control invocation of something
-_other_ than a form then you should use `input[type=button]`.
+`button[type=submit]`, if you want a button to control invocation of something
+_other_ than a form then you should use `button[type=button]`.
 
-#### Why _is_ `input[type=reset]` included?
+#### Why isn't `button[type=reset]` included?
 
-It may stand to reason that if `input[type=submit]` is _excluded_ then so should
-`input[type=reset]`, however, there are valid use cases to resetting a form at
-the same time as some other action, for example closing the dialog that contains
-a form:
+This is not added by design. Reset inputs already have a default action:
+resetting forms. If you want a button to control the resetting of a form, use
+`button[type=reset]`, if you want a button to control invocation of something
+_other_ than a form then you should use `button[type=button]`.
 
-```html
-<dialog id="my-dialog">
-  <form>
-    <input type="text" />
-    <!-- This button closes the dialog _and_ resets the form -->
-    <input type="reset" commandfor="my-dialog" command="close" value="Cancel" />
-  </form>
-</dialog>
-```
+#### Why isn't `input[type=button]` included?
+
+This is not added by design. `input[type=button]` is a legacy element,
+use of this element is discouraged in favour of `<button>`. So we only support
+`<button>` elements.
 
 #### What does this mean for `popovertarget`?
 
@@ -854,7 +849,7 @@ methods, if that's desired:
 
 
 ```html
-<button commandfor="my-element" command="--spin-widget">
+<button type="button" commandfor="my-element" command="--spin-widget">
   Spin the widget
 </button>
 
@@ -888,9 +883,9 @@ you feel it necessary you can invent your own DSLs for passing extra data using
 this hint. For example:
 
 ```html
-<button commandfor="my-counter" command="--add-1">Add 1</button>
-<button commandfor="my-counter" command="--add-2">Add 2</button>
-<button commandfor="my-counter" command="--add-10">Add 10</button>
+<button type="button" commandfor="my-counter" command="--add-1">Add 1</button>
+<button type="button" commandfor="my-counter" command="--add-2">Add 2</button>
+<button type="button" commandfor="my-counter" command="--add-10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
@@ -909,9 +904,9 @@ You can also leverage the buttons `value` attribute to effectively parameterise
 certain commands:
 
 ```html
-<button commandfor="my-counter" command="--add-num" value="1">Add 1</button>
-<button commandfor="my-counter" command="--add-num" value="2">Add 2</button>
-<button commandfor="my-counter" command="--add-num" value="10">Add 10</button>
+<button type="button" commandfor="my-counter" command="--add-num" value="1">Add 1</button>
+<button type="button" commandfor="my-counter" command="--add-num" value="2">Add 2</button>
+<button type="button" commandfor="my-counter" command="--add-num" value="10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
@@ -924,3 +919,5 @@ certain commands:
   });
 </script>
 ```
+
+You could also use `data-*` attributes for even more granular control.
