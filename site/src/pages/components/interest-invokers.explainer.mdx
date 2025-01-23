@@ -4,77 +4,133 @@ name: Interest Invokers (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-- Authors: [Keith Cirkel](https://github.com/keithamus)
+- [Mason Freed](https://github.com/mfreed7), [Keith Cirkel](https://github.com/keithamus)
+- Last updated: January 22, 2025
 
-{/* START doctoc generated TOC please keep comment here to allow auto update */}
-{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+## Table of Contents
+<!--- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-# Interest Invokers
+- [The Pitch in Code](#the-pitch-in-code)
+- [Introduction](#introduction)
+- [HIDs and interest](#hids-and-interest)
+  - [Mouse](#mouse)
+  - [Keyboard](#keyboard)
+  - [Touchscreen](#touchscreen)
+  - [Other](#other)
+- [Mouse delays](#mouse-delays)
+- [Why No `interestaction` Attribute?](#why-no-interestaction-attribute)
+- [Implementation Details](#implementation-details)
+- [Example Code](#example-code)
+  - [Popovers](#popovers)
+  - [Custom delays and multiple actions](#custom-delays-and-multiple-actions)
+  - [Custom behaviour](#custom-behaviour)
+- [Mockups](#mockups)
+  - [Touchscreen hovercard](#touchscreen-hovercard)
+- [Accessibility](#accessibility)
+- [PAQ (Potentially Asked Questions)](#paq-potentially-asked-questions)
+  - [Why the name `interest`? Why not `hover` or `focus`?](#why-the-name-interest-why-not-hover-or-focus)
+  - [Why is `interesttarget` on a lot more elements than `commandfor`?](#why-is-interesttarget-on-a-lot-more-elements-than-commandfor)
+  - [Why is `interesttarget` not unlimited, like `title` is?](#why-is-interesttarget-not-unlimited-like-title-is)
+  - [Safe Area Triangle](#safe-area-triangle)
 
-## Pitch in Code
+
+## The Pitch in Code
 
 ```html
-<button interesttarget="my-tooltip">Hover/Focus to show the tooltip</button>
+<a interesttarget="my-hovercard" href="...">Hover to show the hovercard</button>
 
-<span popover=hint id="my-toolip">This is the tooltip</span>
+<span popover=hint id="my-toolip">This is the hovercard</span>
 ```
 
 ## Introduction
 
-Following [invokers](../invokers.explainer), adding an `interesttarget`
-attributes to interactive elements: starting with `<button>`, `<input
-type="button">`/`<input type="reset">`/`<input type="submit">`, `<a>`, and `<area>` (perhaps
-expanding to `<input>`, `<textarea>`, `<select>`, `<summary>` or maybe more, see
-[#14](https://github.com/openui/open-ui/issues/908)). This would allow
-disclosure of high fidelity tooltips in a more accessible and declarative way.
-Elements with `interesttarget` will - when hovered, or focussed (or an equivalent
-user-agent determined action) - dispatch an `InterestEvent` on the element
-referenced by `interesttarget`, with some default behaviours.
+The [Invoker Commands API](../invokers.explainer), consisting of the `command` and `commandfor` attributes, provides an easy declarative way to make buttons directly trigger actions on a target element, such as showing a popover or a modal dialog when the button **is clicked**. This API, `interesttarget`, is very similar, in that it also provides a declarative way to invoke actions on a target element. However, rather than being activated via a **click** on the element, this API uses a lighter-touch way for the user to "show interest" in an element without fully activating it. For example, a link `<a href="..." interesttarget=foo>` element can be **hovered** with the mouse, which might trigger a hovercard preview of the link, without actually navigating to the link destination URL. Of course, if the link is **clicked**, then a normal navigation will occur.
 
-### Terms
+The `interesttarget` capability is supported on many interactive elements:
+- `<button>`
+- `<input type=button>`
+- `<input type=reset>`
+- `<input type=submit>`
+- `<a>`
+- SVG `<a>`
+- `<area>`.
 
-- Interest/Shows Interest: The action of _Interest_ refers to the user "landing"
-  on an element without invoking it, using a Human Input Device (HID). See below
-  for how various HIDs can show interest.
-- Loses Interest/Lost Interest: The action of _Loses Interest_ refers to the user
-  "moving away" from an element, or its _interestee_, using a HID; in other words
-  interest must be on a different element that is neither. Elements can only
-  _Lose Interest_ if they are in the state of Showing Interest. See below for
-  how various HIDs can lose interest.
-- Interestee: An element which is referenced to by an Interest element, via the
-  `interesttarget` attribute.
+It is possible that this list could be expanded later: see [#908](https://github.com/openui/open-ui/issues/908).
 
+The user will be able to **"show interest"** in an element through various means. For mouse users, hovering the element for a period of time will "show interest". For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. See the [HIDs and interest](#HIDs-and-interest) section for all the details.
 
-### HIDs and interest
+Since one of the primary use cases for this API is the activation of hovercards, when the target element of `interesttarget` is a popover (with the `popover` attribute), the popover will automatically be shown. This provides an easy way to allow disclosure of high fidelity hovercards in a more accessible and declarative way. It is also possible to connect other actions to the target element, via the `"interest"` event: when interest is shown in an element with `interesttarget`, an `InterestEvent` with type `"interest"` will be fired at the element referenced by `interesttarget`.
 
-Interest is shown and lost based on a user gesture, which will be dependent on
-the users Human Input Device (HID). A keyboard will use focus to determine
-interest equivalent to the `focusin`/`focusout` events available today. A
-pointer device, such as a mouse, will use the `pointerenter`/`pointerleave`.
+It is also possible to trigger actions that occur when the user **"loses interest"** in the element and its target. In a very similar way to how "showing interest" is defined, "losing interest" happens in different ways based on the input modality. But the concept is clear: once the user has shown interest in an element, they need a way to show that they have "lost" that interest. For the typical hovercard use case, losing interest would cause the hovercard/popover to close. In all cases, when interest is lost, an `InterestEvent` with type `"loseinterest"` will be fired at the target element.
 
-"Interest" is an intentional abstraction from traditional keyboard and pointer
-events to allow other HIDs to map an appropriate (privacy preserving) user
-gesture, without emulating or otherwise conflicting with keyboard or pointer
-events. For example a user agent with a touch screen HID _might_ map showing
-interest to a menu item in the devices long-press context-menu, while a device
-with hand tracking (such as mixed reality headsets) might offer an explicit hand
-gesture.
+## HIDs and interest
 
-While the proposal aims to encompass alternate HIDs and decvices, the specifics
-precisely how these HIDs will show Interest is not part of the initial proposal,
-and is an area of active discussion. It also stands to reason that
-to-be-invented devices may introduce new and novel concepts of showing/losing
-interest.
+Users access the web using many different Human Interface Devices (HIDs), including mouse, keyboard, touchscreen, and even things like voice control, eye tracking, and other specialty HIDs. However, as mentioned above, "showing" and "losing" interest are intentional abstractions that do not refer to specific actions such as "hover" or "long press". This is on purpose: the developer should not have to worry about handling all of the various input modalities specifically, in the same way that a `<button>` element can be activated in various ways such as tapping, clicking, or hitting Enter on the keyboard. The user agent provides this functionality "for free": developers don't need think about HIDs. This provides two benefits:
 
-## Proposed Plan
+1. The implementation burden is lowered, since developers don't need to implement support for all forms of HID.
+2. Users, particularly those using less common HIDs, are benefited, since all users have *a way* to show interest in elements. They don't get locked out of particular site functionality simply because the site developer didn't make specific affordances for their particular HID.
 
-In the style of `commandfor`, this document proposes we add `interesttarget`
-as available attributes to `<button>`, `<a>`, `<area>` and `<input>` elements.
+### Mouse
+
+Mouse users will show interest in an element by mouse-hovering the element for a period of time. They will lose interest in that element when they de-hover the element (i.e. hover something unrelated) for a period of time. If the target is a popover, then both the element with `interesttarget` *and* the target popover need to be de-hovered. In this way, a user can hover to get a hovercard, and then move the mouse over to that hovercard (e.g. to select/copy some text) without the popover closing.
+
+### Keyboard
+
+For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. Another hot-key such as the ESC key will provide a way to trigger "loseinterest".
+
+See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
+
+### Touchscreen
+
+For touchscreen users, the widely-adopted standard for "showing interest" in an element is the [long-press gesture](https://en.wikipedia.org/wiki/Pointing_device_gesture#:~:text=0%3A04-,Long%20Press,-Duration%3A%205%20seconds). For native apps, this is the user-expected shortcut to show context menus and access other actions without explicitly activating the element. (See [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599) for more context on this point, from developers.)
+
+On the web, however, most browsers *already overload* the long-press gesture to provide additional functionality. For example, long-pressing on plain text nodes often creates a text selection around that text, and sometimes provides an additional context menu containing actions like "copy" or "look up". Long-pressing a link `<a>` element in most browsers provides a more involved context menu with additional operations such as "open in a new tab", "add to reading list", or "share". Users often appreciate these additional capabilities, and do not want to lose access to them. Therefore, this proposal provides a way to **keep both** capabilities: the `interesttarget` behavior **and** the existing context menus and behaviors.
+
+To show interest in an element via touchscreen, the user simply long-presses that element. This does not activate (e.g. click) the element, it merely triggers interest in the element. This long press immediately fires the `"interest"` event, but *also* shows any context menus that would have shown if the `interesttarget` attribute were not present. So both things happen together. In the case of a popover target element, the idea is that the hovercard popover shows up **in addition** to the context menu, so that the user can tap on either of those things. The user can trigger `"loseinterest"` by tapping either outside the target popover, or on one of the provided context menu items (if any).
+
+One difficulty of the above proposal is that the two things (the popover target and the UA-provided context menu) need to coordinate, at least on positioning. It would be a bad user experience if the context menu showed up on top of the popover, obscuring part or all of it. One option would be to make sure the UA context menu is movable, so it can be moved out of the way by the user, if it obscures something important. But in discussions with developers (see, e.g., [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599)), it is clear that this API simply cannot make it *harder* to access the context menu. So more coordination is needed. To provide this coordination, a few more things will be included:
+
+1. When the long-pressed element has `interesttarget`, any UA-provided context menu will not blur or otherwise obscure the web content it covers. In this way, the page will still be visible "under" the context menu.
+2. The portion of the renderer window that is still visible (not obscured by the context menu) will be exposed to the developer via four new [`env()` values](https://developer.mozilla.org/en-US/docs/Web/CSS/env), tentatively called `context-menu-inset-top`, `context-menu-inset-right`, `context-menu-inset-bottom`, and `context-menu-inset-left`. In this way, the developer can safely position the target popover within the area that isn't obscured by the context menu. (See [the mockups section](#mockups).)
+3. An attempt will be made to provide at least half of the screen (or a "reasonable" amount of screen real estate) for developer content, e.g. by moving the context menu down rather than centering it within the viewport.
+
+See https://github.com/openui/open-ui/issues/1052 for a much more detailed conversation with developers about touch screen behavior. That extended discussion led to the behaviors described in this section.
+
+### Other
+
+Th "other" category includes many HID types, including assistive technologies, eye tracking interfaces (e.g. [Apple Vision Pro](https://www.apple.com/apple-vision-pro/)), voice control systems, switch access, and future HIDs that haven't been developed yet.
+
+Since this category of HIDs contains less-commonly-used HID types, and because it also contains future HIDs that don't even exist yet, the specification for `interesttarget` will simply *mandate* that the User Agent provide *a way* for users to both "show interest" and "lose interest" in elements, no matter what HID is in use, without specifying exactly what form that might take. In some cases, this behavior likely cannot be specified, and must be left to the discretion of the user agent. For example, an explicit hand gesture might be needed for the Vision Pro interface. In the to-be-invented case, it stands to reason that devices might introduce new and novel concepts of showing/losing interest.
+
+## Mouse delays
+
+When the HID is a mouse, and hover/de-hover is the method for showing and losing interest, delays are important for a number of reasons:
+
+1. Simply hovering an element should not be enough to show interest in that element, since the user might just be moving the mouse from one place to another on the screen. It would be highly distracting to the user if such a move caused many popovers to show up. For this reason, showing interest needs to be done by hovering an element **for a period of time**.
+
+2. For a similar reason, losing interest cannot be provided by *just* de-hovering the element. For example, in the common case of a link that has a hovercard, it is very common for the hovercard to be separated from the element by some padding space. And it is also common for the user to want to move their mouse *from* the link *to* the hovercard, e.g. to select and copy some text. However, since there's a gap between the elements, moving the mouse across that gap constitutes a de-hover of both the element and its target. For this reason, losing interest needs to be done by de-hovering the element (and its target) **for a period of time**.
+
+Both of these time periods need to be CSS-configurable, because different use cases can require different delays. For example, a responsive gaming site might want very short delays, including potentially zero-delay. On the other hand, information-rich sites such as Wikipedia might want longer delays to ensure their content is easily accessible to all. To achieve this, two properties, `interest-target-show-delay` and `interest-target-hide-delay`, will control the corresponding delays. Because, as described above, both of these delays are fairly critical to proper operation of the interest mechanism, both properties will default to a non-zero value, 0.5 seconds. A shorthand `interest-target-delay` property will control both.
+
+See https://github.com/w3c/csswg-drafts/issues/9236 for a much more detailed conversation about these hover delay settings. That extended discussion led to the behaviors described in this section. Notably, the OP and initial comments started in a somewhat different place than the eventual conclusion, which is what is described here.
+
+## Why No `interestaction` Attribute?
+
+The `command`/`commandfor` API, as its name suggests, provides *two* attributes. One (`commandfor`) is the link to the target element, and the other (`command`) describes what action to take on the target element. That is appropriate, because when activating a button, many different types of actions could be desired, even for the same target element. A button might want to open **or** close a dialog, for example. Or it might want to play **or** pause a video.
+
+The same is not true for `interesttarget`. When the target is a popover, the only set of actions that makes sense is to *show* the popover when interest is shown, and *hide* the popover when interest is lost. There are no identified use cases that invert those actions. Alternatively, defining both show and lose interest actions to *toggle* the popover can lead to serious out-of-sync problems that would be major footguns. So for popovers, there is no need for a separate attribute controlling the behavior, because there is only one rational set of behaviors. And as described above, there is only one kind of target element that comes with default actions, which is the popover. Other actions might use the `"interest"` and `"loseinterest"` events to add additional behavior, but in that case, they can provide their own definitions of actions to take.
+
+See https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411 (particularly [this comment](https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411)) for more discussion of this section.
+
+## Implementation Details
+
+In the style of `commandfor`, we propose to add a global attribute called `interesttarget`, which can be used on `<button>`, `<a>`, `<area>` and `<input>` elements:
 
 ```webidl
 interface mixin InterestInvokerElement {
   [CEReactions] attribute Element? interestTargetElement;
 };
+
 HTMLButtonElement includes InterestInvokerElement
 HTMLInputElement includes InterestInvokerElement
 HTMLAnchorElement includes InterestInvokerElement
@@ -82,39 +138,23 @@ HTMLAreaElement includes InterestInvokerElement
 SVGAElement includes InterestInvokerElement
 ```
 
-The `interesttarget` value should be an IDREF pointing to an element within the
-document. `.interestTargetElement` also exists on the element to imperatively
-assign a node to be the invoker target, allowing for cross-root invokers (in
-some cases, see [attr-asociated element
-steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element)
-for more).
+The `interesttarget` value should be an IDREF pointing to an element within a single document or shadow root. The `interestTargetElement` IDL attribute also exists on the element to imperatively assign a node to be the invoker target, allowing for cross-root invokers (in some cases, see [attr-asociated element steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element) for more). We define this target element to be the "Interestee".
 
-Elements with `interesttarget` set will dispatch an `InterestEvent` on the
-_Interestee_ (the element referenced by `interesttarget`) when the element
-_Shows Interest_ or _Loses Interest_. When the element _Shows Interest_ the
-event type will be `'interest'`. If the element has _Shown Interest_, and
-interest moves away from both the _Interest Element_ and the _Interestee_, then
-the element _Loses Interest_ and an `InterestEvent` with the type of
-`'loseinterest'` will be dispatched on the _Interestee_. The event also contains
-a `invoker` property that will reference the _Interest_ element.
-`InterestEvent` objects are always non-bubbling, composed, cancellable events.
+Elements with an `interesttarget` attribute will dispatch an `InterestEvent` on the *Interestee* when the element
+*Shows Interest* or *Loses Interest*. When the user *Shows Interest* in the element, the event type will be `"interest"`. If the user has already shown interest in the element, and interest is subsequently lost, an `InterestEvent` with the type of `"loseinterest"` will be dispatched on the *Interestee*. The event also contains a `source` property that will reference the element with `interesttarget`. `InterestEvent` objects are always non-bubbling, composed, cancellable events.
 
 ```webidl
 [Exposed=Window]
 interface InterestEvent : Event {
-  constructor(DOMString type, InterestEventInit interestEventInit);
-  readonly attribute Element invoker;
-  readonly attribute DOMString type = "interest";
-  readonly attribute DOMString action;
+  constructor(DOMString type, optional InterestEventInit interestEventInit = {});
+  readonly attribute Element source;
 };
 dictionary InterestEventInit : EventInit {
-  DOMString action = "";
-  Element invoker;
+  Element? source = null;
 };
 ```
 
-Both `interesttarget` and `commandfor` can exist on the same element at the
-same time, and both should be respected.
+Both `interesttarget` and `commandfor` can exist on the same element at the same time, and both should be respected/functional, since they are activated using strictly separate actions by the user.
 
 If a `<button>` is a form participant, or has `type=submit`, then `commandfor`
 _must_ be ignored. `interesttarget` is still valid in these scenarios.
@@ -122,27 +162,43 @@ _must_ be ignored. `interesttarget` is still valid in these scenarios.
 If an `<input>` is a form participant, or has a `type` other than `reset`, `submit`, or
 `button`, then `interesttarget` _must_ be ignored.
 
-### Example Code
+## Example Code
 
-#### Popovers
+### Popovers
 
-An `interesttarget` allows for tooltips using `popover`:
+Use `interesttarget` to declaratively build a hovercard using `popover` (in this case using [`popover=hint`](https://html.spec.whatwg.org/#attr-popover-hint)):
 
 ```html
-<button interesttarget="my-popover">Open Popover</button>
+<button interesttarget="my-popover">Hover for popover</button>
 
 <div id="my-popover" popover="hint">Hello world</div>
 ```
 
-#### Custom behaviour
+### Custom delays and multiple actions
 
-Elements with _Interest_ will dispatch events on the _Interestee_ element,
-allowing for custom JavaScript to be triggered without having to wire up manual
-event handlers to the Interest elements.
+Expanding on the example above, here we add custom hover delays for show and hide, and also show that a single element can have both `interesttarget` and `commandfor`:
+
+```html
+<button interesttarget=hovercard commandfor=application command="show-modal">Start</button>
+
+<div id=hovercard popover=hint>Clicking this button will open a new application</div>
+
+<dialog id=application>Modal application window</dialog>
+
+<style>
+  [interesttarget] {
+    interest-target-show-delay: 1.2s;
+    interest-target-hide-delay: 800ms;
+  }
+```
+
+### Custom behaviour
+
+The `InterestEvent` interface allows for custom JavaScript to be triggered when interest is shown and lost, without having to wire up manual event handlers (such as for `mouseenter` and `mouseleave`):
 
 ```html
 <button interesttarget="my-custom">
-  When this button shows interest, the below div will display.
+  While interest is being shown in this button, the div below will be displayed.
 </button>
 
 <div id="my-custom">Supplementary information</div>
@@ -158,16 +214,19 @@ event handlers to the Interest elements.
 </script>
 ```
 
-### Usability
+## Mockups
 
-The events `interest` and `loseinterest` are intentionally abstract to allow
-more complex usability concepts to unfold. One such area being explored is
-the ability to add "safe areas" or "hit triangles", which allow the user to
-move the pointer between the Interest Invoker (e.g. the button) and Interestee
-(e.g. the tooltip). See [#963](https://github.com/openui/open-ui/issues/963)
-for more.
+### Touchscreen hovercard
 
-### Accessibility
+For touchscreens, the [the Touchscreen section](#Touchscreen) describes how the provided `env()` variables can be used to position the popover to an unobscured position on the screen. This diagram shows the rectangle described by the `context-menu-inset-*` environment variables:
+
+![Interest target available area](/images/touchscreen-interesttarget-mockup.png)
+
+Using those insets, a developer could implement a long-press activated hovercard, to achieve something like this:
+
+![Sample touchscreen hovercard](/images/hovercard1.png)
+
+## Accessibility
 
 > Warning: This section is TBD. PRs and discussions welcome.
 
@@ -175,44 +234,34 @@ See the [`popover=hint` explainer's accessibility section](../popover-hint.resea
 
 In particular, for interest-based triggering of popovers, there is a problem with hidden objects. In general, the details relation does not work for hidden objects, and we can’t necessarily expect the popover to be complete before it becomes visible, as that may happen on-demand. So what happens if the user navigates to a popover’s trigger, and it’s not open? If they tabbed there, then we can make sure the popover is shown on focus. But, if they are navigating with a virtual buffer as is likely, how will they trigger the hint popover to open (the user would need to know to focus the trigger, or JAWS/NVDA would need to start focusing objects during navigation as other screen readers do), and then and how will the user know it’s there (should we use a new value of the haspopup object attribute for these, e.g. `haspopup=hint`)? See https://issues.chromium.org/issues/377923492 for more discussion.
 
-### Defaults
+## PAQ (Potentially Asked Questions)
 
-Depending on the target set by `interesttarget`, showing interest or losing
-interest can trigger additional behaviours alongside the event dispatch.
-Showing/losing interest on an interesttarget will _always_ dispatch a trusted
-`InterestEvent`, but in addition the following table represents how interest on
-specific element types are handled. Note that this list is ordered and higher
-rules take precedence:
-
-| Interestee Element | Event Type       | Behaviour                              |
-| :----------------- | :--------------- | :--------------------------------------|
-| `<* popover=*>`    | `'interest'`     | Call `.showPopover()` on the invokee |
-| `<* popover=*>`    | `'loseinterest'` | Call `.hidePopover()` on the invokee |
-
-> Note: The above table is an attempt at wide coverage, but ideas are welcome. Please submit a PR if you have one!
-
-### PAQ (Potentially Asked Questions)
-
-#### Why the name `interest`? Why not `hover` or `focus`?
+### Why the name `interest`? Why not `hover` or `focus`?
 
 Much like `click`, `hover` or `focus` are specific to certain types of HID, and
-are not terms which encompass all viable methods of interaction. Lots of
+are not terms which encompass all viable methods of interaction. Many
 [alternatives were discussed](https://github.com/openui/open-ui/issues/767) and
 it was deemed that `interest` is the best name to explain the concept of a
 "hover or focus or equivalent".
 
-#### Why is `interesttarget` on a lot more elements than `commandfor`?
+### Why is `interesttarget` on a lot more elements than `commandfor`?
 
 While _invocation_ should only be limited to buttons, disclosure of
 supplementary information can be expanded to _all_ interactive elements. There
-are many useful use cases for offering a tooltip on anchors, such as signalling
+are many useful use cases for offering a hovercard on anchors, such as signalling
 that they are external, or that they will open in a new window, or to show
 preview information (think: preview windows on iOS Safari or the hovercards that
 display on GitHub over a user's handle).
 
-#### Why is `interesttarget` not unlimited, like `title` is?
+### Why is `interesttarget` not unlimited, like `title` is?
 
 It could be considered a mistake to allow `title` on all elements; as adding
 interactivity to non-interactive elements creates many problems. Limiting where
 `interesttarget` is allowed aims to create a "pit of success", guiding
 developers to use it only on interactive elements, where it makes sense.
+
+For example, *arbitrary* elements are not usually focusable, and it is unclear how to ensure that keyboard users can still show interest in these elements. It is not impossible, however: perhaps elements with `interesttarget` become focusable by default, or only work if `tabindex` has been used. However, these potentialy solutions are not particularly popular, especially among accessibility experts and keyboard-users. So more work would be necessary to navigate the pitfalls.
+
+### Safe Area Triangle
+
+The events `interest` and `loseinterest` are intentionally abstract to allow more complex usability concepts to unfold. It is possible that a future capability might be to add automatic "safe areas" or "hit triangles", which allow the user to move the pointer between the Interest Invoker (e.g. the button) and Interestee (e.g. the hovercard), regardless of the `interest-target-hide-delay` setting. See [#963](https://github.com/openui/open-ui/issues/963) for more.
