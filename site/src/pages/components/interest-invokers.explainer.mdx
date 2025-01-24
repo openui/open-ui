@@ -150,6 +150,9 @@ It is handy to be able to select elements that both a) have the `interesttarget`
 2. "Speeding up" the `interest-target-show-delay` when another element already has interest. This is a common request: for example, the first popover hovercard takes ~1 second to show up. But then if you quickly hover another element that also triggers a hovercard, that one shows up much more quickly:
 
 ```
+[interesttarget] {
+  interest-target-delay: 1s;
+}
 container:has(:has-interest) [interesttarget] {
   interest-target-show-delay: 0s;
 }
