@@ -46,16 +46,13 @@ layout: ../../layouts/ComponentLayout.astro
 
 The [Invoker Commands API](../invokers.explainer), consisting of the `command` and `commandfor` attributes, provides an easy declarative way to make buttons directly trigger actions on a target element, such as showing a popover or a modal dialog when the button **is clicked**. This API, `interesttarget`, is very similar, in that it also provides a declarative way to invoke actions on a target element. However, rather than being activated via a **click** on the element, this API uses a lighter-touch way for the user to "show interest" in an element without fully activating it. For example, a link `<a href="..." interesttarget=foo>` element can be **hovered** with the mouse, which might trigger a hovercard preview of the link, without actually navigating to the link destination URL. Of course, if the link is **clicked**, then a normal navigation will occur.
 
-The `interesttarget` capability is supported on many interactive elements:
+The `interesttarget` capability is supported on these interactive elements:
 - `<button>`
-- `<input type=button>`
-- `<input type=reset>`
-- `<input type=submit>`
 - `<a href=something>`
 - SVG `<a href=something>`
 - `<area>`.
 
-It is possible that this list could be expanded later: see [#908](https://github.com/openui/open-ui/issues/908). It is also possible that some elements could be removed from the list: see [#1138](https://github.com/openui/open-ui/issues/1138).
+It is possible that this list could be expanded later: see [#908](https://github.com/openui/open-ui/issues/908) and [#1138](https://github.com/openui/open-ui/issues/1138). It is also possible that some elements could be removed from the list: see [#1138](https://github.com/openui/open-ui/issues/1138).
 
 The user will be able to **"show interest"** in an element through various means. For mouse users, hovering the element for a period of time will "show interest". For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. See the [HIDs and interest](#hids-and-interest) section for all the details.
 
@@ -128,7 +125,7 @@ See https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411 (parti
 
 ## Implementation Details
 
-In the style of `commandfor`, we propose to add a global attribute called `interesttarget`, which can be used on `<button>`, `<a>`, `<area>` and `<input>` elements:
+In the style of `commandfor`, we propose to add a global attribute called `interesttarget`, which can be used on `<button>`, `<a>`, and `<area>` elements:
 
 ```webidl
 interface mixin InterestInvokerElement {
@@ -160,11 +157,7 @@ dictionary InterestEventInit : EventInit {
 
 Both `interesttarget` and `commandfor` can exist on the same element at the same time, and both should be respected/functional, since they are activated using strictly separate actions by the user.
 
-If a `<button>` is a form participant, or has `type=submit`, then `commandfor`
-_must_ be ignored. `interesttarget` is still valid in these scenarios.
-
-If an `<input>` is a form participant, or has a `type` other than `reset`, `submit`, or
-`button`, then `interesttarget` _must_ be ignored.
+While `commandfor` is ignored for `<button>`s that are form participants, or have `type=submit`, the `interesttarget` is still valid in these scenarios.
 
 ## Example Code
 
