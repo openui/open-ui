@@ -106,7 +106,6 @@ There is another category of devices which also falls into the "Other" category:
 When the HID is a mouse, where hover/de-hover is the method for showing and losing interest, delays are important for a number of reasons:
 
 1. Simply hovering an element should not be enough to show interest in that element, since the user might just be moving the mouse from one place to another on the screen. It would be highly distracting to the user if such a move caused many popovers to show up. For this reason, showing interest needs to be done by hovering an element **for a period of time**.
-
 2. For a similar reason, losing interest cannot be provided by *just* de-hovering the element. For example, in the common case of a link that has a hovercard, it is very common for the hovercard to be separated from the element by some padding space. And it is also common for the user to want to move their mouse *from* the link *to* the hovercard, e.g. to select and copy some text. However, since there's a gap between the elements, moving the mouse across that gap constitutes a de-hover of both the element and its target. For this reason, losing interest needs to be done by de-hovering the element (and its target) **for a period of time**.
 
 Both of these time periods need to be CSS-configurable, because different use cases can require different delays. For example, a responsive gaming site might want very short delays, including potentially zero-delay. On the other hand, information-rich sites such as Wikipedia might want longer delays to ensure their content is easily accessible to all. To achieve this, two properties, `interest-target-show-delay` and `interest-target-hide-delay`, will control the corresponding delays. Because, as described above, both of these delays are fairly critical to proper operation of the interest mechanism, both properties will default to a non-zero value, 0.5 seconds. A shorthand `interest-target-delay` property will control both.
@@ -122,6 +121,30 @@ The `command`/`commandfor` API, as its name suggests, provides *two* attributes.
 The same is not true for `interesttarget`. When the target is a popover, the only set of actions that makes sense is to *show* the popover when interest is shown, and *hide* the popover when interest is lost. There are no identified use cases that invert those actions. Alternatively, defining show and lose interest actions to both *toggle* the popover can lead to serious out-of-sync problems that would be major footguns. So for popovers, there is no need for a separate attribute controlling the behavior, because there is only one rational set of behaviors. And as described above, popovers are the only kind of target element that comes with default actions. Other actions might use the `"interest"` and `"loseinterest"` events to add additional behavior, but in that case, they can provide their own definitions of actions to take. And again because of the above points, there isn't a future-compat problem like there might be for the `commandfor` attribute.
 
 See https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411 (particularly [this comment](https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411)) for more discussion of this section.
+
+## The `:has-interest` Pseudo Class
+
+It is handy to be able to select elements that both a) have the `interesttarget` attribute, and b) are *currently* being shown interest. The `:has-interest` pseudo class matches elements in exactly this state. Two common use cases arise:
+
+1. Styling the trigger element to indicate that it's showing interest:
+
+```
+:has-interest {
+  background-color: lightgreen;
+  border: 2px solid green;
+}
+```
+
+2. "Speeding up" the `interest-target-show-delay` when another element already has interest. This is a common request: for example, the first popover hovercard takes ~1 second to show up. But then if you quickly hover another element that also triggers a hovercard, that one shows up much more quickly:
+
+```
+[interesttarget] {
+  interest-target-delay: 1s;
+}
+container:has(:has-interest) [interesttarget] {
+  interest-target-show-delay: 0s;
+}
+```
 
 ## Implementation Details
 
