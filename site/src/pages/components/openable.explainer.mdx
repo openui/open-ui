@@ -256,7 +256,46 @@ TODO
 
 # Example Use Cases
 
-TODO
+Here, a developer is building a table where additional rows of content can be shown or hidden by use of command buttons.
+
+```html
+<table>
+  ...
+  <tr>
+    <th>Name of row</th>
+    <td>...</td>
+    <td>
+       <button commandfor="moar" command="toggle-openable">view additional rows</button>
+    </td>
+  </tr>
+  <tr openable id="moar">...</tr>
+  ...
+</table>
+```
+In the following example, a developer is creating a sidebar navigation where each link has a sibling command button to toggle the visibility of sub-navigation items:
+
+```html
+<nav aria-label="secondary">
+  ...
+  <ul>
+    ...
+    <li>
+      <a href="products.html">Our Products</a>
+      <button commandfor="subducts"
+        command="toggle-openable"
+        aria-label="our products sub-navigation">
+       <!-- svg chevron goes here -->
+      </button>
+      <ul>
+        <li><a href=...>...</a>
+        <li><a href=...>...</a>
+        ...
+      </ul>
+    </li>
+     ...
+  </ul>
+</nav>
+```
 
 # The Choices Made in this API
 
