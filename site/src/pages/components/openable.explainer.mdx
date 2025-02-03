@@ -246,7 +246,7 @@ An openable container does not result in a change of focus by default.  If an au
 
 ## Accessibility / Semantics
 
-Since the `openable` content attribute can be applied to any element, and this only impacts the element's presentation, this addition does not have any direct semantic or accessibility impact. The element with the `openable` attribute will keep its existing semantics and AOM representation. For example, `<article openable>...</article>` will continue to be exposed as an implicit `role=article`. Similarly, ARIA can be used to modify accessibility mappings in [the normal way](https://w3c.github.io/html-aria/), for example `<div openable role=note>...</div>`.
+The `openable` content attribute can be applied to any element, where in the hidden or "collapsed" state, the element will be hidden from the accessibility tree.  Upon invoking. the element will become available both visually, and via the browser's accessibility tree.  Beyond this behavior, the element with the `openable` attribute will otherwise keep its existing semantics and AOM representation. For example, `<article openable>...</article>` will continue to be exposed as an implicit `role=article`. Similarly, ARIA can be used to modify accessibility mappings [per the allowances defined in the ARIA in HTML specification](https://w3c.github.io/html-aria/).  For example `<div openable role=note>...</div>`.
 
 As mentioned in the [Declarative Triggers](#declarative-triggers) section, accessibility mappings will be automatically configured to associate the openable with its trigger element, as needed.
 
