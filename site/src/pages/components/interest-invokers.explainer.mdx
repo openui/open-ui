@@ -155,10 +155,10 @@ interface mixin InterestInvokerElement {
   [CEReactions] attribute Element? interestTargetElement;
 };
 
-HTMLButtonElement includes InterestInvokerElement
-HTMLAnchorElement includes InterestInvokerElement
-HTMLAreaElement includes InterestInvokerElement
-SVGAElement includes InterestInvokerElement
+HTMLButtonElement includes InterestInvokerElement;
+HTMLAnchorElement includes InterestInvokerElement;
+HTMLAreaElement includes InterestInvokerElement;
+SVGAElement includes InterestInvokerElement;
 ```
 
 The `interesttarget` value should be an IDREF pointing to an element within a single document or shadow root. The `interestTargetElement` IDL attribute also exists on the element to imperatively assign a node to be the invoker target, allowing for cross-root invokers (in some cases, see [attr-asociated element steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element) for more). We define this target element to be the "Interestee".
