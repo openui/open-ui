@@ -5,7 +5,7 @@ path: /components/openable.explainer
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-- [@lukewarlow](https://github.com/lukewarlow), [@scottaohara](https://github.com/scottaohara)
+- Authors: [@lukewarlow](https://github.com/lukewarlow), [@scottaohara](https://github.com/scottaohara)
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -20,14 +20,15 @@ layout: ../../layouts/ComponentLayout.astro
   - [Opening and Closing an Openable](#opening-and-closing-an-openable)
     - [Page Load Trigger](#page-load-trigger)
     - [Declarative Triggers](#declarative-triggers)
-    - [JavaScript Trigger](#javascript-trigger)
-    - [CSS Pseudo Class](#css-pseudo-class)
-    - [Rendering](#rendering)
-    - [Open vs Closed Openables](#open-vs-closed-openables)
+    - [JavaScript Triggers](#javascript-triggers)
+  - [CSS Pseudo Class](#css-pseudo-class)
+  - [Open vs Closed Openables](#open-vs-closed-openables)
+  - [Rendering](#rendering)
   - [IDL Attribute and Feature Detection](#idl-attribute-and-feature-detection)
   - [Events](#events)
   - [Focus Management](#focus-management)
 - [Behaviors](#behaviors)
+  - [Find in page support](#find-in-page-support)
   - [Accessibility / Semantics](#accessibility--semantics)
   - [Disallowed elements](#disallowed-elements)
 - [Example Use Cases](#example-use-cases)
@@ -35,26 +36,27 @@ layout: ../../layouts/ComponentLayout.astro
   - [Alternatives Considered](#alternatives-considered)
   - [Why a content attribute?](#why-a-content-attribute)
   - [Design decisions (via OpenUI)](#design-decisions-via-openui)
+- [Questions](#questions)
 
 > Note: The naming of various aspects of this API is intentionally bad, this is placeholder. The actual naming will be decided upon in the future.
 
-# Background
+## Background
 
 TODO
 
-## Goals
+### Goals
 
 TODO
 
-## See Also
+### See Also
 
 TODO
 
-# API Shape
+## API Shape
 
 This section lays out the full details of this proposal. If you'd prefer, you can **[skip to the examples section](#example-use-cases) to see the code**.
 
-## HTML Content Attribute
+### HTML Content Attribute
 
 A new boolean content attribute, **`openable`**, controls the behavior.
 
@@ -66,11 +68,11 @@ So this markup represents openable content:
 
 As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To open the openable, one of several methods can be used: [declarative triggering](#declarative-triggers), [JavaScript triggering](#javascript-trigger).
 
-## Opening and Closing an Openable
+### Opening and Closing an Openable
 
 There are several ways to "open" an openable, and they are discussed in this section. When any of these methods are used to open an openable, it will be made visible.
 
-### Page Load Trigger
+#### Page Load Trigger
 
 As mentioned above, a `<div openable>` will be hidden by default. If it is desired that the openable should be shown automatically upon page load, the `defaultopen` attribute can be applied:
 
@@ -86,7 +88,7 @@ The `defaultopen` content attribute can also be accessed via IDL:
 myDiv.defaultOpen = true
 ```
 
-### Declarative Triggers
+#### Declarative Triggers
 
 A common design pattern is to have a button which makes an openable visible. To facilitate this pattern, and avoid the need for JavaScript in this common case, this API integrates with [command invokers](/components/invokers.explainer).
 
@@ -118,7 +120,7 @@ myButton.command = 'show'
 
 See the [invokers explainer](/components/invokers.explainer) for more information on how these attributes work.
 
-### JavaScript Trigger
+#### JavaScript Trigger
 
 To open or close the Openable via JavaScript, there are three methods on HTMLElement:
 
@@ -168,20 +170,6 @@ The above rules mean that an openable, when not "open", has `display:none` appli
 
 Be mindful when using other stylesheets that you haven't authored. These may set the `display` value on your openable elements. For example, if you use a `menu` element as an `openable` and you use earlier versions of [normalize.css](https://necolas.github.io/normalize.css/). In this case, normalize.css has a rule that sets `display: flex` on `menu` elements.
 
-### Find in page support
-
-Elements hidden with `display:none` are not exposed to find in page functionality nor text fragment links. To support use cases where this is desirable, openables support
-the `hidden=until-found` attribute. When these are used together, the UA will not apply `display:none` to the element, but will instead use the `content-visibility: hidden` from the hidden attribute styles.
-
-Unlike when `hidden=until-found` is used on its own, the browser will *not* remove the `hidden` attribute once the element is found in the page, instead the content-visibility style is reverted through CSS.
-This allows the element to maintain find-in-page support if it's opened and collapsed again.
-
-```html
-<div id="findable-openable" hidden="until-found" openable>
-  Searchable hidden contents
-</div>
-```
-
 ### Rendering
 
 The UA stylesheet for openables will look like this:
@@ -198,7 +186,7 @@ The UA stylesheet for openables will look like this:
 }
 ```
 
-## IDL Attribute and Feature Detection
+### IDL Attribute and Feature Detection
 
 The `openable` content attribute will be [reflected](https://html.spec.whatwg.org/#reflect) as a boolean IDL attribute:
 
@@ -226,7 +214,7 @@ function supportsOpenable() {
 }
 ```
 
-## Events
+### Events
 
 An event is fired synchronously when an openable is open or close. This event can be used, for example, to populate content for the openable just in time before it is opened, or update server data when it closes. The event provides a `currentState` and `newState` for the openable. The value of these properties can either be "open" or "closed". The events looks like this:
 
@@ -241,21 +229,37 @@ The `beforetoggle` event is cancellable when the `newState` is equal to "open". 
 
 Additionally an asynchronous non-cancellable `toggle` event is fired.
 
-## Focus Management
+### Focus Management
 
 An openable container does not result in a change of focus by default.  If an author creates an openable component where it would be desirable to automatically move focus when activated, then the `autofocus` attribute can be used to indicate the element that needs to receive focus, upon opening.
 
-## Accessibility / Semantics
+## Behaviors
+
+### Find in page support
+
+Elements hidden with `display:none` are not exposed to find in page functionality nor text fragment links. To support use cases where this is desirable, openables support
+the `hidden=until-found` attribute. When these are used together, the UA will not apply `display:none` to the element, but will instead use the `content-visibility: hidden` from the hidden attribute styles.
+
+Unlike when `hidden=until-found` is used on its own, the browser will *not* remove the `hidden` attribute once the element is found in the page, instead the content-visibility style is reverted through CSS.
+This allows the element to maintain find-in-page support if it's opened and collapsed again.
+
+```html
+<div id="findable-openable" hidden="until-found" openable>
+  Searchable hidden contents
+</div>
+```
+
+### Accessibility / Semantics
 
 The `openable` content attribute can be applied to any element, where in the hidden or "collapsed" state, the element will be hidden from the accessibility tree.  Upon invoking. the element will become available both visually, and via the browser's accessibility tree.  Beyond this behavior, the element with the `openable` attribute will otherwise keep its existing semantics and AOM representation. For example, `<article openable>...</article>` will continue to be exposed as an implicit `role=article`. Similarly, ARIA can be used to modify accessibility mappings [per the allowances defined in the ARIA in HTML specification](https://w3c.github.io/html-aria/).  For example `<div openable role=note>...</div>`.
 
 As mentioned in the [Declarative Triggers](#declarative-triggers) section, accessibility mappings will be automatically configured to associate the openable with its trigger element, as needed.
 
-## Disallowed elements
+### Disallowed elements
 
 TODO
 
-# Example Use Cases
+## Example Use Cases
 
 Here, a developer is building a table where additional rows of content can be shown or hidden by use of command buttons.
 
@@ -298,23 +302,23 @@ In the following example, a developer is creating a sidebar navigation where eac
 </nav>
 ```
 
-# The Choices Made in this API
+## The Choices Made in this API
 
 Many decisions and choices were made in the design of this API, and those decisions were made via numerous discussions (live and on issues) in [OpenUI](https://open-ui.org/), a WHATWG [Community Group](https://open-ui.org/working-mode).
 
-## Alternatives Considered
+### Alternatives Considered
 
 TODO
 
 An alternate to the `defaultopen` attribute could be to allow the `openable` attribute to declare its initial state.  E.g., `<div openable="open">` or similar.  
 
-## Why a content attribute?
+### Why a content attribute?
 
 Similar to some of the reasons why `popover` evolved into an attribute, many types of elements may need to be shown/hidden or "openable" - with no one single element that could represent all scenarios.  
 
 As an attribute, a controlling element (button) can toggle the openable state of a list of hyperlinks, a table row, or another section or fieldset of related content, etc.  A content attribute allows this <em>behavior</em> to be applied to all of these use cases, and more - allowing the flexibility of developers to use the attribute on <em>any element</em>.
 
-## Design decisions (via [OpenUI](https://open-ui.org/))
+### Design decisions (via [OpenUI](https://open-ui.org/))
 
 TODO
 
