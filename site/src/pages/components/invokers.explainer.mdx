@@ -267,7 +267,7 @@ When the `command` attribute is missing it will default to an invalid state.
 | :-------------- | :-------------------- | :--------------------------------------------------------------------------------------------------------- |
 | `<* popover>`   | `'toggle-popover'`    | Shows the `popover` if closed, otherwise hides. Similar to `.togglePopover()`                              |
 | `<* popover>`   | `'hide-popover'`      | Hides the `popover` if open, otherwise does nothing. Similar to `.hidePopover()`                           |
-| `<* popover>`   | `'show-popover'`      | Shows the `popover` if closes, otherwise does nothing. Similar to `.showPopover()`                         |
+| `<* popover>`   | `'show-popover'`      | Shows the `popover` if closed, otherwise does nothing. Similar to `.showPopover()`                         |
 | `<dialog>`      | `'show-modal'`        | If the `<dialog>` is not `open`, shows it as modal. Similar to `.showModal()`                              |
 | `<dialog>`      | `'close'`             | If the `<dialog>` is `open`, close and use the button `value` for returnValue. Similar to `.close(value)   |
 | `<dialog>`      | `'request-close'`     | If the `<dialog>` is `open`, request to close and use the button `value` for returnValue. Similar to `.requestClose(value)   |
@@ -278,6 +278,9 @@ interactivity, and how the button may need to respond to such actions.
 
 | Invokee Element       | `command` hint          | Behaviour                                                                                                      |
 | :-------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------- |
+| `<* openable>`        | `'toggle-openable'`    | Opens the `openable` if closed, otherwise closes. Similar to `.toggleOpenable()`                              |
+| `<* openable>`        | `'close-openable'`     | Closes the `openable` if open, otherwise does nothing. Similar to `.closeOpenable()`                           |
+| `<* openable>`        | `'open-openable'`      | Opens the `openable` if closed, otherwise does nothing. Similar to `.openOpenable()`                         |
 | `<details>`           | `'toggle'`             | If the `<details>` is `open`, then close it, otherwise open it                                                 |
 | `<details>`           | `'open'`               | If the `<details>` is not `open`, then open it                                                                 |
 | `<details>`           | `'close'`              | If the `<details>` is `open`, then close it                                                                    |
