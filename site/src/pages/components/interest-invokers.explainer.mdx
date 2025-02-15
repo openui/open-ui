@@ -75,6 +75,10 @@ Mouse users will show interest in an element by mouse-hovering the element for a
 
 For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. Another hot-key such as the ESC key will provide a way to trigger "loseinterest". These hot-keys must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys.
 
+Additionally, the appearance of the focus ring will be altered slightly when focus is on elements with `interesttarget`. This allows the user to discover that something is "different" about this element, and know that the keyboard activation hot-key will allow them to show interest. Since accessibility guidelines state that color alone cannot be enough to differentiate states, this focus ring change will likely need to be something like a slightly-thicker outline, or other shape change.
+
+An alternative idea is to instead change the "location" hint that most browsers include in the lower-left corner when focusing a link element. This area currently shows the destination URL for the link, but it could have additional text added such as "press alt-down for additional information" when an element with `interesttarget` is focused.
+
 See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
 
 ### Touchscreen
@@ -114,13 +118,6 @@ There was some discussion about the need to allow UAs to modify these delays bas
 
 See https://github.com/w3c/csswg-drafts/issues/9236 for a much more detailed conversation about these hover delay settings. That extended discussion led to the behaviors described in this section. Notably, the OP and initial comments started in a somewhat different place than the eventual conclusion, which is what is described here.
 
-## Why No `interestaction` Attribute?
-
-The `command`/`commandfor` API, as its name suggests, provides *two* attributes. One (`commandfor`) is the link to the target element, and the other (`command`) describes what action to take on the target element. That is appropriate, because when activating a button, many different types of actions could be desired, even for the same target element. A button might want to open, open-modal, close, **or** request-close a dialog, for example. Or it might want to play, pause, **or** mute a video.
-
-The same is not true for `interesttarget`. When the target is a popover, the only set of actions that makes sense is to *show* the popover when interest is shown, and *hide* the popover when interest is lost. There are no identified use cases that invert those actions. Alternatively, defining show and lose interest actions to both *toggle* the popover can lead to serious out-of-sync problems that would be major footguns. So for popovers, there is no need for a separate attribute controlling the behavior, because there is only one rational set of behaviors. And as described above, popovers are the only kind of target element that comes with default actions. Other actions might use the `"interest"` and `"loseinterest"` events to add additional behavior, but in that case, they can provide their own definitions of actions to take. And again because of the above points, there isn't a future-compat problem like there might be for the `commandfor` attribute.
-
-See https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411 (particularly [this comment](https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411)) for more discussion of this section.
 
 ## The `:has-interest` Pseudo Class
 
@@ -247,16 +244,76 @@ Using those insets, a developer could implement a long-press activated hovercard
 
 ## Accessibility
 
-> Warning: This section is TBD. PRs and discussions welcome.
+Since `popover=hint` is a common target for `interesttarget`, for the purpose of building "tooltips" and "hovercards", there are a few additional definitions and considerations:
 
-See the [`popover=hint` explainer's accessibility section](../popover-hint.research.explainer/#a11y-api-support) for additional comments. In particular, many of the relationships that are provided for "regular" invokers such as `popovertarget` apply to interest-based invokers also. For example, an `aria-details` relationship should be established between an interest invoker and its target, and `aria-expanded` should be set when the target is open.
+- When the target is a `popover=hint` element, and that hint popover contains only elements with a computed role of generic, text or image, we will call that a **"plain hint"**.
+- When the target is a `popover=auto` or `popover=manual`, or it is a `popover=hint` with contents beyond those allowed by "plain hint", then we will call that a **"rich hint"**.
 
-One nuance of hovercards is that for "simple" hovercards that only contain non-interactive content, it's possible that rather than establishing the above ARIA relationships, it might be better to simply use the content of the hovercard as the accessible description for the triggering element.
+### Plain hints (aka tooltips)
 
-In particular, for interest-based triggering of popovers, there is a problem with hidden objects. In general, the details relation does not work for hidden objects, and we can’t necessarily expect the popover to be complete before it becomes visible, as that may happen on-demand. So what happens if the user navigates to a popover’s trigger, and it’s not open? If they are using a keyboard, then we can make sure the popover is shown when the hot-key is pressed. But, if they are navigating with a virtual buffer as is likely, how will they trigger the hint popover to open? And once it's open, how will the user know it’s there? Should we use a new value of the haspopup object attribute for these, e.g. `haspopup=hint`? See https://issues.chromium.org/issues/377923492 for more discussion.
+For a screen reader user, there already exist simple settings and commands to read accessible descriptions, which are just an additional piece of text associated with an object, such as used by a `title` or `aria-description` attribute.  When a plain hint is just used for a prettier tooltip, a screen reader can reuse this simple mechanism and act like a title was present. There is no need for the user to navigate to the hint popover itself, since there's nothing to explore.
 
+For the above reason, the browser will simply expose the the contents of a plain hint on the interest invoker element. The actual popover element and its descendants can be invisible/ignored in the AX tree. In particular:
 
-## PFAQ (Potentially/Frequently Asked Questions)
+1. If no other accessible name is available, use the `popover=hint`’s inner text for the accessible name.
+2. If it's used as the name, then use it to compute the description, setting the `describedby` relation to point from the interest invoker to the hint element
+3. There is no need to make `aria-details` connections or set `aria-expanded` on the interest invoker for plain hints.
+
+### Rich hints (aka hovercards or other)
+
+Since rich hints have additional content that might want to be explored directly, additional connections need to be made here:
+
+- Set a [minimum role](https://www.w3.org/TR/html-aam-1.0/#dfn-minimum-role) of "tooltip" on the target popover.
+- Set `aria-expanded=true` when the rich hint is open, and `false` when it is not.
+- Create an `aria-details` relation between the interest invoker and the rich hint popover.
+
+As with `popovertarget`, when a rich hint is shown, [sequential focus navigation](https://html.spec.whatwg.org/#focus-navigation-scope-owner) will be adjusted so that the target popover is "next" in the tab navigation cycle after the interest invoker. Since by definition "plain hints" do not have anything focusable, sequential focus navigation is not affected.
+
+See also, https://github.com/w3c/aria/issues/979.
+
+## FAQ (Frequently Asked Questions)
+
+### Why No `interestaction` Attribute?
+
+The `command`/`commandfor` API, as its name suggests, provides *two* attributes. One (`commandfor`) is the link to the target element, and the other (`command`) describes what action to take on the target element. That is appropriate, because when activating a button, many different types of actions could be desired, even for the same target element. A button might want to open, open-modal, close, **or** request-close a dialog, for example. Or it might want to play, pause, **or** mute a video.
+
+The same is not true for `interesttarget`. When the target is a popover, the only set of actions that makes sense is to *show* the popover when interest is shown, and *hide* the popover when interest is lost. There are no identified use cases that invert those actions. Alternatively, defining show and lose interest actions to both *toggle* the popover can lead to serious out-of-sync problems that would be major footguns. So for popovers, there is no need for a separate attribute controlling the behavior, because there is only one rational set of behaviors. And as described above, popovers are the only kind of target element that comes with default actions. Other actions might use the `"interest"` and `"loseinterest"` events to add additional behavior, but in that case, they can provide their own definitions of actions to take. And again because of the above points, there isn't a future-compat problem like there might be for the `commandfor` attribute.
+
+See https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411 (particularly [this comment](https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411)) for more discussion of this section.
+
+### Why a keyboard hot-key and not just keyboard focus?
+
+There are pros and cons to both methods.
+
+#### Focus element to show interest (possibly after delay)
+
+There are two approaches: instantly show interest when an element is focused, or show interest after the element has been focused for a period of time. Most people seem to favor a delay, to avoid extreme annoyance for keyboard users. Perhaps re-use [the mouse delays](#Mouse-delays) or create a separate version for keyboard focus delays. To avoid accidental neglect of the keyboard delays/users, it might be better to re-use the same delays for both mouse and keyboard.
+
+Pros:
+- very discoverable - simply focus an element and wait.
+
+Cons:
+- hard to avoid / annoying. Users simply trying to keyboard-navigate through a document might inadvertently trigger popovers. Note that if the target popover is a "rich hint", it will be next in the tab navigation cycle, forcing the user on a "detour" in this case. It's further possible that the rich hint itself has additional interest targets, which can open their own rich hints, trapping the user for a significant number of tab stops.
+- can be slow to activate, due to the delay.
+
+#### Hot-key to show interest
+
+Pros:
+- No chance for "hijacking" the tab navigation cycle.
+- Fast/immediate to activate (no delays needed).
+
+Cons:
+- Not very discoverable.
+
+#### Conclusion: hot-key
+
+Mouse users are fundamentally different from keyboard users, in that a mouse user can roughly-instantly move the mouse between any two arbitrary points on the screen. In contrast, keyboard users live within a sequential "linked list" of focusable elements, and can only navigate forward or backward, one step at a time. For this reason, keyboard users will have a harder time avoiding accidentally showing interest in elements that they merely stopped on briefly while navigating to another element. The same can be true for mouse users, if they stop their mouse while moving between points, but this is much more likely to happen via keyboard focus navigation.
+
+Hot-keys of **all types** are often not very discoverable. "Power users" of the keyboard tend to search out these hot-keys and remember them, while "occasional" keyboard users do not. Here, we rely on the fact that most UX designers consider tooltips and hovercards to be "auxiliary" and not required for proper functioning of the site.
+
+The idea (described in [the keyboard section](#Keyboard)) to add helpful text to the "location" area on the bottom left of the browser window may alleviate much of the lack of discoverability here.
+
+See https://github.com/openui/open-ui/issues/1133.
 
 ### Why the name `interest`? Why not `hover` or `focus`?
 
@@ -266,14 +323,20 @@ are not terms which encompass all viable methods of interaction. Many
 it was deemed that `interest` is the best name to explain the concept of a
 "hover or focus or equivalent".
 
-### Why is `interesttarget` on a lot more elements than `commandfor`?
+See https://github.com/openui/open-ui/issues/1136.
+
+### Why is `interesttarget` supported on more elements than `commandfor`?
 
 While _invocation_ should only be limited to buttons, disclosure of
 supplementary information can be expanded to _all_ interactive elements. There
 are many useful use cases for offering a hovercard on anchors, such as signalling
 that they are external, or that they will open in a new window, or to show
 preview information (think: preview windows on iOS Safari or the hovercards that
-display on GitHub over a user's handle).
+display on GitHub over a user's handle). To start, a limited set of elements is
+supported, to make sure they can be made accessibly. This set could be expanded
+in the future.
+
+See https://github.com/openui/open-ui/issues/839.
 
 ### Why is `interesttarget` not unlimited, like `title` is?
 
@@ -287,10 +350,6 @@ For example, *arbitrary* elements are not usually focusable, and it is unclear h
 ### Safe Area Triangle
 
 The events `interest` and `loseinterest` are intentionally abstract to allow more complex usability concepts to unfold. It is possible that a future capability might be to add automatic "safe areas" or "hit triangles", which allow the user to move the pointer between the Interest Invoker (e.g. the button) and Interestee (e.g. the hovercard), regardless of the `interest-target-hide-delay` setting. See [#963](https://github.com/openui/open-ui/issues/963) for more.
-
-### Is `interesttarget` the right name?
-
-See https://github.com/openui/open-ui/issues/1136 for more discussion.
 
 ### What if I (the developer) don't want the touchscreen context menu
 
