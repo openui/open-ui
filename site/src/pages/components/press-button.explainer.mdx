@@ -1,0 +1,144 @@
+---
+menu: Active Proposals
+name: Press Buttons (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors: [Luke Warlow](https://github.com/lukewarlow)
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+## Table of Contents
+
+- [Background](#background)
+  - [Goals](#goals)
+  - [See Also](#see-also)
+- [API Shape](#api-shape)
+  - [Press button type](#press-button-type)
+  - [CSS Pseudo Class](#css-pseudo-class)
+- [Example Use Cases](#example-use-cases)
+- [The Choices Made in this API](#the-choices-made-in-this-api)
+  - [Alternatives Considered](#alternatives-considered)
+    - [Reuse Checkbox](#reuse-checkbox)
+    - [Press boolean attribute](#press-boolean-attribute)
+    - [Pressed enum attribute](#pressed-enum-attribute)
+- [Questions](#questions)
+
+## Background
+
+It's common in UI design to have buttons which toggle a binary state.
+
+These are implemented in various ways across the web. Some involve JavaScript (e.g. using `aria-pressed` or changing the button label), some are semantically questionable (e.g. using a checkbox or switch), and some are both (e.g. using styled `div` elements).
+
+In aria there's the concept of a [pressed state](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed) that buttons can have, this requires JavaScript to toggle on and off currently.
+
+### Goals
+
+- Provide an ergonomic way to create buttons that toggle a binary pressed state.
+
+### See Also
+
+See the Toggle Button pattern in [ARIA APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/).
+
+See [Muan](https://github.com/muan)'s [Press Button Proposal](https://muan.github.io/Proposals/#press-button).
+
+## API Shape
+
+### Press button type
+
+New `"press"` value for the button element's type attribute.
+
+Functionality this would provide atop the "button" value:
+
+- Implicit pressed state, defaulting to false. This corresponds to aria-pressed attribute.
+
+- Pressing the button would toggle the pressed state (e.g. false -> true for first click)
+
+- The buttons default styling would include an indicator of this pressed state.
+
+### CSS Pseudo Class
+
+When a press button is in the pressed state, it will match the `:pressed` pseudo class.
+
+This would be used by the UA stylesheet to provide the aforementioned styling indicator.
+
+When in the mixed state this element would match `:indeterminate` and *not* pressed.
+
+### New `defaultpressed` DOM attribute
+
+This would be an enum attribute and would allow the default state to be aria-pressed="true" or aria-pressed="mixed" rather than "false".
+
+It would be reflected to a new defaultPressed IDL attribute.
+
+It's missing value default would be "true", allowing it to be used as a boolean attribute in the simple case.
+
+### New `pressed` IDL property
+
+This would be a read/write IDL property, with no corresponding DOM attribute. It would get/set the internal pressed state of the button. Accepted values would be "true", "false", "mixed".
+
+### UA Styles
+
+The UA stylesheet would include a rule for `button:pressed` which would style the button as pressed.
+
+## Example Use cases
+
+See https://github.com/openui/open-ui/issues/1039
+
+Basically any button where a single state (which should be reflected by a fixed label) is being toggled. e.g. a mute button.
+
+## The Choices made in this API
+
+### Alternatives Considered
+
+#### Reuse checkbox
+
+HTML already has a sort of state toggle, the checkbox input. For the switch component, the HTML proposal (And recently shipped implementation in Safari) uses a new attribute on the checkbox input.
+Why don't we follow the same path here?
+
+1. A switch and a checkbox are generally intended to be form participants, press buttons are *NOT* (as such my proposal introduces no form value concept for press buttons)
+
+2. Press buttons are also *buttons* for this reason it doesn't make sense to use input as the base element.
+
+#### press boolean attribute
+
+Why are we proposing a new type rather than a new attribute for buttons?
+
+One downside to a new button type is that invalid button types resolve to submit *not* button, this means in older browsers these press buttons could erroneously submit forms.
+
+However, as previously stated press buttons aren't form participants and so probably won't be used inside of a form element much. They also (currently) still require some JS to do an action and so you can prevent default the submission in older browsers.
+
+Aside from the potential form submission in older browsers the new type feels like an ergonomic win compared to a new attribute.
+
+If we take a default pressed button as an example:
+
+`<button type="press" defaultpressed="true">` vs `<button type="button" press defaultpressed>`
+
+Using a new type also means that we can't try and turn reset or submit or _future_ button into a press button accidentally.
+
+#### pressed enum attribute
+
+This is the strongest alternative. It would alleviate the requirement to have a defaultpressed attribute and IDL property.
+
+`<button type="button" pressed="true">` where pressed takes "true", "false", and "mixed", this would reflect the IDL property (and change when the button is pressed too).
+
+While it's potentially clearer, it does rely on state reflection, which is undesirable imo, it also doesn't match most other elements on the web (aside from dialog and details).
+
+## Questions
+
+- Should `:pressed` also apply if an explicit aria-pressed attribute is applied to elements with a role button?
+  - I'm not aware of any other state pseudo doing this?
+
+- Should this fire an event? If so, which?
+
+- How should defaultpressed attribute work if you change it once parsed? Should pressed update to match until the user clicks the button? (this is I believe how checkbox works)
+
+- Should defaultpressed instead be called initiallypressed? This might depend on the previous question. default is more consistent?
+
+- How does this work with command invokers?
+
+- What should the default styling be?
+
+- What should the IDL properties do for non-toggle buttons?
+
+- If the button is in the mixed state what should clicking it do?
