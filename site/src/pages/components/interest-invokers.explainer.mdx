@@ -80,11 +80,11 @@ Mouse users will show interest in an element by mouse-hovering the element for a
 
 ### Keyboard
 
-For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. Another hot-key such as the ESC key will provide a way to trigger "loseinterest". These hot-keys must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys.
+For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. Another hot-key such as the ESC key will provide a way to trigger "loseinterest". These hot-keys must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key.
 
 Additionally, the appearance of the focus ring will be altered slightly when focus is on elements with `interesttarget`. This allows the user to discover that something is "different" about this element, and know that the keyboard activation hot-key will allow them to show interest. Since accessibility guidelines state that color alone cannot be enough to differentiate states, this focus ring change will likely need to be something like a slightly-thicker outline, or other shape change.
 
-An alternative idea is to instead change the "location" hint that most browsers include in the lower-left corner when focusing a link element. This area currently shows the destination URL for the link, but it could have additional text added such as "press alt-down for additional information" when an element with `interesttarget` is focused.
+An alternative idea is to instead change the "location" hint that most browsers include in the lower-left corner when focusing a link element. This area currently shows the destination URL for the link, but it could have additional text added such as "press alt-down for additional information" when an element with `interesttarget` is focused. This could also be shown on the bottom-right side of the screen, to avoid interfering with the URL hint.
 
 See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
 
