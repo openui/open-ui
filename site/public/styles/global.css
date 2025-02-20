@@ -2,6 +2,7 @@
   --font-size-base: 16px;
   --color-text: hsl(12, 5%, 4%);
   --color-border: hsl(17, 24%, 90%);
+  color-scheme: light dark;
 }
 
 html {
@@ -13,7 +14,7 @@ html {
 }
 
 body {
-  color: hsla(0, 0%, 0%, 0.8);
+  color: light-dark(hsla(0, 0%, 0%, 0.8), white);
   font-family: 'Source Sans Pro', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   font-weight: 400;
   word-wrap: break-word;
@@ -44,7 +45,7 @@ h1 {
   text-rendering: optimizeLegibility;
   font-size: 2rem;
   line-height: 1.1;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.5));
 }
 h2 {
   margin-top: 1.5rem;
@@ -225,7 +226,7 @@ li > p {
 code {
   font-size: 0.85rem;
   line-height: 1.5rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.2));
   padding: 0 0.25em;
   border-radius: 3px;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -254,7 +255,7 @@ td:last-child {
   padding-right: 0;
 }
 a {
-  color: #007a3d;
+  color: light-dark(#007a3d, #00cd70);
 }
 
 nav {
