@@ -1,0 +1,258 @@
+---
+menu: Active Proposals
+name: Invoker Commands Future (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors: [Keith Cirkel](https://github.com/keithamus), [Luke Warlow](https://github.com/lukewarlow)
+
+**NOTE:** See the original explainer for the core proposal [here](/components/invokers.explainer).
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+# Invoker Buttons
+
+## Introduction
+
+This document outlines potential future enhancements to [Invoker Commands](/components/invokers.explainer).
+
+All commands noted here are ideas only and are not included in the initial release of this feature.
+
+### Defaults
+
+Depending on the target set by `commandfor`, invoking the button will trigger
+additional behaviours alongside the event dispatch, depending on the value of
+`command`. The following table represents ideas on how built-in invocations on specific
+element types are handled. These need further design on exactly how
+they will behave based on implications such as accessibility, security,
+interactivity, and how the button may need to respond to such actions.
+
+| Invokee Element       | `command` hint          | Behaviour                                                                                                      |
+| :-------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------- |
+| `<dialog>`            | `'request-close'`      | If the `<dialog>` is `open`, request to close and use the button `value` for returnValue. Similar to `.requestClose(value)   |
+| `<* openable>`        | `'toggle-openable'`    | Opens the `openable` if closed, otherwise closes. Similar to `.toggleOpenable()`                              |
+| `<* openable>`        | `'close-openable'`     | Closes the `openable` if open, otherwise does nothing. Similar to `.closeOpenable()`                           |
+| `<* openable>`        | `'open-openable'`      | Opens the `openable` if closed, otherwise does nothing. Similar to `.openOpenable()`                         |
+| `<details>`           | `'toggle'`             | If the `<details>` is `open`, then close it, otherwise open it                                                 |
+| `<details>`           | `'open'`               | If the `<details>` is not `open`, then open it                                                                 |
+| `<details>`           | `'close'`              | If the `<details>` is `open`, then close it                                                                    |
+| `<dialog>`            | `'toggle'`             | If the `<dialog>` is `open`, then close it and use the button `value` for returnValue, otherwise open as modal |
+| `<select>`            | `'show-picker'`        | Shows the native picker. Similar to `.showPicker()` on the invokee                                             |
+| `<input>`             | `'show-picker'`        | Shows the native picker. Similar to `.showPicker()` on the invokee                                             |
+| `<video>`             | `'play-pause'`         | If the video is not playing, plays the video. Otherwise pauses it. Similar to `el.playing = !el.playing`       |
+| `<video>`             | `'pause'`              | If the video is playing, pause the video. Similar `.playing = false`                                           |
+| `<video>`             | `'play'`               | If the video is not playing, play the video. Similar to `.playing = true`                                      |
+| `<video>`             | `'toggle-muted'`       | If the video is muted, it unmutes the video, otherwise it mutes it. Similar to `el.muted = !el.muted`          |
+| `<audio>`             | `'play-pause'`         | If the audio is not playing, plays the audio. Otherwise pauses it. Similar to `el.playing = !el.playing`       |
+| `<audio>`             | `'pause'`              | If the audio is playing, pause the audio. Similar `.playing = false`                                           |
+| `<audio>`             | `'play'`               | If the audio is not playing, play the audio. Similar to `.playing = true`                                      |
+| `<audio>`             | `'toggle-muted'`       | If the audio is muted, it unmutes the audio, otherwise it mutes it. Similar to `el.muted = !el.muted`          |
+| `<*>`                 | `'toggle-fullscreen'`  | If the element is fullscreen, then exit, otherwise request to enter                                            |
+| `<*>`                 | `'request-fullscreen'` | Request the element to enter into 'fullscreen' mode                                                            |
+| `<*>`                 | `'exit-fullscreen'`    | If the element is fullscreen, then exit                                                                        |
+| `<input type=number>` | `'step-up'`            | Call `.stepUp()` on the invokee                                                                                |
+| `<input type=number>` | `'step-down'`          | Call `.stepDown()` on the invokee                                                                              |
+
+> Note: Ideas are welcome. Please submit an issue if you have one!
+
+Further to the initial ship we're also exploring implicit `command` or implicit
+`commandfor` values where the value can easily be inferred.
+
+### Accessibility
+
+For built-in behaviours `command` attribute maps to specific accessibility
+mappings which are placed on the button. The button may also use the
+`commandfor` referenced element to gather other details (for example the state
+of the element) to reflect that state on the button.
+
+These mappings will happen implicitly on the browsers Accessible Nodes, and so
+while (for simplicity) this section refers to various `aria-` attributes,
+buttons will not sprout these attributes in the DOM, but the effective
+equivalent will be exposed to Assistive Technologies.
+
+#### Buttons with `command=request-close`
+
+Buttons with this dialog command will implicitly receive `aria-details=IDREF`,
+where `IDREF` matches that of the `commandfor` attribute, while the dialog is
+in the showing state, and the button is not a descendant of the dialog.
+
+<details>
+<summary>Why?</summary>
+
+A button that cancels a dialog is very typically found inside of the dialog, but
+in some cases it may be found outside, perhaps as a "toggle" style button which
+opens and closes a dialog as non-modal. This button may be used to close an open
+dialog that is shown as non-modal. It may be useful for a user to traverse into
+the dialog before closing it, for example to check if they have unsaved changes
+within the dialog.
+
+</details>
+
+<br/><br/>
+
+Buttons will also implicitly receive an `aria-expanded` value, if they are not a
+descendant of the `commandfor=` referenced element. The state of the
+`aria-expanded` value will map to the state of the dialog's openness. When the
+dialog is open the button will have `aria-expanded="true"`, when closed,
+`aria-expanded="false"`. This will be recomputed whenever the dialog changes
+state, such that the button always reflects the state of openness.
+
+<details>
+<summary>Why?</summary>
+
+A button that cancels a dialog is very typically found inside of the dialog, but
+in some cases it may be found outside, perhaps as a "toggle" style button which
+opens and closes a dialog as non-modal.
+
+Buttons outside of the dialog may be used to close an open dialog that is shown
+as non-modal. It may be useful for a user to traverse into the dialog before
+closing it, for example to check if they have unsaved changes within the dialog.
+It may also be useful to know if the dialog is already closed (as in its
+`aria-expanded` state is false), as this may help the user make a decision to
+whether or not they action the close button. 
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-pressed
+
+Given elements will have `aria-expanded`, adding `aria-pressed` would be
+confusing or redundant, and as such won't be proposed for these buttons.
+
+##### aria-controls
+
+While `aria-controls` attempts to establish a similar style of relationship to
+`aria-details`, `aria-details` sees broader support among various assistive
+technologies, and it would be redundant to add both.
+
+</details>
+
+<br/><br/>
+
+#### Other built-in `command=` types
+
+Further built-in commands will be proposed on a case-per-case basis,
+and additional aria or other logic will be considered with those at the time.
+
+### Security
+
+See the main [Invoker Commands explainer](/components/invokers.explainer#security) for an overview of the
+security considerations.
+
+**Note**: The security considerations for the proposed commands are not yet complete and will be specified in more detail
+in the future.
+
+Below is a brief summary of the security considerations for the commands proposed above:
+
+#### Details
+
+This proposal aims to allow opening and closing `<details>` elements with
+`invoketarget`. This is not considered to be new capability, as it is already
+possible to do this with the `<summary>` element.
+
+#### Input
+
+It should be noted that input pickers (like the file picker dialog) render native
+controls outside of the bounds of the document frame (iframe or browser window).
+Due to this, the security implications of invoking these elements should be
+carefully considered.
+
+Scripts can call `.showPicker()` on form elements, and the picker will open.
+There are some cross-origin restrictions, for example calling `.showPicker()`
+on elements in a cross-origin context only works for `<input type=file>` or
+`<input type=color>`.
+
+It is also possible to wrap an `<input>` in a `<label>`, where invoking the
+label will open the picker. This is quite common practice when trying to style
+`<input type=file>` for example; dressing the `<label>` to look like a
+`<button>` and hiding the `<input>`.
+
+This proposal allows showing the pickers of input elements, for example an
+invoker can target an `<input type=file>` and clicking the invoker will open
+the operating systems file picker dialog. As stated above, this is already
+possible with `<label>` elements, but care should be taken to ensure that
+the same cross-origin restrictions apply for Invokers as they do for scripting.
+
+#### Fullscreen elements
+
+Turning an element into a fullscreen needs to be carefully consdidered.
+Scripting already allows this via the `.requestFullscreen()` API which, as the
+name suggests, may not always be successful given the UA context. This API
+requires the document context to be active, for example requiring a user
+activation (this is true of invokers in the general case), it also requires
+the Permissions Policy to allow for this behaviour, and requires the element to
+not already be on the Top Layer.
+
+All of these constraints should also be true for invokers opening fullscreen
+elements. This means the only _significant_ new behavioural difference between
+an invoker opening a fullscreen element vs the existing behaviour which
+requires scripting, is that sanboxed iframes which disallow scripting but allow
+fullscreen may now declare a button that can fullscreen. Consider the following:
+
+```html
+<iframe sandbox allow="fullscreen">
+  <html id="invokee">
+    <button type="button" commandfor="invokee" command="toggleFullscreen">Invoke</button>
+    <button onclick="invokee.requestFullscreen()">Go fullscreen</button>
+  </html>
+</iframe>
+````
+
+In this example, the `<button onclick>` will do nothing as the iframe is
+sandboxed and does not allow scripting. The `<button invoketarget>` will
+fullscreen the element, however, as the `allow=fullscreen` Permission Policy is
+enabled to allow fullscreen.
+
+This is considered to be a low security threat, as it requires opt-in to the
+fullscreen Permission Policy explitly via iframe attributes or scripting. We
+will, however, continue to explore if this should be a possibility.
+
+#### Media Elements
+
+This proposal allows video and audio elements to be controlled with buttons
+outside of the browsers native video controls. This includes playing, pausing,
+and toggling mute/unmute. Today this is only possible using scripting via the
+equivalent scripting APIs: `.play()` / `.pause()` / `.muted=`. These APIs are
+guarded by Permissions Policy, and so should the invoker equivalent. Some User
+Agents can be configured to reject calls to `.play()`, and this should also be
+true of invokers. As such the key new capability here is the ability to call
+these APIs without scripting enabled. This is effectively the same concern as
+fullscreen; the security model is guarded around the Permissions Policy.
+
+There is also additional concern around the media element invokers being able
+to circumvent autoplay policies. Invokers should not be able to circumvent
+these. By design, invokers require a user interaction (clicking the button)
+and so this should not circumvent autoplay policies.
+
+#### Further proposals...
+
+There are continued suggestions for new capabilities of Invokers, such as
+[invoking picture-in-picture](https://github.com/openui/open-ui/issues/916).
+
+Each of these will need to be taken into consideration on a case-per-case
+basis. The following questions will need to be answered for each of these:
+
+- Is it possible for the user to do this today with scripting?
+- Is it possible for the user to do this today without scripting?
+- Does this behaviour bypass scripting sandboxing rules, such as
+  Permissions Policy or iframes?
+- Does this enable buttons to invoke content that appears outside of the
+  browser frame?
+
+### PAQ (Potentially Asked Questions)
+
+#### Do we have to always supply both? Can't we make `command` or `commandfor` implicit?
+
+The original proposal had the concept of an "auto" `command` value which would
+determine an explicit command based on various heuristics, such as the target
+element. This has been deferred for the initial ship, but may be explored
+further. This is considered out of scope for the initial ship, however.
+
+We may also explore the possibility of making `commandfor` implicit, for example
+if a button is a descendant of a dialog, omitting `commandfor` may make sense.
+This is also considered out of scope for the initial ship.
