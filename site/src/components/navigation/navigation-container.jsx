@@ -1,12 +1,31 @@
-import { useStore } from '@nanostores/react'
-import React from 'react'
-import { isMenuOpen } from '../../state/menuState'
+import { useSignal } from '@preact/signals'
+import { useEffect, useRef } from 'preact/hooks'
 
 function NavigationContainer(props) {
-  const $isMenuOpen = useStore(isMenuOpen)
+  const isMenuOpen = useSignal(false)
+  const navRef = useRef(null)
+
+  useEffect(() => {
+    function handleCommand(e) {
+      if (e.command === '--toggle-menu') {
+        isMenuOpen.value = !isMenuOpen.value
+        e.source.setAttribute('aria-expanded', isMenuOpen.value)
+      }
+    }
+
+    if (navRef.current) {
+      navRef.current.addEventListener('command', handleCommand)
+    }
+
+    return () => {
+      if (navRef.current) {
+        navRef.current.removeEventListener('command', handleCommand)
+      }
+    }
+  })
 
   return (
-    <nav id="site-nav" className={$isMenuOpen ? 'opened' : ''}>
+    <nav ref={navRef} id="site-nav" className={isMenuOpen.value ? 'opened' : ''}>
       {props.children}
     </nav>
   )
