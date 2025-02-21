@@ -11,6 +11,7 @@ layout: ../../layouts/ComponentLayout.astro
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
 
 - [Table of Contents](#table-of-contents)
+- [The Pitch](#the-pitch)
 - [The Pitch in Code](#the-pitch-in-code)
 - [Introduction](#introduction)
 - [HIDs and Interest](#hids-and-interest)
@@ -40,6 +41,11 @@ layout: ../../layouts/ComponentLayout.astro
   - [Safe Area Triangle](#safe-area-triangle)
   - [What if I (the developer) don't want the touchscreen context menu](#what-if-i-the-developer-dont-want-the-touchscreen-context-menu)
 
+## The Pitch
+
+When you write @mfreed7 or #743 on Github, you get a link to the user's profile page or the issue/PR page. But if you hover over that link instead of clicking it, you get a nice "hovercard" popover containing more detailed information. Users really like this feature, because it gives them the bit of information they want ("who or what is this?"), including common quick actions like "Follow this user", without requiring them to leave the page, potentially losing state in the process.
+
+Nearly all major sites include functionality such as this, ranging from small text-based tooltips to large interactive hovercards with useful links and buttons. However, implementing this behavior takes a remarkable amount of code. It must manage mouse hover and de-hover states, keep track of hover delays, implement keyboard activation, get accessibility right, and all of the related interactions. As a result, many developers' implementations aren't accessible to keyboard users, and none are accessible to touchscreen users. As a result, users who do not use a mouse do not have full access to the same information as those who do. The UA should provide this functionality natively, so we can do it right, and so developers don't have to keep re-inventing this wheel and/or leaving behind some users.
 
 ## The Pitch in Code
 
