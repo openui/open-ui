@@ -5,7 +5,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [Mason Freed](https://github.com/mfreed7), [Keith Cirkel](https://github.com/keithamus)
-- Last updated: January 22, 2025
+- Last updated: February 21, 2025
 
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -34,7 +34,6 @@ layout: ../../layouts/ComponentLayout.astro
   - [Rich hints (aka hovercards or other)](#rich-hints-aka-hovercards-or-other)
 - [FAQ (Frequently Asked Questions)](#faq-frequently-asked-questions)
   - [Why No `interestaction` Attribute?](#why-no-interestaction-attribute)
-  - [Why a keyboard hot-key and not just keyboard focus?](#why-a-keyboard-hot-key-and-not-just-keyboard-focus)
   - [Why the name `interest`? Why not `hover` or `focus`?](#why-the-name-interest-why-not-hover-or-focus)
   - [Why is `interesttarget` supported on more elements than `commandfor`?](#why-is-interesttarget-supported-on-more-elements-than-commandfor)
   - [Why is `interesttarget` not unlimited, like `title` is?](#why-is-interesttarget-not-unlimited-like-title-is)
@@ -86,11 +85,28 @@ Mouse users will show interest in an element by mouse-hovering the element for a
 
 ### Keyboard
 
-For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. Another hot-key such as the ESC key will provide a way to trigger "loseinterest". These hot-keys must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key.
+For keyboard users, there is a tension between discoverability and annoyance. The most discoverable way to "show interest" via the keyboard is simply for keyboard focus to trigger interest. The downside of this pattern is that users who are merely trying to keyboard-navigate through a document might be annoyed if popovers begin to appear as they tab through the document. An activation delay mitigates this somewhat, but doesn't solve the issue for users who stop tabbing on an `interesttarget` element inadvertently, and are then surprised by a popover. This problem is particularly bad in the case that the popover has interactive content, since it will be placed *next* in the tab navigation order, forcing the user on a "detour". The alternative way to "show interest" is a special keyboard hot-key, such as Alt-UpArrow. This alleviates the "surprise" problem, since the user must affirmatively choose to show interest, but it lacks discoverability. Many users might never know that there's a way to activate the additional content.
 
-Additionally, the appearance of the focus ring will be altered slightly when focus is on elements with `interesttarget`. This allows the user to discover that something is "different" about this element, and know that the keyboard activation hot-key will allow them to show interest. Since accessibility guidelines state that color alone cannot be enough to differentiate states, this focus ring change will likely need to be something like a slightly-thicker outline, or other shape change.
+For the above reasons, a somewhat more complicated approach is adopted for `interesttarget`, which is a blend of the two approaches. It attempts to keep all of the good parts of focus-triggered-interest while mitigating the bad parts:
 
-An alternative idea is to instead change the "location" hint that most browsers include in the lower-left corner when focusing a link element. This area currently shows the destination URL for the link, but it could have additional text added such as "press alt-down for additional information" when an element with `interesttarget` is focused. This could also be shown on the bottom-right side of the screen, to avoid interfering with the URL hint.
+- trigger interest in the element when it receives keyboard focus, after `interest-target-show-delay` seconds.
+- lose interest in the element when focus *leaves* the interest invoker or its target, after `interest-target-hide-delay` seconds. Also, hitting ESC will immediately lose interest in the element.
+
+So essentially, delayed-focus triggers interest. To mitigate the "annoy the user" problems, the following additional behaviors take place. Note that these additional behaviors do *not* occur when interest is shown via mouse, touchscreen, or other:
+- if the target is a popover, it is shown, but is rendered with `interactivity: inert`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
+- a hotkey (e.g. Alt-UpArrow) will cause the popover to be "fully activated" which removes the `interactivity` rule. This makes it non-inert and available in the focus navigation order. This hot-key must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key. The hotkey should not be an arrow key without a modifier, since that will interfere with scrolling.
+- a new pseudo class (e.g. `:has-partial-interest` or similar) will match on the *target popover* only when it is in the "partially activated" inert state. If the popover does not contain any interactive elements, then the `:has-partial-interest` pseudo class will *not* apply, since there's no difference between "partial" and "full" activation.
+- a new UA stylesheet rule will will be added: `:has-partial-interest::after {content: "Press Alt-UpArrow to activate this content"; interactivity: auto}`. This adds (developer-overridable) hints to the user about the hotkey, so that it is discoverable. Note the `interactivity` value here - that makes the hotkey information non-inert so it shows up in the a11y tree.
+
+This approach, while slightly more complicated, nicely meets the following use case requirements:
+ - Better user activation story for non-interactive "tooltips" that shouldn't be so hard to activate.
+ - Better discoverability story for rich "hovercards".
+ - Less risk of annoyance for keyboard users, since rich hovercards don't insert themselves automatically into the sequential focus order.
+ - Ability to override inertness for key use cases, such as menus (where the author would add `:has-partial-interest {interactivity:auto}` to activate immediately on focus) and "large/obtrusive" tooltips (where the author would add `:has-partial-interest {display:none}` so content doesn't automatically show on focus).
+ - The partial interest state can be indicated to the user (e.g. with `:has-partial-interest {opacity:50%}`) if desired, and the helpful text about the hotkey can be customized or hidden if desired.
+ - (Most importantly?) The default state "just works" for keyboard users, in the case that the developer only tested/developed using a mouse, and didn't do any of the above.
+
+Additionally, the appearance of the focus ring will be altered slightly when focus is on elements with `interesttarget`. This allows the user to discover that something is "different" about this element, and know that the keyboard activation hot-keys will allow them to activate popovers. Since accessibility guidelines state that color alone cannot be enough to differentiate states, this focus ring change will likely need to be something like a slightly-thicker outline, or other shape change.
 
 See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
 
@@ -301,40 +317,6 @@ The `command`/`commandfor` API, as its name suggests, provides *two* attributes.
 The same is not true for `interesttarget`. When the target is a popover, the only set of actions that makes sense is to *show* the popover when interest is shown, and *hide* the popover when interest is lost. There are no identified use cases that invert those actions. Alternatively, defining show and lose interest actions to both *toggle* the popover can lead to serious out-of-sync problems that would be major footguns. So for popovers, there is no need for a separate attribute controlling the behavior, because there is only one rational set of behaviors. And as described above, popovers are the only kind of target element that comes with default actions. Other actions might use the `"interest"` and `"loseinterest"` events to add additional behavior, but in that case, they can provide their own definitions of actions to take. And again because of the above points, there isn't a future-compat problem like there might be for the `commandfor` attribute.
 
 See https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411 (particularly [this comment](https://github.com/openui/open-ui/issues/1064#issuecomment-2581511411)) for more discussion of this section.
-
-### Why a keyboard hot-key and not just keyboard focus?
-
-There are pros and cons to both methods.
-
-#### Focus element to show interest (possibly after delay)
-
-There are two approaches: instantly show interest when an element is focused, or show interest after the element has been focused for a period of time. Most people seem to favor a delay, to avoid extreme annoyance for keyboard users. Perhaps re-use [the mouse delays](#Mouse-delays) or create a separate version for keyboard focus delays. To avoid accidental neglect of the keyboard delays/users, it might be better to re-use the same delays for both mouse and keyboard.
-
-Pros:
-- very discoverable - simply focus an element and wait.
-
-Cons:
-- hard to avoid / annoying. Users simply trying to keyboard-navigate through a document might inadvertently trigger popovers. Note that if the target popover is a "rich hint", it will be next in the tab navigation cycle, forcing the user on a "detour" in this case. It's further possible that the rich hint itself has additional interest targets, which can open their own rich hints, trapping the user for a significant number of tab stops.
-- can be slow to activate, due to the delay.
-
-#### Hot-key to show interest
-
-Pros:
-- No chance for "hijacking" the tab navigation cycle.
-- Fast/immediate to activate (no delays needed).
-
-Cons:
-- Not very discoverable.
-
-#### Conclusion: hot-key
-
-Mouse users are fundamentally different from keyboard users, in that a mouse user can roughly-instantly move the mouse between any two arbitrary points on the screen. In contrast, keyboard users live within a sequential "linked list" of focusable elements, and can only navigate forward or backward, one step at a time. For this reason, keyboard users will have a harder time avoiding accidentally showing interest in elements that they merely stopped on briefly while navigating to another element. The same can be true for mouse users, if they stop their mouse while moving between points, but this is much more likely to happen via keyboard focus navigation.
-
-Hot-keys of **all types** are often not very discoverable. "Power users" of the keyboard tend to search out these hot-keys and remember them, while "occasional" keyboard users do not. Here, we rely on the fact that most UX designers consider tooltips and hovercards to be "auxiliary" and not required for proper functioning of the site.
-
-The idea (described in [the keyboard section](#Keyboard)) to add helpful text to the "location" area on the bottom left of the browser window may alleviate much of the lack of discoverability here.
-
-See https://github.com/openui/open-ui/issues/1133.
 
 ### Why the name `interest`? Why not `hover` or `focus`?
 
