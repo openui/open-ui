@@ -1,12 +1,18 @@
-import { useStore } from '@nanostores/react'
-import React from 'react'
-import { isMenuOpen } from '../../state/menuState'
+import { useState } from 'preact/hooks'
+import 'invokers-polyfill'
 
 function NavigationContainer(props) {
-  const $isMenuOpen = useStore(isMenuOpen)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  function handleCommand(e) {
+    if (e.command === '--toggle-menu') {
+      setIsMenuOpen(!isMenuOpen)
+      e.source.setAttribute('aria-expanded', isMenuOpen)
+    }
+  }
 
   return (
-    <nav id="site-nav" className={$isMenuOpen ? 'opened' : ''}>
+    <nav onCommand={handleCommand} id="site-nav" className={isMenuOpen ? 'opened' : ''}>
       {props.children}
     </nav>
   )
