@@ -1,5 +1,4 @@
 import './toggle-menu-button.css'
-import 'invokers-polyfill'
 
 function ToggleMenuButton() {
   return (

@@ -1,31 +1,18 @@
-import { useSignal } from '@preact/signals'
-import { useEffect, useRef } from 'preact/hooks'
+import { useState } from 'preact/hooks'
+import 'invokers-polyfill'
 
 function NavigationContainer(props) {
-  const isMenuOpen = useSignal(false)
-  const navRef = useRef(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  useEffect(() => {
-    function handleCommand(e) {
-      if (e.command === '--toggle-menu') {
-        isMenuOpen.value = !isMenuOpen.value
-        e.source.setAttribute('aria-expanded', isMenuOpen.value)
-      }
+  function handleCommand(e) {
+    if (e.command === '--toggle-menu') {
+      setIsMenuOpen(!isMenuOpen)
+      e.source.setAttribute('aria-expanded', isMenuOpen)
     }
-
-    if (navRef.current) {
-      navRef.current.addEventListener('command', handleCommand)
-    }
-
-    return () => {
-      if (navRef.current) {
-        navRef.current.removeEventListener('command', handleCommand)
-      }
-    }
-  })
+  }
 
   return (
-    <nav ref={navRef} id="site-nav" className={isMenuOpen.value ? 'opened' : ''}>
+    <nav onCommand={handleCommand} id="site-nav" className={isMenuOpen ? 'opened' : ''}>
       {props.children}
     </nav>
   )
