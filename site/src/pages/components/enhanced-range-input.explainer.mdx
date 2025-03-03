@@ -30,7 +30,10 @@ import RangeAnatomy from '../../components/range-anatomy'
 
 The `<input type="range">` element has long been a part of HTML forms, providing a slider control for selecting numeric values. However, its current implementation lacks flexibility in styling and functionality, leading developers to often resort to custom implementations. These custom solutions can result in reduced performance, reliability, and accessibility compared to native form controls.
 
-The web development community has expressed a need for more customizable and feature-rich range inputs, particularly for use cases such as price range selectors, date/time range pickers, and other multi-value selection scenarios.
+The web development community has [expressed a need for more customizable and feature-rich range inputs](https://github.com/w3c/csswg-drafts/issues/4410#issuecomment-1087244943), particularly for use cases such as price range selectors, date/time range pickers, and other multi-value selection scenarios.
+
+- [Examples from CSSWG issue](https://github.com/w3c/csswg-drafts/issues/4410#issuecomment-1087244943)
+- [Examples from Open UI issue](https://github.com/openui/open-ui/issues/1165)
 
 ## Goals
 
@@ -83,9 +86,9 @@ The standardized anatomy includes:
 - `::range-track`: The main track along which the thumb(s) move.
 - `::range-fill`: The filled portion of the track, typically between the minimum value and the thumb (or between thumbs for multi-handle ranges).
 - `::range-thumb`: The draggable handle(s) used to select values.
-- `::range-tick`: Optional tick marks along the track for value representation.
-- `::range-tick-label`: Labels associated with tick marks.
 - `::range-segment`: Sections of the track between handles in multi-handle ranges.
+- `::range-tick`: Optional tick marks along the track for value representation. (when datalist is paired).
+- `::range-tick-label`: Labels associated with tick marks. (when datalist is paired).
 
 ### Styling API
 
@@ -107,6 +110,12 @@ We propose extending the range input to support multiple handles, starting with 
 
 To improve accessibility, especially for multi-handle ranges, we propose making individual thumbs focusable and providing clear audio cues for screen readers.
 
+### Backwards Compatibility
+
+The reason for opting in is to ensure backward compatibility with existing range inputs. Since current implementations are a mess, it feels like a safer bet. Browsers that do not support the new features will fall back to the current behavior of range inputs, and it opens up the window of targeting support via CSS (@supports).
+
+For multi-handle ranges, browsers that do not support the feature will treat the input as a standard single-handle range, using the first value provided in the `value` attribute
+
 ### Datalist Integration
 
 We propose standardizing and enhancing the integration of `<datalist>` with range inputs. This will allow for consistent implementation of tick marks and predefined values across browsers, especially when used with the `appearance: base-range` styling.
@@ -115,7 +124,8 @@ Key features:
 
 1. Standardized rendering of `<datalist>` options as tick marks on the range track.
 2. Ability to style tick marks using the `::range-tick` pseudo-element.
-3. Support for `<datalist>` with multi-handle range inputs.
+3. Ability to style labels of tick marks using the `::range-tick-label` pseudo-element.
+4. Support for `<datalist>` with multi-handle range inputs.
 
 ### Multi-Color Range Segments
 
@@ -150,18 +160,18 @@ input[type="range"][handles="3"]::range-segment:nth-child(3) {
 
 1 `handles`: Specifies the number of handles for the range input. Default is 1.
 ```html
-<input type="range" handles="2" min="0" max="100" values="25,75">
+<input type="range" handles="2" min="0" max="100" value="25,75">
 ```
-2 `values`: A comma-separated list of values for multi-handle ranges.
+2 `value`: A comma-separated list of values for multi-handle ranges, if single value, only one is available
 
 ```html
-<input type="range" handles="2" min="0" max="100" values="25,75">
+<input type="range" handles="2" min="0" max="100" value="25,75">
 ```
 
-3 `step-between`: Defines the minimum distance between handles in a multi-handle range.
+3 `stepbetween`: Defines the minimum distance between handles in a multi-handle range.
 
 ```html
-<input type="range" handles="2" min="0" max="100" values="25,75" step-between="10">
+<input type="range" handles="2" min="0" max="100" value="25,75" stepbetween="10">
 ```
 4 `list`: Links the range input to a `<datalist>` element, providing tick marks or predefined values.
 
@@ -183,7 +193,7 @@ To address the current fragmentation and provide a unified styling API, we propo
 2. `::range-fill`: Represents the filled portion of the track.
 3. `::range-thumb`: Represents the draggable handle(s).
 4. `::range-tick`: Represents individual tick marks on the range input.
-5. `::range-tick-label`: Represents the label associated with each tick mark.
+5. `::range-tick-label`: Represents the label associated with each tick mark. This pseudo-element should be able to handle the `content` property for custom content. By default, the content is the value of the tick.
 6. `::range-segment`: Represents sections of the track between handles in multi-handle ranges.
 
 These pseudo-elements can be used in combination with other CSS selectors, such as `:nth-child()`, to provide granular control over individual ticks, labels, and segments.
@@ -203,6 +213,7 @@ input[type="range"]::range-track {
 input[type="range"]::range-fill {
     background-color: #4CAF50;
 }
+
 input[type="range"]::range-thumb {
     width: 20px;
     height: 20px;
@@ -216,6 +227,7 @@ input[type="range"]::range-tick {
     height: 8px;
     background-color: #999;
 }
+
 /* Style every fifth tick differently */
 input[type="range"]::range-tick:nth-child(5n) {
     height: 12px;
@@ -226,18 +238,22 @@ input[type="range"]::range-tick-label {
     font-size: 12px;
     color: #666;
 }
+
 /* Style labels for every fifth tick differently */
 input[type="range"]::range-tick-label:nth-child(5n) {
     font-weight: bold;
     color: #333;
 }
+
 /* Style segments in a multi-handle range */
 input[type="range"][handles="3"]::range-segment:nth-child(1) {
     background-color: #FF5733;
 }
+
 input[type="range"][handles="3"]::range-segment:nth-child(2) {
     background-color: #33FF57;
 }
+
 input[type="range"][handles="3"]::range-segment:nth-child(3) {
     background-color: #3357FF;
 }
@@ -246,16 +262,26 @@ input[type="range"][handles="3"]::range-segment:nth-child(3) {
 ### JavaScript API
 
 1. `valueAsNumber`: Returns an array of numbers for multi-handle ranges.
-2. `setRangeValue(index, value)`: Sets the value for a specific handle.
+2. `setRangeValue(index, value)`: Sets the value for a specific handle, without the need for a string.
 3. `handleValues`: Returns an array of handle positions as percentages.
 
 Example usage:
 
 ```javascript
-const range = document.querySelector('input[type="range"][handles="2"]');
-console.log(range.valueAsNumber); // [25, 75]
-range.setRangeValue(0, 30);
-console.log(range.handleValues); // [30, 75]
+const rangeInput = document.querySelector('input[type="range"][handles="2"]');
+// Getting the value
+console.log(rangeInput.value); // "25,75"
+
+// Setting the value
+rangeInput.value = "30,70";
+console.log(rangeInput.value); // "30,70"
+
+// Handy properties
+console.log(range.valueAsNumber); // [30, 70]
+rangeInput.setRangeValues(0, 30);
+
+console.log(rangeInput.value); // "0,30"
+console.log(range.valueAsNumber); // [0, 30]
 ```
 
 ## Examples
@@ -322,7 +348,7 @@ input[type="range"][handles="2"]::range-thumb {
 
 **HTML**
 ```html
-<input type="range" handles="2" min="0" max="1000" values="250,750" step="10">
+<input type="range" handles="2" min="0" max="1000" value="250,750" step="10">
 ```
 
 ### Range with Custom Tick Styling
@@ -429,7 +455,7 @@ input[type="range"][handles="3"]::range-segment:nth-child(3) {
 **HTML:**
 
 ```html
-<input type="range" handles="3" min="0" max="100" values="25,50,75">
+<input type="range" handles="3" min="0" max="100" value="25,50,75">
 ```
 ## Considerations and Open Questions
 
@@ -439,19 +465,12 @@ input[type="range"][handles="3"]::range-segment:nth-child(3) {
 4. Should we provide built-in support for non-linear scales (e.g., logarithmic)?
 5. How can we ensure consistent behavior across different input methods (mouse, touch, keyboard)?
 6. Should we consider additional pseudo-elements for more granular styling control?
-7. How should we handle vertical orientation for range inputs?
+7. How should we handle vertical orientation for range inputs, as [writing-mode seems not enough](https://github.com/openui/open-ui/issues/1165#issuecomment-2688209397)?
 8. Should we use "range" or "slider" as the keyword for pseudo-elements (e.g., `::range-thumb` vs `::slider-thumb`)?
-9. How can we ensure a smooth transition from the current browser-specific pseudo-elements to the new standardized ones?
-10. Should we consider providing aliases for backwards compatibility with existing browser-specific pseudo-elements?
-11. How should we handle the positioning and spacing of tick marks when using `<datalist>` with multi-handle range inputs?
-12. Should we provide options for automatic tick mark generation (e.g., evenly spaced) without requiring a `<datalist>`?
-13. How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks?
-14. How should we handle color transitions between segments in multi-handle ranges? Should there be an option for gradient transitions?
-15. Should we provide a way to programmatically set segment colors, perhaps through a new attribute or JavaScript API?
-16. How do we ensure that segment colors maintain sufficient contrast with the thumb and tick marks for accessibility?
+9. How should we handle range-tick-labels that can have a combination of string an number? eg: price range: (\$5 - \$20);
+10. How should we handle the positioning and spacing of tick marks when using `<datalist>` with multi-handle range inputs?
+11. Should we provide options for automatic tick mark generation (e.g., evenly spaced) without requiring a `<datalist>`?
+12. How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks?
+13. How should we handle color transitions between segments in multi-handle ranges? Should there be an option for gradient transitions?
+14. Should we provide a way to programmatically set segment colors, perhaps through a new attribute or JavaScript API?
 
-## Backwards Compatibility
-
-The proposed enhancements will be opt-in, ensuring backwards compatibility with existing range inputs. Browsers that do not support the new features will fall back to the current behavior of range inputs.
-
-For multi-handle ranges, browsers that do not support the feature will treat the input as a standard single-handle range, using the first value provided in the `values` attribute
