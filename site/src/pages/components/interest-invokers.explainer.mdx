@@ -127,7 +127,7 @@ Note: adding such a CSS property likely precludes the later addition of somethin
 
 ### Touchscreen
 
-For touchscreen users, the widely-adopted standard for "showing interest" in an element is the [long-press gesture](https://en.wikipedia.org/wiki/Pointing_device_gesture#:~:text=0%3A04-,Long%20Press,-Duration%3A%205%20seconds). For native apps, this is the user-expected shortcut to show context menus and access other actions without explicitly activating the element. (See [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599) for more context on this point, from developers.)
+For touchscreen users, the widely-adopted standard for "showing interest" in an element is the [long-press gesture](https://en.wikipedia.org/wiki/Pointing_device_gesture#:~:text=0%3A04-,Long%20Press,-Duration%3A%205%20seconds). For native apps, this is the user-expected shortcut to show context menus and access other actions without explicitly activating the element. (See [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599) for more context on this point, from developers.) While "inventing" a new interaction pattern such as long-press-and-drag or other "magic" might sound appealing, users would not know or expect this pattern to work. On mobile, long-press is the standard way to show interest, and developers need `interesttarget` to re-use this standard pattern.
 
 On the web, however, most browsers *already overload* the long-press gesture to provide additional functionality. For example, long-pressing on plain text nodes often creates a text selection around that text, and sometimes provides an additional context menu containing actions like "copy" or "look up". Long-pressing a link `<a>` element in most browsers provides a more involved context menu with additional operations such as "open in a new tab", "add to reading list", or "share". Users often appreciate these additional capabilities, and do not want to lose access to them. Therefore, this proposal provides a way to **keep both** capabilities: the `interesttarget` behavior **and** the existing context menus and behaviors.
 
@@ -138,6 +138,12 @@ One difficulty of the above proposal is that the two things (the popover target 
 1. When the long-pressed element has `interesttarget`, any UA-provided context menu will not blur or otherwise obscure the web content it covers. In this way, the page will still be visible "under" the context menu.
 2. The portion of the renderer window that is still visible (not obscured by the context menu) will be exposed to the developer via four new [`env()` values](https://developer.mozilla.org/en-US/docs/Web/CSS/env), tentatively called `context-menu-inset-top`, `context-menu-inset-right`, `context-menu-inset-bottom`, and `context-menu-inset-left`. In this way, the developer can safely position the target popover within the area that isn't obscured by the context menu. (See [the mockups section](#mockups).)
 3. An attempt will be made to provide at least half of the screen (or a "reasonable" amount of screen real estate) for developer content, e.g. by moving the context menu down rather than centering it within the viewport.
+
+Importantly, the User Agent will still be in control of a few things:
+
+1. The position and size of the UA-provided context menu.
+2. The available space and location for the developer/site-provided hovercard.
+3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
 
 See https://github.com/openui/open-ui/issues/1052 for a much more detailed conversation with developers about touch screen behavior. That extended discussion led to the behaviors described in this section.
 
