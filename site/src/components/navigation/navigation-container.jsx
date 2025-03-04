@@ -1,5 +1,9 @@
 import { useState } from 'preact/hooks'
-import 'invokers-polyfill'
+import { apply, isSupported } from 'invokers-polyfill/fn'
+
+if (typeof window !== 'undefined') {
+  if (!isSupported()) apply()
+}
 
 function NavigationContainer(props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
