@@ -17,7 +17,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [HIDs and Interest](#hids-and-interest)
   - [Mouse](#mouse)
   - [Keyboard](#keyboard)
-    - [`interactivity: not-keyboard-focusable`](#interactivity-not-keyboard-focusable)
+    - [interactivity: not-keyboard-focusable](#interactivity-not-keyboard-focusable)
   - [Touchscreen](#touchscreen)
   - [Other](#other)
 - [Mouse delays](#mouse-delays)
@@ -99,7 +99,7 @@ So essentially, delayed-focus triggers interest. To mitigate the "annoy the user
 - if the target is a popover, it is shown, but any interactive contents within the popover act as if they have `tabindex=-1`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
 - a hotkey (e.g. Alt-UpArrow) will cause the popover to be "fully activated" which removes the special `tabindex=-1` behavior, making it available in the focus navigation order. This hot-key must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key. The hotkey should not be an arrow key *without* a modifier, since that will interfere with scrolling.
 - a new set of pseudo classes will match on the interest invoker *and* the target popover, only when it is in the "partially activated" state. For example, `:has-partial-interest` will match the invoker, and `:target-has-partial-interest` will match the popover.
-- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-has-partial-interest {interactivity:not-keyboard-focusable}`.  See the [`interactivity:not-keyboard-focusable` section](#interactivity-not-keyboard-focusable) for more detail.
+- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-has-partial-interest {interactivity:not-keyboard-focusable}`.  See the [interactivity:not-keyboard-focusable section](#interactivity-not-keyboard-focusable) for more detail.
 - a new UA stylesheet rule will will also be added: `:target-has-partial-interest::after {content: "Press Alt-UpArrow to activate this content"}`. This adds (developer-overridable) hints to the user about the hotkey, so that it is discoverable.
 
 This approach, while slightly more complicated, nicely meets the following use case requirements:
@@ -114,7 +114,7 @@ Additionally, the appearance of the focus ring will be altered slightly when foc
 
 See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
 
-#### `interactivity: not-keyboard-focusable`
+#### interactivity: not-keyboard-focusable
 
 As a prerequisite for `interesttarget`, a new value for the `interactivity` CSS property needs to be added:
 
