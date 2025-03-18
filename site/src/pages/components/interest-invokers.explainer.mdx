@@ -17,7 +17,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [HIDs and Interest](#hids-and-interest)
   - [Mouse](#mouse)
   - [Keyboard](#keyboard)
-    - [`interactivity: no-keyboard`](#interactivity-no-keyboard)
+    - [`interactivity: not-keyboard-focusable`](#interactivity-not-keyboard-focusable)
   - [Touchscreen](#touchscreen)
   - [Other](#other)
 - [Mouse delays](#mouse-delays)
@@ -99,14 +99,14 @@ So essentially, delayed-focus triggers interest. To mitigate the "annoy the user
 - if the target is a popover, it is shown, but any interactive contents within the popover act as if they have `tabindex=-1`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
 - a hotkey (e.g. Alt-UpArrow) will cause the popover to be "fully activated" which removes the special `tabindex=-1` behavior, making it available in the focus navigation order. This hot-key must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key. The hotkey should not be an arrow key *without* a modifier, since that will interfere with scrolling.
 - a new set of pseudo classes will match on the interest invoker *and* the target popover, only when it is in the "partially activated" state. For example, `:has-partial-interest` will match the invoker, and `:target-has-partial-interest` will match the popover.
-- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-has-partial-interest {interactivity:no-keyboard}`.  See the [`interactivity:no-keyboard` section](#interactivity-no-keyboard) for more detail.
+- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-has-partial-interest {interactivity:not-keyboard-focusable}`.  See the [`interactivity:not-keyboard-focusable` section](#interactivity-not-keyboard-focusable) for more detail.
 - a new UA stylesheet rule will will also be added: `:target-has-partial-interest::after {content: "Press Alt-UpArrow to activate this content"}`. This adds (developer-overridable) hints to the user about the hotkey, so that it is discoverable.
 
 This approach, while slightly more complicated, nicely meets the following use case requirements:
  - Better user activation story for non-interactive "tooltips" that shouldn't be so hard to activate. Note that these have no behavior difference between "partially activated" and "fully activated", since they contain nothing interactive.
  - Better discoverability story for rich "hovercards". The `::after` UA rule provides explicit instructions.
  - Less risk of annoyance for keyboard users, since rich hovercards don't insert themselves automatically into the sequential focus order.
- - Ability to override the `interactivity:no-keyboard` behavior for key use cases, such as menus (where the author would add `:target-has-partial-interest {interactivity:auto}` to activate immediately on focus) and "large/obtrusive" tooltips (where the author would add `:target-has-partial-interest {display:none}` so content doesn't automatically show on focus, but requires the hotkey).
+ - Ability to override the `interactivity:not-keyboard-focusable` behavior for key use cases, such as menus (where the author would add `:target-has-partial-interest {interactivity:auto}` to activate immediately on focus) and "large/obtrusive" tooltips (where the author would add `:target-has-partial-interest {display:none}` so content doesn't automatically show on focus, but requires the hotkey).
  - The partial interest state can be indicated to the user (e.g. with `:target-has-partial-interest {opacity:50%}`) if desired, and the helpful text about the hotkey can be customized or hidden if desired.
  - (Most importantly?) The default state "just works" for keyboard users, in the case that the developer only tested/developed using a mouse, and didn't do any of the above.
 
@@ -114,13 +114,13 @@ Additionally, the appearance of the focus ring will be altered slightly when foc
 
 See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
 
-#### `interactivity: no-keyboard`
+#### `interactivity: not-keyboard-focusable`
 
 As a prerequisite for `interesttarget`, a new value for the `interactivity` CSS property needs to be added:
 
 - `interactivity: auto`: the (existing) 'auto' behavior. Some elements (such as buttons) are made focusable by the user agent, and others (such as `<div>`) are not.
 - `interactivity: inert`: the (existing) 'inert' behavior. Nothing in the subtree is interactive, focusable, clickable, etc., and content is *not present* in the accessibility tree.
-- `interactivity: no-keyboard`: (new value) the element and its subtree will not be keyboard focusable, but will retain all other forms of interactivity such as mouse-clicks. Note that the element might still be focusable overall (e.g. programmatically or via the mouse), it will merely not be present in the sequential focus navigation order. The element, in other words, behaves as if it has `tabindex=-1`.
+- `interactivity: not-keyboard-focusable`: (new value) the element and its subtree will not be keyboard focusable, but will retain all other forms of interactivity such as mouse-clicks. Note that the element might still be focusable overall (e.g. programmatically or via the mouse), it will merely not be present in the sequential focus navigation order. The element, in other words, behaves as if it has `tabindex=-1`.
 
 This property inherits, so that children of the element also follow the behavior. An explicit `tabindex` value on an element should override the value of this property.
 
