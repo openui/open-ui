@@ -24,7 +24,7 @@ All commands noted here are ideas only and are not included in the initial relea
 Depending on the target set by `commandfor`, invoking the button will trigger
 additional behaviours alongside the event dispatch, depending on the value of
 `command`. The following table represents ideas on how built-in invocations on specific
-element types are handled. These need further design on exactly how
+element types could be handled. These need further design on exactly how
 they will behave based on implications such as accessibility, security,
 interactivity, and how the button may need to respond to such actions.
 
@@ -51,6 +51,8 @@ interactivity, and how the button may need to respond to such actions.
 | `<*>`                 | `'toggle-fullscreen'`  | If the element is fullscreen, then exit, otherwise request to enter                                            |
 | `<*>`                 | `'request-fullscreen'` | Request the element to enter into 'fullscreen' mode                                                            |
 | `<*>`                 | `'exit-fullscreen'`    | If the element is fullscreen, then exit                                                                        |
+| `<*>`                 | [`'copy-text'`](https://github.com/openui/open-ui/issues/952)          | Copy the inner text of the target element to the clipboard. Special case when self referencing to use the value attribute. |
+| `<*>`                 | [`'share'`](https://github.com/openui/open-ui/issues/974)          | Share the inner text of the target element, special casing URLs. Special case when self referencing to use the value attribute. |
 | `<input type=number>` | `'step-up'`            | Call `.stepUp()` on the invokee                                                                                |
 | `<input type=number>` | `'step-down'`          | Call `.stepDown()` on the invokee                                                                              |
 
