@@ -1,0 +1,439 @@
+---
+menu: Active Proposals
+name: Menu elements (Explainer)
+path: /components/menu.explainer
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors: [@domfarolino](https://github.com/domfarolino), [@dizhang168](https://github.com/dizhang168), [@josepharhar](https://github.com/josepharhar), [@mfreed7](https://github.com/mfreed7)
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [New `<menuitem>` elements](#new-menuitem-elements)
+- [Grouping `<menuitem>`s together](#grouping-menuitems-together)
+- [Question and Answers](#question-and-answers)
+  - [When to use Select vs Menu](#when-to-use-select-vs-menu)
+  - [Why are we adding `<menuitem>` and not re-using the `<command>` element?](#why-are-we-adding-menuitem-and-not-re-using-the-command-element)
+  - [Why are we adding `<menubar>` and `<menulist>` and not re-using the `<menu>` element?](#why-are-we-adding-menubar-and-menulist-and-not-re-using-the-menu-element)
+  - [Popover semantics for `<menulist>`](#popover-semantics-for-menulist)
+  - [Why are we using popover instead of openable for `<menulist>`?](#why-are-we-using-popover-instead-of-openable-for-menulist)
+  - [What should be the keyboard behavior?](#what-should-be-the-keyboard-behavior)
+  - [Should clicking/activating a menuitem close the menu by default?](#should-clickingactivating-a-menuitem-close-the-menu-by-default)
+  - [Should any of these elements be form-associated?](#should-any-of-these-elements-be-form-associated)
+  - [How can users customize the UI of these menu elements?](#how-can-users-customize-the-ui-of-these-menu-elements)
+  - [There was a proposal for a Context Menu years ago. How is this different?](#there-was-a-proposal-for-a-context-menu-years-ago-how-is-this-different)
+  - [How can we use menu elements to support custom right click Context Menus?](#how-can-we-use-menu-elements-to-support-custom-right-click-context-menus)
+  - [How can we use menu elements to support navigation menus?](#how-can-we-use-menu-elements-to-support-navigation-menus)
+  - [How can we use menu elements to support toolbars?](#how-can-we-use-menu-elements-to-support-toolbars)
+  - [How can we use menu elements to support Touch Bar?](#how-can-we-use-menu-elements-to-support-touch-bar)
+- [Examples in code](#examples-in-code)
+  - [Google Docs: nested menulist](#google-docs-nested-menulist)
+
+## Introduction
+
+A menu is an essential way to group menu items together and provide users the ability to execute commands. There is an existing [`<menu>` element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element), which represents a “toolbar” listing of commands. Though it is named “menu”, it is not programmatically exposed like a “menu” or “menubar”. There is also no native support to make listed commands look and behave cohesively. This proposal introduces new menu elements to give web developers more flexibility while following the[ ARIA practices on menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/). Namely, we suggest adding `<menubar>`, `<menulist>` and various types of `<menuitem>` elements.
+
+Having native menu features will make it easier for web developers to add menulists, menubars and better configure the menu items to choose from. Furthermore, introducing these new features will expand on the baseline behaviors popover and anchor positioning provide.  New native menu elements will also have the correct implicit ARIA roles, states and properties as well as the expected keyboard navigation behaviors - ensuring consistent experiences for users on the platform they are engaging with.
+
+Use cases:
+
+* Add an in-page horizontal menubar at the top of a content window; example: Google Doc has a menubar with the items File, Edit, View, Insert, Format, etc.
+* Add a filter button that opens a menulist to a shopping catalogue where user can check between “Sort by relevant”, “Sort by newest”, “Sort by price”.
+
+
+## New `<menuitem>` elements
+
+`<menuitem>`
+
+* A focusable/activatable command in a `<menubar>`/`<menulist>`
+* Supports :disabled, disabled attribute
+* May have a popovertarget which takes the idref of a submenu to show
+    * Example: `<menuitem popovertarget=submenu>`
+* Events: "toggle” on popover will be fired.
+
+`<menuitemcheckbox>`
+
+* inherits from menuitem - but is exposed as menuitemcheckbox
+* A focusable/activatable item in a `<menulist>`
+* When grouped via `<fieldset>` with other `<menuitemcheckbox>`es, it allows for multiple menuitem selections in a checkable grouping.
+* Events: "change" or "toggle" will be fired.
+
+`<menuitemradio>`
+
+* inherits from menuitem - but is exposed as menuitemradio
+* A focusable/activatable item in a `<menulist>`
+* When grouped via `<fieldset>` with other `<menuitemradio>`s, it allows for a single menuitem selection within a checkable grouping.
+* Supports :checked and ::checkmark
+* Events: "change" or "toggle" will be fired.
+
+**Question: Should this be one element with specific attributes or multiple elements?**
+
+Instead of adding multiple new elements, we could also:
+
+
+
+1. Add a type attribute: `<menuitem>`, `<menuitem type=checkbox>`, `<menuitem type=radio>`.
+    1. If type is checkbox or radio, it is automatically checkable
+2. Add a **checkable** attribute on the `<menuitem>`
+    2. menuitem.checked IDL property to check if the item is checked
+3. Add a **checkable** attribute on the grouping element (fieldset, menulist)
+    3. Checkable attribute can be multiple (for checkbox) or single (for radio)
+    4. `<fieldset checkable=multiple><menuitem>`
+    5. `<fieldset checkable=single><menuitem>`
+4. Add **name** attribute to group items together if we only want one element to checked at a time (for type radio)
+        1. `<menuitem checkable name=foo>`
+        2. `<menuitem checkable name=foo>`
+
+**Question: Should we allow `<menuitemcheckbox>`, `<menuitemradio>` in `<menubar>`?**
+
+Currently, we don’t see a need for this. All menuitems inside a menubar should open a menulist. We are open to removing this restriction if there are good use cases. For example, for a toolbar pattern (which this proposal isn’t covering), a `<menuitem>` with the text “Bold” should mark that element as checked.
+
+
+## Grouping `<menuitem>`s together
+
+This proposal does not modify the existing [`<menu>` element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element). Instead, users create a menu UI using menubar, menulist, menuitem, etc.
+
+`<menubar>`
+
+
+
+* Menubar should be used to represent a series of `<menuitem>`s that can then open submenus of commands.
+* In a menubar, a menuitem’s most common purpose is to invoke submenus (menulists).
+* An **in-page** menu that can contain a list of `<menuitem>`
+* Menuitems within a menubar are displayed horizontally by default.
+* Supports :disabled, disabled attribute
+
+`<menulist>`
+
+
+
+* Menulist should be used to represent submenus of commands.
+* In a menulist, a menu item’s most common purpose is to invoke actions (commands) or other submenus (menulists).
+* A **popover** menu that can contain a list of `<menuitem>`
+* Anchored to the button which is declaratively set up to open it
+* Attributes
+    * disabled, open, name?
+
+**Question: Is `<fieldset>` necessary to group `<menuitem>` together?**
+
+Yes. While, we can use the <code>["name"](https://html.spec.whatwg.org/C#attr-fe-name)</code> attribute to logically group exclusive `<menuitemradio>` items together, to support captioned groups of `<menulist>` items, we should use the existing `<fieldset>` element (and its optional labeling `<legend>` element) that give this functionality to forms.
+
+Furthermore, `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly considered, but decided against since it is used for grouping options.
+
+We are also considering adding a checkable attribute on `<fieldset>` elements, to group the `<menuitem>`s as either all radios or all checkboxes instead of using new elements.
+
+```HTML
+
+<menulist>
+  <fieldset checkable=single>
+    <menuitem>Radio 1</menuitem>
+    <menuitem>Radio 2</menuitem>
+    <menuitem>Radio 3</menuitem>
+  </fieldset>
+
+  <fieldset checkable=multiple>
+    <menuitem>Checkbox 1</menuitem>
+    <menuitem>Checkbox 2</menuitem>
+    <menuitem>Checkbox 4</menuitem>
+  </fieldset>
+</menulist>
+```
+
+If multiple `<menuitem>`s are added without a fieldset, they are grouped together under the parent `<menulist>`.
+
+**Question: How should we expose the checked menu items to script?**
+
+It can be queried together as :checked element.
+
+**Question: Should we restrict `<menubar>` and `<menulist>` to only contain `<menuitem>`s?**
+
+Similarly to customizable select, we expect everything to be wrapped inside `<menuitem>` according to the content model. This includes non-interactive elements like logo, images, text.
+
+**What about interactive elements?**
+
+TBD.
+
+
+## Question and Answers
+
+
+### When to use Select vs Menu
+
+Just like a select element, the menu element has a list of choices to pick from. And with customizable select now available, users might be confused on which one to use.
+
+The `<select>` element is a form-associated element and contains `<option>` elements. Each of these `<option>` elements must have a server-readable value. As a user chooses an option, specific events are triggered (change, input) and a new value is set.
+
+On the other hand, the proposed `<menulist>` element should be used to display a list of commands/actions. Each `<menuitem>` should be thought of as a command that is activable. That action could be to open a new nested menulist element or to trigger a specific command. It must adhere to [ARIA guidelines for menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
+
+
+### Why are we adding `<menuitem>` and not re-using the `<command>` element?
+
+See `<command>` element’s deprecated specification [here](https://udn.realityripple.com/docs/Web/HTML/Element/command). In the last year, the command and commandfor attributes were introduced so buttons can perform actions on other elements declaratively. We thought re-using this obsolete element with the same name would be confusing to developers.
+
+Additionally - command is a single element, where as this proposal is introducing various elements with additional grouping semantics and keyboard behaviors beyond what a single 'command' element would represent - or reasonably be capable of creating parity with the various ARIA roles these new proposed elements would be natively introducing to HTML.
+
+
+### Why are we adding `<menubar>` and `<menulist>` and not re-using the `<menu>` element?
+
+The [`<menu>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element) element already exists, but it is very barebones. It represents a “toolbar” but is exposed no differently than an unordered list containing list items, each list item then representing a command (represented by a button element) that the user can perform or activate. There is a lot of nuance between the various menu patterns (menubar, navigation menu, toolbar) that this one element cannot differentiate. It has no special keyboard behavior nor unique ARIA roles mapping beyond the implicit roles of the elements it represents. Due to these legacy restrictions, we recommend not modifying it and instead depend on the new elements `<menubar>` and `<menulist>`.
+
+You can read more about what the menu element is and isn’t, [here](https://www.scottohara.me/blog/2021/10/21/menu.html).
+
+
+### Popover semantics for `<menulist>`
+
+Given a `<menuitem>` inside a `<menubar>`, it can invoke a `<menulist>` by invoking a target.
+
+This can be accomplished by either:
+
+
+
+* **`<menuitem menu=id>`**
+* `<menuitem menulist=id>`
+* `<menuitem popovertarget=id>`
+    * Maybe not; this is strictly more limited than command/commandfor
+* **`<menuitem command=”show-menu” commandfor=id>`**
+    * We should allow [command invokers](https://open-ui.org/components/invokers.explainer/).
+    * Useful for menu items that invoke custom commands.
+    * Useful for interest invoker targets.
+    * Useful to show modal dialog.
+    * To decide: Does this make sense for radio/checkbox menuitems? Do we have use cases of a menuitem that toggles its checked state and invoke a behavior at the same time?
+* Nest the menulist as a sibling of other menuitems, inside the parent menulist.
+
+**Questions**
+* Since `<menulist>`s are popovers by default, what happens if we add a popover attribute on top of it?
+* What should be the default popover value?
+    * Have popover=auto be default
+    * Can set popover=hint?
+    * Can set popover=manual?
+* Should menulist.showPopover() be the way to open these from script?
+
+
+### Why are we using popover instead of openable for `<menulist>`?
+
+An "[openable](https://open-ui.org/components/openable.explainer/)" is an element rendered in-page with display:none until it is opened. This could be useful for mobile apps, where the menubar is shown vertically in-page.
+
+An element with role=menu is pretty much exclusively a popover or contained within a popover.  If someone wanted an in-page menu then a menubar, or a fieldset of controls might be the more appropriate solution. Someone *could* show/hide a menubar - much like how google docs allows one to show/hide the menubar with the toggle on the right side of the toolbar (hide the menus (ctrl+shift+f) button).
+
+Openable is currently not standard. If there are valid cases of needing the `<menulist>` element to be in-page and the feature is mature enough, we can revisit this.
+
+
+### What should be the keyboard behavior?
+
+We can use the same keyboard behavior as described in the table of the ARIA Authoring Practices Guide, which is demonstrative of the keyboard expectations for how menus and menubars work at the operating system level.
+
+
+
+* A menubar has a single tab stop.
+* A menulist is invoked when its popovertarget (a menuitem or a button). Focus would automatically move to its first focusable child.
+* Tab focus will not trigger the menuitem to get selected/checked, but only when an explicit Enter/choice happens.
+* An explicit Enter/Space on a menuitem without popvertarget and inside a menulist will close that menulist.
+* An explicit Enter/Space does not close the menulist if the menuitem selected has a popovertarget that gets triggered.
+* An explicit ESC will close the current popover menulist that has focus and return focus to its invoking element (which may be a menuitem inside a menulist or a menubar; or is a button element).
+* Arrow keyboard events will allow navigating between menuitems.
+
+Question
+
+
+
+* Is there any case where tab will close a menulist? For example, when we move from the last `<menuitem>` in a `<menulist>` and are moving to the next `<menuitem>` in the `<menubar>`.
+* Do we need special behavior for hot keys?
+
+
+### Should clicking/activating a menuitem close the menu by default?
+
+When user clicks on a menuitem:
+
+
+
+1. If it has a valid reference to a menulist:
+    1. If menulist is open, close the menulist (and all its nested menulist children).
+    2. Else, open it and move focus.
+2. Else, if menuitem is contained inside an open menulist, close its parentMenulist.
+
+The algorithm when user clicks on a menuitemcheckbox:
+
+
+
+1. Set it to checked.
+
+The algorithm when user clicks on a menuitemradio:
+
+
+
+1. Set it to checked.
+2. Set all other menuitemradio to unchecked.
+
+Question:
+
+
+
+* Should there be an attribute to control this behavior?
+* Should “focusout” on a `<menulist>` cause it to close?
+* What about hovering on `<menuitem>`? This is not supported for popovers yet.
+* Define the click and drag behavior.
+* Define the activation behavior.
+* Define the behavior for nested list cases. We can leverage that menulist are popovers, meaning the focus is scoped already.
+
+
+### Should any of these elements be form-associated?
+
+No. the menu elements proposal is intended to be semantically different from customizable &lt;select>, which is in part achieved by the difference in form-association support. Supporting form-assocation also increases complexity (it raises questions like: what do we do if some of the controls appear *outside* of the menu element tree? how does form-association integrate with menu nesting?) with no obvious benefit; until a strong use case materializes, our default will be to not form-associate elements in this proposal.
+
+However, we do recognize there are use cases where users might want to have inputs inside the menulists or menubars. For example, searchable menus using an input element. In such cases, the control is allowed in the menulist or menubar, but is not associated with a form.
+
+
+### How can users customize the UI of these menu elements?
+
+We propose these elements should not support the CSS appearance property and just have a “base” appearance by default like the `<dialog>` element.
+
+**Some open questions**
+
+
+
+* `<menubar>` should list `<menuitem>`s horizontally, but support using CSS writing-mode.
+    * Can have vertical case by:
+        * Set CSS writing-mode: vertical-lr on the `<menubar>`
+        * Set CSS writing-mode: horizontal-tb on the `<menuitem>` inside the `<menubar>`
+* `<menulist>` can support more than top to bottom layout:
+    * Set CSS display: grid and use rows/columns pattern.
+* For checkable `<menuitem>`, should the check mark be on the left or the right?
+    * Default should be on the left.
+    * This can depend on the CSS direction property.
+* For `<menuitem>`, should there be a default slot for the icon? If so, should it be on the left or the right?
+    * Default should be on the left.
+    * This can depend on the CSS direction property.
+
+
+### There was a proposal for a Context Menu years ago. How is this different?
+
+Previously, “context menus” were specified to allow developers to define custom context menus declaratively. This was being prototyped by Mozilla. Blink also had an implementation behind a flag.
+
+```HTML
+<menu id=”menu1” type=”context”>
+  <a href=#>Cancel</a>
+</menu>
+
+<button contextmenu=”menu1”>Right-click me</button>
+```
+
+Per [comment](https://github.com/whatwg/html/issues/2929#issuecomment-322804888) and [PR](https://github.com/whatwg/html/pull/2742), this feature was removed from the HTML specification because there was a lack of active interest by at least two implementers.
+
+From Chromium, the [reasoning for removing support](https://issues.chromium.org/issues/40589971#comment65) was:
+
+
+
+1. There is doubt whether the API is well designed.
+2. This was considered a low priority because “reaching outside the content area and contributing items to the browser’s context menu” is a new capability and needs thorough designing. There was no bandwidth for new capabilities work.
+3. This is not an interoperability priority (only existed in Firefox)
+
+Chromium bug: [https://issues.chromium.org/issues/40589971](https://issues.chromium.org/issues/40589971)
+
+Mozilla bug: [https://bugzilla.mozilla.org/show_bug.cgi?id=617528](https://bugzilla.mozilla.org/show_bug.cgi?id=617528)
+
+Mozilla bug to remove support: [https://bugzilla.mozilla.org/show_bug.cgi?id=1372276](https://bugzilla.mozilla.org/show_bug.cgi?id=1372276)
+
+Webkit bug about the touch bar API: [https://bugs.webkit.org/show_bug.cgi?id=179020](https://bugs.webkit.org/show_bug.cgi?id=179020)
+
+The specification were removed per:
+
+[https://github.com/whatwg/html/pull/2742](https://github.com/whatwg/html/pull/2742)
+
+[https://github.com/whatwg/html/pull/2342](https://github.com/whatwg/html/pull/2342)
+
+[https://github.com/whatwg/html/pull/244](https://github.com/whatwg/html/pull/244)
+
+
+### How can we use menu elements to support custom right click Context Menus?
+
+We discourage users from using these new elements to build a custom context menu. There are good reasons to keep the user agent defined context menu. For example, it allows users to copy/paste consistently across sites and to have browser extension options added. We do not plan to provide a declarative way to build a context menu.
+
+However, this proposal is not about removing the existing web capabilities. Authors can use Javascript to add an event listener on “contextmenu” and call preventDefault to not show the default context menu. They can support custom context menus (similar to Google Doc) by showing a `<menulist>` at the cursor location.
+
+We understand it would be helpful to have this feature be natively supported. If we want to open the conversation about supporting this, here are some open questions to resolve:
+
+
+
+* What should be the keyboard behavior?
+* What are the accessibility mappings? See open [ARIA issue](https://github.com/w3c/aria/issues/1971).
+* Can we add support to add individual `<menuitem>` to the existing UA context menu?
+* How can we keep the OS context menu’s style?
+* Before we can support this, we need to fix [this](https://github.com/whatwg/html/issues/10905) popover bug about values auto vs manual.
+
+
+### How can we use menu elements to support navigation menus?
+
+A navigation menu is for navigation to different pages on a site. The navigation menu item should have an href attribute. It must adhere to [ARIA guidelines for navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/). An example use case would be to have a `<menulist>` where users can choose “Settings”, “Logout”, etc.
+
+If we choose to not take on `<menubar>` for site navigation to reduce initial scope, our fear is that authors will shoehorn the site navigation use case into in-page `<menulist>`, resulting in broad use of non-accessible site navigation menus.
+
+**Questions**
+
+* Should we reuse the [`<nav>` element](https://html.spec.whatwg.org/multipage/#the-nav-element)?
+    * No. Similar to how we do not want to re-use `<menu>`, it would be better to create a new element than to codify an universally undesired pattern.
+* Instead of using `<menubar>`, should we have a new `<navmenubar>` element?
+* Should we support anchor elements inside `<menuitem>`s?
+    * No, `<menuitem>` should only wrap non-interactive elements.
+* Should we support href attribute on `<menuitem>`s?
+    * Maybe, if we commit to the “navigation menu” use case.
+
+**Questions about VoiceOver on navigation menubar**
+
+
+
+1. I tried Voiceover with on the chrome menus themselves and commands affecting the current context like copy/past aren't obviously distinguishable from commands that are more navigation like (e.g. settings...). Why is that uniquely important for the web?
+2. I tried Voiceover on google docs and tab navigation for the menus doesn't seem to work very well but when I am able to tab to Help => Privacy Policy (opens a new tab), it's not announced as a link.
+
+
+### How can we use menu elements to support toolbars?
+
+A menubar provides a hierarchical structure of menus for accessing application functions while a  toolbar provides quick access to commonly used commands through icons and buttons. As such, a toolbar can contain a variety of controls beyond just menuitems. For example, buttons and [comboboxes](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) to invoke menulists.
+
+There are ARIA guidelines for the [toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/examples/toolbar/) pattern, which is different from the menubar and the navigation menu patterns. This proposal will not address this yet.
+
+
+### How can we use menu elements to support Touch Bar?
+
+There is a history of attempting to do this in Webkit, for example for a [Touch Bar](https://github.com/whatwg/html/issues/3251). The idea for this is to collect all your “commands” and put them into the macOS menu bar (or expose them some other way). This proposal will not address this yet.
+
+
+
+
+## Examples in code
+
+
+### Google Docs: nested menulist
+
+
+```HTML
+<menubar>
+ <menuitem menu=format>Format</menuitem>
+ <menuitem menu=tools>Tools</menuitem>
+ <menuitem menu=extensions>Extensions</menuitem>
+ <menuitem menu=help>Help</menuitem>
+</menubar>
+<menulist id=format>
+  <menuitem menu="format-text">Text</menuitem>
+  <menuitem menu="format-paragraph-styles">Paragraph styles</menuitem>
+  <menuitem menu="format-align-indent">Align & indent</menuitem>
+  ...
+ <menulist id="format-text" checkable=multiple>
+  <menuitem id="bold">Bold</menuitem>
+  <menuitem>Italic</menuitem>
+  <menuitem>Underline</menuitem>
+  ...
+ </menulist>
+</menulist>
+
+<script>
+bold.addEventListener("click", () => {
+  let text = document.getElementById("text");
+  text.style.fontWeight = 'bold';
+});
+</script>
+```
