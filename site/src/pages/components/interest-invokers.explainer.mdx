@@ -20,7 +20,7 @@ layout: ../../layouts/ComponentLayout.astro
     - [interactivity: not-keyboard-focusable](#interactivity-not-keyboard-focusable)
   - [Touchscreen](#touchscreen)
   - [Other](#other)
-- [Mouse delays](#mouse-delays)
+- [Mouse/Keyboard delays](#mousekeyboard-delays)
 - [The `:has-interest` Pseudo Class](#the-has-interest-pseudo-class)
 - [Implementation Details](#implementation-details)
 - [Example Code](#example-code)
@@ -82,7 +82,7 @@ Users access the web using many different Human Interface Devices (HIDs), includ
 
 ### Mouse
 
-Mouse users will show interest in an element by mouse-hovering the element for a period of time. They will lose interest in that element when they de-hover the element (i.e. hover something unrelated) for a period of time. (See the [Mouse delays](#mouse-delays) section for more detail.) If the target is a popover, then both the element with `interesttarget` *and* the target popover need to be de-hovered. In this way, a user can hover to get a hovercard, and then move the mouse over to that hovercard (e.g. to select/copy some text) without the popover closing.
+Mouse users will show interest in an element by mouse-hovering the element for a period of time. They will lose interest in that element when they de-hover the element (i.e. hover something unrelated) for a period of time. (See the [Mouse/Keyboard delays](#mousekeyboard-delays) section for more detail.) If the target is a popover, then both the element with `interesttarget` *and* the target popover need to be de-hovered. In this way, a user can hover to get a hovercard, and then move the mouse over to that hovercard (e.g. to select/copy some text) without the popover closing.
 
 Note (see the [Keyboard](#keyboard) section for more detail) that hovering the element with `interesttarget` shows the popover in "partial activation" mode. Subsequently, hovering the target popover itself causes the target to be "fully activated". This enables use cases where *both* keyboard and mouse are being used. For example, a user might tab to focus an `interesttarget` element, which shows a popover. Then they move their mouse over to a button within that popover, activating the popover and making the button clickable.
 
@@ -156,12 +156,12 @@ Since this category of HIDs contains less-commonly-used HID types, and because i
 
 There is another category of devices which also falls into the "Other" category: very small touchscreens. One example here is a watch face with a small touchscreen that can render web content. In this case, as with the other devices in this category, the UA must provide a usable way to show interest in an element.
 
-## Mouse delays
+## Mouse/Keyboard delays
 
-When the HID is a mouse, where hover/de-hover is the method for showing and losing interest, delays are important for a number of reasons:
+For mouse or keyboard users, delays are important for a number of reasons:
 
-1. Simply hovering an element should not be enough to show interest in that element, since the user might just be moving the mouse from one place to another on the screen. It would be highly distracting to the user if such a move caused many popovers to show up. For this reason, showing interest needs to be done by hovering an element **for a period of time**.
-2. For a similar reason, losing interest cannot be provided by *just* de-hovering the element. For example, in the common case of a link that has a hovercard, it is very common for the hovercard to be separated from the element by some padding space. And it is also common for the user to want to move their mouse *from* the link *to* the hovercard, e.g. to select and copy some text. However, since there's a gap between the elements, moving the mouse across that gap constitutes a de-hover of both the element and its target. For this reason, losing interest needs to be done by de-hovering the element (and its target) **for a period of time**.
+1. Simply hovering or focusing an element should not be enough to show interest in that element, since the user might just be moving from one place to another, and not trying to pause and show interest. It would be highly distracting to the user if such a move caused many popovers to show up. For this reason, showing interest needs to be done by hovering/focusing an element **for a period of time**.
+2. For a similar reason, losing interest cannot be provided by *just* de-hovering/blurring the element. For example, in the common case of a link that has a hovercard, it is very common for the hovercard to be separated from the element by some padding space. And it is also common for mouse users to want to move their mouse *from* the link *to* the hovercard, e.g. to select and copy some text. However, since there's a gap between the elements, moving the mouse across that gap constitutes a de-hover of both the element and its target. For this reason, losing interest needs to be done by de-hovering the element (and its target) **for a period of time**.
 
 Both of these time periods need to be CSS-configurable, because different use cases can require different delays. For example, a responsive gaming site might want very short delays, including potentially zero-delay. On the other hand, information-rich sites such as Wikipedia might want longer delays to ensure their content is easily accessible to all. To achieve this, two properties, `interest-target-show-delay` and `interest-target-hide-delay`, will control the corresponding delays. Because, as described above, both of these delays are fairly critical to proper operation of the interest mechanism, both properties will default to a non-zero value, 0.5 seconds. A shorthand `interest-target-delay` property will control both.
 
