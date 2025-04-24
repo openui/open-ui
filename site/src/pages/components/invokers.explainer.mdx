@@ -1,10 +1,17 @@
 ---
-menu: Active Proposals
+menu: Graduated Proposals
 name: Invoker Commands (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-- Authors: [Keith Cirkel](https://github.com/keithamus)
+- Authors: [Keith Cirkel](https://github.com/keithamus), [Luke Warlow](https://github.com/lukewarlow)
+- Last updated: 20 February 2025
+- [Specification](https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command)
+- [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API)
+
+**NOTE:** This explainer covers the graduated parts of this proposal. While we try to keep it roughly in line with the actual shipped features, it might be more informative to look the specification and MDN documentation links.
+
+See also [the future proposed commands](/components/future-invokers.explainer).
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -67,9 +74,8 @@ to. This allows for popovers to be created and interacted with - in an
 accessible and reliable way - without writing any additional JavaScript, which
 is a very welcome addition. While `popovertarget` sufficiently captured the use
 case for popovers, it fell short of providing the same developer & user
-experience for other interactive elements such as `<dialog>`, `<details>`,
-`<video>`, `<input type="file">`, and so on. This proposal attempts to redress
-the balance.
+experience for other interactive elements such as `<dialog>`.
+This proposal attempts to redress the balance.
 
 ### Terms
 
@@ -80,9 +86,8 @@ the balance.
   `Space` or `Enter` (Carriage Return) key on the keyboard. For other HIDs such
   as eye tracking or pedals or game controllers, the equivalent expected "click"
   action should be used to invoke the element.
-- Invoker: An invoker is a button element (that is a `<button>`,
-  `<input type="button">`, or `<input type="reset">`) that has an `commandfor`
-  and `command` attribute set.
+- Invoker: An invoker is a button control (that is a `<button type="button">`) that has a
+  `commandfor` and `command` attribute set.
 - Invoker Target: An element which is referenced to by an Invoker, via the
   `commandfor` attribute.
 
@@ -142,7 +147,7 @@ interface CommandEvent : Event {
   readonly attribute DOMString command;
 };
 dictionary CommandEventInit : EventInit {
-  DOMString action = "";
+  DOMString command = "";
   Element source;
 };
 ```
@@ -167,7 +172,7 @@ When pointing to a `popover`, `commandfor` acts much like `popovertarget`,
 allowing the toggling of popovers.
 
 ```html
-<button commandfor="my-popover" command="toggle-popover">Open Popover</button>
+<button type="button" commandfor="my-popover" command="toggle-popover">Open Popover</button>
 <!-- Effectively the same as popovertarget="my-popover" -->
 
 <div id="my-popover" popover="auto">Hello world</div>
@@ -179,59 +184,13 @@ When pointing to a `<dialog>`, `command` can toggle a `<dialog>`'s
 openness.
 
 ```html
-<button commandfor="my-dialog" command="show-modal">Open Dialog</button>
+<button type="button" commandfor="my-dialog" command="show-modal">Open Dialog</button>
 
 <dialog id="my-dialog">
   Hello world!
 
-  <button commandfor="my-dialog" command="close">Close</button>
+  <button type="button" commandfor="my-dialog" command="close">Close</button>
 </dialog>
-```
-
-#### Details
-
-> Note: Invokers targeting a `<details>` element has been deferred from the initial release.
-
-When pointing to a `<details>`, `commandfor` can toggle a `<details>`'
-openness.
-
-```html
-<button commandfor="my-details" command="open">Open Details</button>
-<!-- Can be used to replicate the `<summary>` interaction -->
-
-<details id="my-details">
-  <summary>Summary...</summary>
-  Hello world!
-</details>
-```
-
-#### Customizing `input type=file`
-
-> Note: Invokers targeting a `<input>` element has been deferred from the initial release.
-
-Pointing `commandfor` to an `<input type="file">` can act the same as the
-rendered button _within_ the input; and can be used to declare a customised
-alternative button to the input's button.
-
-```html
-<button commandfor="my-file" command="show-picker">Pick a file...</button>
-
-<input id="my-file" type="file" />
-```
-
-#### Customizing video/audio controls
-
-> Note: Invokers targeting `<audio>` and `<video>` elements has been deferred from the initial release.
-
-The `<video>` and `<audio>` tags have many interactions, here `commandfor`
-shines, allowing multiple buttons to handle different interactions with the
-video player.
-
-```html
-<button commandfor="my-video" command="play-pause">Play/Pause</button>
-<button commandfor="my-video" command="toggle-muted">Mute/Unmute</button>
-
-<video id="my-video"></video>
 ```
 
 #### Custom behaviour
@@ -242,42 +201,18 @@ manual event handlers to the Invokers.
 
 ```html
 <!-- Custom commands must contain a double dash! -->
-<button commandfor="my-custom" command="--my-frobulate">Frobulate</button>
+<button type="button" commandfor="my-custom" command="--my-frobulate">Frobulate</button>
 
 <div id="my-custom"></div>
 
 <script>
   document.getElementById("my-custom").addEventListener("command", (e) => {
-    if (e.action === "--my-frobulate") {
+    if (e.command === "--my-frobulate") {
       alert("Successfully frobulated the div");
     }
   });
 </script>
 ```
-
-### Accessibility
-
-> Warning: This section is incomplete PRs welcome.
-
-The _Invoker_ implicitly receives `aria-controls=IDREF` or `aria-details=IDREF`
-(tbd) to expose the _Invoker_ controls another element (the _Invokee_) for
-instances where the invokee is not a sibling to the invoker element.
-
-If the _Invokee_ has the `popover` attribute, the _Invoker_ implicitly receives
-an `aria-expanded` state, as well as an `aria-details` association (for
-instances where the elements are not DOM siblings) which will match the state of
-the popover's openness. It will be `aria-expanded=true` when the `popover` is
-`:popover-open` and `aria-expanded=false` otherwise.
-
-If the _Invokee_ is a `<details>` element the _Invoker_ implicitly receives an
-`aria-expanded` state which will match the state of the _Invokee_'s openness. It
-will be `aria-expanded=true` when the _Invokee_ is open and
-`aria-expanded=false` otherwise.
-
-If the _Invokee_ is a `<dialog>` element the _Invoker_ implicitly receives an
-`aria-expanded` state which will match the state of the _Invokee_'s openness. It
-will be `aria-expanded=true` when the _Invokee_ is open and
-`aria-expanded=false` otherwise.
 
 ### Defaults
 
@@ -288,46 +223,281 @@ element types are handled.
 
 When the `command` attribute is missing it will default to an invalid state.
 
-| Invokee Element | `action` hint         | Behaviour                                                                                                  |
+| Invokee Element | `command` hint         | Behaviour                                                                                                  |
 | :-------------- | :-------------------- | :--------------------------------------------------------------------------------------------------------- |
 | `<* popover>`   | `'toggle-popover'`    | Shows the `popover` if closed, otherwise hides. Similar to `.togglePopover()`                              |
 | `<* popover>`   | `'hide-popover'`      | Hides the `popover` if open, otherwise does nothing. Similar to `.hidePopover()`                           |
-| `<* popover>`   | `'show-popover'`      | Shows the `popover` if closes, otherwise does nothing. Similar to `.showPopover()`                         |
+| `<* popover>`   | `'show-popover'`      | Shows the `popover` if closed, otherwise does nothing. Similar to `.showPopover()`                         |
 | `<dialog>`      | `'show-modal'`        | If the `<dialog>` is not `open`, shows it as modal. Similar to `.showModal()`                              |
 | `<dialog>`      | `'close'`             | If the `<dialog>` is `open`, close and use the button `value` for returnValue. Similar to `.close(value)   |
 
-Further behaviours have been proposed, but need further design on exactly how 
-they will behave based on implications such as accessibility, security,
-interactivity, and how the button may need to respond to such actions.
+### Accessibility
 
-| Invokee Element       | `action` hint          | Behaviour                                                                                                      |
-| :-------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------- |
-| `<details>`           | `'toggle'`             | If the `<details>` is `open`, then close it, otherwise open it                                                 |
-| `<details>`           | `'open'`               | If the `<details>` is not `open`, then open it                                                                 |
-| `<details>`           | `'close'`              | If the `<details>` is `open`, then close it                                                                    |
-| `<dialog>`            | `'toggle'`             | If the `<dialog>` is `open`, then close it and use the button `value` for returnValue, otherwise open as modal |
-| `<dialog>`            | `'cancel'`             | If the `<dialog>` is `open`, cancel the dialog                                                                 |
-| `<select>`            | `'show-picker'`        | Shows the native picker. Similar to `.showPicker()` on the invokee                                             |
-| `<input>`             | `'show-picker'`        | Shows the native picker. Similar to `.showPicker()` on the invokee                                             |
-| `<video>`             | `'play-pause'`         | If the video is not playing, plays the video. Otherwise pauses it. Similar to `el.playing = !el.playing`       |
-| `<video>`             | `'pause'`              | If the video is playing, pause the video. Similar `.playing = false`                                           |
-| `<video>`             | `'play'`               | If the video is not playing, play the video. Similar to `.playing = true`                                      |
-| `<video>`             | `'toggle-muted'`       | If the video is muted, it unmutes the video, otherwise it mutes it. Similar to `el.muted = !el.muted`          |
-| `<audio>`             | `'play-pause'`         | If the audio is not playing, plays the audio. Otherwise pauses it. Similar to `el.playing = !el.playing`       |
-| `<audio>`             | `'pause'`              | If the audio is playing, pause the audio. Similar `.playing = false`                                           |
-| `<audio>`             | `'play'`               | If the audio is not playing, play the audio. Similar to `.playing = true`                                      |
-| `<audio>`             | `'toggle-muted'`       | If the audio is muted, it unmutes the audio, otherwise it mutes it. Similar to `el.muted = !el.muted`          |
-| `<*>`                 | `'toggle-fullscreen'`  | If the element is fullscreen, then exit, otherwise request to enter                                            |
-| `<*>`                 | `'request-fullscreen'` | Request the element to enter into 'fullscreen' mode                                                            |
-| `<*>`                 | `'exit-fullscreen'`    | If the element is fullscreen, then exit                                                                        |
-| `<input type=number>` | `'step-up'`            | Call `.stepUp()` on the invokee                                                                                |
-| `<input type=number>` | `'step-down'`          | Call `.stepDown()` on the invokee                                                                              |
+For built-in behaviours `command` attribute maps to specific accessibility
+mappings which are placed on the button. The button may also use the
+`commandfor` referenced element to gather other details (for example the state
+of the element) to reflect that state on the button.
 
-> Note: The above tables are an attempt at wide coverage, but ideas are welcome.
-> Please submit a PR if you have one!
+These mappings will happen implicitly on the browsers Accessible Nodes, and so
+while (for simplicity) this section refers to various `aria-` attributes,
+buttons will not sprout these attributes in the DOM, but the effective
+equivalent will be exposed to Assistive Technologies.
 
-Further to the initial ship we're also exploring implicit `command` or implicit
-`commandfor` values where the value can easily be inferred.
+#### Buttons with `command=toggle-popover`, `command=hide-popover`, or `command=show-popover`
+
+Buttons with these popover commands will implicitly receive
+`aria-details=IDREF`, where `IDREF` matches that of the `commandfor` attribute,
+under certain conditions while the popover is in the showing state.
+
+<details>
+
+<summary>Why?</summary>
+
+Some Assistive Technologes allow users to press a keyboard shortcut to navigate
+to the element pointed to by `aria-details`. This is useful in scenarios where
+the popover is _not_ the invoking element's next accessibility sibling, such as if there are buttons
+or other controls between the invoking button and the popover.
+
+</details>
+
+<br/><br/>
+
+Browsers are expected to omit `aria-details` based on heuristics where it is redundant,
+such as the contents of the popover being the next accessibility sibling to the invoking element, or while
+the popover's contents are not traversable, such as when it is hidden, or not
+in the DOM.
+
+Browsers should also omit `aria-details` when the invoking button is a descendant
+of the popover it refers to, for example a close button inside the popover.
+
+Buttons will also implicitly receive an `aria-expanded` value. The state of the 
+`aria-expanded` value will map to the state of the popover. When the popover is
+open the button will have `aria-expanded="true"`, when closed,
+`aria-expanded="false"`. If the button is an descendant of the popover then it
+will be explictly set to `aria-expanded="undefined"`, indicating to assistive
+technology that the expanded state is not applicable to this button.
+This attribute will be recomputed whenever the popover changes state, such that
+the button always reflects the state of expansion.
+
+<details>
+<summary>Why?</summary>
+
+Some Assistive Technologies will announce the state of expansion while the
+button is focussed, for example a `<button aria-expanded=false>File</button>`
+may be announced by a screen reader as "File, button, collapsed", while
+`<button aria-expanded=true>File</button>` may be announced by a screen reader
+as `File, button, expanded`. This is helpful information for users who require
+an alternative of the visual confirmation of the popover being rendered on
+screen.
+
+If the popover element is not in the DOM, browsers should ensure the button has
+the `aria-expanded=false` state. Some websites may chose to render such
+elements only when they are open, often referred to as "conditional rendering".
+Browsers should aim to do their best to cater for this, and as such provide the
+state under the assumpsion that a popover element may appear in the DOM on
+press.
+
+</details>
+
+<br/><br/>
+
+Buttons with these popover commands will also have focus restored to the
+button when the popover closes. This will require the popover keeping a
+reference to the opening button so that it can return the focus to that button.
+
+<details>
+<summary>Why?</summary>
+
+It is important for keyboard users (or other users who rely on focus) to not
+have their focus state lost when performing actions on the page. If the page
+shows a new piece of navigable UI, and shifts the user's focus to that UI,
+then it is important to restore focus when that UI closes, so that the user's
+journey is maintained.
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-pressed
+
+Given elements will have `aria-expanded`, adding `aria-pressed` would be
+confusing or redundant, and as such won't be proposed for these buttons.
+
+##### aria-controls
+
+While `aria-controls` attempts to establish a similar style of relationship to
+`aria-details`, `aria-details` sees broader support among various assistive
+technologies, and it would be redundant to add both.
+
+##### aria-haspopup=dialog
+
+When the `commandfor=` element is a `<dialog>`, adding aria-haspopup=dialog is
+a potentially viable attribute to add. Some Assistive Technologies will announce
+that the button will open a dialog, for example
+`<button aria-haspopup=dialog>Delete</button>` may be announced by a screen
+reader as "Delete, button, opens dialog". However, buttons that open dialogs
+rarely come with additional visual treatment, and so the lack of a visual
+analog means that using this attribute likely provides surplus information
+to users of assistive technologies that isn't otherwise provided. Additionally,
+the _intent_ for `aria-haspopup` is more focused towards combobox popovers,
+where the type of popover may be ambigious. As command buttons can be used for
+more than just combobox controls, `aria-haspopup` is not present by default.
+
+</details>
+
+<br/><br/>
+
+#### Buttons with `command=show-modal`
+
+Buttons with this dialog command will also have focus restored to the button
+when the dialog closes. This will require the dialog keeping a reference to the
+opening button so that it can return the focus to that button.
+
+<details>
+<summary>Why?</summary>
+
+It is important for keyboard users (or other users who rely on focus) to not
+have their focus state lost when performing actions on the page. If the page
+shows a new piece of navigable UI, and shifts the user's focus to that UI,
+then it is important to restore focus when that UI closes, so that the user's
+journey is maintained.
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-details
+
+Exposing an `aria-details` relationship between the button and the dialog is
+redundant. These relationships are useful only when the related element is
+open and present on the page and the invoking button is still navigable. A
+modal dialog renders the rest of the page inert meaning that it won't be
+possible to navigate to the invoking button.
+
+##### aria-controls
+
+Similar to `aria-details`, `aria-controls` is not useful for a dialog that
+is closed, and non-navigable for a dialog that is open as modal, so it would 
+provide no benefit to add.
+
+##### aria-pressed
+
+The `aria-pressed` state is the incorrect type of association for elements
+which conditionally appear on the page.
+
+##### aria-expanded
+
+Similar to `aria-details`, the `aria-expanded` state redundant, given the
+dialog is opened as modal. For the user to have navigated to a button that
+opens a modal dialog, the dialog must not be open. If the dialog is open then
+the button will be inert, therefore non-navigable, therefore it is redundant
+to provide it an implicit `aria-expanded=true` state also.
+
+##### aria-haspopup=dialog
+
+When the `commandfor=` element is a `<dialog>` it might seem `aria-haspopup=dialog` 
+would be a potentially viable attribute to add. Some Assistive Technologies will announce
+that the button will open a dialog, for example
+`<button aria-haspopup=dialog>Delete</button>` may be announced by a screen
+reader as "Delete, button, opens dialog". However, buttons that open dialogs
+rarely come with additional visual treatment, and so the [lack of a visual
+analog means that using this attribute likely provides surplus information](https://w3c.github.io/aria/#h-note-50)
+to users of assistive technologies that isn't otherwise provided. Additionally,
+the _intent_ for `aria-haspopup` is more focused towards combobox popovers,
+where the type of popover may be ambigious. As command buttons can be used for
+more than just combobox controls, `aria-haspopup` is not present by default.
+
+</details>
+
+<br/><br/>
+
+#### Buttons with `command=close`
+
+Buttons with this dialog command will implicitly receive `aria-details=IDREF`,
+where `IDREF` matches that of the `commandfor` attribute, while the dialog is
+in the showing state, and the button is not a descendant of the dialog.
+
+<details>
+<summary>Why?</summary>
+
+A button that closes a dialog is very typically found inside of the dialog, but
+in some cases it may be found outside, perhaps as a "toggle" style button which
+opens and closes a dialog as non-modal. This button may be used to close an open
+dialog that is shown as non-modal. It may be useful for a user to traverse into
+the dialog before closing it, for example to check if they have unsaved changes
+within the dialog.
+
+</details>
+
+<br/><br/>
+
+Buttons will also implicitly receive an `aria-expanded` value, if they are not a
+descendant of the `commandfor=` referenced element. The state of the
+`aria-expanded` value will map to the state of the dialog's openness. When the
+dialog is open the button will have `aria-expanded="true"`, when closed,
+`aria-expanded="false"`. This will be recomputed whenever the dialog changes
+state, such that the button always reflects the state of openness.
+
+<details>
+<summary>Why?</summary>
+
+A button that closes a dialog is very typically found inside of the dialog, but
+in some cases it may be found outside, perhaps as a "toggle" style button which
+opens and closes a dialog as non-modal.
+
+Buttons outside of the dialog may be used to close an open dialog that is shown
+as non-modal. It may be useful for a user to traverse into the dialog before
+closing it, for example to check if they have unsaved changes within the dialog.
+It may also be useful to know if the dialog is already closed (as in its
+`aria-expanded` state is false), as this may help the user make a decision to
+whether or not they action the close button. 
+
+</details>
+
+<br/><br/>
+
+<details>
+<summary>Other considerations not explicitly proposed.</summary>
+
+##### aria-pressed
+
+Given elements will have `aria-expanded`, adding `aria-pressed` would be
+confusing or redundant, and as such won't be proposed for these buttons.
+
+##### aria-controls
+
+While `aria-controls` attempts to establish a similar style of relationship to
+`aria-details`, `aria-details` sees broader support among various assistive
+technologies, and it would be redundant to add both.
+
+</details>
+
+<br/><br/>
+
+#### Other built-in `command=` types
+
+The above commands are the core built-in command types which will be initially
+shipping. Further built-in commands will be proposed on a case-per-case basis,
+and additional aria or other logic will be considered with those at the time.
+
+#### Custom `command=` types
+
+Custom command types have accessibility requirements which will be hard to
+determine based on the presence of the button and invokee alone. Consequently,
+it is left to the implementer or user of the custom command to assign
+appropriate aria markup to these buttons.
+
+#### Elements with `commandfor=` but no `command=`
+
+In this current proposal, elements without a `command=` attribute are
+considered "author errors"; they will do nothing when invoked. These buttons
+will recieve no additional implicit aria states.
 
 ### Invokers and Custom Elements
 
@@ -335,18 +505,19 @@ As the underlying system for invoke elements uses event dispatch, Custom Element
 can make use of `CommandEvent` for their own behaviours. Consider the following:
 
 ```html
-<button commandfor="my-element" command="--spin-widget">
+<button type="button" commandfor="my-element" command="--spin-widget">
   Spin the widget
 </button>
 
 <spin-widget id="my-element"></spin-widget>
 <script>
-  customElements.define(
+
+customElements.define(
     "spin-widget",
     class extends HTMLElement {
       connectedCallback() {
         this.addEventListener("command", (e) => {
-          if (e.action === "--spin-widget") {
+          if (e.command === "--spin-widget") {
             this.spin();
           }
         });
@@ -355,6 +526,53 @@ can make use of `CommandEvent` for their own behaviours. Consider the following:
   );
 </script>
 ```
+
+### Security
+
+This proposal adds new capabilities in that elements can be interacted with
+using HTML where prior these required scripting (read: JS). Care has been taken
+within this proposal to ensure there are no substantially new security
+implications, and that the risk is kept low.
+
+In general, we should not grant significant new capabilities with or without
+scripting, and seek other ways to mitigate security concerns.
+
+Invokers, by design, have two security affordances:
+
+- Without scripting, they require user interaction - the invoker button needs
+  to be clicked for the browser to fire an Command Event. Scripts are able to
+  synthesise the `CommandEvent`, or the `click` event on the button - but
+  scripts are already capable of causing the same interactions without Invokers.
+- The `commandfor` takes an IDREF which must reference an ID within the same
+  document. `commandForElement` can be assigned a cross-root element, but
+  this requires scripting which means all actions are already possible.
+
+To go into more detail, below is a brief summary of the security considerations
+per interaction:
+
+#### Popovers
+
+This proposal allows opening and closing popovers with `invoketarget`. This is
+already possible with `popovertarget`, and so there is no new capability here.
+
+#### Dialogs
+
+This proposal allows opening and closing `<dialog>` elements with
+`invoketarget`. While this is new capability (prior to this proposal scripting
+is required), it poses the same security considerations as popovers in that it
+toggles the visiblity of a new element. Modal dialog elements are also placed
+on the "top layer" which means they occlude other content. This is already
+possible with popovers, which are also placed on the top layer, so while
+buttons to open `<dialog>` elements is a new capability, it is not a novel new
+security threat considering attackers could already craft a popover.
+
+Modal dialogs also trap focus, such that focus can only be moved within
+elements inside the dialog or the browser native controls (such as the URL
+bar). This is considered to not pose a significant threat as the invoking
+button requires user activation, the dialog cannot render outside of the
+document frame (iframe or browser window) and so cannot occlude the browsers
+Chrome, and there are built in gestures to close a dialog (such as the Esc key
+via a `CloseWatcher`) that cannot be opted out of with or without invokers.
 
 ### PAQ (Potentially Asked Questions)
 
@@ -397,9 +615,9 @@ https://github.com/whatwg/html/issues/9625#issuecomment-2115718679
 #### Do we have to always supply both? Can't we make `command` or `commandfor` implicit?
 
 The original proposal had the concept of an "auto" `command` value which would
-determine an exlicit command based on various heuristics, such as the target
+determine an explicit command based on various heuristics, such as the target
 element. This has been deferred for the initial ship, but may be explored
-further. This is considred out of scope for the initial ship, however.
+further. This is considered out of scope for the initial ship, however.
 
 We may also explore the possibility of making `commandfor` implicit, for example
 if a button is a descendant of a dialog, omitting `commandfor` may make sense.
@@ -423,29 +641,25 @@ for non-interactive elements. While `<a>`s _are_ interactive, they should _only_
 be used for page navigation and not for invoking other behaviours, and so
 `command`/`commandfor` should not be allowed.
 
-#### Why isn't `input[type=submit]` included?
+#### Why isn't `button[type=submit]` included?
 
 This is not added by design. Submit inputs already have a default action:
 submitting forms. If you want a button to control the submission of a form, use
-`input[type=submit]`, if you want a button to control invocation of something
-_other_ than a form then you should use `input[type=button]`.
+`button[type=submit]`, if you want a button to control invocation of something
+_other_ than a form then you should use `button[type=button]`.
 
-#### Why _is_ `input[type=reset]` included?
+#### Why isn't `button[type=reset]` included?
 
-It may stand to reason that if `input[type=submit]` is _excluded_ then so should
-`input[type=reset]`, however, there are valid use cases to resetting a form at
-the same time as some other action, for example closing the dialog that contains
-a form:
+This is not added by design. Reset inputs already have a default action:
+resetting forms. If you want a button to control the resetting of a form, use
+`button[type=reset]`, if you want a button to control invocation of something
+_other_ than a form then you should use `button[type=button]`.
 
-```html
-<dialog id="my-dialog">
-  <form>
-    <input type="text" />
-    <!-- This button closes the dialog _and_ resets the form -->
-    <input type="reset" commandfor="my-dialog" command="close" value="Cancel" />
-  </form>
-</dialog>
-```
+#### Why isn't `input[type=button]` included?
+
+This is not added by design. `input[type=button]` is a legacy element,
+use of this element is discouraged in favour of `<button>`. So we only support
+`<button>` elements.
 
 #### What does this mean for `popovertarget`?
 
@@ -467,7 +681,7 @@ methods, if that's desired:
 
 
 ```html
-<button commandfor="my-element" command="--spin-widget">
+<button type="button" commandfor="my-element" command="--spin-widget">
   Spin the widget
 </button>
 
@@ -501,16 +715,16 @@ you feel it necessary you can invent your own DSLs for passing extra data using
 this hint. For example:
 
 ```html
-<button commandfor="my-counter" command="--add-1">Add 1</button>
-<button commandfor="my-counter" command="--add-2">Add 2</button>
-<button commandfor="my-counter" command="--add-10">Add 10</button>
+<button type="button" commandfor="my-counter" command="--add-1">Add 1</button>
+<button type="button" commandfor="my-counter" command="--add-2">Add 2</button>
+<button type="button" commandfor="my-counter" command="--add-10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
 <script>
   const counter = document.getElementById("my-counter");
   counter.addEventListener("command", (e) => {
-    let addMatch = /^--add-(\d+)$/.match(e.action);
+    let addMatch = /^--add-(\d+)$/.match(e.command);
     if (addMatch) {
       counter.value = Number(counter.value) + Number(addMatch[1]);
     }
@@ -522,9 +736,9 @@ You can also leverage the buttons `value` attribute to effectively parameterise
 certain commands:
 
 ```html
-<button commandfor="my-counter" command="--add-num" value="1">Add 1</button>
-<button commandfor="my-counter" command="--add-num" value="2">Add 2</button>
-<button commandfor="my-counter" command="--add-num" value="10">Add 10</button>
+<button type="button" commandfor="my-counter" command="--add-num" value="1">Add 1</button>
+<button type="button" commandfor="my-counter" command="--add-num" value="2">Add 2</button>
+<button type="button" commandfor="my-counter" command="--add-num" value="10">Add 10</button>
 
 <input readonly id="my-counter" value="0" />
 
@@ -537,3 +751,5 @@ certain commands:
   });
 </script>
 ```
+
+You could also use `data-*` attributes for even more granular control.
