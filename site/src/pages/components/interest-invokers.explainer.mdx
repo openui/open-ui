@@ -67,7 +67,7 @@ The `interesttarget` capability is supported on these interactive elements:
 
 It is possible that this list could be expanded later: see [#908](https://github.com/openui/open-ui/issues/908) and [#1138](https://github.com/openui/open-ui/issues/1138). It is also possible that some elements could be removed from the list: see [#1138](https://github.com/openui/open-ui/issues/1138).
 
-The user will be able to **"show interest"** in an element through various means. For mouse users, hovering the element for a period of time will "show interest". For keyboard users, the UA will provide a hot-key such as Alt-Down, which will "show interest" in the element. See the [HIDs and interest](#hids-and-interest) section for all the details.
+The user will be able to **"show interest"** in an element through various means. For keyboard and mouse users, focusing or hovering the element for a period of time will "show interest". See the [HIDs and interest](#hids-and-interest) section for all the details.
 
 Since one of the primary use cases for this API is the activation of hovercards, when the target element of `interesttarget` is a popover (with the `popover` attribute), the popover will automatically be shown. This provides an easy way to allow disclosure of high fidelity hovercards in a more accessible and declarative way. It is also possible to connect other actions to the target element, via the `"interest"` event: when interest is shown in an element with `interesttarget`, an `InterestEvent` with type `"interest"` will be fired at the element referenced by `interesttarget`.
 
