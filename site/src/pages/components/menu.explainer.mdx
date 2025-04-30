@@ -21,7 +21,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 ## Introduction
 
-A menu is an essential way to group menu items together and provide users the ability to execute commands. There is an existing [`<menu>` element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element), which represents a "toolbar" listing of commands. Though it is named "menu", it is not programmatically exposed like a "menu" or "menubar". There is also no native support to make listed commands look and behave cohesively. This proposal introduces new menu elements to give web developers more flexibility while following the[ ARIA practices on menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/). Namely, we suggest adding `<menubar>`, `<menulist>` and various types of `<menuitem>` elements.
+A menu is an essential way to group menu items together and provide users the ability to execute commands. There is an existing [`<menu>` element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element), which represents a "toolbar" listing of commands. Though it is named "menu", it is not programmatically exposed like a "menu" or "menubar". There is also no native support to make listed commands look and behave cohesively. This proposal introduces new menu elements to give web developers more flexibility while following the [ARIA practices on menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/). Namely, our proposal includes adding `<menubar>`, `<menulist>`, and `<menuitem>` elements.
 
 Having native menu features will make it easier for web developers to add menulists, menubars and better configure the menu items to choose from. Furthermore, introducing these new features will expand on the baseline behaviors popover and anchor positioning provide.  New native menu elements will also have the correct implicit ARIA roles, states and properties as well as the expected keyboard navigation behaviors - ensuring consistent experiences for users on the platform they are engaging with.
 
@@ -35,51 +35,49 @@ Use cases:
 
 `<menuitem>`
 
-* A focusable/activatable command in a `<menubar>`/`<menulist>`
-* Supports :disabled, disabled attribute
+* A focusable/activatable command in a `<menubar>` and `<menulist>`
+* Supports the `disabled` attribute, and the `:disabled` CSS pseudo-class
 * May have a popovertarget menu which takes the idref of a submenu to show
     * Example: `<menuitem menu=submenu>`
-* Events: "toggle" on popover will be fired.
+* Events:
+    * "toggle" on popover will be fired.
+    * "change" will be fired when the `<menuitem>` is checkable, and its state changes
+* Checkability:
+    * Supports "checkable" configuration and state, by wrapping `<menuitem>`s in a `<fieldset>` with
+      a new `checkable` attribute; see [Grouping menuitems together](#grouping-menuitems-together).
+    * Supports the :checked CSS pseudo-class and ::checkmark CSS pseudo-element
 
-`<menuitemcheckbox>`
+**Question: Should `<menuitem>`s be represented by a single element, or multiple elements?**
 
-* inherits from menuitem - but is exposed as menuitemcheckbox
-* A focusable/activatable item in a `<menulist>`
-* When grouped via `<fieldset>` with other `<menuitemcheckbox>`es, it allows for multiple menuitem selections in a checkable grouping.
-* Events: "change" or "toggle" will be fired.
+As stated, our proposal involves introducing a single `<menuitem>` element to represent menu
+buttons, some of which can be checkable. Instead of representing both non-checkable & checkable
+state-bearing menu items with the single `<menuitem>` element, we could also consider:
 
-`<menuitemradio>`
-
-* inherits from menuitem - but is exposed as menuitemradio
-* A focusable/activatable item in a `<menulist>`
-* When grouped via `<fieldset>` with other `<menuitemradio>`s, it allows for a single menuitem selection within a checkable grouping.
-* Supports :checked and ::checkmark
-* Events: "change" or "toggle" will be fired.
-
-**Question: Should this be one element with specific attributes or multiple elements?**
-
-Instead of adding multiple new elements, we could also:
-
-* Add a type attribute: `<menuitem>`, `<menuitem type=checkbox>`, `<menuitem type=radio>`.
-    * If type is checkbox or radio, it is automatically checkable
-* Add a **checkable** attribute on the `<menuitem>`
-    * menuitem.checked IDL property to check if the item is checked
-    * Add **name** attribute to group items together if we only want one element to checked at a time (for type radio)
+* Add a `type` attribute: `<menuitem>`, `<menuitem type=checkbox>`, `<menuitem type=radio>`.
+    * If `type` is `checkbox` or `radio`, it is automatically checkable
+* Add a `checkable` IDL attribute on `<menuitem>`
+    * This IDL property could be used to see if the item is checked
+    * Use a `name` attribute to group exclusive menu items together (this only applies for "radio"
+      menu items):
         * `<menuitem checkable name=foo>`
         * `<menuitem checkable name=foo>`
-* Add a **checkable** attribute on the grouping element (fieldset, menulist)
-    * Checkable attribute can be multiple (for checkbox) or single (for radio)
-    * `<fieldset checkable=multiple><menuitem>`
-    * `<fieldset checkable=single><menuitem>`
+* Add a `checkable` IDL attribute on the *grouping* element (`<fieldset>`, `<menulist>`)
+    * This attribute can have the values `single` (for radios) or `multiple` (for checkbox)
 
-**Question: Should we allow `<menuitemcheckbox>`, `<menuitemradio>` in `<menubar>`?**
+**Question: Should we allow radio and checkbox menu items as direct children of a `<menubar>`?**
 
-Currently, we don’t see a need for this. All menuitems inside a menubar should open a menulist. We are open to removing this restriction if there are good use cases. For example, for a toolbar pattern (which this proposal isn’t covering), a `<menuitem>` with the text "Bold" should mark that element as checked.
+Currently, we don’t see a need for this. All menuitems inside a menubar should perform some action
+like opening a sub `<menulist>`, however we will reconsider this restriction if good use cases
+arise.
 
+For example, a text editor might need to provide a `<menulist>` to provide basic font style adjustments. A group of checkable `<menuitem>` elements to mark content as "Bold", "Italic" or "Underlined", could be provided.  The checked state representing whether the text is currently "Bold" (checked) or not.
 
 ## Grouping `<menuitem>`s together
 
-This proposal does not modify the existing [`<menu>` element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element). Instead, users create a menu UI using menubar, menulist, menuitem, etc.
+Our proposal involves grouping `<menuitem>` elements together with the new `<menubar>` and
+`<menulist>` elements, and does not modify the existing [`<menu>`
+element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element) processing
+model. See https://github.com/openui/open-ui/issues/1194 for more discussion about this.
 
 `<menubar>`
 
@@ -92,7 +90,7 @@ This proposal does not modify the existing [`<menu>` element](https://html.spec.
 `<menulist>`
 
 * Menulist should be used to represent submenus of commands.
-* In a menulist, a menu item’s most common purpose is to invoke actions (commands) or other submenus (menulists).
+* In a menulist, a menu item's most common purpose is to invoke actions (commands) or other submenus (menulists).
 * A **popover** menu that can contain a list of `<menuitem>`
 * Anchored to the button which is declaratively set up to open it
 * Attributes
@@ -100,25 +98,34 @@ This proposal does not modify the existing [`<menu>` element](https://html.spec.
 
 **Question: Is `<fieldset>` necessary to group `<menuitem>` together?**
 
-Yes. While, we can use the <code>["name"](https://html.spec.whatwg.org/C#attr-fe-name)</code> attribute to logically group exclusive `<menuitemradio>` items together, to support captioned groups of `<menulist>` items, we should use the existing `<fieldset>` element (and its optional labeling `<legend>` element) that give this functionality to forms. If multiple `<menuitem>`s are added without a fieldset, they are grouped together under the parent `<menulist>`.
+Yes. While, we can use the <code>["name"](https://html.spec.whatwg.org/C#attr-fe-name)</code>
+attribute to logically group exclusive checkable `<menuitem>`s together, to support captioned groups
+of `<menulist>` items, we should use the existing `<fieldset>` element (and its optional labeling
+`<legend>` element) that give this functionality to forms. If multiple `<menuitem>`s are added
+without a `<fieldset>`, they are grouped together under their parent `<menulist>` or `<menubar>`,
+but are logically separate and are not checkable.
 
-Note, `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly considered, but decided against since it is used for grouping options.
+Note, `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly
+considered, but decided against since it is used for grouping options.
 
-We are also considering adding a checkable attribute on `<fieldset>` elements, to group the `<menuitem>`s as either all radios or all checkboxes instead of using new elements.
+Our proposal includes adding a `checkable` attribute on `<fieldset>`, to group `<menuitem>`s as
+either radios or checkboxes, instead of introducing new `<menuitemcheckbox>` and `<menuitemradio>`
+elements. We envision the following markup:
 
 ```HTML
 
 <menulist>
   <fieldset checkable=single>
-    <menuitem>Radio 1</menuitem>
-    <menuitem>Radio 2</menuitem>
-    <menuitem>Radio 3</menuitem>
+    <legend>Sort by</legend>
+    <menuitem>Recently added</menuitem>
+    <menuitem>Date created</menuitem>
+    <menuitem>Creator</menuitem>
   </fieldset>
 
   <fieldset checkable=multiple>
-    <menuitem>Checkbox 1</menuitem>
-    <menuitem>Checkbox 2</menuitem>
-    <menuitem>Checkbox 4</menuitem>
+    <menuitem>1 bedroom</menuitem>
+    <menuitem>2 bedrooms</menuitem>
+    <menuitem>3 bedrooms</menuitem>
   </fieldset>
 </menulist>
 ```
@@ -135,7 +142,7 @@ We should support `<fieldset>` and `<legend>` to help group the menu items toget
 
 We should support specific use cases of interactive elements outside the `<menuitem>`. For example, if the user wants to add an `<input type=search>` element, it should not be wrapped inside a `<menuitem>` and should instead be a sibling of `<menuitem>`s.
 
-<img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems" />
+<img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems">
 
 
 ## Questions
@@ -226,14 +233,14 @@ When user clicks on a menuitem:
     2. Else, open it and move focus.
 2. Else, if menuitem is contained inside an open menulist, close its parentMenulist.
 
-The algorithm when user clicks on a menuitemcheckbox:
+The algorithm when the user activates a `<menuitem>` in a `<fieldset checkable=multiple>`:
 
 1. Set it to checked.
 
-The algorithm when user clicks on a menuitemradio:
+The algorithm when the user activates a `<menuitem>` in a `<fieldset checkable=single>`:
 
 1. Set it to checked.
-2. Set all other menuitemradio to unchecked.
+2. Set all other radio menu items in the same group to unchecked.
 
 **Questions**
 
