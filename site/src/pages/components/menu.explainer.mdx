@@ -335,14 +335,13 @@ We understand it would be helpful to have this feature be natively supported. If
 
 ### How can we use menu elements to support navigation menus?
 
-A navigation menu is for navigation to different pages on a site. The navigation menu item should have an href attribute. It must adhere to [ARIA guidelines for navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/). An example use case would be to have a `<menulist>` where users can choose "Settings", "Logout", etc.
+A navigation menu is for navigation to different pages on a site. It is often created using a `<nav>` element, which maps to the ARIA role `navigation`. Navigation menus do not need ARIA to be accessible. Since all items in a navigation menu are focusable links, users can depend on the focusable state to navigate between the different items. Navigation menus are the most common type of menus we see online. It can be found on blogs, SPA, news sites, anywhere. Most are following a **Disclosure Navigation Menu** pattern although it is also possible to implement it using a **Navigation Menubar** pattern (for example, to support nested menu lists).
 
-If we choose to not take on `<menubar>` for site navigation to reduce initial scope, our fear is that authors will shoehorn the site navigation use case into in-page `<menulist>`, resulting in broad use of non-accessible site navigation menus.
+We are evaluating the possibility to include **Navigation Menubar** pattern in our proposal. Currently, screen readers don't expect `<menuitem>` to be navigatable. We need to carefully evaluate if this is a valuable addition and how menuitem can be changed to support a navigation menubar.
 
 **Questions**
 
 * Should we reuse the [`<nav>` element](https://html.spec.whatwg.org/multipage/#the-nav-element)?
-    * No. Similar to how we do not want to re-use `<menu>`, it would be better to create a new element than to codify an universally undesired pattern.
 * Instead of using `<menubar>`, should we have a new `<navmenubar>` element?
 * Should we support anchor elements inside `<menuitem>`s?
     * No, `<menuitem>` should only wrap non-interactive elements.
