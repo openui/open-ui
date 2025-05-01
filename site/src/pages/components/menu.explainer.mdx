@@ -335,14 +335,15 @@ We understand it would be helpful to have this feature be natively supported. If
 
 ### How can we use menu elements to support navigation menus?
 
-A navigation menu is for navigation to different pages on a site. The navigation menu item should have an href attribute. It must adhere to [ARIA guidelines for navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/). An example use case would be to have a `<menulist>` where users can choose "Settings", "Logout", etc.
+A "navigation menu" represents a means to allow users to access different pages/screen or sub-pages/screens of a website or web application - commonly used in many blogs, SPAs, news websites, really anywhere.  The most common way to create a navigation menu is by using a `<nav>` element, which implicitly exposes the ARIA landmark `navigation` role.  Lists, hyperlinks and buttons (to show/hide sub-navigation items) are the commonly expected child elements of many standard navigations, which generally do not need an author to declare specific ARIA roles to be accessible. Since all items in standard navigations are commonly hyperlinks and buttons, users can rely on standard <kbd>Tab</kbd> key navigation to reach each interactive element of the navigation. 
 
-If we choose to not take on `<menubar>` for site navigation to reduce initial scope, our fear is that authors will shoehorn the site navigation use case into in-page `<menulist>`, resulting in broad use of non-accessible site navigation menus.
+Sometimes, to reduce the amount of keyboard tabbing to bypass large navigation menus, a [**Disclosure Navigation Menu** pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/) or [**Menubar Navigation** pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/) may be used.  Each have their own pros and cons.
+
+We are evaluating the possibility to include **Navigation Menubar** pattern in our proposal.  We need to carefully evaluate if this is a valuable addition, as there are long standing UX concerns with using menubars in this way, and if such a pattern is introduced, we want to make sure it addresses the concerns of all users.
 
 **Questions**
 
-* Should we reuse the [`<nav>` element](https://html.spec.whatwg.org/multipage/#the-nav-element)?
-    * No. Similar to how we do not want to re-use `<menu>`, it would be better to create a new element than to codify an universally undesired pattern.
+* Should we reuse the [`<nav>` element](https://html.spec.whatwg.org/multipage/#the-nav-element) if we were to support a "disclosure" or "menubar" navigation pattern?
 * Instead of using `<menubar>`, should we have a new `<navmenubar>` element?
 * Should we support anchor elements inside `<menuitem>`s?
     * No, `<menuitem>` should only wrap non-interactive elements.
