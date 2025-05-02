@@ -212,7 +212,7 @@ SVGAElement includes InterestInvokerElement;
 The `interesttarget` value should be an IDREF pointing to an element within a single document or shadow root. The `interestTargetElement` IDL attribute also exists on the element to imperatively assign a node to be the invoker target, allowing for cross-root invokers (in some cases, see [attr-asociated element steps](https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-element) for more). We define this target element to be the "Interestee".
 
 Elements with an `interesttarget` attribute will dispatch an `InterestEvent` on the *Interestee* when the element
-*Shows Interest* or *Loses Interest*. When the user *Shows Interest* in the element, the event type will be `"interest"`. If the user has already shown interest in the element, and interest is subsequently lost, an `InterestEvent` with the type of `"loseinterest"` will be dispatched on the *Interestee*. The event also contains a `source` property that will reference the element with `interesttarget`. `InterestEvent` objects are always non-bubbling, composed, cancellable events.
+*Shows Interest* or *Loses Interest*. When the user *Shows Interest* in the element, the event type will be `"interest"`. If the user has already shown interest in the element, and interest is subsequently lost, an `InterestEvent` with the type of `"loseinterest"` will be dispatched on the *Interestee*. The event also contains a `source` property that will reference the element with `interesttarget`. `InterestEvent` objects are always non-bubbling, non-composed, cancellable events.
 
 ```webidl
 [Exposed=Window]
