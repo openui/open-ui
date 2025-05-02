@@ -96,21 +96,19 @@ For the above reasons, a somewhat more complicated approach is adopted for `inte
 - lose interest in the element when focus *leaves* the interest invoker or its target, after `interest-target-hide-delay` seconds. Also, hitting ESC will immediately lose interest in the element.
 
 So essentially, delayed-focus triggers interest. To mitigate the "annoy the user" problems, the target popover is activated in "partial activation" mode, in which case none of its contents are keyboard focusable. To achieve that, the following additional behaviors take place:
-- if the target is a popover, it is shown, but any interactive contents within the popover act as if they have `tabindex=-1`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
+- if the target is a popover, and the popover contains keyboard-focusable elements, then it put into "partial interest" mode, whereby interactive contents within the popover act as if they have `tabindex=-1`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
 - a hotkey (e.g. Alt-UpArrow) will cause the popover to be "fully activated" which removes the special `tabindex=-1` behavior, making it available in the focus navigation order. This hot-key must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key. The hotkey should not be an arrow key *without* a modifier, since that will interfere with scrolling and editing.
-- a new set of pseudo classes will match on the interest invoker *and* the target popover, only when it is in the "partially activated" state. For example, `:has-partial-interest` will match the invoker, and `:target-has-partial-interest` will match the popover.
-- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-has-partial-interest {interactivity:not-keyboard-focusable}`.  See the [interactivity:not-keyboard-focusable section](#interactivity-not-keyboard-focusable) for more detail.
-- a new UA stylesheet rule will will also be added: `:target-has-partial-interest::after {content: "Press Alt-UpArrow to activate this content"}`. This adds (developer-overridable) hints to the user about the hotkey, so that it is discoverable.
+- a new set of pseudo classes will match on the interest invoker *and* the target popover, only when it is in the "partially activated" state. For example, `:has-partial-interest` will match the invoker, and `:target-of-partial-interest` will match the popover.
+- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-of-partial-interest {interactivity:not-keyboard-focusable}`.  See the [interactivity:not-keyboard-focusable section](#interactivity-not-keyboard-focusable) for more detail.
+- a new UA stylesheet rule will will also be added, such as: `:target-of-partial-interest::after {content: "Press Alt-UpArrow to activate this content"}`. This adds (developer-stylable or -hideable) hints to the user about the hotkey, so that it is discoverable.
 
 This approach, while slightly more complicated, nicely meets the following use case requirements:
  - Better user activation story for non-interactive "tooltips" that shouldn't be so hard to activate. Note that these have no behavior difference between "partially activated" and "fully activated", since they contain nothing interactive.
  - Better discoverability story for rich "hovercards". The `::after` UA rule provides explicit instructions.
  - Less risk of annoyance for keyboard users, since rich hovercards don't insert themselves automatically into the sequential focus order.
- - Ability to override the `interactivity:not-keyboard-focusable` behavior for key use cases, such as menus (where the author would add `:target-has-partial-interest {interactivity:auto}` to activate immediately on focus) and "large/obtrusive" tooltips (where the author would add `:target-has-partial-interest {display:none}` so content doesn't automatically show on focus, but requires the hotkey).
- - The partial interest state can be indicated to the user (e.g. with `:target-has-partial-interest {opacity:50%}`) if desired, and the helpful text about the hotkey can be customized or hidden if desired.
+ - Ability to override the `interactivity:not-keyboard-focusable` behavior for key use cases, such as menus (where the author would add `:target-of-partial-interest {interactivity:auto}` to activate immediately on focus) and "large/obtrusive" tooltips (where the author would add `:target-of-partial-interest {display:none}` so content doesn't automatically show on focus, but requires the hotkey).
+ - The partial interest state can be indicated to the user (e.g. with `:target-of-partial-interest {opacity:50%}`) if desired, and the helpful text about the hotkey can be customized or hidden if desired.
  - (Most importantly?) The default state "just works" for keyboard users, in the case that the developer only tested/developed using a mouse, and didn't do any of the above.
-
-Additionally, the appearance of the focus ring will be altered slightly when focus is on elements with `interesttarget`. This allows the user to discover that something is "different" about this element, and know that the keyboard activation hot-keys will allow them to activate popovers. Since accessibility guidelines state that color alone cannot be enough to differentiate states, this focus ring change will likely need to be something like a slightly-thicker outline, or other shape change.
 
 See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
 
@@ -194,7 +192,7 @@ container:has(:has-interest) [interesttarget] {
 }
 ```
 
-A case has also been made that perhaps a pseudo class should match the **target** in this case. We propose `:target-has-interest` should match the target of the invoker, when it has been activated via showing interest in its interest invoker.
+A case has also been made that perhaps a pseudo class should match the **target** in this case. We propose `:target-of-interest` should match the target of the invoker, when it has been activated via showing interest in its interest invoker.
 
 ## Implementation Details
 
