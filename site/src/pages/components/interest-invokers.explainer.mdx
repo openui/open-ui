@@ -27,7 +27,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [Popovers](#popovers)
   - [Custom delays and multiple actions](#custom-delays-and-multiple-actions)
   - [Custom behaviour](#custom-behaviour)
-  - [Feature detection](#feature-detection)
+  - [Feature detection and polyfilling](#feature-detection-and-polyfilling)
 - [Mockups](#mockups)
   - [Touchscreen hovercard](#touchscreen-hovercard)
 - [Accessibility](#accessibility)
@@ -281,13 +281,19 @@ The `InterestEvent` interface allows for custom JavaScript to be triggered when 
 </script>
 ```
 
-### Feature detection
+### Feature detection and polyfilling
 
 To feature-detect this overall API, the following code does the trick:
 
 ```javascript
 const supported = HTMLButtonElement.prototype.hasOwnProperty("interestTargetElement");
 ```
+
+A rudimentary polyfill has been written (patches welcome!):
+
+- https://www.npmjs.com/package/interesttarget
+- https://github.com/mfreed7/interesttarget#readme
+
 
 ## Mockups
 
