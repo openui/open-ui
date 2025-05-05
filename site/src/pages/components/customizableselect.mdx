@@ -303,34 +303,6 @@ Here is another example with custom content in the listbox: [codepen](https://co
 </div>
 </div>
 
-### Split buttons
-
-<div className="code-image-container">
-<div>
-  This example uses the [selectedcontentelement](#the-selectedcontentelement-attribute) attribute in order to have separate buttons which open the select's popover and another one which has the selected option content and submits a form. The image is taken from a richer example here: [link to codepen](https://codepen.io/una/pen/KKbNYbo).
-```html
-<button><selectedcontent id=myselectedcontent></selectedcontent></button>
-<select selectedcontentelement=myselectedcontent>
-  <button>⬇️</button>
-  <option>Create a merge commit</option>
-  <option>Squash and merge</option>
-  <option>Rebase and merge</option>
-</select>
-<style>
-select, ::picker(select) {
-  appearance: base-select;
-}
-</style>
-```
-</div>
-<div>
-  <Image
-    src="/images/select-split-button.png"
-    alt="A customizable select element with a split button"
-  />
-</div>
-</div>
-
 ## Button behavior
 
 The first child `<button>` of a `<select>` will be slotted into the `<select>`'s UA ShadowRoot and will open the popup list of options.
@@ -343,9 +315,13 @@ When the `<selectedcontent>` element is placed inside of a `<select>`'s `<button
 
 Since the contents of the `<selectedcontent>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedcontent>`.
 
+## The split button use case
+
+Split buttons, like [this one from Fluent UI](https://react.fluentui.dev/?path=/docs/components-button-splitbutton--default) and [this one from PrimeNG](https://primeng.org/splitbutton), are a use case that was discussed for customizable select. Customizable select does not match the a11y properties and keyboard functionality of split buttons, so it is not recommended to use customizable select to implement this use case.
+
 ## The `selectedcontentelement` attribute
 
-`<select>` will support the `selectedcontentelement` attribute, which is an IDref which points to a single `<selectedcontent>` element to update. This allows the `<selectedcontent>` to exist outside of `<select>` in order to support the split buttons use case.
+`<select>` will support the `selectedcontentelement` attribute, which is an IDref which points to a single `<selectedcontent>` element to update. This allows the `<selectedcontent>` to exist outside of `<select>` in order to support the split other use cases.
 
 ## Anatomy of the customizable select element
 
