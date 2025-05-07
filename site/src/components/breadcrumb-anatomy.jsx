@@ -1,4 +1,3 @@
-import React from 'react'
 import { AnatomyWrapper, Host, Slot, Part } from './anatomy-components'
 import './breadcrumb-anatomy.css'
 
