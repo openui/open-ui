@@ -84,6 +84,21 @@ Since one of the primary use cases for this API is the activation of hovercards,
 
 It is also possible to trigger actions that occur when the user **"loses interest"** in the element and its target. In a very similar way to how "showing interest" is defined, "losing interest" happens in different ways based on the input modality. But the concept is clear: once the user has shown interest in an element, they need a way to show that they have "lost" that interest. For the typical hovercard use case, losing interest would cause the hovercard/popover to close. In all cases, when interest is lost, an `InterestEvent` with type `"loseinterest"` will be fired at the target element.
 
+## Survey of Use Cases
+
+There are myriad use cases for the behaviors provided by the `interesttarget` API. The collection of screenshots below shows a number of live production examples from across the web, grouped into common categories such as:
+
+- Page preview
+- Tooltips
+- More info
+- Quick actions
+- Hover menus
+
+Some of these occur when showing interest in links, and some when showing interest in buttons. Notes around the screenshots indicate whether/how these features can be accessed with the keyboard or touchscreen.
+
+<img src='/images/interesttarget-use-cases.png' width="800" alt='Survey of production web use cases for interesttarget' />
+
+
 ## HIDs and Interest
 
 Users access the web using many different Human Interface Devices (HIDs), including mouse, keyboard, touchscreen, and even things like voice control, eye tracking, and other specialty HIDs. However, as mentioned above, "showing" and "losing" interest are intentional abstractions that do not refer to specific actions such as "hover" or "long press". This is on purpose: the developer should not have to worry about handling all of the various input modalities specifically, in the same way that a `<button>` element can be activated in various ways such as tapping, clicking, or hitting Enter on the keyboard. The user agent provides this functionality "for free": developers don't need think about HIDs. This provides two benefits:
@@ -170,7 +185,6 @@ Importantly, the User Agent will still be in control of a few things:
 3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
 
 <img src='/images/interesttarget-mockup-show-both.gif' height="600" alt='Mockup of the "show both" approach' />
-
 
 #### Option 3 - add an item to the context menu
 
