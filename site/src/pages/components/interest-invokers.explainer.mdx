@@ -125,7 +125,7 @@ See https://github.com/openui/open-ui/issues/1133 for a much more detailed conve
 
 #### Mixed keyboard/mouse usage
 
-While an invoker is activated in "partial interest" mode, it is still possible for a user that also uses a mouse to try to interact with things in the target popover. For this reason, hovering a target popover with a mouse also causes the target to be "fully activated". For example, a user might tab to focus an `interesttarget` element, which shows a popover. Then they move their mouse over to a button within that popover, activating the popover and making the button clickable.
+While an invoker is activated in "partial interest" mode (via the keyboard), it is still possible for a user to be also using a mouse. In that case, hovering an invoker or its target popover with a mouse also causes the target to be upgraded to "full interest" immediately. That's important so that any interactive elements in the popover such as buttons can be clicked with the mouse.
 
 #### interactivity: not-keyboard-focusable
 
