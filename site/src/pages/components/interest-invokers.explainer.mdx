@@ -54,7 +54,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 When you write "@mfreed7" or "#743" on Github, the text is automatically upgraded to links pointing to the user's profile page or the issue/PR page. And if you hover over that link instead of clicking it, you get a nice "hovercard" popover containing more detailed information. Users really like this feature, because it gives them the bit of information they want ("who or what is this?"), including common quick actions like "Follow this user", without requiring them to leave the page, potentially losing state in the process.
 
-<img src="/images/github-profile-hovercard.png" width=400 alt="Github profile hovercard">
+<img src="/images/github-profile-hovercard.png" width="400" alt="Github profile hovercard">
 
 
 In a survey of the top 50 sites (according to [Wikipedia](https://en.wikipedia.org/wiki/List_of_most-visited_websites)), >94% of them include hover-triggering functionality like this, ranging from small text-based tooltips to large interactive hovercards with useful links and buttons. However, implementing this behavior takes a remarkable amount of work and code. Careful attention must be paid to managing mouse hover and de-hover states, keeping track of hover delays and states, implementing keyboard activation, getting accessibility right, and all of the related interactions. As a result, many developers' implementations aren't accessible to keyboard users, and virtually none are accessible to touchscreen users. As a result, **mouse users have access to significantly more functionality and information than users who do not use a mouse**. The User Agent should provide this functionality natively, so that developers don't have to keep re-inventing this wheel and/or leaving behind their non-mouse users.
@@ -169,21 +169,21 @@ Importantly, the User Agent will still be in control of a few things:
 2. The available space and location for the developer/site-provided hovercard.
 3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
 
-<img src='/images/interesttarget-mockup-show-both.gif' height=600 alt='Mockup of the "show both" approach'>
+<img src='/images/interesttarget-mockup-show-both.gif' height="600" alt='Mockup of the "show both" approach'>
 
 
 #### Option 3 - add an item to the context menu
 
 This is likely the most straightforward approach that still meets all of the requirements: for elements that already have long-press-activated context menus, simply add an item to that menu (e.g. "View more info"). When this item is tapped, dismisses the context menu and "show interest" in the link element. This approach does not affect the existing UX at all, and is straightforward to implement. It does represent a bit more friction for users, relative to desktop users: touchscreen users must first long-press the link, then single-tap a menu item, in order to show interest. However, this is still infinitely better than the current state of the art, which is to deny most touchscreen users any access to the hovercard.
 
-<img src='/images/interesttarget-mockup-add-to-context-menu.gif' height=600 alt='Mockup of the "add context menu item" approach'>
+<img src='/images/interesttarget-mockup-add-to-context-menu.gif' height="600" alt='Mockup of the "add context menu item" approach'>
 
 
 #### Option 4 - single tap interest
 
 Another approach is to **not** use the long-press gesture at all, but instead make a single-tap on a link with `interesttarget` "show interest". A second tap on that same link (perhaps within a time delay?) would then navigate to the link. This side-steps the context menu problem entirely, since the user can still long-press the same link and get access to the context menu. However, it does introduce a bit of "tap uncertainty" for users. Simply looking at a link on the screen does not provide any indication of whether a single-tap will navigate to a new page, or show interesting information. Without pre-exploring a site, it will be unclear whether the user is "safe" to tap links without leaving the site. Since links are the heart of the web, it seems bad to discourage tapping them.
 
-<img src='/images/interesttarget-mockup-single-tap.gif' height=600 alt='Mockup of the "single-tap" approach'>
+<img src='/images/interesttarget-mockup-single-tap.gif' height="600" alt='Mockup of the "single-tap" approach'>
 
 #### Option 5 - invent a new gesture
 
