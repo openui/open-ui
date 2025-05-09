@@ -53,7 +53,8 @@ layout: ../../layouts/ComponentLayout.astro
 
 When you write "@mfreed7" or "#743" on Github, the text is automatically upgraded to links pointing to the user's profile page or the issue/PR page. And if you hover over that link instead of clicking it, you get a nice "hovercard" popover containing more detailed information. Users really like this feature, because it gives them the bit of information they want ("who or what is this?"), including common quick actions like "Follow this user", without requiring them to leave the page, potentially losing state in the process.
 
-![Github profile hovercard](/images/github-profile-hovercard.png)
+<img src="/images/github-profile-hovercard.png" width=400 alt="Github profile hovercard">
+
 
 In a survey of the top 50 sites (according to [Wikipedia](https://en.wikipedia.org/wiki/List_of_most-visited_websites)), >94% of them include hover-triggering functionality like this, ranging from small text-based tooltips to large interactive hovercards with useful links and buttons. However, implementing this behavior takes a remarkable amount of work and code. Careful attention must be paid to managing mouse hover and de-hover states, keeping track of hover delays and states, implementing keyboard activation, getting accessibility right, and all of the related interactions. As a result, many developers' implementations aren't accessible to keyboard users, and virtually none are accessible to touchscreen users. As a result, **mouse users have access to significantly more functionality and information than users who do not use a mouse**. The User Agent should provide this functionality natively, so that developers don't have to keep re-inventing this wheel and/or leaving behind their non-mouse users.
 
@@ -145,13 +146,15 @@ On the web, however, most browsers *already overload* the long-press gesture to 
 
 ### Option 1 - leave the details to UAs
 
-The original proposal for touchscreen behavior was to leave the specifics up to user agents. I.e. specify that browsers **must** provide their users (all of them) a way to "show interest" in an element, without specifying exactly how to to that on touchscreens. Since it is **currently impossible on the web** to provide users a similar functionality (access context menu **and** hovercard with a single gesture), there is no obvious cow-path to pave on touchscreen. So this option leaves the details of the behavior unspecified, which allows user agents to experiment and iterate on good UX patterns.
+{This idea is [opposed by WebKit](https://github.com/WebKit/standards-positions/issues/305#issuecomment-2284319289), who want the exact behavior to be specified for touchscreen.}
 
-Unfortunately, this idea was [rejected by WebKit](https://github.com/WebKit/standards-positions/issues/305#issuecomment-2284319289), who wanted the exact behavior to be specified for touchscreen. This approach was apparently supported by [Mozilla](https://github.com/whatwg/html/issues/11058#issuecomment-2697565012).
+The original proposal for touchscreen behavior was to leave the specifics up to user agents. I.e. specify that browsers **must** provide their users (all of them) a way to "show interest" in an element, without specifying exactly how to to that on touchscreens. Since it is **currently impossible on the web** to provide users a similar functionality (access context menu **and** hovercard with a single gesture), there is no obvious cow-path to pave on touchscreen. So this option leaves the details of the behavior unspecified, which allows user agents to experiment and iterate on good UX patterns.
 
 ### Option 2 - show both at the same time
 
-After [significant brainstorming and discussion in OpenUI](https://github.com/openui/open-ui/issues/1052), a specific approach was designed wherein *both* the UA context menu *and* the site's hovercard could both be shown at the same time. The short version of this approach is that to show interest in an element via touchscreen, the user simply long-presses that element. This does not activate (e.g. click) the element, it merely triggers interest in the element. This long press immediately fires the `"interest"` event, but **also** shows any context menus that would have shown if the `interesttarget` attribute were not present. So both things happen together. In the case of a popover target element, the idea is that the hovercard popover shows up **in addition** to the context menu, so that the user can tap on either of those things. The user can trigger `"loseinterest"` by tapping either outside the target popover, or on one of the provided context menu items (if any). If the user taps outside *both* the context menu *and* the popover, that should constitute both a loss of interest (closing the popover) and also a signal to close the context menu (since on most platforms, tapping outside the context menu closes it).
+{This approach is opposed by both [WebKit](https://github.com/whatwg/html/issues/11058#issuecomment-2676086663) and [Mozilla](https://github.com/whatwg/html/issues/11058#issuecomment-2695676452), as being too confusing to users, and potentially a security issue.}
+
+After [significant brainstorming and discussion in OpenUI](https://github.com/openui/open-ui/issues/1052), a specific approach was designed wherein *both* the UA context menu *and* the site's hovercard could both be shown at the same time. The short version of this approach is that to show interest in an element via touchscreen, the user simply long-presses that element. This does not activate (e.g. click) the element, it merely triggers interest in the element. This long press immediately fires the `"interest"` event, but **also** shows any context menus that would have shown if the `interesttarget` attribute were not present. Both things happen together. In the case of a popover target element, the idea is that the hovercard popover shows up **in addition** to the context menu, so that the user can tap on either of those things. The user can trigger `"loseinterest"` by tapping either outside the target popover, or on one of the provided context menu items (if any). If the user taps outside *both* the context menu *and* the popover, that should constitute both a loss of interest (closing the popover) and also a signal to close the context menu (since on most platforms, tapping outside the context menu closes it).
 
 One difficulty of this option is that the two things (the popover target and the UA-provided context menu) need to coordinate, at least on positioning. It would be a bad user experience if the context menu showed up on top of the popover, obscuring part or all of it. To provide this coordination, a few more things will be included:
 
@@ -165,30 +168,37 @@ Importantly, the User Agent will still be in control of a few things:
 2. The available space and location for the developer/site-provided hovercard.
 3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
 
-This approach has been rejected by both [WebKit](https://github.com/whatwg/html/issues/11058#issuecomment-2676086663) and [Mozilla](https://github.com/whatwg/html/issues/11058#issuecomment-2695676452), as being too confusing to users and potentially a security issue (showing site and UA content together).
-
-![Mockup of the "show both" approach](/images/interesttarget-mockup-show-both.gif)
+<img src='/images/interesttarget-mockup-show-both.gif' height=600 alt='Mockup of the "show both" approach'>
 
 
 ### Option 3 - add an item to the context menu
 
-This is likely the most straightforward approach that still meets all of the requirements: for elements that already have long-press-activated context menus, simply add an item to that menu (e.g. "More info about link from site"). When this item is tapped, dismisses the context menu and "show interest" in the link element. This approach does not affect the existing UX at all, and is straightforward to implement. It does represent a bit more friction for users, relative to desktop users: touchscreen users must first long-press the link, then single-tap a menu item, in order to show interest. However, this is still infinitely better than the current state of the art, which is to simply deny touchscreen users any access to the hovercard.
+This is likely the most straightforward approach that still meets all of the requirements: for elements that already have long-press-activated context menus, simply add an item to that menu (e.g. "View more info"). When this item is tapped, dismisses the context menu and "show interest" in the link element. This approach does not affect the existing UX at all, and is straightforward to implement. It does represent a bit more friction for users, relative to desktop users: touchscreen users must first long-press the link, then single-tap a menu item, in order to show interest. However, this is still infinitely better than the current state of the art, which is to deny most touchscreen users any access to the hovercard.
 
-![Mockup of the "add context menu item" approach](/images/interesttarget-mockup-add-to-context-menu.gif)
+<img src='/images/interesttarget-mockup-add-to-context-menu.gif' height=600 alt='Mockup of the "add context menu item" approach'>
+
 
 ### Option 4 - single tap interest
 
-Another approach is to **not** use the long-press gesture at all, but instead make a single-tap on a link with `interesttarget` "show interest". A second tap on that same link (perhaps within a time delay?) would then navigate to the link. This side-steps the context menu problem entirely, since the user can still long-press the same link and get access to the context menu. However, it does introduce a bit of "tap uncertainty" for users. Simply looking at a link on the screen does not indicate to them whether a single-tap will navigate to a new page, or show interesting information. Without pre-exploring a site, it will be unclear whether the user is "safe" to tap links without leaving the site.
+Another approach is to **not** use the long-press gesture at all, but instead make a single-tap on a link with `interesttarget` "show interest". A second tap on that same link (perhaps within a time delay?) would then navigate to the link. This side-steps the context menu problem entirely, since the user can still long-press the same link and get access to the context menu. However, it does introduce a bit of "tap uncertainty" for users. Simply looking at a link on the screen does not provide any indication of whether a single-tap will navigate to a new page, or show interesting information. Without pre-exploring a site, it will be unclear whether the user is "safe" to tap links without leaving the site. Since links are the heart of the web, it seems bad to discourage tapping them.
 
-![Mockup of the "single-tap" approach](/images/interesttarget-mockup-single-tap.gif)
+<img src='/images/interesttarget-mockup-single-tap.gif' height=600 alt='Mockup of the "single-tap" approach'>
 
 ### Option 5 - invent a new gesture
 
-Another approach would be to "invent" a new gesture that users can use to show interest. For example, long-press for a specific amount of time, or long-press and "wiggle". Or something else. While UX designers could get creative and come up with something intuitive, it's important to point out again that on the rest of mobile platforms, **long-press** is the expected/trained UX pattern for showing interest in something. Creating a brand new gesture that only works on a single set of apps (browsers) and is different from the entire universe of other mobile apps, creates an extreme discovery problem. Users will not be aware of this magic gesture, and it will go unused. It does however get around the conflict between showing interest and showing the context menu.
+Another approach would be to "invent" a new gesture that users can use to show interest. For example, long-press for a specific amount of time, or long-press and "wiggle". Or something else. While UX designers could get creative and come up with something intuitive, it's important to point out again that on every other native mobile app besides a web browser app, **long-press** is the expected/trained UX pattern for showing interest in something. Creating a brand new gesture that only works on a single set of apps (browsers) and is different from the entire universe of other mobile apps, creates an extreme discovery problem. Users will not be aware of this magic gesture, and it will go unused. It does, however, get around the conflict between showing interest and showing the context menu.
 
 ### Option 6 - do not show the context menu
 
 One final approach is to simply *not show* the context menu on long press, for elements with `interesttarget`. Long-pressing the element triggers interest and opens the hovercard. There is no way for the user to access the context menu, but perhaps that's "ok", since the site has provided a highly-customized hovercard for the link that obviates the user's desire to navigate to the link. Still, it is likely that some users will be annoyed at the lack of functionality, e.g. their inability to copy the link URL to the clipboard.
+
+### Selection of a final option
+
+The debate about the touchscreen UX pattern is still very much in progress. Discussions are happening in multiple places, but mostly these three:
+
+- [WHATWG's touchscreen behavior discussion](https://github.com/whatwg/html/issues/11058)
+- [The Mozilla standards position on interesttarget](https://github.com/mozilla/standards-positions/issues/1181)
+- [The WebKit standards position on interesttarget](https://github.com/WebKit/standards-positions/issues/464)
 
 ## Other
 
@@ -460,7 +470,6 @@ It might be the case that in some circumstances, the "developer knows best" that
   }
 </style>
 ```
-
 
 # Issues / Discussions
 
