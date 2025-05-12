@@ -14,6 +14,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [The Pitch](#the-pitch)
 - [The Pitch in Code](#the-pitch-in-code)
 - [Introduction](#introduction)
+- [Survey of Use Cases](#survey-of-use-cases)
 - [HIDs and Interest](#hids-and-interest)
   - [Mouse](#mouse)
   - [Keyboard](#keyboard)
@@ -83,6 +84,21 @@ The user will be able to **"show interest"** in an element through various means
 Since one of the primary use cases for this API is the activation of hovercards, when the target element of `interesttarget` is a popover (with the `popover` attribute), the popover will automatically be shown. This provides an easy way to allow disclosure of high fidelity hovercards in a more accessible and declarative way. It is also possible to connect other actions to the target element, via the `"interest"` event: when interest is shown in an element with `interesttarget`, an `InterestEvent` with type `"interest"` will be fired at the element referenced by `interesttarget`.
 
 It is also possible to trigger actions that occur when the user **"loses interest"** in the element and its target. In a very similar way to how "showing interest" is defined, "losing interest" happens in different ways based on the input modality. But the concept is clear: once the user has shown interest in an element, they need a way to show that they have "lost" that interest. For the typical hovercard use case, losing interest would cause the hovercard/popover to close. In all cases, when interest is lost, an `InterestEvent` with type `"loseinterest"` will be fired at the target element.
+
+## Survey of Use Cases
+
+There are myriad use cases for the behaviors provided by the `interesttarget` API. The collection of screenshots below shows a number of live production examples from across the web, grouped into common categories such as:
+
+- Page preview
+- Tooltips
+- More info
+- Quick actions
+- Hover menus
+
+Some of these occur when showing interest in links, and some when showing interest in buttons. Notes around the screenshots indicate whether/how these features can be accessed with the keyboard or touchscreen.
+
+<img src='/images/interesttarget-use-cases.png' width="800" alt='Series of screenshots covering examples of each of the mentioned common categories on Reddit, Instagram, Facebook, GitHub, Wikipedia, Google Chat, Google Maps, ChatGPT, Target and Aritzia' />
+
 
 ## HIDs and Interest
 
@@ -170,7 +186,6 @@ Importantly, the User Agent will still be in control of a few things:
 3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
 
 <img src='/images/interesttarget-mockup-show-both.gif' height="600" alt='Mockup of the "show both" approach' />
-
 
 #### Option 3 - add an item to the context menu
 
