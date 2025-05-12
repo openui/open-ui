@@ -1,8 +1,40 @@
+@media (forced-colors: none),
+  (forced-colors: active) {
+  	:root {
+  		--prism-a11y-border-radius: 0.3em;
+  		--prism-a11y-font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  		--prism-a11y-line-height: 1.5;
+  		--prism-a11y-code-block-margin: 0.5em 0;
+  		--prism-a11y-code-block-padding: 1em;
+  		--prism-a11y-code-inline-padding: 0.1em;
+  		--prism-a11y-width-border: 1px;
+  		--prism-a11y-width-tab: 2;
+	}
+}
+
+  @media (forced-colors: none),
+  (forced-colors: active) {
+  	:root {
+  		--prism-a11y-color-background: hsla(0, 0%, 17%, 1);
+  		--prism-a11y-color-text-no-token: hsla(60, 30%, 96%, 1);
+  		--prism-a11y-color-text-comment: hsla(54, 32%, 75%, 1);
+  		--prism-a11y-color-text-blue: hsla(206, 100%, 71%, 1);
+  		--prism-a11y-color-text-cyan: hsla(187, 77.9%, 66.3%, 1);
+  		--prism-a11y-color-text-green: hsla(80, 75%, 55%, 1);
+  		--prism-a11y-color-text-gray: hsla(60, 30%, 96%, 1);
+  		--prism-a11y-color-text-purple: hsla(291, 30%, 83%, 1);
+  		--prism-a11y-color-text-red: hsla(17, 100%, 74%, 1);
+  		--prism-a11y-color-text-yellow: hsla(51, 100%, 50%, 1);
+  		--prism-a11y-plugin-color-border: hsla(51, 100%, 50%, 0.55);
+  		--prism-a11y-plugin-color-background: hsla(51, 100%, 50%, 0.1);
+  	}
+}
+
 code[class*="language-"],
 pre[class*="language-"] {
-	color: #f8f8f2;
+	color: var(--prism-a11y-color-text-no-token);
 	background: none;
-	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-family: var(--prism-a11y-font-family);
 	text-align: left;
 	word-spacing: normal;
 	word-wrap: normal;
@@ -23,18 +55,18 @@ pre[class*="language-"] {
 	padding: 0em;
 	margin: 0.5em 0;
 	overflow: auto;
-	border-radius: 0.3em;
+	border-radius: var(--prism-a11y-border-radius);
 }
 
 :not(pre) > code[class*="language-"],
 pre[class*="language-"] {
-	background: #2b2b2b;
+	background: var(--prism-a11y-color-background);
 }
 
 /* Inline code */
 :not(pre) > code[class*="language-"] {
 	padding: 0.1em;
-	border-radius: 0.3em;
+	border-radius: var(--prism-a11y-border-radius);
 	white-space: normal;
 }
 
@@ -42,11 +74,11 @@ pre[class*="language-"] {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-	color: #d4d0ab;
+	color: var(--prism-a11y-color-text-comment);
 }
 
 .token.punctuation {
-	color: #e1e4e8;
+	color: var(--prism-a11y-color-text-gray);
 }
 
 .token.property,
@@ -55,12 +87,12 @@ pre[class*="language-"] {
 [class*="language-webidl"] .token.keyword,
 .token.symbol,
 .token.deleted {
-	color: #85E89C;
+	color: var(--prism-a11y-color-text-green);
 }
 
 .token.boolean,
 .token.number {
-	color: #00e0e0;
+	color: var(--prism-a11y-color-text-cyan);
 }
 
 .token.selector,
@@ -70,11 +102,11 @@ pre[class*="language-"] {
 .token.char,
 .token.builtin,
 .token.inserted {
-	color: #b392f0;
+	color: var(--prism-a11y-color-text-purple);
 }
 
 .token.string {
-	color:#9ecbff
+	color:var(--prism-a11y-color-text-blue)
 }
 
 .token.operator,
@@ -83,25 +115,25 @@ pre[class*="language-"] {
 .language-css .token.string,
 .style .token.string,
 .token.variable {
-	color: #00e0e0;
+	color: var(--prism-a11y-color-text-cyan);
 }
 
 .token.atrule,
 .token.attr-value {
-	color: #9ecbff;
+	color: var(--prism-a11y-color-text-blue);
 }
 
 .token.function {
-	color: #b392f0;
+	color: var(--prism-a11y-color-text-purple);
 }
 
 .token.keyword {
-	color: #f97583;
+	color: var(--prism-a11y-color-text-red);
 }
 
 .token.regex,
 .token.important {
-	color: #ffd700;
+	color: var(--prism-a11y-color-text-yellow);
 }
 
 .token.important,
@@ -118,5 +150,27 @@ pre[class*="language-"] {
 }
 
 code[class*="language-webidl"] {
-	color: #9ecbff;
+	color: var(--prism-a11y-color-text-blue);
+}
+
+@media (forced-colors: active) {
+	:root {
+	--prism-a11y-color-background: Canvas;
+	--prism-a11y-color-text-no-token: CanvasText;
+	--prism-a11y-color-text-comment: GrayText;
+	--prism-a11y-color-text-cyan: LinkText;
+	--prism-a11y-color-text-gray: LinkText;
+	--prism-a11y-color-text-green: CanvasText;
+	--prism-a11y-color-text-purple: CanvasText;
+	--prism-a11y-color-text-red: CanvasText;
+	--prism-a11y-color-text-yellow: GrayText;
+	--prism-a11y-plugin-color-border: LinkText;
+	--prism-a11y-plugin-color-background: Canvas;
+}
+
+:where(.token.boolean,
+	.token.number,
+	.token.keyword) {
+		font-weight: bold;
+	}
 }
