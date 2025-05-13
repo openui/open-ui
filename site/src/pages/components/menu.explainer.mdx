@@ -16,7 +16,8 @@ layout: ../../layouts/ComponentLayout.astro
 - [Introduction](#introduction)
 - [New `<menuitem>` elements](#new-menuitem-elements)
 - [Grouping `<menuitem>`s together](#grouping-menuitems-together)
-- [Questions](#questions)
+
+- [General questions](#general-questions)
 - [Examples in code](#examples-in-code)
 
 ## Introduction
@@ -144,8 +145,26 @@ We should support specific use cases of interactive elements outside the `<menui
 
 <img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems" />
 
+## Invoking a menulist from a button element
 
-## Questions
+While a `<menubar>` contains a collection of `<menuitem>` elements that can be used to invoke their own submenu (`<menulist>` elements), `<menubar>`s are commonly used for more global or multi-component-level purposes.  If an author needs to provide a `<menulist>` of commands to interact with specific content or components of an interface, then a `<button>` element is commonly used to invoke a `<menulist>`.
+
+For instance, `<button>` elements that are used to reveal menus are commonly used in tables/grids to allow for adjustments to the presentation of the tabular data, if not to invoke the editing or deleting of specific row or cell content.  
+
+Toolbars or other groupings of related controls within complex web interfaces may need to include buttons that can perform _many_ actions - the specific action to perform is chosen by the user when they interact with the primary button, invoking it's menu of commands.
+
+Leveraging the `command` and `commandfor` attributes, it is proposed that `<button>` elements, outside of the context of a `<menubar>`, can invoke `<menulist>` elements.  A `<button>` that invokes a `<menulist>` would have an implicit `aria-haspopup=menu` property, along with an impliict `aria-expanded` state, reflecting whether the element is rendered (expanded) or not (collapsed). 
+It would not have an implicit `aria-details` property. This is because unlike other more generic popovers, keyboard focus should immediately move from the invoking button to the first focusable element, or element with the autofocus attribute, of the rendered `<menulist>`.
+
+For instance:
+```html
+<button command=open-menu commandfor=m>Actions</button>
+<menulist id=m>
+  <!-- menuitems go here -->
+</menulist>
+```
+
+## General questions
 
 
 ### When to use Select vs Menu
