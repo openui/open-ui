@@ -191,7 +191,7 @@ To ensure the behavior described above, the nested `<button>` is rendered `inert
 
 ### Rendering the `<option>` differently in the button
 
-This example uses the customizable `<select>` element with custom CSS to target it which renders the option differently in the listbox vs in the button. The contents of each `<option>` have a `<span aria-label>` in order to make the option get announced the same whether its copied into the `<selectedoption>` or being rendered in the dropdown.
+This example uses the customizable `<select>` element with custom CSS to target it which renders the option differently in the listbox vs in the button. The contents of each `<option>` have a `<span aria-hidden=true>` in order to make the option get announced the same whether its copied into the `<selectedcontent>` or being rendered in the dropdown.
 
 <div className="code-image-container">
 <div>
@@ -201,14 +201,10 @@ This example uses the customizable `<select>` element with custom CSS to target 
     <selectedcontent></selectedcontent>
   </button>
   <option>
-    <span aria-label=heart>
-      ❤️ <span class=description>heart</span>
-    </span>
+    ❤️ <span aria-hidden=true class=description>heart</span>
   </option>
   <option>
-    <span aria-label=smile>
-      🙂 <span class=description>smile</span>
-    </span>
+    🙂 <span aria-hidden=true class=description>smile</span>
   </option>
 </select>
 <style>
