@@ -81,22 +81,23 @@ model. See https://github.com/openui/open-ui/issues/1194 for more discussion abo
 
 `<menubar>`
 
-* Menubar should be used to represent a series of `<menuitem>`s that can then open submenus of commands.
-* In a menubar, a menuitem’s most common purpose is to invoke submenus (menulists).
-* An **in-page** menu that can contain a list of `<menuitem>`
-* Menuitems within a menubar are displayed horizontally by default.
-* Supports :disabled, disabled attribute
+* Menubars commonly represent a series of `<menuitem>`s that are used to open their own submenus (menulists) of commands.
+* Unlike menulists, menubars are rendered **in-page** rather than as a popover, so their menuitems are persistently available.
+* Menubars, and thus their menuitems, are commonly rendered horizontally.
+* Supports :disabled, disabled attribute. If a menubar is disabled then all of its descendent menuitems are also disabled.
 
 `<menulist>`
 
-* Menulist should be used to represent submenus of commands.
-* In a menulist, a menu item's most common purpose is to invoke actions (commands) or other submenus (menulists).
-* A **popover** menu that can contain a list of `<menuitem>`
-* Anchored to the button which is declaratively set up to open it
-* Attributes
-    * disabled, open, name?
+* Menulist should be used to represent a listing, or submenu listing of commands.
+* In a menulist, a menuitem's most common purpose is to invoke actions (commands) or other submenus (menulists).
+* Menulists are commonly be rendered as a **popover**. Submenus are also commonly rendered as adjacent popovers.
+* The menulist popover is anchored to the button or menuitem which invoked it
+* Supports :disabled, disabled attribute. If a menulist is disabled then all of its descendent menuitems are also disabled.
 
-**Question: Is `<fieldset>` necessary to group `<menuitem>` together?**
+**Question:** are the `open` or `name` attributes needed for `menubar` or `menulist`?
+???
+
+**Question: Is `<fieldset>` necessary to group `<menuitem>` elements together?**
 
 Yes. While, we can use the <code>["name"](https://html.spec.whatwg.org/C#attr-fe-name)</code>
 attribute to logically group exclusive checkable `<menuitem>`s together, to support captioned groups
@@ -106,7 +107,7 @@ without a `<fieldset>`, they are grouped together under their parent `<menulist>
 but are logically separate and are not checkable.
 
 Note, `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly
-considered, but decided against since it is used for grouping options.
+considered, but decided against since it is used, and named, specifically for grouping options.
 
 Our proposal includes adding a `checkable` attribute on `<fieldset>`, to group `<menuitem>`s as
 either radios or checkboxes, instead of introducing new `<menuitemcheckbox>` and `<menuitemradio>`
@@ -140,21 +141,21 @@ Similarly to customizable select, we expect everything to be wrapped inside `<me
 
 We should support `<fieldset>` and `<legend>` to help group the menu items together.
 
-We should support specific use cases of interactive elements outside the `<menuitem>`. For example, if the user wants to add an `<input type=search>` element, it should not be wrapped inside a `<menuitem>` and should instead be a sibling of `<menuitem>`s.
+We should support specific use cases of interactive elements that can be found within native operating system menus, as siblings to `<menuitem>` elements. For example, if the user wants to add an `<input type=search>` element, it should not be allowed as a child of a `<menuitem>`. Rather, it should be allowed as the first or last child element of a `<menulist>` or `<menubar>` element.
 
-<img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems" />
+<img src="/images/menubar-search-input.png" alt="examples of text fields as the first child of menulist popups. The first example shows a text field where a percentage can be adjusted, it is followed by a number of menuitems to zoom or adjust an editable canvas. The second example shows a search text field as the first item in a menulist invoked from a Help menuitem of a menubar. Two additional menuitems follow the search text field in this menulist popup." />
 
 
 ## Questions
 
 
-### When to use Select vs Menu
+### When to use Select vs Menulist
 
-Just like a select element, the menu element has a list of choices to pick from. And with customizable select now available, users might be confused on which one to use.
+Just like a select element, the menulist element will represent a series of choices to pick from. And with customizable select now available, users might be confused on which one to use.
 
 The `<select>` element is a form-associated element and contains `<option>` elements. Each of these `<option>` elements must have a server-readable value. As a user chooses an option, specific events are triggered (change, input) and a new value is set.
 
-On the other hand, the proposed `<menulist>` element should be used to display a list of commands/actions. Each `<menuitem>` should be thought of as a command that is activable. That action could be to open a new nested menulist element or to trigger a specific command. It must adhere to [ARIA guidelines for menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
+On the other hand, the proposed `<menulist>` element should be used to display a list of commands/actions. Each `<menuitem>` should be thought of as a command that is activable. That action could be to open a new nested menulist element or to trigger a specific command. It is not generally expected for the invoking element's value or visible label to be modified when activating a `<menuitem>`.  It must adhere to ARIA guidelines for [menu and menubar patterns](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
 
 
 ### Why are we adding `<menuitem>` and not re-using the `<command>` element?
@@ -168,7 +169,7 @@ Additionally - command is a single element, where as this proposal is introducin
 
 The [`<menu>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element) element already exists, but it is very barebones. It represents a "toolbar" but is exposed no differently than an unordered list containing list items, each list item then representing a command (represented by a button element) that the user can perform or activate. There is a lot of nuance between the various menu patterns (menubar, navigation menu, toolbar) that this one element cannot differentiate. It has no special keyboard behavior nor unique ARIA roles mapping beyond the implicit roles of the elements it represents. Due to these legacy restrictions, we recommend not modifying it and instead depend on the new elements `<menubar>` and `<menulist>`.
 
-You can read more about what the menu element is and isn’t, [here](https://www.scottohara.me/blog/2021/10/21/menu.html).
+You can read more about what the `<menu>` element is and isn’t, [here](https://www.scottohara.me/blog/2021/10/21/menu.html).
 
 
 ### Popover semantics for `<menulist>`
