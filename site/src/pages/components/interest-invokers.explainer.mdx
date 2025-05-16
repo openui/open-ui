@@ -15,6 +15,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [The Pitch in Code](#the-pitch-in-code)
 - [Introduction](#introduction)
 - [Survey of Use Cases](#survey-of-use-cases)
+  - [Wikipedia example](#wikipedia-example)
   - [Survey conclusions](#survey-conclusions)
 - [HIDs and Interest](#hids-and-interest)
   - [Mouse](#mouse)
@@ -43,6 +44,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [Accessibility](#accessibility)
   - [Plain hints (aka tooltips)](#plain-hints-aka-tooltips)
   - [Rich hints (aka hovercards or other)](#rich-hints-aka-hovercards-or-other)
+- [Interaction with Speculation Rules](#interaction-with-speculation-rules)
 - [FAQ (Frequently Asked Questions)](#faq-frequently-asked-questions)
   - [Why No `interestaction` Attribute?](#why-no-interestaction-attribute)
   - [Why the name `interest`? Why not `hover` or `focus`?](#why-the-name-interest-why-not-hover-or-focus)
@@ -461,6 +463,10 @@ Since rich hints have additional content that might want to be explored directly
 As with `popovertarget`, when a rich hint is shown, [sequential focus navigation](https://html.spec.whatwg.org/#focus-navigation-scope-owner) will be adjusted so that the target popover is "next" in the tab navigation cycle after the interest invoker. Since by definition "plain hints" do not have anything focusable, sequential focus navigation is not affected.
 
 See also, https://github.com/w3c/aria/issues/979.
+
+## Interaction with Speculation Rules
+
+The [Speculation Rules API](https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API) has an [`eagerness`](https://developer.chrome.com/blog/speculation-rules-improvements#eagerness) setting, for which the `moderate` value [specifically calls out](https://wicg.github.io/nav-speculation/speculation-rules.html#valid-eagerness-strings:~:text=moved%20the%20cursor%20over%20it%20for%20some%20time) hovering a link for a period of time. In some cases, e.g. when `interesttarget` is used to provide a very informative hovercard on such a link, the user might be much *less* likely to click the same link, because they got all of the information they needed from the hovercard. In other cases, the hovercard might contain information that "entices" them to click the link, *increasing* the likelihood that they navigate. Because of this, the developer should carefully consider modifying the speculation rules for these links accordingly, e.g. to exclude the first class of links from preloading, or to increase the `eagerness` for the second class of links.
 
 ## FAQ (Frequently Asked Questions)
 
