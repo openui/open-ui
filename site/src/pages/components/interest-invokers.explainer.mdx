@@ -5,7 +5,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [Mason Freed](https://github.com/mfreed7), [Keith Cirkel](https://github.com/keithamus)
-- Last updated: May 15, 2025
+- Last updated: May 16, 2025
 
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -96,13 +96,30 @@ There are myriad use cases for the behaviors provided by the `interesttarget` AP
 - Quick actions
 - Hover menus
 
-Some of these occur when showing interest in links, and some when showing interest in buttons.
+Some of these occur when showing interest in links, and some when showing interest in buttons. While "More info" and "Page preview" might look/seem similar or the same, they are different in one critical way: page previews show some kind of "preview" of the page you will navigate to if you actually *click* the same link. In contrast, "more info" hovercards show more info about something, while actually *clicking* that same link or button does not navigate the page or transition to another screen. For example, the Google Chat information hovercard shows details about the person or group the user showed interest in; clicking that same button (actually a `<div>` with click handlers) opens a separate action menu for the person/group.
 
 <img src='/images/interesttarget-use-cases.png' width="800" alt='Series of screenshots covering examples of each of the mentioned common categories on Reddit, Instagram, Facebook, GitHub, Wikipedia, Google Chat, Google Maps, ChatGPT, Target and Aritzia' />
 
 The following image shows the same sites as the image above, overlayed with their keyboard and touchscreen support:
 
 <img src='/images/interesttarget-use-cases-keyboard-mouse.png' width="800" alt='Series of screenshots covering the same examples as the above image, overlayed with their keyboard and touchscreen support' />
+
+### Wikipedia example
+
+Wikipedia provides an interesting example case. It has a number of quite useful hover-triggered bits of UI:
+
+1. Page previews for any link to another Wikipedia article.
+2. Interactive "more info" hovercards (not a page preview) for any link to a footnote on the same page.
+3. Non-interactive tooltips for some links and buttons.
+
+These can all be nested in fairly complex ways, as seen here:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/images/interesttarget-wikipedia-nested.png' width="600" alt='Screenshot of nested hovercards and tooltips on Wikipedia' />
+
+None of the above UI is available to keyboard users, because the footnote hovercards are **not** triggered on focus, unlike the rest of the page previews. The "gear" icon (which is on all hovercards) is not keyboard focusable at all, so keyboard users cannot adjust hovercard settings. And finally, while the main page preview hovercards *are* triggered on keyboard focus, they do not go away when the focus is moved, nor do they respond to the ESC key. So once they've been shown via focus, there's no easy way to hide them, and they obscure some page content.
+
+This section is not meant to pick on Wikipedia at all - the site has obviously gone to significant lengths to make a valuable and usable feature that many (mouse) users enjoy. These issues are quite typical to all of the sites we surveyed: the mouse experience is usually very good; the keyboard experience is usually less good and fairly hit-or-miss in terms of accessibility; and as mentioned, touchscreen users are typically left out completely. None of these are the developers' fault: since the web platform does not provide this functionality at all, they are forced to fend for themselves and do the best they can. Developers, and their non-mouse users, need the `interesttarget` API.
+
 
 ### Survey conclusions
 
