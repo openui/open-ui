@@ -23,10 +23,7 @@ export default defineConfig({
   ],
   site: 'https://open-ui.org',
   markdown: {
-    shikiConfig: {
-      langs: [],
-      wrap: true,
-    },
+    syntaxHighlight: 'prism',
   },
   vite: {
     ssr: {
