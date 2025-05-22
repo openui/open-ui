@@ -231,7 +231,11 @@ Additionally an asynchronous non-cancellable `toggle` event is fired.
 
 ### Focus Management
 
-An openable container does not result in a change of focus by default.  If an author creates an openable component where it would be desirable to automatically move focus when activated, then the `autofocus` attribute can be used to indicate the element that needs to receive focus, upon opening.
+An openable container does not result in a change of focus by default. If an author creates an openable component where it would be desirable to automatically move focus when activated, then the `autofocus` attribute can be used to indicate the element that needs to receive focus, upon opening.
+
+However, when an openable is opened it does become the next focusable element in the tab order. This is determined via the invoking element, a button with commandfor="openable" or the `source` element provided to the imperative APIs.
+
+If an openable currently contains focus and is closed such as by a contained button with `command="close-openabled"` or via `closeOpenable()`, the focus will be returned to the element that was focused before the openable was opened. This is important for accessibility and usability, as it allows users to return to their previous location in the document.
 
 ## Behaviors
 
