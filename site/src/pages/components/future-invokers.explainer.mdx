@@ -30,14 +30,12 @@ interactivity, and how the button may need to respond to such actions.
 
 | Invokee Element       | `command` hint          | Behaviour                                                                                                      |
 | :-------------------- | :--------------------- | :------------------------------------------------------------------------------------------------------------- |
-| `<dialog>`            | `'request-close'`      | If the `<dialog>` is `open`, request to close and use the button `value` for returnValue. Similar to `.requestClose(value)   |
 | `<* openable>`        | `'toggle-openable'`    | Opens the `openable` if closed, otherwise closes. Similar to `.toggleOpenable()`                              |
 | `<* openable>`        | `'close-openable'`     | Closes the `openable` if open, otherwise does nothing. Similar to `.closeOpenable()`                           |
 | `<* openable>`        | `'open-openable'`      | Opens the `openable` if closed, otherwise does nothing. Similar to `.openOpenable()`                         |
 | `<details>`           | `'toggle'`             | If the `<details>` is `open`, then close it, otherwise open it                                                 |
 | `<details>`           | `'open'`               | If the `<details>` is not `open`, then open it                                                                 |
 | `<details>`           | `'close'`              | If the `<details>` is `open`, then close it                                                                    |
-| `<dialog>`            | `'toggle'`             | If the `<dialog>` is `open`, then close it and use the button `value` for returnValue, otherwise open as modal |
 | `<select>`            | `'show-picker'`        | Shows the native picker. Similar to `.showPicker()` on the invokee                                             |
 | `<input>`             | `'show-picker'`        | Shows the native picker. Similar to `.showPicker()` on the invokee                                             |
 | `<video>`             | `'play-pause'`         | If the video is not playing, plays the video. Otherwise pauses it. Similar to `el.playing = !el.playing`       |
@@ -72,67 +70,6 @@ These mappings will happen implicitly on the browsers Accessible Nodes, and so
 while (for simplicity) this section refers to various `aria-` attributes,
 buttons will not sprout these attributes in the DOM, but the effective
 equivalent will be exposed to Assistive Technologies.
-
-#### Buttons with `command=request-close`
-
-Buttons with this dialog command will implicitly receive `aria-details=IDREF`,
-where `IDREF` matches that of the `commandfor` attribute, while the dialog is
-in the showing state, and the button is not a descendant of the dialog.
-
-<details>
-<summary>Why?</summary>
-
-A button that cancels a dialog is very typically found inside of the dialog, but
-in some cases it may be found outside, perhaps as a "toggle" style button which
-opens and closes a dialog as non-modal. This button may be used to close an open
-dialog that is shown as non-modal. It may be useful for a user to traverse into
-the dialog before closing it, for example to check if they have unsaved changes
-within the dialog.
-
-</details>
-
-<br/><br/>
-
-Buttons will also implicitly receive an `aria-expanded` value, if they are not a
-descendant of the `commandfor=` referenced element. The state of the
-`aria-expanded` value will map to the state of the dialog's openness. When the
-dialog is open the button will have `aria-expanded="true"`, when closed,
-`aria-expanded="false"`. This will be recomputed whenever the dialog changes
-state, such that the button always reflects the state of openness.
-
-<details>
-<summary>Why?</summary>
-
-A button that cancels a dialog is very typically found inside of the dialog, but
-in some cases it may be found outside, perhaps as a "toggle" style button which
-opens and closes a dialog as non-modal.
-
-Buttons outside of the dialog may be used to close an open dialog that is shown
-as non-modal. It may be useful for a user to traverse into the dialog before
-closing it, for example to check if they have unsaved changes within the dialog.
-It may also be useful to know if the dialog is already closed (as in its
-`aria-expanded` state is false), as this may help the user make a decision to
-whether or not they action the close button. 
-
-</details>
-
-<br/><br/>
-
-<details>
-<summary>Other considerations not explicitly proposed.</summary>
-
-##### aria-pressed
-
-Given elements will have `aria-expanded`, adding `aria-pressed` would be
-confusing or redundant, and as such won't be proposed for these buttons.
-
-##### aria-controls
-
-While `aria-controls` attempts to establish a similar style of relationship to
-`aria-details`, `aria-details` sees broader support among various assistive
-technologies, and it would be redundant to add both.
-
-</details>
 
 <br/><br/>
 
