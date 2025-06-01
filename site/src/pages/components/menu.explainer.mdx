@@ -158,7 +158,7 @@ Toolbars or other groupings of related controls within complex web interfaces ma
 <img src="/images/menu-youtube-button.jpg" alt="the youtube player consists of multiple buttons that invoke their own menulists. The settings button invokes a menulist allowing for the adjustment of quality, playback speed, toggling annotations and more." />
 <img src="/images/menu-split-button.jpg" alt="the create new button in github's top bar invokes a menulist to add new or import a repository, create a new codepace or gist, or make a new orginization or project." />
 
-Leveraging the `command` and `commandfor` attributes, it is proposed that `<button>` elements, outside of the context of a `<menubar>`, can invoke `<menulist>` elements.  A `<button>` that invokes a `<menulist>` would have an implicit `aria-haspopup=menu` property, along with an impliict `aria-expanded` state, reflecting whether the element is rendered (expanded) or not (collapsed). 
+Leveraging the `command` and `commandfor` attributes, we propose that `<button>` elements, outside of the context of a `<menubar>`, can invoke `<menulist>` elements.  A `<button>` that invokes a `<menulist>` would have an implicit `aria-haspopup=menu` property, along with an impliict `aria-expanded` state, reflecting whether the element is rendered (expanded) or not (collapsed). 
 It would not have an implicit `aria-details` property. This is because unlike other more generic popovers, keyboard focus should immediately move from the invoking button to the first focusable element, or element with the autofocus attribute, of the rendered `<menulist>`.
 
 For instance:
