@@ -56,6 +56,30 @@ TODO
 
 This section lays out the full details of this proposal. If you'd prefer, you can **[skip to the examples section](#example-use-cases) to see the code**.
 
+### IDL
+
+The proposed IDL for the Openable API is:
+
+```webidl
+[Exposed=Window]
+partial interface HTMLElement {
+  attribute boolean openable;
+
+  undefined openOpenable(optional OpenOpenableOptions options = {});
+  undefined closeOpenable();
+  boolean toggleOpenable(optional ToggleOpenableOptions options = {});
+  boolean? defaultOpen;
+}
+
+dictionary OpenOpenableOptions {
+  HTMLElement source;
+}
+
+dictionary ToggleOpenableOptions : OpenOpenableOptions {
+  boolean force;
+}
+```
+
 ### HTML Content Attribute
 
 A new boolean content attribute, **`openable`**, controls the behavior.
@@ -67,6 +91,16 @@ So this markup represents openable content:
 ```
 
 As written above, the `<div>` will be rendered `display:none` by the UA stylesheet, meaning it will not be shown when the page is loaded. To open the openable, one of several methods can be used: [declarative triggering](#declarative-triggers), [JavaScript triggering](#javascript-trigger).
+
+The `openable` content attribute will be [reflected](https://html.spec.whatwg.org/#reflect) as a boolean IDL attribute.
+
+This not only allows developer ease-of-use from JavaScript, but also allows for a feature detection mechanism:
+
+```javascript
+function supportsOpenable() {
+  return HTMLElement.prototype.hasOwnProperty('openable')
+}
+```
 
 ### Opening and Closing an Openable
 
@@ -82,10 +116,12 @@ As mentioned above, a `<div openable>` will be hidden by default. If it is desir
 
 In this case, the UA will immediately call `openOpenable()` on the element, as it is parsed.
 
-The `defaultopen` content attribute can also be accessed via IDL:
+The `defaultopen` content attribute can also be accessed via JavaScript:
 
 ```javascript
-myDiv.defaultOpen = true
+const currentDefaultOpen = myDiv.defaultOpen;
+myDiv.defaultOpen = true;
+myDive.hasAttribute('defaultopen') === true;
 ```
 
 #### Declarative Triggers
@@ -110,15 +146,7 @@ If the desire is to have a button that only opens or only closes an openable, th
 
 When the `command` and `commandfor` attributes are applied to an activating element, the UA will automatically map this element with the appropriate accessibility semantics. For instance, the initial implementation will expose the appropriate `aria-expanded` state based on whether the openable is open or closed.
 
-The declarative trigger attributes can also be accessed via IDL:
-
-```javascript
-// Note that `commandFor` directly sets an element reference:
-myButton.commandFor = myElement
-myButton.command = 'show'
-```
-
-See the [invokers explainer](/components/invokers.explainer) for more information on how these attributes work.
+See the [command invokers explainer](/components/invokers.explainer) for more information on how these attributes work.
 
 #### JavaScript Trigger
 
@@ -186,34 +214,6 @@ The UA stylesheet for openables will look like this:
 }
 ```
 
-### IDL Attribute and Feature Detection
-
-The `openable` content attribute will be [reflected](https://html.spec.whatwg.org/#reflect) as a boolean IDL attribute:
-
-```
-[Exposed=Window]
-partial interface HTMLElement {
-  attribute boolean openable;
-
-  undefined openOpenable();
-  undefined closeOpenable();
-  boolean toggleOpenable(optional ToggleOpenableOptions options = {});
-  boolean? defaultOpen;
-}
-
-dictionary ToggleOpenableOptions {
-  boolean force;
-}
-```
-
-This not only allows developer ease-of-use from JavaScript, but also allows for a feature detection mechanism:
-
-```javascript
-function supportsOpenable() {
-  return HTMLElement.prototype.hasOwnProperty('openable')
-}
-```
-
 ### Events
 
 An event is fired synchronously when an openable is open or close. This event can be used, for example, to populate content for the openable just in time before it is opened, or update server data when it closes. The event provides a `currentState` and `newState` for the openable. The value of these properties can either be "open" or "closed". The events looks like this:
@@ -231,7 +231,11 @@ Additionally an asynchronous non-cancellable `toggle` event is fired.
 
 ### Focus Management
 
-An openable container does not result in a change of focus by default.  If an author creates an openable component where it would be desirable to automatically move focus when activated, then the `autofocus` attribute can be used to indicate the element that needs to receive focus, upon opening.
+An openable container does not result in a change of focus by default. If an author creates an openable component where it would be desirable to automatically move focus when activated, then the `autofocus` attribute can be used to indicate the element that needs to receive focus, upon opening.
+
+However, when an openable is opened it does become the next focusable element in the tab order. This is determined via the invoking element, a button with commandfor="openable" or the `source` element provided to the imperative APIs.
+
+If an openable currently contains focus and is closed such as by a contained button with `command="close-openabled"` or via `closeOpenable()`, the focus will be returned to the element that was focused before the openable was opened. This is important for accessibility and usability, as it allows users to return to their previous location in the document.
 
 ## Behaviors
 
@@ -323,9 +327,6 @@ As an attribute, a controlling element (button) can toggle the openable state of
 TODO
 
 ## Questions
-
-Do we need a source property in an options bag for the open and toggle methods like popover has?
-
 
 Should JS methods throw under various circumstances:
   - When the element isn't connected to the document?
