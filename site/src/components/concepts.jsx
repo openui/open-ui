@@ -1,12 +1,12 @@
-import React from 'react'
+import { useState } from 'preact/hooks'
 import { openUIConceptsByComponent } from '../sources'
 import './concepts.css'
 
 import Concept from './concept'
 
 const Concepts = ({ component }) => {
-  const [showDescriptions, setShowDescriptions] = React.useState(false)
-  const [collapseAll, toggleCollapseAll] = React.useState(true)
+  const [showDescriptions, setShowDescriptions] = useState(false)
+  const [collapseAll, toggleCollapseAll] = useState(true)
 
   const conceptsForComponent = Object.entries(openUIConceptsByComponent[component] || []).sort(
     ([_a, conceptsA], [_b, conceptsB]) => conceptsA.length - conceptsB.length,
