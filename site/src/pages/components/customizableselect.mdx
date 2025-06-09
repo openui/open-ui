@@ -191,7 +191,7 @@ To ensure the behavior described above, the nested `<button>` is rendered `inert
 
 ### Rendering the `<option>` differently in the button
 
-This example uses the customizable `<select>` element with custom CSS to target it which renders the option differently in the listbox vs in the button. The contents of each `<option>` have a `<span aria-hidden=true>` in order to make the option get announced the same whether its copied into the `<selectedcontent>` or being rendered in the dropdown.
+This example uses the customizable `<select>` element with custom CSS to target it which renders the option differently in the listbox vs in the button. The "description" text of each `<option>` has an `<span aria-hidden=true>` to both reduce the duplication of announcing the emoji's text alternative, and the visible text.  Hiding the text from the accessibility tree also ensures the selected option will be announced the same whether its copied into the `<selectedcontent>` or being rendered in the dropdown.  E.g., "red heart".
 
 <div className="code-image-container">
 <div>
