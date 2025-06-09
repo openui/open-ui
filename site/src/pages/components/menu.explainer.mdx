@@ -45,7 +45,10 @@ Use cases:
     * "change" will be fired when the `<menuitem>` is checkable, and its state changes
 * Checkability:
     * Supports "checkable" configuration and state, by wrapping `<menuitem>`s in a `<fieldset>` with
-      a new `checkable` attribute; see [Grouping menuitems together](#grouping-menuitems-together).
+      a new `checkable` IDL attribute (with no corresponding content attribute); see [Grouping
+      menuitems together](#grouping-menuitems-together).
+    * Supports the ability to set _initial_ checkedness in HTML, via the `defaultchecked` content
+      attribute (reflect by the `defaultChecked` IDL attribute).
     * Supports the :checked CSS pseudo-class and ::checkmark CSS pseudo-element
 
 **Question: Should `<menuitem>`s be represented by a single element, or multiple elements?**
