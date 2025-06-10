@@ -1,6 +1,6 @@
 ---
 menu: Active Proposals
-name: Menu elements (Explainer)
+name: Menu Elements (Explainer)
 path: /components/menu.explainer
 layout: ../../layouts/ComponentLayout.astro
 ---
@@ -19,6 +19,9 @@ layout: ../../layouts/ComponentLayout.astro
 - [Invoking `<menulist>` from a `<button>` element](#invoking-a-menulist-from-a-button-element)
 - [General questions](#general-questions)
 - [Examples in code](#examples-in-code)
+- [Future enhancements](#future-enhancements)
+- [Reading List](#reading-list)
+- [Issues / Discussions](#issues--discussions)
 
 ## Introduction
 
@@ -36,10 +39,9 @@ Use cases:
 
 `<menuitem>`
 
-* A focusable/activatable command in a `<menubar>` and `<menulist>`
-* Supports the `disabled` attribute, and the `:disabled` CSS pseudo-class
-* May have a popovertarget menu which takes the idref of a submenu to show
-    * Example: `<menuitem menu=submenu>`
+* A focusable/activatable command in a `<menubar>` and `<menulist>`.
+* Supports the `disabled` attribute, and the `:disabled` CSS pseudo-class.
+* Supports the `command/commandfor` attributes to specify popover target.
 * Events:
     * "toggle" on popover will be fired.
     * "change" will be fired when the `<menuitem>` is checkable, and its state changes
@@ -87,16 +89,16 @@ model. See https://github.com/openui/open-ui/issues/1194 for more discussion abo
 
 * Menubar should be used to represent a series of `<menuitem>`s that can then open submenus of commands.
 * In a menubar, a menuitem’s most common purpose is to invoke submenus (menulists).
-* An **in-page** menu that can contain a list of `<menuitem>`
+* An **in-page** menu that can contain a list of `<menuitem>`.
 * Menuitems within a menubar are displayed horizontally by default.
-* Supports :disabled, disabled attribute
+* Supports :disabled, disabled attribute.
 
 `<menulist>`
 
 * Menulist should be used to represent submenus of commands.
 * In a menulist, a menu item's most common purpose is to invoke actions (commands) or other submenus (menulists).
-* A **popover** menu that can contain a list of `<menuitem>`
-* Anchored to the button which is declaratively set up to open it
+* Menulist is a **popover** menu that can contain a list of `<menuitem>`s.
+* Anchored to the button which is declaratively set up to open it.
 * Attributes
     * disabled, open, name?
 
@@ -116,8 +118,7 @@ Our proposal includes adding a `checkable` attribute on `<fieldset>`, to group `
 either radios or checkboxes, instead of introducing new `<menuitemcheckbox>` and `<menuitemradio>`
 elements. We envision the following markup:
 
-```HTML
-
+```html
 <menulist>
   <fieldset checkable=single>
     <legend>Sort by</legend>
@@ -204,10 +205,7 @@ Given a `<menuitem>` inside a `<menubar>`, it can invoke a `<menulist>` by invok
 
 This can be accomplished by either:
 
-* **`<menuitem menu=id>`**
-* `<menuitem menulist=id>`
-* `<menuitem popovertarget=id>`
-    * Maybe not; this is strictly more limited than command/commandfor
+* **`<menuitem command="show-popover" commandfor=id>`**
 * **`<menuitem command="show-menu" commandfor=id>`**
     * We should allow [command invokers](https://open-ui.org/components/invokers.explainer/).
     * Useful for menu items that invoke custom commands.
@@ -217,13 +215,12 @@ This can be accomplished by either:
 * Nest the menulist as a sibling of other menuitems, inside the parent menulist.
 
 **Questions**
+* Should `<menulist>` be a popover by default?
+    * Yes, the popover attribute is not necessary. A menulist is by default a popover with value auto.
 * Since `<menulist>`s are popovers by default, what happens if we add a popover attribute on top of it?
-* What should be the default popover value?
-    * Have popover=auto be default
-    * Can set popover=hint?
-    * Can set popover=manual?
+    * It can be specified to overwrite the `popover=auto` default and to set to `popover=hint` or `popover=manual`.
 * Should menulist.showPopover() be the way to open these from script?
-
+    * Yes (for now).
 
 ### Why are we using popover instead of openable for `<menulist>`?
 
@@ -322,7 +319,7 @@ We propose these elements should not support the CSS appearance property and jus
 
 Previously, "context menus" were specified to allow developers to define custom context menus declaratively. This was being prototyped by Mozilla. Blink also had an implementation behind a flag.
 
-```HTML
+```html
 <menu id="menu1" type="context">
   <a href=#>Cancel</a>
 </menu>
@@ -414,7 +411,7 @@ There is a history of attempting to do this in Webkit, for example for a [Touch 
 
 <img src="/images/menubar-google-docs.png" alt="menubar example" />
 
-```HTML
+```html
 <menubar>
  <menuitem menu=format>Format</menuitem>
  <menuitem menu=tools>Tools</menuitem>
@@ -504,3 +501,24 @@ Menus have been heavily discussed, please see below to learn about the existing 
 - https://webflow.com/blog/navigation-bar-design
 - https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
 
+## Issues / Discussions
+
+This section links to all of the relevant discussions and [issues](https://github.com/openui/open-ui/issues?q=is%3Aissue%20state%3Aopen%20label%3Amenu) related to `menu`:
+
+### OpenUI
+- [Menu elements proposal](https://github.com/openui/open-ui/issues/1179)
+- [Explicitly mention whether reading-flow should impact arrow key navigation](https://github.com/openui/open-ui/issues/1187)
+- [improve distinction between menubar and toolbar](https://github.com/openui/open-ui/issues/1188)
+- [How should we group checkboxes and radios, and how should we decide if they are checkboxes or radios?](https://github.com/openui/open-ui/issues/1189)
+- [Activation behavior for opening submenus](https://github.com/openui/open-ui/issues/1190)
+- [Explicitly mention support for HR as a separator](https://github.com/openui/open-ui/issues/1191)
+- [When should activating a menuitem close the menu?](https://github.com/openui/open-ui/issues/1192)
+- [Navigation vs menu items use case](https://github.com/openui/open-ui/issues/1193)
+- [Consider reusing `<menu>` and `<nav>` HTML elements](https://github.com/openui/open-ui/issues/1194)
+- [allow buttons to open menu(list) popups](https://github.com/openui/open-ui/issues/1196)
+- [[openable] allow author choice of opening a submenu inline or as a popup](https://github.com/openui/open-ui/issues/1198)
+- [do we *need* to introduce menuitem elements?](https://github.com/openui/open-ui/issues/1200)
+- [define orientation attribute](https://github.com/openui/open-ui/issues/1201)
+- [Define a default checked attribute for menuitem](https://github.com/openui/open-ui/issues/1205)
+- [Keyboard shortcuts?](https://github.com/openui/open-ui/issues/1225)
+- [Should menulist be a popover by default?](https://github.com/openui/open-ui/issues/1226)
