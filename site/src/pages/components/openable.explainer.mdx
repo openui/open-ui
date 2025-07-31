@@ -63,12 +63,12 @@ The proposed IDL for the Openable API is:
 ```webidl
 [Exposed=Window]
 partial interface HTMLElement {
-  attribute boolean openable;
+  [Reflect] attribute boolean openable;
 
   undefined openOpenable(optional OpenOpenableOptions options = {});
   undefined closeOpenable();
   boolean toggleOpenable(optional ToggleOpenableOptions options = {});
-  boolean? defaultOpen;
+  attribute boolean? defaultOpen;
 }
 
 dictionary OpenOpenableOptions {

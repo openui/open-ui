@@ -98,8 +98,8 @@ In the style of `popovertarget`, this document proposes we add
 
 ```webidl
 interface mixin CommandElement {
-  [CEReactions] attribute Element? commandForElement;
-  [CEReactions] attribute DOMString command;
+  [CEReactions, Reflect="commandfor"] attribute Element? commandForElement;
+  [CEReactions, ReflectSetter] attribute DOMString command;
 };
 
 HTMLButtonElement extends InvokerElement
