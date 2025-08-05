@@ -5,7 +5,7 @@ layout: ../../layouts/ComponentLayout.astro
 ---
 
 - [Mason Freed](https://github.com/mfreed7), [Keith Cirkel](https://github.com/keithamus)
-- Last updated: June 20, 2025
+- Last updated: August 5, 2025
 
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -20,16 +20,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [HIDs and Interest](#hids-and-interest)
   - [Mouse](#mouse)
   - [Keyboard](#keyboard)
-    - [Mixed keyboard/mouse usage](#mixed-keyboardmouse-usage)
-    - [interactivity: not-keyboard-focusable](#interactivity-not-keyboard-focusable)
   - [Touchscreen](#touchscreen)
-    - [Option 1 - leave the details to UAs](#option-1---leave-the-details-to-uas)
-    - [Option 2 - show both at the same time](#option-2---show-both-at-the-same-time)
-    - [Option 3 - add an item to the context menu](#option-3---add-an-item-to-the-context-menu)
-    - [Option 4 - single tap interest](#option-4---single-tap-interest)
-    - [Option 5 - do not show the context menu](#option-5---do-not-show-the-context-menu)
-    - [Option 6 - invent a new gesture](#option-6---invent-a-new-gesture)
-    - [Selection of a final option](#selection-of-a-final-option)
   - [Other](#other)
   - [Exceptions](#exceptions)
 - [Mouse and Keyboard delays](#mouse-and-keyboard-delays)
@@ -44,24 +35,38 @@ layout: ../../layouts/ComponentLayout.astro
 - [Accessibility](#accessibility)
   - [Plain hints (aka tooltips)](#plain-hints-aka-tooltips)
   - [Rich hints (aka hovercards or other)](#rich-hints-aka-hovercards-or-other)
-- [Interaction with Speculation Rules and Preloading Tech](#interaction-with-speculation-rules-and-preloading-tech)
 - [FAQ (Frequently Asked Questions)](#faq-frequently-asked-questions)
   - [Why No `interestaction` Attribute?](#why-no-interestaction-attribute)
   - [Why the name `interest`? Why not `hover` or `focus`?](#why-the-name-interest-why-not-hover-or-focus)
   - [Why is `interestfor` supported on more elements than `commandfor`?](#why-is-interestfor-supported-on-more-elements-than-commandfor)
   - [Why is `interestfor` not unlimited, like `title` is?](#why-is-interestfor-not-unlimited-like-title-is)
+  - [Interaction with Speculation Rules and Preloading Tech](#interaction-with-speculation-rules-and-preloading-tech)
+  - [Fingerprinting concerns](#fingerprinting-concerns)
   - [Safe Area Triangle](#safe-area-triangle)
   - [What if I (the developer) don't want the touchscreen context menu](#what-if-i-the-developer-dont-want-the-touchscreen-context-menu)
+- [Alternatives Considered](#alternatives-considered)
+  - [Touchscreen options](#touchscreen-options)
+    - [Option 1 - leave the details to UAs](#option-1---leave-the-details-to-uas)
+    - [Option 2 - show both at the same time](#option-2---show-both-at-the-same-time)
+    - [Option 3 - add an item to the context menu](#option-3---add-an-item-to-the-context-menu)
+    - [Option 4 - single tap interest](#option-4---single-tap-interest)
+    - [Option 5 - do not show the context menu](#option-5---do-not-show-the-context-menu)
+    - [Option 6 - invent a new gesture](#option-6---invent-a-new-gesture)
+    - [Selection of a final option](#selection-of-a-final-option)
+  - [Keyboard "partial interest"](#keyboard-partial-interest)
+    - [Details](#details)
+    - [Mixed keyboard/mouse usage](#mixed-keyboardmouse-usage)
+    - [interactivity: not-keyboard-focusable](#interactivity-not-keyboard-focusable)
 - [Issues / Discussions](#issues--discussions)
 
 ## The Pitch
 
-When you write "@mfreed7" or "#743" on Github, the text is automatically upgraded to links pointing to the user's profile page or the issue/PR page. And if you hover over that link instead of clicking it, you get a nice "hovercard" popover containing more detailed information. Users really like this feature, because it gives them the bit of information they want ("who or what is this?"), including common quick actions like "Follow this user", without requiring them to leave the page, potentially losing state in the process.
+When you write `@mfreed7` or `#743` on Github, the text is automatically upgraded to links pointing to the user's profile page or the issue/PR page. And if you hover over that link instead of clicking it, you get a nice "hovercard" popover containing more detailed information. Users really like this feature, because it gives them the bit of information they want ("who or what is this?"), including common quick actions like "Follow this user", without requiring them to leave the page, potentially losing state in the process.
 
 <img src="/images/github-profile-hovercard.png" width="400" alt="Github profile hovercard" />
 
 
-In a [survey](https://docs.google.com/spreadsheets/d/11Bt_FCAqu1hd5llGRGpzgwlgHaqLmOC4SJEMRtNQY-g/edit?gid=0) of the top 50 sites by traffic, 94+% of them include hover-triggering functionality like this, ranging from small text-based tooltips to large interactive hovercards with useful links and buttons. However, implementing this behavior takes a remarkable amount of work and code. Careful attention must be paid to managing mouse hover and de-hover states, keeping track of hover delays and states, implementing keyboard activation, getting accessibility right, and all of the related interactions. As a result, many developers' implementations aren't accessible to keyboard users, and virtually none are accessible to touchscreen users. As a result, **mouse users have access to significantly more functionality and information than users who do not use a mouse**. The User Agent should provide this functionality natively, so that developers don't have to keep re-inventing this wheel and/or leaving behind their non-mouse users.
+In a [survey](https://docs.google.com/spreadsheets/d/11Bt_FCAqu1hd5llGRGpzgwlgHaqLmOC4SJEMRtNQY-g/edit?gid=0) of the top 50 sites by traffic, 94+% of them include hover-triggering functionality like this, ranging from small text-based tooltips to large interactive hovercards with useful links and buttons. However, implementing this behavior takes a remarkable amount of work and code. Careful attention must be paid to managing mouse hover and de-hover states, keeping track of hover delays and states, implementing keyboard activation, getting accessibility right, and all of the related interactions. As a result, many developers' implementations aren't accessible to keyboard users (about 50% of the sites we surveyed), and virtually none are accessible to touchscreen users. As a result, **mouse users have access to significantly more functionality and information than users who do not use a mouse**. The User Agent should provide this functionality natively, so that developers don't have to keep re-inventing this wheel and/or leaving behind their non-mouse users.
 
 ## The Pitch in Code
 
@@ -146,153 +151,26 @@ Mouse users will show interest in an element by mouse-hovering the element for a
 
 ### Keyboard
 
-For keyboard users, there is a tension between discoverability and annoyance. The most discoverable way to "show interest" via the keyboard is simply for keyboard focus to trigger interest. The downside of this pattern is that users who are merely trying to keyboard-navigate through a document might be annoyed if popovers begin to appear as they tab through the document. An activation delay mitigates this somewhat, but doesn't solve the issue for users who stop tabbing on an `interestfor` element inadvertently, and are then surprised by a popover. This problem is particularly bad in the case that the popover has interactive content, since it will be placed *next* in the tab navigation order, forcing the user on a "detour". The alternative way to "show interest" is a special keyboard hot-key, such as Alt-UpArrow. This alleviates the "surprise" problem, since the user must affirmatively choose to show interest, but it lacks discoverability. Many users might never know that there's a way to activate the additional content.
-
-For the above reasons, a somewhat more complicated approach is adopted for `interestfor`, which is a blend of the two approaches. It attempts to keep all of the good parts of focus-triggered-interest while mitigating the bad parts:
-
-- trigger interest in the element when it receives keyboard focus, after `interest-show-delay` seconds.
-- lose interest in the element when focus *leaves* the interest invoker or its target, after `interest-hide-delay` seconds. Also, hitting ESC will immediately lose interest in the element.
-
-So essentially, delayed-focus triggers interest. To mitigate the "annoy the user" problems, the target popover is activated in "partial interest" mode, in which case none of its contents are keyboard focusable. To achieve that, the following additional behaviors take place:
-- if the target is a popover, and the popover contains keyboard-focusable elements, then it's put into "partial interest" mode, whereby interactive contents within the popover act as if they have `tabindex=-1`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
-- a hotkey (e.g. Alt-UpArrow) will cause the popover to be "fully activated" which removes the special `tabindex=-1` behavior, making it available in the focus navigation order. This hot-key must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key. The hotkey should not be an arrow key *without* a modifier, since that will interfere with scrolling and editing.
-- a new set of pseudo classes will match on the interest invoker *and* the target popover, only when it is in the "partial interest" state. For example, `:has-partial-interest` will match the invoker, and `:target-of-partial-interest` will match the popover.
-- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-of-partial-interest {interactivity:not-keyboard-focusable}`.  See the [interactivity:not-keyboard-focusable section](#interactivity-not-keyboard-focusable) for more detail.
-- a new UA stylesheet rule will will also be added, such as: `:target-of-partial-interest::after {content: "Press Alt-UpArrow to activate"}`. This adds (developer-stylable or -hideable) hints to the user about the hotkey, so that it is discoverable.
-
-This approach, while slightly more complicated, nicely meets the following use case requirements:
- - Better user activation story for non-interactive "tooltips" that shouldn't be so hard to activate. Note that these have no behavior difference between "partial interest" and "full interest", since they contain nothing interactive.
- - Better discoverability story for rich "hovercards". The `::after` UA rule provides explicit instructions.
- - Less risk of annoyance for keyboard users, since rich hovercards don't insert themselves automatically into the sequential focus order.
- - Ability to override the `interactivity:not-keyboard-focusable` behavior for key use cases, such as menus (where the author would add `:target-of-partial-interest {interactivity:auto}` to activate immediately on focus) and "large/obtrusive" tooltips (where the author would add `:target-of-partial-interest {display:none}` so content doesn't automatically show on focus, but requires the hotkey).
- - The partial interest state can be indicated to the user (e.g. with `:target-of-partial-interest {opacity:50%}`) if desired, and the helpful text about the hotkey can be customized or hidden if desired.
- - (Most importantly?) The default state "just works" for keyboard users, in the case that the developer only tested/developed using a mouse, and didn't do any of the above.
-
-See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
-
-#### Mixed keyboard/mouse usage
-
-While an invoker is activated in "partial interest" mode (via the keyboard), it is still possible for a user to be also using a mouse. In that case, hovering an invoker or its target popover with a mouse also causes the target to be upgraded to "full interest" immediately. That's important so that any interactive elements in the popover such as buttons can be clicked with the mouse.
-
-#### interactivity: not-keyboard-focusable
-
-As a prerequisite for `interestfor`, a new value for the `interactivity` CSS property needs to be added:
-
-- `interactivity: auto`: the (existing) 'auto' behavior. Some elements (such as buttons) are made focusable by the user agent, and others (such as `<div>`) are not.
-- `interactivity: inert`: the (existing) 'inert' behavior. Nothing in the subtree is interactive, focusable, clickable, etc., and content is *not present* in the accessibility tree.
-- `interactivity: not-keyboard-focusable`: (new value) the element and its subtree will not be keyboard focusable, but will retain all other forms of interactivity such as mouse-clicks. Note that the element might still be focusable overall (e.g. programmatically or via the mouse), it will merely not be present in the sequential focus navigation order. The element, in other words, behaves as if it has `tabindex=-1`.
-
-This property inherits, so that children of the element also follow the behavior. An explicit `tabindex` value on an element should override the value of this property.
-
-Note: adding such a CSS property likely precludes the later addition of something like [`:focusable`](https://github.com/w3c/csswg-drafts/issues/7269), due to circularity concerns.
+For keyboard users, there is a tension between discoverability and annoyance. The most discoverable way to "show interest" via the keyboard is simply for keyboard focus to trigger interest. The downside of this pattern is that users who are merely trying to keyboard-navigate through a document might be annoyed if popovers begin to appear as they tab through the document. An activation delay, combined with the ESC key always losing interest and closing popovers, mitigates this problem. A prior proposal (see [the alternatives section](#alternatives-considered)) included a more complicated "partial interest" concept that was intended to remedy this problem. However, it turned out to be very complicated for developers, and annoying for users. The presence of the ESC key to "escape" from interest turns out to fix most annoyance problems.
 
 ### Touchscreen
 
-For touchscreen users, the [widely-adopted standard](https://docs.google.com/spreadsheets/d/11Bt_FCAqu1hd5llGRGpzgwlgHaqLmOC4SJEMRtNQY-g/edit?gid=113109928) for "showing interest" in an element is the [long-press gesture](https://en.wikipedia.org/wiki/Pointing_device_gesture#:~:text=0%3A04-,Long%20Press,-Duration%3A%205%20seconds). For native apps, this is the user-expected shortcut to show context menus and access other actions without explicitly activating the element. (See [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599) for more context on this point, from developers.) While "inventing" a new interaction pattern such as long-press-and-drag or other "magic" might sound appealing, users would not know or expect this pattern to work. On mobile, long-press is the standard way to show interest, and developers need `interestfor` to re-use this standard pattern.
+For touchscreen users, the [widely-adopted standard](https://docs.google.com/spreadsheets/d/11Bt_FCAqu1hd5llGRGpzgwlgHaqLmOC4SJEMRtNQY-g/edit?gid=113109928) for "showing interest" in an element is the [long-press gesture](https://en.wikipedia.org/wiki/Pointing_device_gesture#:~:text=0%3A04-,Long%20Press,-Duration%3A%205%20seconds). For native apps, this is the user-expected shortcut to show context menus and access other actions without explicitly activating the element. (See [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599) for more context on this point, from developers.) While "inventing" a new interaction pattern such as long-press-and-drag or other "magic" might sound appealing, users would not know or expect this pattern to work, since it would only exist on one (or a handful) of apps on their phone: browsers. For all other native mobile apps, long-press is the standard way to show interest, and for that reason, developers need `interestfor` to re-use this standard UX pattern.
 
-On the web, however, most browsers *already overload* the long-press gesture to provide additional functionality. For example, long-pressing on plain text nodes often creates a text selection around that text, and sometimes provides an additional context menu containing actions like "copy" or "look up". Long-pressing a link `<a>` element in most browsers provides a more involved context menu with additional operations such as "open in a new tab", "add to reading list", "share", or even full inert/anonymous previews of the target URL's content. Users often appreciate these additional capabilities, and do not want to lose access to them. Therefore, the `interestfor` API must provide a way to **keep both** capabilities: the `interestfor` behavior **and** the existing context menus and behaviors.
+On the web, however, most browsers *already overload* the long-press gesture to provide additional functionality. For example, long-pressing on plain text nodes often creates a text selection around that text, and sometimes provides an additional context menu containing actions like "copy" or "look up". Long-pressing a link (an `<a>` element) in most browsers provides a more involved context menu with additional operations such as "open in a new tab", "add to reading list", "share", or even full inert/anonymous previews of the target URL's content. Users often appreciate these additional capabilities, and do not want to lose access to them. Therefore, the `interestfor` API must provide a way to **keep both** capabilities: the `interestfor` behavior **and** the existing context menus and behaviors.
 
-#### Option 1 - leave the details to UAs
+Many different options for providing touchscreen support were discussed and even prototyped, and the details can be found in [the alternatives section](#alternatives-considered). The final selected proposal is to simply add an item to the pre-existing long-press context menu, such as "Show Details", which (if selected) shows interest in the element. If the element being long-pressed would not ordinarily show a context menu (such as a `<button>` in many browsers), then the long press itself is enough to show interest directly.
 
-\{This idea is [opposed by WebKit](https://github.com/WebKit/standards-positions/issues/305#issuecomment-2284319289), and [Mozilla](https://github.com/mozilla/standards-positions/issues/1181#issuecomment-2846994491), who both want the exact behavior to be specified for touchscreen.}
-
-The original proposal for touchscreen behavior was to leave the specifics up to user agents. I.e. specify that browsers **must** provide their users (all of them) a way to "show interest" in an element, without specifying exactly how to to that on touchscreens. Since it is **currently impossible on the web** to provide users a similar functionality (access context menu **and** hovercard with a single gesture), there is no obvious cow-path to pave on touchscreen. So this option leaves the details of the behavior unspecified, which allows user agents to experiment and iterate on good UX patterns.
-
-#### Option 2 - show both at the same time
-
-\{This approach is opposed by both [WebKit](https://github.com/whatwg/html/issues/11058#issuecomment-2676086663) and [Mozilla](https://github.com/whatwg/html/issues/11058#issuecomment-2695676452), as being too confusing to users, and potentially a security issue.}
-
-After [significant brainstorming and discussion in OpenUI](https://github.com/openui/open-ui/issues/1052), a specific approach was designed wherein *both* the UA context menu *and* the site's hovercard could both be shown at the same time. The short version of this approach is that to show interest in an element via touchscreen, the user simply long-presses that element. This does not activate (e.g. click) the element, it merely triggers interest in the element. This long press immediately fires the `"interest"` event, but **also** shows any context menus that would have shown if the `interestfor` attribute were not present. Both things happen together. In the case of a popover target element, the idea is that the hovercard popover shows up **in addition** to the context menu, so that the user can tap on either of those things. The user can trigger `"loseinterest"` by tapping either outside the target popover, or on one of the provided context menu items (if any). If the user taps outside *both* the context menu *and* the popover, that should constitute both a loss of interest (closing the popover) and also a signal to close the context menu (since on most platforms, tapping outside the context menu closes it).
-
-One difficulty of this option is that the two things (the popover target and the UA-provided context menu) need to coordinate, at least on positioning. It would be a bad user experience if the context menu showed up on top of the popover, obscuring part or all of it. To provide this coordination, a few more things will be included:
-
-1. When the long-pressed element has `interestfor`, any UA-provided context menu will not blur or otherwise obscure the web content it covers. In this way, the page will still be visible "under" the context menu.
-2. The portion of the renderer window that is still visible (not obscured by the context menu) will be exposed to the developer via four new [`env()` values](https://developer.mozilla.org/en-US/docs/Web/CSS/env), tentatively called `context-menu-inset-top`, `context-menu-inset-right`, `context-menu-inset-bottom`, and `context-menu-inset-left`. In this way, the developer can safely position the target popover within the area that isn't obscured by the context menu.
-3. An attempt will be made to provide at least half of the screen (or a "reasonable" amount of screen real estate) for developer content, e.g. by moving the context menu down rather than centering it within the viewport.
-
-Importantly, the User Agent will still be in control of a few things:
-
-1. The position and size of the UA-provided context menu.
-2. The available space and location for the developer/site-provided hovercard.
-3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
-
-| `<a>` - long-press | `<button>` - long-press |
-|-------|------------|
-| <img src='/images/interesttarget-mockup-show-both.gif' height="600" alt='Mockup of the "show both" approach on links' /> | <img src='/images/interesttarget-mockup-button-long-press.gif' height="600" alt='Mockup of the "show both" approach on buttons' /> |
-
-
-#### Option 3 - add an item to the context menu
-
-This is **likely the most straightforward approach that still meets all of the requirements**. For elements that already have long-press-activated context menus, simply add an item to that menu (e.g. "View more info"). When this item is tapped, context menu is dismissed, and "interest is shown" in the link element. This approach does not affect the existing UX at all, and is straightforward to implement. It does represent a bit more friction for users, relative to desktop users: touchscreen users must first long-press the link, then single-tap a menu item, in order to show interest. However, this is still infinitely better than the current state of the art, which is to deny most touchscreen users any access to the hovercard.
-
-| `<a>` - long-press | `<button>` - long-press |
-|-------|------------|
-| <img src='/images/interesttarget-mockup-add-to-context-menu.gif' height="600" alt='Mockup of the "add context menu item" approach on links' /> | <img src='/images/interesttarget-mockup-button-long-press.gif' height="600" alt='Mockup of the "add context menu item" approach on buttons' /> |
-
-##### Option 3.5 - add an opt-in "info" button pseudo element
-
-While Option 3 is a great way to ensure that all users have access to hovercard content, it is a bit more difficult to discover. In some cases, developers might want to provide a more visible way to show the user that there is more content to access. (In other cases, developers explicitly do not want this - they want to keep an uncluttered page layout.)
-
-In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the new `::interest-hint` pseudo element:
-
-```css
-@media (any-pointer: coarse) {
-  /* On touch devices, show the interest-hint pseudo */
-  .my-link::interest-hint {
-    content: '' / 'profile preview';
-    background-image: url('icon.png');
-    /* styles */
-  }
-}
-```
-
-When the `::interest-hint` pseudo element has a value set for `content` on an element with the `interestfor` attribute, the pseudo-element is generated as a button following the element. Typically, this is rendered as a small `(i)` icon or similar, but the decision of what to render in the button will be up to the developer. When the user taps (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard.
-
-In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-hint` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
-
-| `<a>` - long-press | `<button>` - long-press |
-|-------|------------|
-| <img src='/images/interesttarget-mockup-pseudo-element.gif' height="600" alt='Mockup of the pseudo element approach on links' /> | Not typical, since long-press on the button already shows interest immediately |
-
-
-#### Option 4 - single tap interest
-
-Another approach is to **not** use the long-press gesture at all, but instead make a single-tap on a link with `interestfor` "show interest". A second tap on that same link (perhaps within a time delay?) would then navigate to the link. This side-steps the context menu problem entirely, since the user can still long-press the same link and get access to the context menu. However, it does introduce a bit of "tap uncertainty" for users. Simply looking at a link on the screen does not provide any indication of whether a single-tap will navigate to a new page, or show interesting information. Without pre-exploring a site, it will be unclear whether the user is "safe" to tap links without leaving the site. Since links are the heart of the web, it seems bad to discourage tapping them.
-
-| `<a>` - single-tap | `<button>` - single-tap |
-|-------|------------|
-| <img src='/images/interesttarget-mockup-single-tap.gif' height="600" alt='Mockup of the "single-tap" approach on links' /> | <img src='/images/interesttarget-mockup-button-single-tap.gif' height="600" alt='Mockup of the "single-tap" approach on buttons' /> |
-
-#### Option 5 - do not show the context menu
-
-Another approach is to simply *not show* the context menu on long press, for elements with `interestfor`. Long-pressing the element triggers interest and opens the hovercard. There is no way for the user to access the context menu, but perhaps that's "ok", since the site has provided a highly-customized hovercard for the link that obviates the user's desire to navigate to the link. Still, it is likely that some users will be annoyed at the lack of functionality, e.g. their inability to copy the link URL to the clipboard.
-
-| `<a>` - long-press | `<button>` - long-press |
-|-------|------------|
-| <img src='/images/interesttarget-mockup-no-context-menu.gif' height="600" alt='Mockup of the "no context menu" approach on links' /> | <img src='/images/interesttarget-mockup-button-long-press.gif' height="600" alt='Mockup of the "no context menu" approach on buttons' /> |
-
-
-#### Option 6 - invent a new gesture
-
-One final approach would be to "invent" a new gesture that users can use to show interest. For example, long-press for a specific amount of time, or long-press and "wiggle". Or something else. While UX designers could get creative and come up with something intuitive, it's important to point out again that on every other native mobile app besides a web browser app, **long-press** is the expected/trained UX pattern for showing interest in something. Creating a brand new gesture that only works on a single set of apps (browsers) and is different from the entire universe of other mobile apps, creates an extreme discovery problem. Users will not be aware of this magic gesture, and it will go unused. It does, however, get around the conflict between showing interest and showing the context menu.
-
-#### Selection of a final option
-
-The debate about the touchscreen UX pattern is still very much in progress. Discussions are happening in multiple places, but mostly these three:
-
-- [WHATWG's touchscreen behavior discussion](https://github.com/whatwg/html/issues/11058)
-- [The Mozilla standards position on interestfor](https://github.com/mozilla/standards-positions/issues/1181)
-- [The WebKit standards position on interestfor](https://github.com/WebKit/standards-positions/issues/464)
 
 ### Other
 
 The "other" category includes many HID types, including assistive technologies, eye tracking and VR interfaces, voice control systems, switch access, and future HIDs that haven't been developed yet.
 
-Since this category of HIDs contains less-commonly-used HID types, and because it also contains future HIDs that don't even exist yet, the specification for `interestfor` will simply **mandate** that the User Agent provide *a way* for users to both "show interest" and "lose interest" in elements, no matter what HID is in use, without specifying exactly what form that might take. In some cases, this behavior likely cannot be specified, and must be left to the discretion of the user agent. For example, an explicit hand gesture might be needed for an eye tracking VR interface. In the to-be-invented case, it stands to reason that devices might introduce new and novel concepts of showing/losing interest.
+Since this category of HIDs contains less-commonly-used HID types, and because it also contains future HIDs that don't even exist yet, the specification for `interestfor` will simply mandate that the User Agent provide *a way* for users to both "show interest" and "lose interest" in elements, no matter what HID is in use, without specifying exactly what form that might take. In some cases, this behavior likely cannot be specified, and must be left to the discretion of the user agent. For example, an explicit hand gesture might be needed for an eye tracking VR interface, to preserve privacy. In the to-be-invented case, it stands to reason that devices might introduce new and novel concepts for showing/losing interest.
 
 ### Exceptions
 
-While several sections above use words like "mandate" and "require", there are exceptions. As with all things, the UA (as the *user's agent*) is still free to decide *not* to provide some users in some circumstances with the ability to show interest. For example, on extremely small touchscreens such as watch faces, the UA might decide that there's no practical UX that will serve users, and so will decide not to provide access. However, it is expected that UA's broadly provide users with a method for showing and losing interest in elements.
+While several sections above use words like "mandate" and "require", there are exceptions. As with all things, the UA (as the *user's agent*) is still free to decide *not* to provide some users in some circumstances with the ability to show interest. For example, on extremely small touchscreens such as watch faces, the UA might decide that there's no practical UX that will serve users, and so will decide not to provide access. However, it is expected that UA's broadly provide users with a method for showing and losing interest in elements, when that is feasible, regardless of the user's chosen input modality.
 
 ## Mouse and Keyboard delays
 
@@ -303,19 +181,19 @@ For mouse or keyboard users, delays are important for a number of reasons:
 
 Both of these time periods need to be CSS-configurable, because different use cases can require different delays. For example, a responsive gaming site might want very short delays, including potentially zero-delay. On the other hand, information-rich sites such as Wikipedia might want longer delays to ensure their content is easily accessible to all. To achieve this, two properties, `interest-show-delay` and `interest-hide-delay`, will control the corresponding delays. Because, as described above, both of these delays are fairly critical to proper operation of the interest mechanism, both properties will default to a non-zero value, 0.5 seconds. A shorthand `interest-delay` property will control both.
 
-There was some discussion about the need to allow UAs to modify these delays based on user needs. For example, some users might require longer delays to be able to navigate between popovers. There was a [discussion](https://github.com/w3c/csswg-drafts/issues/9236) about potentially using keywords (e.g. "short", "medium", "long") rather than explicit numbers for these properties. However, there was strong pushback against that for several reasons, the primary one being that it's not possible to normalize all sites down to a small set of named values. The alternative suggestion, which meets the use case, is that the UA is allowed to modify delays, as needed, to be a proper agent for the user. One example might be a setting like "multiply all delays by 10x".
+There was some discussion about the need to allow UAs to modify these delays based on user needs. For example, some users might require longer delays to be able to navigate between popovers. There was a [discussion](https://github.com/w3c/csswg-drafts/issues/9236) about potentially using keywords (e.g. "short", "medium", "long") rather than explicit numbers for these properties. However, there was strong pushback against that for several reasons, the primary one being that it's not possible to normalize all sites down to a small set of named values. The alternative suggestion, which meets the use case, is that the UA is allowed to modify delays, as needed, to be a proper agent for the user. One example might be a setting like "multiply all delays by 10x", or "all delays have a minimum of 5s", etc.
 
-The CSS properties for controlling delays are being discussed https://github.com/w3c/csswg-drafts/issues/9236.
+The CSS properties for controlling delays were discussed in https://github.com/w3c/csswg-drafts/issues/9236.
 
 
 ## Pseudo Classes
 
-It is handy to be able to select elements that both a) have the `interestfor` attribute, and b) are *currently* being shown interest. The `:has-interest` pseudo class matches elements in exactly this state. Two common use cases arise:
+It is handy to be able to select elements that both a) have the `interestfor` attribute, and b) are *currently* being shown interest. The `:interest-source` pseudo class matches elements in exactly this state. Two common use cases arise:
 
 1. Styling the trigger element to indicate that it's showing interest:
 
 ```
-:has-interest {
+:interest-source {
   background-color: lightgreen;
   border: 2px solid green;
 }
@@ -327,25 +205,23 @@ It is handy to be able to select elements that both a) have the `interestfor` at
 [interestfor] {
   interest-delay: 1s;
 }
-container:has(:has-interest) [interestfor] {
+container:has(:interest-source) [interestfor] {
   interest-show-delay: 0s;
 }
 ```
 
-As mentioned in the [Keyboard](#keyboard) section, there is also a `:has-partial-interest` pseudo class, which matches the invoker when it only has "partial interest".
-
-It is sometimes also convenient to be able to style the *target* of an interest invoker based on whether its *invoker* has interest. For that purpose, we introduce two more pseudo classes, `:target-of-interest` and `:target-of-partial-interest`, which work the same way as `:has-interest` and `:has-partial-interest`, except that they match the target rather than the invoker. These can be used to e.g. change the style of popovers that are transiently-invoked vs. those that are invoked via a less transient mechanism such as `popovertarget`.
+It is sometimes also convenient to be able to style the *target* of an interest invoker based on whether its *invoker* has interest. For that purpose, we introduce another pseudo classes, `:interest-target`, which works the same way as `:interest-source`, except that it matches the *target* rather than the *invoker/source*. These can be used to e.g. change the style of popovers that are transiently-invoked vs. those that are invoked via a less transient mechanism such as `commandfor` or `popovertarget`.
 
 ```
 [popover] {
   background-color: green;
 }
-[popover]:target-of-interest {
+[popover]:interest-target {
   background-color: orange;
 }
 ```
 
-The pseudo class functionality and naming is being discussed in https://github.com/w3c/csswg-drafts/issues/12154.
+The pseudo class functionality was discussed in https://github.com/w3c/csswg-drafts/issues/12154, and their naming is being discussed in https://github.com/w3c/csswg-drafts/issues/12515.
 
 
 ## Implementation Details
@@ -490,10 +366,6 @@ As with `popovertarget`, when a rich hint is shown, [sequential focus navigation
 
 See also, https://github.com/w3c/aria/issues/979.
 
-## Interaction with Speculation Rules and Preloading Tech
-
-The [Speculation Rules API](https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API) has an [`eagerness`](https://developer.chrome.com/blog/speculation-rules-improvements#eagerness) setting, for which the `moderate` value [specifically calls out](https://wicg.github.io/nav-speculation/speculation-rules.html#valid-eagerness-strings:~:text=moved%20the%20cursor%20over%20it%20for%20some%20time) hovering a link for a period of time. Other similar preloading technologies like [instant.page](https://instant.page/) and [quicklink](https://github.com/GoogleChromeLabs/quicklink) have very similar features. In some cases, e.g. when `interestfor` is used to provide a very informative hovercard on such a link, the user might be much *less* likely to click the same link, because they got all of the information they needed from the hovercard. In other cases, the hovercard might contain information that "entices" them to click the link, *increasing* the likelihood that they navigate. Because of this, the developer should carefully consider modifying any such preloading rules for these links accordingly, e.g. to exclude the first class of links from preloading, or to increase the `eagerness` for the second class of links.
-
 ## FAQ (Frequently Asked Questions)
 
 ### Why No `interestaction` Attribute?
@@ -536,6 +408,14 @@ developers to use it only on interactive elements, where it makes sense.
 
 For example, *arbitrary* elements are not usually focusable, and it is unclear how to ensure that keyboard users can still show interest in these elements. It is not impossible, however: perhaps elements with `interestfor` become focusable by default, or only work if `tabindex` has been used. However, these potentialy solutions are not particularly popular, especially among accessibility experts and keyboard-users. So more work would be necessary to navigate the pitfalls.
 
+### Interaction with Speculation Rules and Preloading Tech
+
+The [Speculation Rules API](https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API) has an [`eagerness`](https://developer.chrome.com/blog/speculation-rules-improvements#eagerness) setting, for which the `moderate` value [specifically calls out](https://wicg.github.io/nav-speculation/speculation-rules.html#valid-eagerness-strings:~:text=moved%20the%20cursor%20over%20it%20for%20some%20time) hovering a link for a period of time. Other similar preloading technologies like [instant.page](https://instant.page/) and [quicklink](https://github.com/GoogleChromeLabs/quicklink) have very similar features. In some cases, e.g. when `interestfor` is used to provide a very informative hovercard on such a link, the user might be much *less* likely to click the same link, because they got all of the information they needed from the hovercard. In other cases, the hovercard might contain information that "entices" them to click the link, *increasing* the likelihood that they navigate. Because of this, the developer should carefully consider modifying any such preloading rules for these links accordingly, e.g. to exclude the first class of links from preloading, or to increase the `eagerness` for the second class of links.
+
+### Fingerprinting concerns
+
+Since this API does not expose any details of *how* the user indicated interest, it does not introduce any fingerprinting concerns. It should be noted that other pre-existing events (such as `focusin` or `mouseenter`) already expose such details. But this API does not change that fact or expose any additional details about the user.
+
 ### Safe Area Triangle
 
 The events `interest` and `loseinterest` are intentionally abstract to allow more complex usability concepts to unfold. It is possible that a future capability might be to add automatic "safe areas" or "hit triangles", which allow the user to move the pointer between the Interest Invoker (e.g. the button) and Interestee (e.g. the hovercard), regardless of the `interest-hide-delay` setting. See [#963](https://github.com/openui/open-ui/issues/963) for more.
@@ -558,6 +438,149 @@ It might be the case that in some circumstances, the "developer knows best" that
   }
 </style>
 ```
+
+## Alternatives Considered
+
+This section details various alternative proposals that were discussed or prototyped, and a bit about why they were not selected.
+
+### Touchscreen options
+
+#### Option 1 - leave the details to UAs
+
+\{This idea is [opposed by WebKit](https://github.com/WebKit/standards-positions/issues/305#issuecomment-2284319289), and [Mozilla](https://github.com/mozilla/standards-positions/issues/1181#issuecomment-2846994491), who both want the exact behavior to be specified for touchscreen.}
+
+The original proposal for touchscreen behavior was to leave the specifics up to user agents. I.e. specify that browsers **must** provide their users (all of them) a way to "show interest" in an element, without specifying exactly how to to that on touchscreens. Since it is **currently impossible on the web** to provide users a similar functionality (access context menu **and** hovercard with a single gesture), there is no obvious cow-path to pave on touchscreen. So this option leaves the details of the behavior unspecified, which allows user agents to experiment and iterate on good UX patterns.
+
+#### Option 2 - show both at the same time
+
+\{This approach is opposed by both [WebKit](https://github.com/whatwg/html/issues/11058#issuecomment-2676086663) and [Mozilla](https://github.com/whatwg/html/issues/11058#issuecomment-2695676452), as being too confusing to users, and potentially a security issue.}
+
+After [significant brainstorming and discussion in OpenUI](https://github.com/openui/open-ui/issues/1052), a specific approach was designed wherein *both* the UA context menu *and* the site's hovercard could both be shown at the same time. The short version of this approach is that to show interest in an element via touchscreen, the user simply long-presses that element. This does not activate (e.g. click) the element, it merely triggers interest in the element. This long press immediately fires the `"interest"` event, but **also** shows any context menus that would have shown if the `interestfor` attribute were not present. Both things happen together. In the case of a popover target element, the idea is that the hovercard popover shows up **in addition** to the context menu, so that the user can tap on either of those things. The user can trigger `"loseinterest"` by tapping either outside the target popover, or on one of the provided context menu items (if any). If the user taps outside *both* the context menu *and* the popover, that should constitute both a loss of interest (closing the popover) and also a signal to close the context menu (since on most platforms, tapping outside the context menu closes it).
+
+One difficulty of this option is that the two things (the popover target and the UA-provided context menu) need to coordinate, at least on positioning. It would be a bad user experience if the context menu showed up on top of the popover, obscuring part or all of it. To provide this coordination, a few more things will be included:
+
+1. When the long-pressed element has `interestfor`, any UA-provided context menu will not blur or otherwise obscure the web content it covers. In this way, the page will still be visible "under" the context menu.
+2. The portion of the renderer window that is still visible (not obscured by the context menu) will be exposed to the developer via four new [`env()` values](https://developer.mozilla.org/en-US/docs/Web/CSS/env), tentatively called `context-menu-inset-top`, `context-menu-inset-right`, `context-menu-inset-bottom`, and `context-menu-inset-left`. In this way, the developer can safely position the target popover within the area that isn't obscured by the context menu.
+3. An attempt will be made to provide at least half of the screen (or a "reasonable" amount of screen real estate) for developer content, e.g. by moving the context menu down rather than centering it within the viewport.
+
+Importantly, the User Agent will still be in control of a few things:
+
+1. The position and size of the UA-provided context menu.
+2. The available space and location for the developer/site-provided hovercard.
+3. The decision whether to show interest at all. For example, on very small screens, the UA might decide to only show the context menu and not trigger interest, because there's no space.
+
+| `<a>` - long-press | `<button>` - long-press |
+|-------|------------|
+| <img src='/images/interesttarget-mockup-show-both.gif' height="600" alt='Mockup of the "show both" approach on links' /> | <img src='/images/interesttarget-mockup-button-long-press.gif' height="600" alt='Mockup of the "show both" approach on buttons' /> |
+
+
+#### Option 3 - add an item to the context menu
+
+**\{This option is the final one that was selected, and is left in this list as "option 3" for posterity.\}**
+
+This is **likely the most straightforward approach that still meets all of the requirements**. For elements that already have long-press-activated context menus, simply add an item to that menu (e.g. "View more info"). When this item is tapped, context menu is dismissed, and "interest is shown" in the link element. This approach does not affect the existing UX at all, and is straightforward to implement. It does represent a bit more friction for users, relative to desktop users: touchscreen users must first long-press the link, then single-tap a menu item, in order to show interest. However, this is still infinitely better than the current state of the art, which is to deny most touchscreen users any access to the hovercard.
+
+| `<a>` - long-press | `<button>` - long-press |
+|-------|------------|
+| <img src='/images/interesttarget-mockup-add-to-context-menu.gif' height="600" alt='Mockup of the "add context menu item" approach on links' /> | <img src='/images/interesttarget-mockup-button-long-press.gif' height="600" alt='Mockup of the "add context menu item" approach on buttons' /> |
+
+##### Option 3.5 - add an opt-in "info" button pseudo element
+
+While Option 3 is a great way to ensure that all users have access to hovercard content, it is a bit more difficult to discover. In some cases, developers might want to provide a more visible way to show the user that there is more content to access. (In other cases, developers explicitly do not want this - they want to keep an uncluttered page layout.)
+
+In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the new `::interest-hint` pseudo element:
+
+```css
+@media (any-pointer: coarse) {
+  /* On touch devices, show the interest-hint pseudo */
+  .my-link::interest-hint {
+    content: '' / 'profile preview';
+    background-image: url('icon.png');
+    /* styles */
+  }
+}
+```
+
+When the `::interest-hint` pseudo element has a value set for `content` on an element with the `interestfor` attribute, the pseudo-element is generated as a button following the element. Typically, this is rendered as a small `(i)` icon or similar, but the decision of what to render in the button will be up to the developer. When the user taps (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard.
+
+In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-hint` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
+
+| `<a>` - long-press | `<button>` - long-press |
+|-------|------------|
+| <img src='/images/interesttarget-mockup-pseudo-element.gif' height="600" alt='Mockup of the pseudo element approach on links' /> | Not typical, since long-press on the button already shows interest immediately |
+
+
+#### Option 4 - single tap interest
+
+\{This option is confusing for users, since it is not safely discoverable. Tapping a link might sometimes navigate, and might sometimes show interest. This negative opinion was echoed in [this Mozilla standards position comment](https://github.com/mozilla/standards-positions/issues/1181#issuecomment-2919868227).\}
+
+Another approach is to **not** use the long-press gesture at all, but instead make a single-tap on a link with `interestfor` "show interest". A second tap on that same link (perhaps within a time delay?) would then navigate to the link. This side-steps the context menu problem entirely, since the user can still long-press the same link and get access to the context menu. However, it does introduce a bit of "tap uncertainty" for users. Simply looking at a link on the screen does not provide any indication of whether a single-tap will navigate to a new page, or show interesting information. Without pre-exploring a site, it will be unclear whether the user is "safe" to tap links without leaving the site. Since links are the heart of the web, it seems bad to discourage tapping them.
+
+| `<a>` - single-tap | `<button>` - single-tap |
+|-------|------------|
+| <img src='/images/interesttarget-mockup-single-tap.gif' height="600" alt='Mockup of the "single-tap" approach on links' /> | <img src='/images/interesttarget-mockup-button-single-tap.gif' height="600" alt='Mockup of the "single-tap" approach on buttons' /> |
+
+#### Option 5 - do not show the context menu
+
+\{Users appreciate the context menu items that UAs currently provide, such as "Open in new tab", "copy to clipboard", etc. As such, this option takes away user choice, and/or forces developers to choose between offering hovercard functionality **or** browser context menu functionality. For these reasons, this option was not selected.\}
+
+Another approach is to simply *not show* the context menu on long press, for elements with `interestfor`. Long-pressing the element triggers interest and opens the hovercard. There is no way for the user to access the context menu, but perhaps that's "ok", since the site has provided a highly-customized hovercard for the link that obviates the user's desire to navigate to the link. Still, it is likely that some users will be annoyed at the lack of functionality, e.g. their inability to copy the link URL to the clipboard.
+
+| `<a>` - long-press | `<button>` - long-press |
+|-------|------------|
+| <img src='/images/interesttarget-mockup-no-context-menu.gif' height="600" alt='Mockup of the "no context menu" approach on links' /> | <img src='/images/interesttarget-mockup-button-long-press.gif' height="600" alt='Mockup of the "no context menu" approach on buttons' /> |
+
+
+#### Option 6 - invent a new gesture
+
+\{As mentioned previously, this option is not discoverable by users, and does not match platform expectations. Therefore, it was not selected.}
+
+One final approach would be to "invent" a new gesture that users can use to show interest. For example, long-press for a specific amount of time, or long-press and "wiggle". Or something else. While UX designers could get creative and come up with something intuitive, it's important to point out again that on every other native mobile app besides a web browser app, **long-press** is the expected/trained UX pattern for showing interest in something. Creating a brand new gesture that only works on a single set of apps (browsers) and is different from the entire universe of other mobile apps, creates an extreme discovery problem. Users will not be aware of this magic gesture, and it will go unused. It does, however, get around the conflict between showing interest and showing the context menu.
+
+#### Selection of a final option
+
+The debate about the touchscreen UX pattern occurred in several places, mostly these three:
+
+- [WHATWG's touchscreen behavior discussion](https://github.com/whatwg/html/issues/11058)
+- [The Mozilla standards position on interestfor](https://github.com/mozilla/standards-positions/issues/1181)
+- [The WebKit standards position on popover=hint](https://github.com/WebKit/standards-positions/issues/305)
+
+
+
+### Keyboard "partial interest"
+
+The "partial interest" concept was one intended to avoid user annoyance at showing popovers/interest via keyboard focus. The thought was that it might be annoying to have a popover show up while simply navigating via keyboard, and to have that popover "steal" the sequential focus navigation order. It turns out, the ESC key is always there if this happens, and the "partial interest" activation to actually *navigate* to the popover was much more trouble, both for the user and for the developer. So this mode was removed from the proposal.
+
+#### Details
+
+The "partial interest" mode is a somewhat more complicated approach, which attempts to keep all of the good parts of focus-triggered-interest while mitigating the bad parts:
+
+When keyboard focus triggers interest, the target popover is activated in "partial interest" mode, in which case none of its contents are keyboard focusable. To achieve that, the following additional behaviors take place:
+- if the target is a popover, and the popover contains keyboard-focusable elements, then it's put into "partial interest" mode, whereby interactive contents within the popover act as if they have `tabindex=-1`. This keeps the popover from inserting any additional tab stops into the sequential focus navigation order.
+- a hotkey (e.g. Alt-UpArrow) will cause the popover to be "fully activated" which removes the special `tabindex=-1` behavior, making it available in the focus navigation order. This hot-key must be chosen by the UA to be convenient for the user, while also not conflicting with existing UA-provided and OS-provided hot-keys. Other ideas include Alt-Space or Ctrl-Space for the show interest hot key. The hotkey should not be an arrow key *without* a modifier, since that will interfere with scrolling and editing.
+- a new set of pseudo classes will match on the interest invoker *and* the target popover, only when it is in the "partial interest" state. For example, `:has-partial-interest` will match the invoker, and `:target-of-partial-interest` will match the popover.
+- the special `tabindex=-1` behavior will be implemented with a new UA stylesheet rule: `:target-of-partial-interest {interactivity:not-keyboard-focusable}`.  See the [interactivity:not-keyboard-focusable section](#interactivity-not-keyboard-focusable) for more detail.
+- a new UA stylesheet rule will will also be added, such as: `:target-of-partial-interest::after {content: "Press Alt-UpArrow to activate"}`. This adds (developer-stylable or -hideable) hints to the user about the hotkey, so that it is discoverable.
+
+See https://github.com/openui/open-ui/issues/1133 for a much more detailed conversation with developers about keyboard behavior. That extended discussion led to the behaviors described in this section.
+
+#### Mixed keyboard/mouse usage
+
+While an invoker is activated in "partial interest" mode (via the keyboard), it is still possible for a user to be also using a mouse. In that case, hovering an invoker or its target popover with a mouse also causes the target to be upgraded to "full interest" immediately. That's important so that any interactive elements in the popover such as buttons can be clicked with the mouse.
+
+#### interactivity: not-keyboard-focusable
+
+As a prerequisite for `interestfor`, a new value for the `interactivity` CSS property needs to be added:
+
+- `interactivity: auto`: the (existing) 'auto' behavior. Some elements (such as buttons) are made focusable by the user agent, and others (such as `<div>`) are not.
+- `interactivity: inert`: the (existing) 'inert' behavior. Nothing in the subtree is interactive, focusable, clickable, etc., and content is *not present* in the accessibility tree.
+- `interactivity: not-keyboard-focusable`: (new value) the element and its subtree will not be keyboard focusable, but will retain all other forms of interactivity such as mouse-clicks. Note that the element might still be focusable overall (e.g. programmatically or via the mouse), it will merely not be present in the sequential focus navigation order. The element, in other words, behaves as if it has `tabindex=-1`.
+
+This property inherits, so that children of the element also follow the behavior. An explicit `tabindex` value on an element should override the value of this property.
+
+Note: adding such a CSS property likely precludes the later addition of something like [`:focusable`](https://github.com/w3c/csswg-drafts/issues/7269), due to circularity concerns.
+
+
 
 ## Issues / Discussions
 
