@@ -63,7 +63,7 @@ The important expected behaviours:
    move focus to the first focusable element inside the iframe (if the iframe has focusable
    elements) or past the iframe (if there is nothing to focus in the iframe) — the same thing
    `Tab` press default action does.
-* The same logic applies for mirroring `Shift+Tab` behaviour  when `direction` is set ot `BACKWARD`.
+* The same logic applies for mirroring `Shift+Tab` behaviour when `direction` is set ot `BACKWARD`.
 * `document.focusNext()` should have no effect if the page is not focused or the focus is in
    the address bar.
 
@@ -113,7 +113,7 @@ Some important expected behaviours:
    `preventDefault()` the focus grab by the iframe. Next, if the parent application has not
    called `preventDefault()`, `beforefocus` event should be dispatched inside an iframe.
 * When a user clicks an input (or any `tabindex=0` element), `beforefocus` for
-   that input is dispatched (with the `reasion=UI`) and if `preventDefault()` is called,
+   that input is dispatched (with the `reason=UI`) and if `preventDefault()` is called,
    the input shoudn't receive focus (effectively leaving `document.activeElement` set to
    `<body>` as if the click has happened on an empty space of the page).
 
