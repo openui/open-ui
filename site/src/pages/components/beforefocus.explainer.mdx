@@ -41,7 +41,10 @@ Let's dive deeper into it.
 The method's signature should be like:
 
 ```ts
-focusNext(contextElement?: HTMLElement, direction?: FORWARD | BACKWARD);
+focusNext(options?: {
+   contextElement?: HTMLElement,
+   direction?: FORWARD | BACKWARD
+});
 ```
 
 `contextElement` is the starting point from which the browser should start looking for the next
