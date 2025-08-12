@@ -14,7 +14,7 @@ Authors: [Marat Abdullin](https://github.com/mshoho)
 
 The browsers give very little options for implementing complex keyboard navigation
 patterns. We are currently stuck with workaround techniques like roving tabindex and/or
-dummy focusable elements to redirect keyboard focus. These techniques requre modifying the
+dummy focusable elements to redirect keyboard focus. These techniques require modifying the
 DOM on the fly and have limitations. They cause reflows and style recomputations, and
 could be hard or impossible to apply in some particular scenarios. For example, you might
 be owning a parent list component, but not owning the contents of the list items. Or
@@ -27,8 +27,8 @@ there is a multitude of different applications and no single standardized approa
 It would also involve a huge body of work in the browser engine.
 
 Instead of high level APIs, this proposal focuses on having two fairly simple lower level
-functions which arguably would allow the application developers to implement whatever patterns
-they prefer without working around the limitations and impossibilities.
+functions which would arguably allow the application developers to implement whatever patterns
+they prefer without working around the browser limitations and impossibilities.
 
 Namely, one method called `document.focusNext()` and one event called `beforefocus`.
 Let's dive deeper into it.
