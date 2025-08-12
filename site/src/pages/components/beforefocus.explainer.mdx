@@ -1,0 +1,128 @@
+---
+menu: Active Proposals
+name: beforefocus/focusNext (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+---
+
+Authors: [Marat Abdullin](https://github.com/mshoho)
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+{/* END doctoc generated TOC please keep comment here to allow auto update */}
+
+## Introduction
+
+The browsers give very little options for implementing complex keyboard navigation
+patterns. We are currently stuck with workaround techniques like roving tabindex and/or
+dummy focusable elements to redirect keyboard focus. These techniques requre modifying the
+DOM on the fly and have limitations. They cause reflows and style recomputations, and
+could be hard or impossible to apply in some particular scenarios. For example, you might
+be owning a parent list component, but not owning the contents of the list items. Or
+you have to embed a cross-origin iframe you are unable to poke inside.
+
+While having additional new high level abstractions to handle keyboard navigation (like,
+for example, [focusgroup](./focusgroup.explainer)) sounds plausible, in reality it
+would be hard or impossible to align on the APIs that would cover all necessary cases —
+there is a multitude of different applications and no single standardized approach for them.
+It would also involve a huge body of work in the browser engine.
+
+Instead of high level APIs, this proposal focuses on having two fairly simple lower level
+functions which arguably would allow the application developers to implement whatever patterns
+they prefer without working around the limitations and impossibilities.
+
+Namely, one method called `document.focusNext()` and one event called `beforefocus`.
+Let's dive deeper into it.
+
+## document.focusNext()
+
+`document.focusNext()` method just exposes the default action the browsers have for `Tab` and
+`Shift+Tab` presses.
+
+The method's signature should be like:
+
+```ts
+focusNext(contextElement?: HTMLElement, direction?: FORWARD | BACKWARD);
+```
+
+`contextElement` is the starting point from which the browser should start looking for the next
+element to focus. It is optional and equals to `document.activeElement` by default.
+
+`direction` is the direction of the search. `FORWARD` to get the `Tab` press behaviour and
+`BACKWARD` to get `Shift+Tab` press behaviour. It is also optional and equals to `FORWARD` by
+default.
+
+This method should invoke exactly the same internal routine to locate and focus
+elements which the currently existing default action for `Tab` and `Shift+Tab` invokes.
+
+The important expected behaviours:
+
+* If the `contextElement` is the last element in the DOM, calling `document.focusNext()` moves
+   focus outside of the page to the browser's address bar — the same thing `Tab` press default
+   action does.
+* If an `<iframe>` comes after the `contextElement`, calling `document.focusNext()` should
+   move focus to the first focusable element inside the iframe (if the iframe has focusable
+   elements) or past the iframe (if there is nothing to focus in the iframe) — the same thing
+   `Tab` press default action does.
+* The same logic applies for mirroring `Shift+Tab` behaviour  when `direction` is set ot `BACKWARD`.
+* `document.focusNext()` should have no effect if the page is not focused or the focus is in
+   the address bar.
+
+Implementing `document.focusNext()` will be fairly straightforward as no new behaviour needs
+to be added, just the one that is already present should be reused.
+
+
+## beforefocus Event
+
+`beforefocus` event is dispatched _before_ the browser wants to focus an element. Most important
+part is that `preventDefault()` of the `beforefocus` event should prevent the element from
+receiving focus.
+
+The event should have an important property to distinguish the reason for the focusing:
+
+```ts
+interface BeforeFocusEvent extends FocusEvent {
+  reason: FOCUS_FORWARD | FOCUS_BACKWARD | PROGRAMMATIC | AUTOFOCUS | UI
+}
+```
+
+`FOCUS_FORWARD` means that the element is about to be focused because `Tab` is pressed or
+`document.focusNext()` is called with `direction` set to `FORWARD`.
+
+`FOCUS_BACKWARD` means that the element is about to be focused because `Shift+Tab` is
+pressed or `document.focusNext()` is called with `direction` set to `BACKWARD`.
+
+`PROGRAMMATIC` means that the element is about to be focused because the application has
+called `element.focus()`.
+
+`AUTOFOCUS` means that the element is about to be focused because of the `autofocus` DOM
+attribute.
+
+`UI` means that the element is about to be focused because the user has clicked (or tapped)
+an element.
+
+It is important that calling `preventDefault()` actually prevents the element focus.
+
+Some important expected behaviours:
+
+* When you `Tab` into a page from the address bar, `beforefocus` should be dispatched for
+   the element the browser wants to focus first and focusing it should be preventable with
+   `preventDefault()`.
+* When something inside an `<iframe>` is about to be focused, `beforefocus` should first be
+   dispatched in the parent application that contains the iframe, the iframe element should
+   be the target of that `beforefocus` event instance, allowing the parent application to
+   `preventDefault()` the focus grab by the iframe. Next, if the parent application has not
+   called `preventDefault()`, `beforefocus` event should be dispatched inside an iframe.
+* When a user clicks an input (or any `tabindex=0` element), `beforefocus` for
+   that input is dispatched (with the `reasion=UI`) and if `preventDefault()` is called,
+   the input shoudn't receive focus (effectively leaving `document.activeElement` set to
+   `<body>` as if the click has happened on an empty space of the page).
+
+## Summary
+
+A combination of `document.focusNext()` and `beforefocus` event would allow to easily
+implement various high level keyboard navigation abstractions — all kinds of modal dialogs,
+lists, arrow navigation areas, groups of focusables — without fundamentally arguing about
+how these abstractions should look like.
+
+These changes are not breaking anything that already exists and don't seem very complex to
+implement.
