@@ -43,7 +43,8 @@ The method's signature should be like:
 ```ts
 focusNext(options?: {
    contextElement?: HTMLElement,
-   direction?: FORWARD | BACKWARD
+   direction?: FORWARD | BACKWARD,
+   trapped?: boolean
 });
 ```
 
@@ -53,6 +54,10 @@ element to focus. It is optional and equals to `document.activeElement` by defau
 `direction` is the direction of the search. `FORWARD` to get the `Tab` press behaviour and
 `BACKWARD` to get `Shift+Tab` press behaviour. It is also optional and equals to `FORWARD` by
 default.
+
+`trapped` means that instead of going to the address bar after the last element, the search
+should continue from the beginnig for the page (or from the end of it in case of moving
+backwards). False by default.
 
 This method should invoke exactly the same internal routine to locate and focus
 elements which the currently existing default action for `Tab` and `Shift+Tab` invokes.
@@ -69,6 +74,7 @@ The important expected behaviours:
 * The same logic applies for mirroring `Shift+Tab` behaviour when `direction` is set ot `BACKWARD`.
 * `document.focusNext()` should have no effect if the page is not focused or the focus is in
    the address bar.
+* When `trapped` is true, the focus should cycle inside the page, skipping the address bar.
 
 Implementing `document.focusNext()` will be fairly straightforward as no new behaviour needs
 to be added, just the one that is already present should be reused.
