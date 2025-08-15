@@ -148,7 +148,7 @@ First way for working this around is a technique called roving tabindex — you 
 to all list items but the selected one which has `tabindex=0`. To implement roving tabindex in a,
 for example, React application, `tabindex` attribute updates need to be done either in the
 React tree or as direct DOM manipulations on top of the React life cycle. Doing it in the
-React tree requires rerendering the entire list when the selected item changes, doing it as
+React tree requires rerendering of the entire list when the selected item changes, doing it as
 direct DOM manipulations could lead to conflicts and inconsistencies with the components inside
 the list item (they might legitimately be using/changing `tabindex` for their own purposes).
 
@@ -202,16 +202,17 @@ listContainer.addEventListener('beforefocus', event => {
       !listContainer.contains(event.relatedTarget) // and we are moving into the list from outside of the list.
     ) {
       event.preventDefault(); // Don't focus the element the browser wanted to focus.
-      selectedItem.focus(); // But do focus the selected item.
+
+      document.focusNext({
+         contextElement: selectedItem, // But do focus the selected item even if it's an iframe or shadow DOM.
+         includeContextElement: true
+      });
     }
   }
 
   ...
 });
 ```
-
-For arrow keypresses and/or iframe situations we would be able to use `document.focusNext()` (of course, extending
-the `beforefocus` handler above to handle it properly).
 
 ### Unstolen Focus Example
 
