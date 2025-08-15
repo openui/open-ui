@@ -12,13 +12,11 @@ Authors: [Marat Abdullin](https://github.com/mshoho)
 
 ## Introduction
 
-The browsers give very little options for implementing complex keyboard navigation
-patterns. We are currently stuck with workaround techniques like roving tabindex and/or
-dummy focusable elements to redirect keyboard focus. These techniques require modifying the
-DOM on the fly and have limitations. They cause reflows and style recomputations, and
-could be hard or impossible to apply in some particular scenarios. For example, you might
-be owning a parent list component, but not owning the contents of the list items. Or
-you have to embed a cross-origin iframe you are unable to poke inside.
+Browsers include complex heuristics for determining the next element to focus, but these aren't
+exposed to web developers, leaving them to implement these heuristics from scratch, often requiring
+DOM modificatons, or writing code that causes reflows and style recomputations. It can be hard or
+sometimes impossible to apply in some particular scenarios (for example, you might have control of
+a parent list component, but not the contents of the list items).
 
 While having additional new high level abstractions to handle keyboard navigation (like,
 for example, [focusgroup](./focusgroup.explainer)) sounds plausible, in reality it
