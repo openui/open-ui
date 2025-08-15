@@ -197,14 +197,15 @@ listContainer.addEventListener('beforefocus', event => {
   // When we are moving through the page.
   if (event.reason === FOCUS_FORWARD || event.reason === FOCUS_BACKWARD) {
     if (
-      event.target !== selectedItem && // If the browser is going to focus something other than selected item,
+      !selectedItem?.contains(event.target) // If the browser is going to focus something other
+                                            // than an element from the selected item,
       listContainer.contains(selectedItem) && // and the selectedItem is still in the DOM,
       !listContainer.contains(event.relatedTarget) // and we are moving into the list from outside of the list.
     ) {
       event.preventDefault(); // Don't focus the element the browser wanted to focus.
 
       document.focusNext({
-         contextElement: selectedItem, // But do focus the selected item even if it's an iframe or shadow DOM.
+         contextElement: selectedItem, // But do focus the selected item.
          includeContextElement: true
       });
     }
