@@ -40,6 +40,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [Empty Cell data](#empty-cell-data)
   - [Non-uniform cells](#non-uniform-cells)
 - [(Future Consideration) Additional Keyboard support](#future-consideration-additional-keyboard-support)
+- [Open Questions](#open-questions)
 - [Privacy and Security Considerations](#privacy-and-security-considerations)
   - [Privacy](#privacy)
   - [Security](#security)
@@ -1014,6 +1015,13 @@ increments), as well as the home/end keys to jump to the beginning and end of gr
 It might also be interesting to add support for typeahead scenarios (though what values to
 look for when building an index would need to be worked out, and may ultimately prove to be
 too complicated).
+
+## Open Questions
+
+* **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
+  * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that these are OK to use in this scenario.
+  * Are there other roles not listed here that have a strong use case for `focusgroup`?
+* **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
 
 ## Privacy and Security Considerations
 
