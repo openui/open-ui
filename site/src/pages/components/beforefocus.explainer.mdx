@@ -19,12 +19,12 @@ sometimes impossible to apply in some particular scenarios (for example, you mig
 a parent list component, but not the contents of the list items).
 
 While having additional new high level abstractions to handle keyboard navigation (such as the
-[focusgroup](./focusgroup.explainer)) will be useful, there are a multitude of different
-applications for focus, and lower level primitives will give web developers more flexibility.
+[focusgroup](./focusgroup.explainer)) will be useful, there is a multitude of different
+scenarios for focus management, and lower level primitives will give web developers more flexibility.
 
-Instead of high level APIs, this proposal focuses on having two fairly simple lower level
-functions which would arguably allow the application developers to implement whatever patterns
-they prefer without working around the browser limitations and impossibilities.
+This proposal focuses on having two fairly simple lower level functions which would arguably allow
+the developers to implement whatever patterns they prefer without working around the browser
+limitations and impossibilities.
 
 Namely, one method called `document.focusNext()` and one event called `beforefocus`.
 Let's dive deeper into it.
@@ -40,7 +40,8 @@ The method's signature should be like:
 focusNext(options?: {
    contextElement?: HTMLElement,
    direction?: FORWARD | BACKWARD,
-   trapped?: boolean
+   trapped?: boolean,
+   includeContextElement?: boolean,
 });
 ```
 
@@ -54,6 +55,13 @@ default.
 `trapped` means that instead of going to the address bar after the last element, the search
 should continue from the beginnig of the page (or from the end of it in case of moving
 backwards). False by default.
+
+By setting `includeContextElement` to true, `focusNext()` will also include `contextElement` in the
+search for next element to focus (and focus it if it is focusable). False by default.
+In some scenarios it is more convenient to start considering elements including `contextElement`,
+for example, if you have a group of focusable elements that needs to be skipped, it could be more
+convenient to specify next group's container instead of locating last deepest child of the current
+group that needs to be skipped.
 
 This method should invoke exactly the same internal routine to locate and focus
 elements which the currently existing default action for `Tab` and `Shift+Tab` invokes.
@@ -71,10 +79,6 @@ The important expected behaviours:
 * `document.focusNext()` should have no effect if the page is not focused or the focus is in
    the address bar.
 * When `trapped` is true, the focus should cycle inside the page, skipping the address bar.
-
-Implementing `document.focusNext()` will be fairly straightforward as no new behaviour needs
-to be added, just the one that is already present should be reused.
-
 
 ## beforefocus Event
 
@@ -121,6 +125,8 @@ Some important expected behaviours:
    that input is dispatched (with the `reason=UI`) and if `preventDefault()` is called,
    the input shoudn't receive focus (effectively leaving `document.activeElement` set to
    `<body>` as if the click has happened on an empty space of the page).
+* When screen readers want to move focus with virtual cursor, `reason` should be either
+   `FOCUS_FORWARD` or `FOCUS_BACKWARD` (relative to currently focused element position).
 
 ## Usage Examples
 
@@ -204,7 +210,7 @@ listContainer.addEventListener('beforefocus', event => {
 });
 ```
 
-For arrow keypresses and/or iframe situations we would able to use `document.focusNext()` (of course, extending
+For arrow keypresses and/or iframe situations we would be able to use `document.focusNext()` (of course, extending
 the `beforefocus` handler above to handle it properly).
 
 ### Unstolen Focus Example
