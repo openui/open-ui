@@ -126,6 +126,111 @@ Some important expected behaviours:
    the input shoudn't receive focus (effectively leaving `document.activeElement` set to
    `<body>` as if the click has happened on an empty space of the page).
 
+## Usage Examples
+
+### List Example
+
+Consider the following example — a page containing a list of focusable items:
+<img src="/images/beforefocus-example-1.png" alt="List example to describe beforefocus event usage" width="400" />
+
+From the keyboard navigation perspective, it is a common practice that when you are tabbing
+through the page, only one item of the list receives focus, next Tab moves you outside of the
+list (otherwise it will take forever to tab through a very long or infinite virtualized list).
+And to move between the list items, the arrow keys are normally used. It is also a common practice
+to send focus to the selected item while tabbing through the page.
+
+In the example above, tabbing from the address bar will move to `Focusable Item 1`, not to the
+selected one.
+
+First way for working this around is a technique called roving tabindex — you set `tabindex=-1`
+to all list items but the selected one which has `tabindex=0`. To implement roving tabindex in a,
+for example, React application, `tabindex` attribute updates need to be done either in the
+React tree or as direct DOM manipulations on top of the React life cycle. Doing it in the
+React tree requires rerendering the entire list when the selected item changes, doing it as
+direct DOM manipulations could lead to conflicts and inconsistencies with the components inside
+the list item (they might legitimately be using/changing `tabindex` for their own purposes).
+
+Things get even more complicated with roving tabindex when a list item contains multiple
+focusable components inside — you have to go deep inside the item and make sure every focusable
+element inside inactive item gets `tabindex` properly set/unset. Those could be the components
+owned by different teams and various third party components. Imagine rich chat message with links
+and buttons inside as an example of such a list item. And when your list item contains a cross
+origin iframe, roving tabindex technique completely hits the wall.
+
+A cherry on top with roving tabindex is the necessity to carefully maintain the state — if the
+data layer decides that the currently selected item needs to be removed, you have to make sure
+that the list is not left in a state when all items are `tabindex=-1` — this might be very
+nontrivial in a complex application.
+
+And of course, mainting roving tabindex is a continuous set of DOM updates which lead to
+reflows, style recalculations and generally have a toll on the application performance.
+
+After roving tabindex, our next resort is putting two invisible inputs before and after our list.
+Their purpose is to receive focus when a user tabs through the page and immediately redirect
+that focus to a selected item. This works in a lot of cases, but it also is hacky and far from
+ideal. Those dummy inputs need to be inserted in the DOM and maintained properly. In a React
+application example, they again need either to be a part of React tree or inserted at the proper
+moment and into the proper place as direct DOM manipulations (making sure that they stay
+first/last when React rerenders the tree).
+
+Additionally, to prevent the screen readers from choking when the dummy input receives focus
+and moves it right away, those dummy inputs need to be focusable elements with `aria-hidden=true`.
+`axe-core` that is commonly used to validate the DOM state from the accessibility point, will
+highlight those elements as violations and you will have to train your testing team to distinguish
+those intentional violations from the actual violations.
+
+Another complication is that even though those dummy inputs are invisible, you need to position them
+properly to make sure that focusing them doesn't cause the scrollable containers to scroll in
+unexpected ways.
+
+And iframes might ruin the party again — you can call `iframe.focus()` but that won't focus the
+proper element inside the iframe.
+
+That is when `beforefocus` event might come into play.
+
+```ts
+listContainer.addEventListener('beforefocus', event => {
+  ...
+
+  // When we are moving through the page.
+  if (event.reason === FOCUS_FORWARD || event.reason === FOCUS_BACKWARD) {
+    if (
+      event.target !== selectedItem && // If the browser is going to focus something other than selected item,
+      listContainer.contains(selectedItem) && // and the selectedItem is still in the DOM,
+      !listContainer.contains(event.relatedTarget) // and we are moving into the list from outside of the list.
+    ) {
+      event.preventDefault(); // Don't focus the element the browser wanted to focus.
+      selectedItem.focus(); // But do focus the selected item.
+    }
+  }
+
+  ...
+});
+```
+
+For arrow keypresses and/or iframe situations we would able to use `document.focusNext()` (of course, extending
+the `beforefocus` handler above to handle it properly).
+
+### Unstolen Focus Example
+
+`beforefocus` would also be useful for preventing unexpected focus movements in complex applications.
+
+Imagine you have two tabs in the UI: Tab1 and Tab2. You render them at once, but Tab1 is currently active and
+your focus is inside Tab1 contents. At the same time, you have an iframe inside Tab2 contents, it will become
+visible when you activate Tab2. But the iframe is an embedded application which doesn't really know that it's
+not active now. But it has autofocus or a programmatic focus on load. Once it loads, the focusing logic
+inside that yet inactive iframe in Tab2 contents will steal the focus from whatever you currently have focused
+in your active Tab1. With `beforefocus` you might do something like:
+
+```ts
+tabs.addEventListener('beforefocus', event => {
+  // When an inactive tab claims focus, just tell it no.
+  if (!activeTabContents.contains(event.target)) {
+   event.preventDefault();
+  }
+});
+```
+
 ## Summary
 
 A combination of `document.focusNext()` and `beforefocus` event would allow to easily
