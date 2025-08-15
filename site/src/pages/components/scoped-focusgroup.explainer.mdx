@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior contributors (from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer)): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
- - Last updated: 2025-08-14
+ - Last updated: 2025-08-15
 
 ## Table of Contents
 
@@ -50,7 +50,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [Acknowledgments](#acknowledgments)
 ## Introduction
 
-Authors routinely hand-code “roving tabindex” logic for composite widgets (toolbars, tablists, menus, listboxes, grids). In practice this means providing a single tab stop to enter the control and then using arrow keys to move focus across the items. A broad earlier `focusgroup` explainer generalized this to all elements, but unconstrained usage would be easy to misapply to arbitrary containers, causing accessibility problems. The scoped version here intentionally limits the attribute to a small, well-defined set of ARIA composite widget roles  and their expected interactive descendants—preserving ergonomics while reducing accidental harm.
+Authors routinely hand-code “roving tabindex” logic for composite widgets like toolbars, tablists, menus, listboxes, and grids. In practice, this means providing a single tab stop to enter the control, then using arrow keys to move focus between items. A broad earlier `focusgroup` explainer generalized this to all elements, but unconstrained usage could easily be misapplied to arbitrary containers, causing accessibility problems. The scoped version here intentionally limits the attribute to a small, well-defined set of ARIA composite widget roles and their expected interactive descendants—preserving ergonomics while reducing accidental harm.
 
 ### Eligible Roles
 * `toolbar`
@@ -58,7 +58,7 @@ Authors routinely hand-code “roving tabindex” logic for composite widgets (t
 * `listbox`
 * `menu`
 * `menubar`
-* [(consideration for future) `grid`](#future-consideration-grid-focusgroups)
+* [(future consideration) `grid`](#future-consideration-grid-focusgroups)
 
 Authors may use the proposed `focusgroup` HTML attribute to declare that
 a subtree of focusable elements will get:
@@ -135,10 +135,9 @@ What to notice:
 * Sequential focus navigation within a `focusgroup` is respected. When entering the `focusgroup`,
    focus will always go to the first selected tab (with `tabindex=0`). The `no-memory` value
    [prevents the focusgroup from remembering the last focused tab](#disabling-focusgroup-memory) so
-   that focus will always go to the selected tab on reentrance regardless of which element was
+   that focus will always go to the selected tab on re-entry regardless of which element was
    focused last.
-* If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to the selected
-   tab, which is next in sequential focus navigation order. Pressing tab again moves the focus to
+* If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to
    `tabpanel-2` which is next in sequential focus navigation order (because the other
    `role=tabpanel`s are `hidden`).
 * focus will `wrap` from one end of the tablist to the other because of `focusgroup=wrap` attribute
@@ -528,7 +527,7 @@ When the `combobox` input element is focused, it is remembered by the `focusgrou
 The `<input>` element traps nearly all keystrokes by default, including the arrow keys that might
 have been used to reach the "Increase/Decrease Font" buttons. When the user presses tab, focus
 exits the `focusgroup`. Later, when focus re-enters, the `focusgroup` will put focus back on the
-`<input>` element (because of the memory), and the cycle continues with no way to get to the two
+`<input>` element (because of its memory), and the cycle continues with no way to get to the two
 following buttons via keyboard interaction alone.
 
 Fortunately, there are several solutions to this problem:
@@ -547,8 +546,8 @@ Fortunately, there are several solutions to this problem:
 ### Restricted elements
 
 Because `focusgroup` definitions are intended for grouping related controls, it does not make sense
-to provide `focusgroup` functionality on all elements. While the `focusgroup` attribute may de defined
-as a global attribute, it's applicability is limited to a subset of elements. Only elements with the
+to provide `focusgroup` functionality on all elements. While the `focusgroup` attribute may be defined
+as a global attribute, its applicability is limited to a subset of elements. Only elements with the
 [eligible roles](#eligible-roles) support having `focusgroup` applied to them.
 
 The current proposal is to limit `focusgroup` to only the elements whose name match the DOM's
@@ -611,7 +610,7 @@ The following `focusgroup` definition values change this behavior:
 | `focusgroup="grid row-flow col-wrap"` | grid | Rows flow; columns wrap. |
 
 Specifying both `row-wrap` and `row-flow` in one HTML `focusgroup` definition is an author error. Only
-one declaration for row behavior is allowed. Similarily for `col-wrap` and `col-flow`.
+one declaration for row behavior is allowed. Similarly for `col-wrap` and `col-flow`.
 
 ## Limiting linear focusgroup directionality
 
@@ -698,7 +697,7 @@ Example:
 </div>
 ```
 
-When a `focusgroup` definition is appled to an element, it implicicly opts out of any ancestor's
+When a `focusgroup` definition is applied to an element, it implicitly opts out of any ancestor's
 `focusgroup`s. This ensures that every element can only belong in one `focusgroup` at a time.
 
 Example:
@@ -901,7 +900,7 @@ Example:
 The `<table>`'s grid `focusgroup` definition automatically establishes each of its
 descendant `<tr>`s as `focusgroup` rows (the parser-generated `<tbody>` is
 accounted for) and `<td>`s as `focusgroup` cells. Each `focusgroup` cell is a scope
-root for one `focusgroup` item per cell, and the cell and its shadow-inclusive decendants are all
+root for one `focusgroup` item per cell, and the cell and its shadow-inclusive descendants are all
 `focusgroup` candidates. Among all `focusgroup` cells, the left/right arrow keys navigate between cells
 in the table, and up/down arrow keys will compute the new target based on the DOM position of the
 current `focusgroup` candidate cell in relation to the `focusgroup` candidate row.
@@ -1019,7 +1018,7 @@ too complicated).
 ## Open Questions
 
 * **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
-  * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that these are OK to use in this scenario.
+  * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that it is OK to use them in this scenario.
   * Are there other roles not listed here that have a strong use case for `focusgroup`?
 * **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
 
