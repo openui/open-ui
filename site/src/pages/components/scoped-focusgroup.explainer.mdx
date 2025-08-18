@@ -12,6 +12,10 @@ layout: ../../layouts/ComponentLayout.astro
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Differences from the original explainer](#differences-from-the-original-explainer)
+  - [CSS Support is now a future consideration.](#css-support-is-now-a-future-consideration)
+  - [Grid Support is now a future consideration.](#grid-support-is-now-a-future-consideration)
+  - [Focusgroup is now scoped to specific Scenarios](#focusgroup-is-now-scoped-to-specific-scenarios)
   - [Eligible Roles](#eligible-roles)
 - [Quickstart](#quickstart)
 - [Goal](#goal)
@@ -40,6 +44,10 @@ layout: ../../layouts/ComponentLayout.astro
   - [Empty Cell data](#empty-cell-data)
   - [Non-uniform cells](#non-uniform-cells)
 - [(Future Consideration) Additional Keyboard support](#future-consideration-additional-keyboard-support)
+- [Alternative Scoping Mechanism](#alternative-scoping-mechanism)
+  - [Existing Proposal](#existing-proposal)
+  - [Alternative scoping](#alternative-scoping)
+  - [Avoiding redundant declarations](#avoiding-redundant-declarations)
 - [Open Questions](#open-questions)
 - [Privacy and Security Considerations](#privacy-and-security-considerations)
   - [Privacy](#privacy)
@@ -50,7 +58,33 @@ layout: ../../layouts/ComponentLayout.astro
 - [Acknowledgments](#acknowledgments)
 ## Introduction
 
-Authors routinely hand-code “roving tabindex” logic for composite widgets like toolbars, tablists, menus, listboxes, and grids. In practice, this means providing a single tab stop to enter the control, then using arrow keys to move focus between items. A broad earlier `focusgroup` explainer generalized this to all elements, but unconstrained usage could easily be misapplied to arbitrary containers, causing accessibility problems. The scoped version here intentionally limits the attribute to a small, well-defined set of ARIA composite widget roles and their expected interactive descendants—preserving ergonomics while reducing accidental harm.
+Authors routinely hand-code “roving tabindex” logic for composite widgets like toolbars, tablists, menus, listboxes, and grids. In practice, this means providing a single tab stop to enter the control, then using arrow keys to move focus between items.
+
+## Differences from the original explainer
+
+### CSS Support is now a future consideration.
+Support for applying focusgroup and related attributes via CSS is considered out-of-scope for this explainer, but should be considered for a future, backwards compatible, addition.
+
+### Grid Support is now a future consideration.
+Support for applying focusgroup and related attributes to grid-like structures is considered out-of-scope for this explainer, but should be considered for a future, backwards compatible, addition.
+
+### Focusgroup is now scoped to specific Scenarios
+A broad earlier `focusgroup` explainer generalized this to all elements, but unconstrained usage can be misapplied to arbitrary containers ("div soup"), obscuring missing semantics and creating confusing keyboard loops that degrade accessibility. This version deliberately scopes `focusgroup` to a small, well-defined set of ARIA composite widget roles where:
+
+* Roving tabindex is already an established best practice (alignment with APG patterns).
+* Grouped arrow-key navigation is expected by assistive technologies and users.
+* The semantic contract (composite widget → managed internal focus) is already implied.
+
+Reasons for scoping now:
+
+1. Accessibility integrity: Prevents legitimizing arrow navigation on arbitrary layout containers that lack meaningful relationships, avoiding patterns that flatten or bypass true document structure.
+2. Interoperability focus: A smaller, role-bound surface accelerates consistent UA + AT implementation and testing.
+3. Author guardrails: Most real implementations (libraries/utilities) already concentrate on these composites; constraining the native feature mirrors current successful practice and reduces accidental misuse.
+4. Custom element clarity: Clear initial limits avoid later removals; future expansion criteria can be explicit (e.g., demonstrable accessibility benefit, stable semantics, passing test matrix).
+5. Declarative signal quality: Keeping the attribute on contexts with strong semantics maximizes usefulness of the implicit accessibility signal (focus mode switching, predictable navigation expectations).
+6. Progressive path preserved: A lower-level or more generic primitive can be layered in later without invalidating this attribute; this approach avoids over-promising broad utility up front.
+
+Future evolution can consider additional roles or a role-agnostic extension when there is objective evidence (author demand + accessible patterns + testable semantics) that expansion improves user outcomes without reintroducing the risks above.
 
 ### Eligible Roles
 * `toolbar`
@@ -1013,13 +1047,54 @@ It might also be interesting to add support for typeahead scenarios (though what
 look for when building an index would need to be worked out, and may ultimately prove to be
 too complicated).
 
+## Alternative Scoping Mechanism
+
+The `focusgroup` attribute is a new HTML attribute that provides a way to define a group of focusable elements that can be navigated using keyboard controls. This attribute can be applied to any HTML element, allowing for greater flexibility in defining focusable regions within a webpage, but to avoid promoting inaccessible behaviors, this document outlines the need to scope functionality to specific scenarios, namely select roles.
+Aria roles are intended to provide semantic meaning and structure, not to influence the behavior of the page itself. For example, the aria-modal doesn't make the element modal, the developer has to do that with JavaScript. The current version of this explainer has `focusgroup`, and html attribute, have its behavior explicitly tied to an aria attribute, the role. This unprecedented behavior may not be desirable, so an alternative scoping mechanism is detailed below.
+
+### Existing Proposal
+```html
+<tab-group role="tablist" focusgroup="inline wrap">
+  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+</tab-group>
+```
+
+### Alternative scoping
+```html
+<tab-group role="tablist" focusgroup="tablist inline wrap">
+  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+</tab-group>
+```
+What to notice:
+* In this example, focusgroup takes a **required** role as an input, which helps to clarify the intended behavior and scope of the focusable elements within the group.
+
+### Avoiding redundant declarations
+```html
+<tab-group focusgroup="tablist inline wrap">
+  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+</tab-group>
+```
+What to notice:
+* In this example, the author chooses to not specify the role, relying solely on the `focusgroup` attribute to convey the intended behavior. This would be the equivalent of using the `role` attribute, but with a more concise syntax.
+* While there isn't precedant for aria to influence the behavior of the page past semantic hints, there is precedant for the reverse, and it is expected that html attributes can influence the semantics of the page. For example, the `hidden` attribute is an HTML attribute that influences both the behavior and the semantics communicated to screen readers, but does not have a corresponding ARIA role. This approach allows for a more streamlined and efficient way to define focusable regions without the need for redundant declarations.
+
 ## Open Questions
 
-* **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
+1. **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
   * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that it is OK to use them in this scenario.
   * Are there other roles not listed here that have a strong use case for `focusgroup`?
-* **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
-* **CSS Mappings:** This explainer does not currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
+2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
+3. **CSS Mappings:** This explainer does not currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
+4. **Attribute Functionality and Dependencies:** There are some concerns about the design of the `focusgroup` attribute.
+  - The `focusgroup` attribute provides new keyboard behaviors, which is a departure from ARIA attributes that typically only provide semantics for assistive technologies (e.g., `aria-modal` requires a developer to implement the modal behavior with JavaScript).
+  - This proposal creates a dependency where the `focusgroup` HTML attribute is only valid when a specific ARIA `role` is also present. This creates an unusual link between a native HTML attribute and ARIA semantics.
+  - What are the specific accessibility challenges with the earlier, more general `focusgroup` proposal? It's possible to misuse other ARIA attributes, so what makes `focusgroup` unique in this regard?
 
 ## Privacy and Security Considerations
 
