@@ -86,6 +86,8 @@ Reasons for scoping now:
 
 Future evolution can consider additional roles or a role-agnostic extension when there is objective evidence (author demand + accessible patterns + testable semantics) that expansion improves user outcomes without reintroducing the risks above.
 
+While the need to scope is not an open question in this document, _how to scope_ is. See the [Alternative Scoping Mechanism](#alternative-scoping-mechanism) section for details on another scoping mechanism that is being considered.
+
 ### Eligible Roles
 * `toolbar`
 * `tablist`
@@ -1049,41 +1051,66 @@ too complicated).
 
 ## Alternative Scoping Mechanism
 
-The `focusgroup` attribute is a new HTML attribute that provides a way to define a group of focusable elements that can be navigated using keyboard controls. This attribute can be applied to any HTML element, allowing for greater flexibility in defining focusable regions within a webpage, but to avoid promoting inaccessible behaviors, this document outlines the need to scope functionality to specific scenarios, namely select roles.
+The `focusgroup` attribute is a new HTML attribute that provides a way to define a group of focusable elements that can be navigated using keyboard controls. This attribute can be applied to any HTML element, allowing for greater flexibility in defining focusable regions within a webpage, but to avoid promoting inaccessible behaviors, this document outlines the need to scope functionality to specific scenarios, namely by limiting functionality to elements that have a specified role that is considered ["eligible" for focusgroup](#eligible-roles).
 Aria roles are intended to provide semantic meaning and structure, not to influence the behavior of the page itself. For example, the aria-modal doesn't make the element modal, the developer has to do that with JavaScript. The current version of this explainer has `focusgroup`, and html attribute, have its behavior explicitly tied to an aria attribute, the role. This unprecedented behavior may not be desirable, so an alternative scoping mechanism is detailed below.
 
-### Existing Proposal
+### Usage as previously explained in this proposal.
 ```html
-<tab-group role="tablist" focusgroup="inline wrap">
-  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-</tab-group>
-```
-
-### Alternative scoping
-```html
-<tab-group role="tablist" focusgroup="tablist inline wrap">
-  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-</tab-group>
+<div id="one" role="toolbar" focusgroup="wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+<div id="two" focusgroup="wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
 ```
 What to notice:
-* In this example, focusgroup takes a **required** role as an input, which helps to clarify the intended behavior and scope of the focusable elements within the group.
+* In the second tab list, `focusgroup` behavior will **not** be applied as the element does not specify an eligible role.
+* This breaks the convention of aria being semantic-only, and not tied to behavior.
+
+### Alternative scoping approach
+```html
+<div id="one" role="toolbar" focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+<div id="two" role="toolbar" focusgroup="wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+```
+What to notice:
+* In example "one", focusgroup takes a **required** role as an input, which helps to clarify the intended behavior and scope of the focusable elements within the group.
+* In example "two", the required role attribute is **not** specified, which means the focusgroup behavior will not be applied.
 
 ### Avoiding redundant declarations
 ```html
-<tab-group focusgroup="tablist inline wrap">
-  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
-</tab-group>
+<div id="one" focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
 ```
 What to notice:
-* In this example, the author chooses to not specify the role, relying solely on the `focusgroup` attribute to convey the intended behavior. This would be the equivalent of using the `role` attribute, but with a more concise syntax.
+* In the first example, the author chooses to not specify the role, relying solely on the `focusgroup` attribute to convey the intended behavior. This would be the equivalent of using the `role` attribute, but with a more concise syntax.
 * While there isn't precedant for aria to influence the behavior of the page past semantic hints, there is precedant for the reverse, and it is expected that html attributes can influence the semantics of the page. For example, the `hidden` attribute is an HTML attribute that influences both the behavior and the semantics communicated to screen readers, but does not have a corresponding ARIA role. This approach allows for a more streamlined and efficient way to define focusable regions without the need for redundant declarations.
 
+### Conflicting role specifications
+```html
+<div id="one" role="menu" focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+<button id="two" role="menu" tabindex="-1">Exit</button>
+```
+What to notice:
+* In the second example, the required role is specified, but the author also explicitly specifies the role. While this is an example of "bad practice", in this example, the div with id="two" will have a computed role of "menu". While a bad practice, this would follow the existing precedent of following the author's intent, see the button with `id="two"`.
 ## Open Questions
 
 1. **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
@@ -1092,8 +1119,7 @@ What to notice:
 2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
 3. **CSS Mappings:** This explainer does not currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
 4. **Attribute Functionality and Dependencies:** There are some concerns about the design of the `focusgroup` attribute.
-  - The `focusgroup` attribute provides new keyboard behaviors, which is a departure from ARIA attributes that typically only provide semantics for assistive technologies (e.g., `aria-modal` requires a developer to implement the modal behavior with JavaScript).
-  - This proposal creates a dependency where the `focusgroup` HTML attribute is only valid when a specific ARIA `role` is also present. This creates an unusual link between a native HTML attribute and ARIA semantics.
+  - This proposal creates a dependency where the `focusgroup` HTML attribute is only valid when a specific ARIA `role` is also present. This creates an unusual link between a native HTML attribute and ARIA semantics. See the [Alternative Scoping Mechanism](#alternative-scoping-mechanism) section for an alternative that reverses the relationship, with focusgroup taking a role as a required input, which then informs the user agent's understanding of the semantic meaning of the group, which can then be exposed to assistive technologies.
   - What are the specific accessibility challenges with the earlier, more general `focusgroup` proposal? It's possible to misuse other ARIA attributes, so what makes `focusgroup` unique in this regard?
 
 ## Privacy and Security Considerations
