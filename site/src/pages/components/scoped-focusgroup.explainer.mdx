@@ -61,13 +61,13 @@ Authors routinely hand-code “roving tabindex” logic for composite widgets li
 
 ## Differences from the original explainer
 [Original focusgroup explainer.](/components/focusgroup.explainer)
-### CSS Support is now a future consideration.
-Support for applying focusgroup and related attributes via CSS is considered out-of-scope for this explainer, but should be considered for a future, backwards compatible, addition.
+### CSS support is now a future consideration
+Applying `focusgroup` (and related behaviors) via CSS is out of scope for this explainer and deferred for a possible, backwards-compatible future addition.
 
-### Grid Support is now a future consideration.
-Support for applying focusgroup and related attributes to grid-like structures is considered out-of-scope for this explainer, but should be considered for a future, backwards compatible, addition.
+### Grid support is now a future consideration
+Applying `focusgroup` to grid-like structures (2-D navigation) is out of scope for this explainer and deferred for a possible, backwards-compatible future addition.
 
-### Focusgroup is now scoped to specific Scenarios
+### Focusgroup is now scoped to specific scenarios
 A broad earlier `focusgroup` explainer generalized this to all elements, but unconstrained usage can be misapplied to arbitrary containers ("div soup"), obscuring missing semantics and creating confusing keyboard loops that degrade accessibility. This version deliberately scopes `focusgroup` to a small, well-defined set of ARIA composite widget roles where:
 
 * Roving tabindex is already an established best practice (alignment with APG patterns).
@@ -93,7 +93,7 @@ While the need to scope is not an open question in this document, _how to scope_
 * `listbox`
 * `menu`
 * `menubar`
-* [(future consideration) `grid`](#future-consideration-grid-focusgroups)
+* [(Future consideration) `grid`](#future-consideration-grid-focusgroups)
 
 Authors may use the proposed `focusgroup` HTML attribute to declare that
 a subtree of focusable elements will get:
@@ -252,7 +252,7 @@ of the cells in the table are focusable.
   <tr>
     <td tabindex="-1">02-Jan-16</td>
     <td tabindex="-1">Debit</td>
-    <td><a tabindex="-1" href="#">Down Town Grocery</a></td>
+    <td><a tabindex="-1" href="#">Downtown Grocery</a></td>
     <td tabindex="-1">$250.00</td>
     <td tabindex="-1">$999,750.00</td>
   </tr>
@@ -423,8 +423,7 @@ sequentially among all the focusgroup items using the arrow keys (up/right moves
 down/left moves focus backwards assuming the `<p>` element has `writing-mode` `horizontal-tb` and
 `direction` `ltr`).
 
-Note that only elements with `id=one` and `three` can be focused using the Tab key. The `<span>` has
-`tabindex=-1` set, which takes it out of the tabindex sequential navigation ordering.
+Note that only the elements with `id=one` and `id=three` can be focused using the Tab key. The element with `id=two` has `tabindex="-1"`, which takes it out of sequential focus navigation ordering.
 
 ### Last-focused memory
 
@@ -507,7 +506,7 @@ Example:
 <list-component focusgroup role="listbox" aria-label="Cute dogs">
   <template shadowrootmode="open">
     <my-listitem role="option" tabindex="0" aria-selected="true">Terrier</my-listitem>
-    <my-listitem role="option" tabindex="-1" aria-selected="false">Dalmation</my-listitem>
+  <my-listitem role="option" tabindex="-1" aria-selected="false">Dalmatian</my-listitem>
     <my-listitem role="option" tabindex="-1" aria-selected="false">Saint Bernard</my-listitem>
   </template>
 </list-component>
@@ -518,7 +517,7 @@ The focusgroup is a default handler for certain keystrokes (keydown events for a
 etc.) that will cause focus to move among focusgroup items. This default keyboard handling could
 interfere with other actions the application would like to take. A common pattern is to
 [limit focusgroup directionality](#limiting-linear-focusgroup-directionality) so that certain
-cross-axis keystrokes won't trigger focusgroup behavior. However, if these doesn't address the use
+cross-axis keystrokes won't trigger focusgroup behavior. However, if this doesn't address the use
 case, then authors may cancel the focusgroup's default behavior at any time by canceling
 (`preventDefault()`) the specific keydown event. Keydown events are dispatched by the currently
 focused element, and bubble through the focusgroup ancestor element in most cases.
@@ -546,7 +545,7 @@ a focusgroup may inadvertently prevent the user from accessing other focusgroup 
       <button type="button" aria-label="Font List" aria-expanded="false" aria-controls="font-listbox" tabindex="-1">🔽</button>
     </div>
     <ul id="font-listbox" role="listbox" aria-label="Font List">
-      <li role="option">Ariel</li>
+      <li role="option">Arial</li>
       <li role="option">Monospace</li>
       <li role="option">Verdana</li>
     </ul>
@@ -727,7 +726,6 @@ Example:
   </span>
   <button type="button" tabindex="-1">Underline</button>
 </div>
-</div>
 ```
 
 When a `focusgroup` definition is applied to an element, it implicitly opts out of any ancestor's
@@ -761,10 +759,10 @@ last-focused element within its scope, initially empty. Each time the focus is c
 within a `focusgroup`, the "memory" is updated to refer to that element. This behavior is
 akin to the
 [roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
-in which the "memory" is the statefull `tabindex="0"` value assigned to the currently
+in which the "memory" is the stateful `tabindex="0"` value assigned to the currently
 focused element.
 
-In some scenarios it is not desireable to have a `focusgroup` maintain a memory. Usually this
+In some scenarios it is not desirable to have a `focusgroup` maintain a memory. Usually this
 is because there is a more relevant element which should take focus when entering the `focusgroup`
 instead of the most-recently-focused element. For example, an active (selected) tab in a
 `role="tablist"` container, rather than the last-focused tab (when selection does not follow focus).
@@ -779,16 +777,16 @@ To disable the `focusgroup`'s default memory, use the value `no-memory`:
 After the `focusgroup`'s memory has been set, it must be cleared whenever any one of the following
 change:
 
-* The element with the `focusgroup` definition is `hidden` or un-hidden; or if the currently-remembered
-   element is `hidden` or un-hidden.
+* The element with the `focusgroup` definition is `hidden` or un-hidden; or if the currently remembered
+  element is `hidden` or un-hidden.
 * The element with the `focusgroup` definition has its `disabled` or `inert` status changed; or if the
-   currently-remembered element has its `disabled` or `inert` status changed.
+  currently remembered element has its `disabled` or `inert` status changed.
 * The element with the `focusgroup` definition is removed from the shadow-inclusive tree; or if the
-   currently-remembered element is removed from the shadow-inclusive tree.
-* The currently-remembered element stops being focusable (e.g., a `<div>` with a `tabindex` has its
-   `tabindex` attribute removed).
-* The currently-remembered element is changed to become excluded from the `focusgroup` (through
-   `focusgroup="none"` on itself or a shadow-inclusive ancester, or by changing `focusgroup`s: if a new
+  currently remembered element is removed from the shadow-inclusive tree.
+* The currently remembered element stops being focusable (e.g., a `<div>` with a `tabindex` has its
+  `tabindex` attribute removed).
+* The currently remembered element is changed to become excluded from the `focusgroup` (through
+  `focusgroup="none" on itself or a shadow-inclusive ancestor, or by changing `focusgroup`s: if a new
    `focusgroup` definition appears on itself or one of its shadow-inclusive ancestor elements).
 
 ## Adjustments to sequential focus navigation
@@ -827,11 +825,11 @@ Algorithmically, during "forward" sequential focus navigation, if the element be
        `focusgroup`, then move focus to this element.
 2. otherwise, continue with the sequential focus navigation algorithm as normal.
 
-For "reverse" sequential focus navigation, the algorithm is similar, but swap occurances of the
+For "reverse" sequential focus navigation, the algorithm is similar, but swap occurrences of the
 "first focusable `focusgroup` candidate" for "last focusable `focusgroup` candidate".
 
 Because this algorithm applies only when interrogating the first (or last) focusable `focusgroup`
-candidate, then any descendants that preceed (or follow) the first (or last) focusable
+candidate, then any descendants that precede (or follow) the first (or last) focusable
 `focusgroup` candidate that themselves define a `focusgroup` are considered first. In other words,
 broad-reaching ancestral `focusgroup`s won't necessarily "steal" focus from descendant `focusgroup`s
 during sequential focus navigation.
@@ -1015,7 +1013,7 @@ Example:
 Unlike linear `focusgroup`s, an automatic or manual grid `focusgroup` requires a small degree of DOM
 structure to work correctly. Unless the proper structure exists, the grid `focusgroup` won't work.
 
-Attempts to define new grid or linear `focusgroup`s among the DOM elements that makeup the
+Attempts to define new grid or linear `focusgroup`s among the DOM elements that make up the
 structure of a grid `focusgroup` (such as on or between elements defining the root grid
 container, the grid-rows and the grid-cells) will be ignored. However new grid or linear
 `focusgroup`s **can be defined** on elements that are shadow-inclusive descendants of grid-cell
@@ -1051,7 +1049,7 @@ too complicated).
 ## Alternative Scoping Mechanism
 
 The `focusgroup` attribute is a new HTML attribute that provides a way to define a group of focusable elements that can be navigated using keyboard controls. This attribute can be applied to any HTML element, allowing for greater flexibility in defining focusable regions within a webpage, but to avoid promoting inaccessible behaviors, this document outlines the need to scope functionality to specific scenarios, namely by limiting functionality to elements that have a specified role that is considered ["eligible" for focusgroup](#eligible-roles).
-Aria roles are intended to provide semantic meaning and structure, not to influence the behavior of the page itself. For example, the aria-modal doesn't make the element modal, the developer has to do that with JavaScript. The current version of this explainer has `focusgroup`, and html attribute, have its behavior explicitly tied to an aria attribute, the role. This unprecedented behavior may not be desirable, so an alternative scoping mechanism is detailed below.
+Aria roles are intended to provide semantic meaning and structure, not to influence the behavior of the page itself. For example, the aria-modal doesn't make the element modal, the developer has to do that with JavaScript. The current version of this explainer has the html attribute, `focusgroup`, tie its behavior to an aria attribute, the role. This unprecedented behavior may not be desirable, so an alternative scoping mechanism is detailed below.
 
 ### Usage as previously explained in this proposal.
 ```html
@@ -1135,13 +1133,13 @@ No significant security concerns are expected.
 
 Here is a short list to issue discussions that led to the current design of focusgroup.
 
-* [ocusgroup works across Shadow DOM boundaries by default](https://github.com/openui/open-ui/issues/521)
-* [arrow key movement and directionality contraints should be aligned with content direction (add inline/block)](https://github.com/openui/open-ui/issues/522)
+* [focusgroup works across Shadow DOM boundaries by default](https://github.com/openui/open-ui/issues/521)
+* [arrow key movement and directionality constraints should be aligned with content direction (add inline/block)](https://github.com/openui/open-ui/issues/522)
 * [focusgroup definitions should not be limited to direct-children](https://github.com/openui/open-ui/issues/989)
 * [focusgroup should include a memory](https://github.com/openui/open-ui/issues/537)
 * [focusgroup should be restricted to some elements only](https://github.com/openui/open-ui/issues/995)
 
-See other [open `focusgroup` issues on Github](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
+See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
 
 ## Index of focusgroup values
 
