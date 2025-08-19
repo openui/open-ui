@@ -904,9 +904,9 @@ the structure of the grid to ensure it has appropriate row and cell structures. 
 event that the implementation cannot automatically determine the grid structure, then
 the definition is ignored (i.e., there is no fallback to a linear grid).
 
-| HTML | CSS | Explanation |
-|---|---|---|
-| `focusgroup="grid"` | `focus-group-type: grid` | Establishes the root of an automatic grid `focusgroup`. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-type: grid-row` and `focus-group-type: grid-cell` `focusgroup` candidate status automatically. |
+| HTML | Explanation |
+|---|---|
+| `focusgroup="grid"` | Establishes the root of an automatic grid `focusgroup`. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-type: grid-row` and `focus-group-type: grid-cell` `focusgroup` candidate status automatically. |
 
 Example:
 
@@ -1096,10 +1096,10 @@ What to notice:
 </div>
 ```
 What to notice:
-* In the first example, the author chooses to not specify the role, relying solely on the `focusgroup` attribute to convey the intended behavior. This would be the equivalent of using the `role` attribute, but with a more concise syntax.
+* The author chooses to not specify the role, relying solely on the `focusgroup` attribute to convey the intended behavior. This would be the equivalent of using the `role` attribute, but with a more concise syntax.
 * While there isn't precedant for aria to influence the behavior of the page past semantic hints, there is precedant for the reverse, and it is expected that html attributes can influence the semantics of the page. For example, the `hidden` attribute is an HTML attribute that influences both the behavior and the semantics communicated to screen readers, but does not have a corresponding ARIA role. This approach allows for a more streamlined and efficient way to define focusable regions without the need for redundant declarations.
 
-### Conflicting role specifications
+### Conflicting role specification
 ```html
 <div id="one" role="menu" focusgroup="toolbar wrap" aria-label="Text formatting">
   <button type="button" tabindex="-1">Bold</button>
@@ -1180,6 +1180,14 @@ See other [open `focusgroup` issues on Github](https://github.com/openui/open-ui
 |---|---|
 | enable memory | (unspecified value; default value) |
 | disable memory | `no-memory` |
+
+***Alternative scoping mechanism (proposed)***
+Where `<role name>` is the ARIA role that corresponds to the current element.
+See [Alternative Scoping Mechanism](#alternative-scoping-mechanism) for more details.
+
+| Description | Example |
+|---|---|
+| Role | `<role name>` |
 
 ## Acknowledgments
 
