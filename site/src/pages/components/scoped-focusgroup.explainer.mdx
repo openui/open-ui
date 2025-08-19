@@ -76,15 +76,9 @@ A broad earlier `focusgroup` explainer generalized this to all elements, but unc
 * The semantic contract (composite widget → managed internal focus) is already implied.
 
 Reasons for scoping now:
-
-1. Accessibility integrity: Prevents legitimizing arrow navigation on arbitrary layout containers that lack meaningful relationships, avoiding patterns that flatten or bypass true document structure.
-2. Interoperability focus: A smaller, role-bound surface accelerates consistent UA + AT implementation and testing.
-3. Author guardrails: Most real implementations (libraries/utilities) already concentrate on these composites; constraining the native feature mirrors current successful practice and reduces accidental misuse.
-4. Custom element clarity: Clear initial limits avoid later removals; future expansion criteria can be explicit (e.g., demonstrable accessibility benefit, stable semantics, passing test matrix).
-5. Declarative signal quality: Keeping the attribute on contexts with strong semantics maximizes usefulness of the implicit accessibility signal (focus mode switching, predictable navigation expectations).
-6. Progressive path preserved: A lower-level or more generic primitive can be layered in later without invalidating this attribute; this approach avoids over-promising broad utility up front.
-
-Future evolution can consider additional roles or a role-agnostic extension when there is objective evidence (author demand + accessible patterns + testable semantics) that expansion improves user outcomes without reintroducing the risks above.
+* Reasonable constraint: Prevents legitimizing arrow navigation on arbitrary layout containers that lack meaningful relationships, guiding developers to use patterns that are well defined (paving the cow paths).
+* Author guardrails: Most real implementations (libraries/utilities) already concentrate on these composites; constraining the native feature mirrors current successful practice and reduces accidental misuse.
+* Future evolution can consider additional roles or a role-agnostic extension when there is objective evidence (author demand + accessible patterns + testable semantics) that expansion improves user outcomes without reintroducing the risks above. Going the other way is nearly impossible.
 
 While the need to scope is not an open question in this document, _how to scope_ is. See the [Alternative Scoping Mechanism](#alternative-scoping-mechanism) section for details on another scoping mechanism that is being considered.
 
