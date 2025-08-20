@@ -28,7 +28,7 @@ jobs:
           # Only commit a new agenda file if we have issues with the agenda+ label
           if [ "$(echo "$ISSUES" | jq -r 'length // 0')" -gt 0 ]; then
             # Build the markdown document
-            echo "$ISSUES" | jq --arg date "$(date -d $DAY '+%B %d, %Y')" -r 'sort_by(.number) | "# Telecon Agenda, " + $date + "\n===================================\n" + (map("* \(.title) [#\(.number)](\(.url))") | join("\n"))' > "./meetings/telecon/$(date -d $DAY '+%Y-%m-%d').md"
+            echo "$ISSUES" | jq --arg date "$(date -d $DAY '+%B %d, %Y')" -r 'sort_by(.number) | "Open UI Telecon Agenda, " + $date + "\n===================================\n" + (map("* \(.title) [#\(.number)](\(.url))") | join("\n"))' > "./meetings/telecon/$(date -d $DAY '+%Y-%m-%d').md"
             # Commit and push
             git add ./meetings/telecon/
             git commit --message "Create $(date -d $DAY '+%Y-%m-%d').md"
