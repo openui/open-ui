@@ -56,6 +56,40 @@ layout: ../../layouts/ComponentLayout.astro
 
 Authors routinely hand-code “roving tabindex” logic for composite widgets like toolbars, tablists, menus, listboxes, and grids. In practice, this means providing a single tab stop to enter the control, then using arrow keys to move focus between items.
 
+### Before / After at a glance:
+
+Before (manual roving tabindex JS):
+```html
+<div role="toolbar" aria-label="Text formatting" id="fmtToolbar">
+  <button type="button">Bold</button>
+  <button type="button">Italic</button>
+  <button type="button">Underline</button>
+</div>
+<script>
+  // Without focusgroup an author script must implement:
+  //  - Focus management (roving tabindex: keep exactly one item tabbable, skip disabled/hidden).
+  //  - Keyboard navigation (Arrow keys, Home/End, optional wrap, writing mode/RTL handling).
+  //  - Memory (restore last focused item on re-entry).
+  // Plus any domain logic (selection state, toggles, menus, tooltips, custom commands, etc.).
+  // focusgroup makes the first three bullets declarative; authors keep only selection & feature logic.
+</script>
+```
+After (single declarative attribute):
+```html
+<div focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button">Bold</button>
+  <button type="button">Italic</button>
+  <button type="button">Underline</button>
+  <script>
+    // Now with focusgroup, the author only needs to implement selection & feature logic.
+  </script>
+</div>
+```
+What changed:
+* `focusgroup="toolbar wrap"` supplies the role (first token) + wrap behavior.
+* Roving tabindex + arrow key handling + memory are native (no JS for core movement).
+* Selection / pressed state (e.g., toggling Bold) and any advanced commands remain author logic.
+
 ## Differences from the original explainer
 [Original focusgroup explainer.](/components/focusgroup.explainer)
 ### CSS support is now a future consideration
@@ -131,37 +165,7 @@ Benefits over ad-hoc scripts (FocusZone, Tabster, bespoke roving tabindex): less
 
 The following examples start with the most common composite: a formatting toolbar.
 
-What you can (and do) today (imperative roving tabindex):
-
-```html
-<div role="toolbar" aria-label="Text formatting" id="fmtToolbar">
-  <button type="button">Bold</button>
-  <button type="button">Italic</button>
-  <button type="button">Underline</button>
-</div>
-<script>
-  // Without focusgroup you must: manage one roving tab stop, intercept Arrow/Home/End (wrap + RTL), track last focus vs selection-first, skip disabled/hidden, and update on mutations.
-</script>
-```
-
-Issues with this approach: boilerplate per component, manual wrap & memory bookkeeping, repeated tabIndex writes (layout/AT churn), handling of RTL/vertical writing & Home/End variations, mutation tracking, and risk of divergence across frameworks.
-
-Scoped `focusgroup` replacement (no JS needed for the core navigation + memory + wrap):
-
-```html
-<div focusgroup="toolbar wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-```
-What to notice:
-* `focusgroup` enables down/right arrow keys to advance the focus to the next focusable element in
-   DOM order (up/left keys will move the focus in reverse) just like in the native radio group.
-* edge wrapping (`wrap`) so users can cycle continuously.
-* last-focused memory on re-entry. State and selection changes (e.g., toggling Bold) remain normal button semantics, `focusgroup` never infers or changes selection.
-
-In this next example, the author is using a
+In this example, the author is using a
 [tab control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) where the tab activation
 behavior is decoupled from selection ("manual tab activation"):
 
