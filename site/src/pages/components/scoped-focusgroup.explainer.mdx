@@ -99,18 +99,18 @@ Applying `focusgroup` (and related behaviors) via CSS is out of scope for this e
 Applying `focusgroup` to grid-like structures (2-D navigation) is out of scope for this explainer and deferred for a possible, backwards-compatible future addition.
 
 ### Focusgroup is now scoped to specific scenarios
-A broad earlier `focusgroup` explainer generalized this to all elements, but unconstrained usage can be misapplied to arbitrary containers ("div soup"), obscuring missing semantics and creating confusing keyboard loops that degrade accessibility. This version deliberately scopes `focusgroup` to a small, well-defined set of ARIA composite widget roles where:
+Earlier drafts explored applying `focusgroup` to any container. Broad, role-agnostic usage risks normalizing arrow navigation in semantically neutral wrappers ("div soup"), masking missing semantics and creating unexpected keyboard loops. The proposal now:
 
-* Roving tabindex is already an established best practice (alignment with APG patterns).
-* Grouped arrow-key navigation is expected by assistive technologies and users.
-* The semantic contract (composite widget → managed internal focus) is already implied.
+* Limits activation to a concise, enumerated set of established ARIA composite widget patterns (first token = composite role).
+* Allows (when omitted) safe child role inference for common item types to reduce boilerplate and steer toward APG-aligned structures.
+* Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the first token.
 
-Reasons for scoping now:
-* Reasonable constraint: Prevents legitimizing arrow navigation on arbitrary layout containers that lack meaningful relationships, guiding developers to use patterns that are well defined (paving the cow paths).
-* Author guardrails: Most real implementations (libraries/utilities) already concentrate on these composites; constraining the native feature mirrors current successful practice and reduces accidental misuse.
-* Future evolution can consider additional roles or a role-agnostic extension when there is objective evidence (author demand + accessible patterns + testable semantics) that expansion improves user outcomes without reintroducing the risks above. Going the other way is nearly impossible.
+Benefits of this scoped, token-first approach:
+* Guardrails: Prevents accidental application to arbitrary layout groupings without a recognized composite role.
+* Ergonomics: One attribute encodes both composite intent and navigation modifiers (`wrap`, `inline`, etc.).
+* Extensibility: Additional composite roles (or a role-agnostic mode) can be considered later based on demonstrated accessible patterns; narrowing later would be impractical.
 
-While the need to scope is not an open question in this document, _how to scope_ is. See the [Alternative Scoping Mechanism](#alternative-scoping-mechanism) section for details on another scoping mechanism that is being considered.
+Open aspects still under discussion appear in the Open Questions (e.g., set of eligible roles, child role inference).
 
 ### Eligible Roles
 First token (container composite role) values:
