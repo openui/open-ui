@@ -339,13 +339,15 @@ To achieve this goal, we believe the solution must be available in declarative m
 If JavaScript is required, then there seems little advantage to using a built-in feature over
 what can be implemented completely in author code. Furthermore, a declarative solution provides
 the key signal that allows the platform's accessibility infrastructure to make the `focusgroup`
-accessible by default:
+accessible by default by:
 
-- signaling to the AT to switch to a
-   ["Focus mode"](https://www.accessibility-developer-guide.com/knowledge/screen-readers/desktop/browse-focus-modes/)
-   by default, e.g., that the user has entered a type of control group.
-- providing a consistent and reliable navigation usage pattern for users with no extra author code
-  required.
+* providing a consistent and reliable navigation usage pattern for users with no extra author code required.
+* requiring no new screen reader features: the behaviors (roving tabindex, arrow + Home/End movement,
+  optional wrap, last-focused memory) already function today when authored via JavaScript, `focusgroup`
+  standardizes intent without introducing novel interaction semantics.
+  * Because `focusgroup` requires authors to specify a pattern, and the aria-role of the element and
+  controlled descendants are set appropriately, there should be no need for user agents to signal the
+  AT to switch to a ["Focus mode"](https://www.accessibility-developer-guide.com/knowledge/screen-readers/desktop/browse-focus-modes/) by default (the user has entered a control group).
 
 ### Non-Goals
 
