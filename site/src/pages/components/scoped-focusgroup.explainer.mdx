@@ -1088,9 +1088,11 @@ too complicated).
 5. Inference never assigns roles where multiple valid item roles could apply ambiguously.
 
 ### Alternatives considered
+When considering how to ensure that `focusgroup` usage is scoped to scenarios we want, the following
+approaches were considered.
 1. Role-required gating (original): only activates when an eligible `role` attribute is present. Rejected: couples behavior activation to ARIA; breaks precedent.
-2. Parent-only implicit role (earlier alternative): saves one attribute but leaves child role repetition; weaker accessibility guardrails.
-3. Adopted (parent token + child inference): best balance of ergonomics, clarity, guidance.
+2. Parent-only implicit role (earlier alternative): ensures that aria norms are followed, while still allowing authors to avoid repetition.
+3. Adopted (parent token + child inference): Same as above, but additionally sets the expected role on children that participate in the `focusgroup`.
 ## Open Questions
 
 1. **Supported Patterns:** The [list of supported patterns for `focusgroup`](#supported-patterns) is open for discussion, and I am open to input on what should be allowed.
