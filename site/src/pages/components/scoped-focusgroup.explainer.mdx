@@ -7,7 +7,7 @@ layout: ../../layouts/ComponentLayout.astro
 
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior contributors (from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer)): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
- - Last updated: 2025-08-15
+ - Last updated: 2025-08-21
 
 ## Table of Contents
 
@@ -44,11 +44,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [Empty Cell data](#empty-cell-data)
   - [Non-uniform cells](#non-uniform-cells)
 - [(Future Consideration) Additional Keyboard support](#future-consideration-additional-keyboard-support)
-- [Alternative Scoping Mechanism](#alternative-scoping-mechanism)
-  - [Usage as previously explained in this proposal.](#usage-as-previously-explained-in-this-proposal)
-  - [Alternative scoping approach](#alternative-scoping-approach)
-  - [Avoiding redundant declarations](#avoiding-redundant-declarations)
-  - [Conflicting role specification](#conflicting-role-specification)
+- [Alternatives considered](#alternatives-considered)
 - [Open Questions](#open-questions)
 - [Privacy and Security Considerations](#privacy-and-security-considerations)
   - [Privacy](#privacy)
@@ -83,12 +79,21 @@ Reasons for scoping now:
 While the need to scope is not an open question in this document, _how to scope_ is. See the [Alternative Scoping Mechanism](#alternative-scoping-mechanism) section for details on another scoping mechanism that is being considered.
 
 ### Eligible Roles
+First token (container composite role) values:
 * `toolbar`
 * `tablist`
+* `radiogroup`
 * `listbox`
 * `menu`
 * `menubar`
 * [(Future consideration) `grid`](#future-consideration-grid-focusgroups)
+
+Child item role inference (when role omitted):
+* `radiogroup` ⇒ `radio`
+* `tablist` ⇒ `tab`
+* `menu` / `menubar` ⇒ `menuitem`
+* `listbox` ⇒ `option`
+* `toolbar` ⇒ (no special inference; native semantics retained)
 
 Authors may use the proposed `focusgroup` HTML attribute to declare that
 a subtree of focusable elements will get:
@@ -132,7 +137,7 @@ Issues with this approach: boilerplate per component, manual wrap & memory bookk
 Scoped `focusgroup` replacement (no JS needed for the core navigation + memory + wrap):
 
 ```html
-<div role="toolbar" focusgroup="wrap" aria-label="Text formatting">
+<div focusgroup="toolbar wrap" aria-label="Text formatting">
   <button type="button" tabindex="-1">Bold</button>
   <button type="button" tabindex="-1">Italic</button>
   <button type="button" tabindex="-1">Underline</button>
@@ -149,10 +154,10 @@ In this next example, the author is using a
 behavior is decoupled from selection ("manual tab activation"):
 
 ```html
-<div role="tablist" focusgroup="inline wrap no-memory" aria-label="Common Operating Systems">
-  <button id="tab-1" type="button" role="tab" aria-selected="false" aria-controls="tabpanel-1" tabindex="-1">macOS</button>
-  <button id="tab-2" type="button" role="tab" aria-selected="true" aria-controls="tabpanel-2" tabindex="0">Windows</button>
-  <button id="tab-3" type="button" role="tab" aria-selected="false" aria-controls="tabpanel-3" tabindex="-1">Linux</button>
+<div focusgroup="tablist inline wrap no-memory" aria-label="Common Operating Systems">
+  <button id="tab-1" aria-selected="false" aria-controls="tabpanel-1" tabindex="-1">macOS</button>
+  <button id="tab-2" aria-selected="true" aria-controls="tabpanel-2" tabindex="0">Windows</button>
+  <button id="tab-3" aria-selected="false" aria-controls="tabpanel-3" tabindex="-1">Linux</button>
 </div>
 <div id="tabpanel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1" hidden> … </div>
 <div id="tabpanel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2"> … </div>
@@ -184,26 +189,26 @@ Both `menuitem`s in the `menubar` ("About" and "Admissions") have popover `menu`
 menu has an additional submenu under "Tuition".
 
 ```html
-<ul role="menubar" aria-label="Mythical University" focusgroup="inline wrap">
+<ul focusgroup="menubar inline wrap" aria-label="Mythical University">
   <li role="none">
-    <a role="menuitem" popovertarget="aboutpop" href="…" tabindex="-1" title="">About</a>
-    <ul role="menu" focusgroup="block wrap" autofocus id="aboutpop" aria-label="About" popover>
-      <li role="none"><a role="menuitem" href="…" tabindex="-1" title="">Overview</a></li>
-      <li role="none"><a role="menuitem" href="…" tabindex="-1" title="">Administration</a></li>
+    <a popovertarget="aboutpop" href="…" tabindex="-1" title="">About</a>
+    <ul focusgroup="menu block wrap" autofocus id="aboutpop" aria-label="About" popover>
+      <li role="none"><a href="…" tabindex="-1" title="">Overview</a></li>
+      <li role="none"><a href="…" tabindex="-1" title="">Administration</a></li>
     </ul>
   </li>
   <li role="none">
-    <a role="menuitem" popovertarget="admitpop" href="…" tabindex="-1" title="">Admissions</a>
-    <ul role="menu" focusgroup="block wrap" autofocus id="admitpop" aria-label="Admissions" popover>
-      <li role="none"><a role="menuitem" href="…" tabindex="-1" title="">Apply</a></li>
+    <a popovertarget="admitpop" href="…" tabindex="-1" title="">Admissions</a>
+    <ul focusgroup="menu block wrap" autofocus id="admitpop" aria-label="Admissions" popover>
+      <li role="none"><a href="…" tabindex="-1" title="">Apply</a></li>
       <li role="none">
-        <a role="menuitem" popovertarget="tuitpop" href="…" tabindex="-1" title="">Tuition</a>
-        <ul role="menu" focusgroup="block wrap" autofocus id="tuitpop" aria-label="Tuition" popover>
-          <li role="none"><a role="menuitem" href="…" tabindex="-1" title="">Undergraduate</a></li>
-          <li role="none"><a role="menuitem" href="…" tabindex="-1" title="">Graduate</a></li>
+        <a popovertarget="tuitpop" href="…" tabindex="-1" title="">Tuition</a>
+        <ul focusgroup="menu block wrap" autofocus id="tuitpop" aria-label="Tuition" popover>
+          <li role="none"><a href="…" tabindex="-1" title="">Undergraduate</a></li>
+          <li role="none"><a href="…" tabindex="-1" title="">Graduate</a></li>
         </ul>
       </li>
-      <li role="none"><a role="menuitem" href="…" tabindex="-1" title="">Visit</a></li>
+      <li role="none"><a href="…" tabindex="-1" title="">Visit</a></li>
     </ul>
   </li>
 </ul>
@@ -268,7 +273,7 @@ What to notice:
 Opt-out subtree (explicit example):
 
 ```html
-<div role="toolbar" focusgroup="inline wrap">
+<div focusgroup="toolbar inline wrap">
   <button tabindex="-1">A</button>
   <span focusgroup="none">
     <button tabindex="-1">(Not arrow reachable)</button>
@@ -389,7 +394,7 @@ The minimal focusgroup below demonstrates that the element declaring a focusgrou
 focusgroup candidate and (in this case) the single focusgroup item.
 
 ```html
-<div role="toolbar" focusgroup>
+<div focusgroup="toolbar">
   <button type="button">Only control</button>
 </div>
 ```
@@ -403,7 +408,7 @@ An element can only have _one_ **focusgroup definition** added via the `focusgro
 Example (toolbar with multiple items and one roving tab stop):
 
 ```html
-<div id="ancestor" role="toolbar" focusgroup>
+<div id="ancestor" focusgroup="toolbar">
   <button id="one" type="button">Bold</button>
   <button id="two" type="button" tabindex="-1">Italic</button>
   <button id="three" type="button" tabindex="-1">Underline</button>
@@ -451,7 +456,7 @@ among a set of related focusable controls such as this menubar:
 Example:
 
 ```html
-<div role="toolbar" focusgroup aria-label="Text Formatting" aria-controls="…">
+<div focusgroup="toolbar" aria-label="Text Formatting" aria-controls="…">
   <div>
     <button type="button" aria-pressed="false" value="bold" tabindex="-1"><span>Bold</span></button>
     <button type="button" aria-pressed="false" value="italic" tabindex="-1"><span>Italic</span></button>
@@ -480,7 +485,7 @@ are sequentially focusable via `tabindex="0"` (or stop excluding them via `tabin
 Example:
 
 ```html
-<div role="toolbar" focusgroup aria-label="Text Formatting" aria-controls="…">
+<div focusgroup="toolbar" aria-label="Text Formatting" aria-controls="…">
   <div>
     <button type="button" aria-pressed="false" value="bold"><span>Bold</span></button>
     <button type="button" aria-pressed="false" value="italic"><span>Italic</span></button>
@@ -532,7 +537,7 @@ authors are not careful. For example, without any author mitigations, an interac
 a focusgroup may inadvertently prevent the user from accessing other focusgroup items:
 
 ```html
-<div role="toolbar" focusgroup aria-label="Font Adjustment" aria-controls="…">
+<div focusgroup="toolbar" aria-label="Font Adjustment" aria-controls="…">
   <label for="font-input">Font</label>
   <div>
     <div>
@@ -712,7 +717,7 @@ interactive content inside it is bypassed when arrowing among the primary format
 Example:
 
 ```html
-<div role="toolbar" focusgroup="inline wrap" aria-label="Text formatting">
+<div focusgroup="toolbar inline wrap" aria-label="Text formatting">
   <button type="button" tabindex="-1">Bold</button>
   <button type="button" tabindex="-1">Italic</button>
   <span focusgroup="none" aria-label="Help group">
@@ -1041,68 +1046,23 @@ It might also be interesting to add support for typeahead scenarios (though what
 look for when building an index would need to be worked out, and may ultimately prove to be
 too complicated).
 
-## Alternative Scoping Mechanism
 
-The `focusgroup` attribute is a new HTML attribute that provides a way to define a group of focusable elements that can be navigated using keyboard controls. This attribute can be applied to any HTML element, allowing for greater flexibility in defining focusable regions within a webpage, but to avoid promoting inaccessible behaviors, this document outlines the need to scope functionality to specific scenarios, namely by limiting functionality to elements that have a specified role that is considered ["eligible" for focusgroup](#eligible-roles).
-Aria roles are intended to provide semantic meaning and structure, not to influence the behavior of the page itself. For example, the aria-modal doesn't make the element modal, the developer has to do that with JavaScript. The current version of this explainer has the html attribute, `focusgroup`, tie its behavior to an aria attribute, the role. This unprecedented behavior may not be desirable, so an alternative scoping mechanism is detailed below.
+### Authoring guidance
+1. Put the composite role token first: `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
+2. Omit common child roles (radios in radiogroup, tabs in tablist, menuitems in menubar/menu, options in listbox, buttons in toolbar) unless you need an override.
+3. Avoid mismatches: if you also supply a `role` attribute on the container and it conflicts with the first token, the explicit `role` wins; UAs MAY warn.
+4. Explicit child roles override inference silently—use when combining heterogeneous items.
+5. Inference never assigns roles where multiple valid item roles could apply ambiguously.
 
-### Usage as previously explained in this proposal.
-```html
-<div id="one" role="toolbar" focusgroup="wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-<div id="two" focusgroup="wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-```
-What to notice:
-* In the second tab list, `focusgroup` behavior will **not** be applied as the element does not specify an eligible role.
-* This breaks the convention of aria being semantic-only, and not tied to behavior.
+### Alternatives considered
+1. Role-required gating (original): only activates when an eligible `role` attribute is present. Rejected: couples behavior activation to ARIA; breaks precedent.
+2. Parent-only implicit role (earlier alternative): saves one attribute but leaves child role repetition; weaker accessibility guardrails.
+3. Adopted (parent token + child inference): best balance of ergonomics, clarity, guidance.
 
-### Alternative scoping approach
-```html
-<div id="one" role="toolbar" focusgroup="toolbar wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-<div id="two" role="toolbar" focusgroup="wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-```
-What to notice:
-* In example "one", focusgroup takes a **required** role as an input, which helps to clarify the intended behavior and scope of the focusable elements within the group.
-* In example "two", the required role attribute is **not** specified, which means the focusgroup behavior will not be applied.
-
-### Avoiding redundant declarations
-```html
-<div id="one" focusgroup="toolbar wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-```
-What to notice:
-* The author chooses to not specify the role, relying solely on the `focusgroup` attribute to convey the intended behavior. This would be the equivalent of using the `role` attribute, but with a more concise syntax.
-* While there isn't precedant for aria to influence the behavior of the page past semantic hints, there is precedant for the reverse, and it is expected that html attributes can influence the semantics of the page. For example, the `hidden` attribute is an HTML attribute that influences both the behavior and the semantics communicated to screen readers, but does not have a corresponding ARIA role. This approach allows for a more streamlined and efficient way to define focusable regions without the need for redundant declarations.
-
-### Conflicting role specification
-```html
-<div id="one" role="menu" focusgroup="toolbar wrap" aria-label="Text formatting">
-  <button type="button" tabindex="-1">Bold</button>
-  <button type="button" tabindex="-1">Italic</button>
-  <button type="button" tabindex="-1">Underline</button>
-</div>
-<button id="two" role="menu" tabindex="-1">Exit</button>
-```
-What to notice:
-* In the second example, the required role is specified, but the author also explicitly specifies the role. While this is an example of "bad practice", in this example, the div with id="two" will have a computed role of "menu". While a bad practice, this would follow the existing precedent of following the author's intent, see the button with `id="two"`.
+Future discussion points:
+* Exact list & phase-in of child role inferences.
+* Console warnings vs silent ignore for mismatches.
+* Opt-out token for inference (e.g. `no-infer`) if needed.
 ## Open Questions
 
 1. **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
@@ -1110,9 +1070,11 @@ What to notice:
   * Are there other roles not listed here that have a strong use case for `focusgroup`?
 2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
 3. **CSS Mappings:** This explainer does not currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
-4. **Attribute Functionality and Dependencies:** There are some concerns about the design of the `focusgroup` attribute.
-  - This proposal creates a dependency where the `focusgroup` HTML attribute is only valid when a specific ARIA `role` is also present. This creates an unusual link between a native HTML attribute and ARIA semantics. See the [Alternative Scoping Mechanism](#alternative-scoping-mechanism) section for an alternative that reverses the relationship, with focusgroup taking a role as a required input, which then informs the user agent's understanding of the semantic meaning of the group, which can then be exposed to assistive technologies.
-  - What are the specific accessibility challenges with the earlier, more general `focusgroup` proposal? It's possible to misuse other ARIA attributes, so what makes `focusgroup` unique in this regard?
+4. **Attribute Functionality and Dependencies:** Feedback requested on adopted scoping (role token + optional child role inference):
+  - Initial inference role set size (keep minimal vs broad?).
+  - Should mismatched explicit container `role` vs first token trigger a console warning or be silent?
+  - Need an explicit opt-out token (e.g., `no-infer`) for child inference?
+  - Telemetry/authoring data sources to validate expansion or adjustments.
 
 ## Privacy and Security Considerations
 
@@ -1138,16 +1100,19 @@ See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui
 
 ## Index of focusgroup values
 
-***Focusgroup types:***
+Tokens are space-separated. Order: first token MUST be a container composite role (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
 
-| Description | HTML syntax |
-|---|---|
-| no `focusgroup` | (missing/invalid attribute) |
-| linear `focusgroup` | (unspecified value; default value) |
-| automatic grid `focusgroup` | `grid` |
-| manual grid `focusgroup` root | `manual-grid` |
-| manual grid `focusgroup` row | `grid-row` |
-| manual grid `focusgroup` cell | `grid-cell` |
+***Container role tokens (first token):***
+
+| Role | Implied container role if no explicit `role` attr | Child role inference (when role omitted) |
+|---|---|---|
+| `toolbar` | toolbar | none (native button semantics) |
+| `tablist` | tablist | `tab` |
+| `radiogroup` | radiogroup | `radio` |
+| `menu` | menu | `menuitem` |
+| `menubar` | menubar | `menuitem` |
+| `listbox` | listbox | `option` |
+| `grid` (future) | grid | none (2-D navigation future) |
 
 ***Focusgroup directions:***
 
@@ -1174,13 +1139,14 @@ See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui
 | enable memory | (unspecified value; default value) |
 | disable memory | `no-memory` |
 
-***Alternative scoping mechanism (proposed)***
-Where `<role name>` is the ARIA role that corresponds to the current element.
-See [Alternative Scoping Mechanism](#alternative-scoping-mechanism) for more details.
+Authoring shorthand examples:
 
-| Description | Example |
+| Pattern | Markup |
 |---|---|
-| Role | `<role name>` |
+| Wrapping toolbar | `<div focusgroup="toolbar wrap">…` |
+| Horizontal manual-activation tabs (no memory) | `<div focusgroup="tablist inline wrap no-memory">…` |
+| Simple radiogroup | `<div focusgroup="radiogroup">…` |
+| Vertical listbox (block axis) | `<div focusgroup="listbox block">…` |
 
 ## Acknowledgments
 
