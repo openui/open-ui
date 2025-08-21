@@ -88,12 +88,24 @@ First token (container composite role) values:
 * `menubar`
 * [(Future consideration) `grid`](#future-consideration-grid-focusgroups)
 
-Child item role inference (when role omitted):
-* `radiogroup` ⇒ `radio`
-* `tablist` ⇒ `tab`
-* `menu` / `menubar` ⇒ `menuitem`
-* `listbox` ⇒ `option`
-* `toolbar` ⇒ (no special inference; native semantics retained)
+Child item role inference (automatic when author omits explicit child `role` attributes):
+
+`focusgroup` aims to reduce boilerplate while nudging authors toward patterns described in the WAI-ARIA Authoring Practices (APG). When the first token is a recognized composite role and a managed descendant lacks an explicit `role`, the user agent MAY assign the corresponding expected item role. Overriding is ALWAYS allowed: an explicit child `role` attribute wins. The table also calls out common, legitimate reasons you might intentionally override.
+
+| Composite token (first token) | Inferred child role(s) | Purpose / APG alignment | When you might override |
+|---|---|---|---|
+| `radiogroup` | `radio` | Matches APG radiogroup pattern (one roving tab stop, arrow movement among radios). | To mix a different toggle type (e.g. `role="switch"`) or introduce non-radio items. |
+| `tablist` | `tab` | Encourages APG-compliant tabs controlling `tabpanel`s. | For hybrid controls where some items are disclosure buttons not acting as tabs. |
+| `menu` / `menubar` | `menuitem` | Provides baseline APG menu / menubar semantics. | To specify `menuitemcheckbox` / `menuitemradio` or custom interactive roles. |
+| `listbox` | `option` | Aligns with APG listbox option semantics. | For rich, grouped, or multi-role items (e.g. adding `role="option"` plus nested buttons). |
+| `toolbar` | (none) | Leaves native semantics of existing interactive descendants. | Usually no need; add roles only for custom elements lacking native semantics. |
+| `grid` (future) | (TBD) | 2‑D navigation future; no inference defined yet. | Will depend on future design. |
+
+Notes:
+* Overriding is always safe: the platform never blocks or second-guesses an explicit role.
+* Inference is intentionally conservative; it never assigns a role where multiple equally valid choices exist (e.g., it won’t guess between `menuitemradio` vs `menuitemcheckbox`).
+* If an inferred role would conflict with native semantics that provide richer accessibility (e.g., a native `<button>` inside a `toolbar`), no change is made.
+* Tooling and validators can surface when explicit roles are unnecessary, helping authors simplify markup.
 
 Authors may use the proposed `focusgroup` HTML attribute to declare that
 a subtree of focusable elements will get:
@@ -1058,11 +1070,6 @@ too complicated).
 1. Role-required gating (original): only activates when an eligible `role` attribute is present. Rejected: couples behavior activation to ARIA; breaks precedent.
 2. Parent-only implicit role (earlier alternative): saves one attribute but leaves child role repetition; weaker accessibility guardrails.
 3. Adopted (parent token + child inference): best balance of ergonomics, clarity, guidance.
-
-Future discussion points:
-* Exact list & phase-in of child role inferences.
-* Console warnings vs silent ignore for mismatches.
-* Opt-out token for inference (e.g. `no-infer`) if needed.
 ## Open Questions
 
 1. **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
@@ -1071,10 +1078,10 @@ Future discussion points:
 2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
 3. **CSS Mappings:** This explainer does not currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
 4. **Attribute Functionality and Dependencies:** Feedback requested on adopted scoping (role token + optional child role inference):
-  - Initial inference role set size (keep minimal vs broad?).
+  - Exact list & phased expansion of child role inference set (which roles, staged rollout?).
   - Should mismatched explicit container `role` vs first token trigger a console warning or be silent?
   - Need an explicit opt-out token (e.g., `no-infer`) for child inference?
-  - Telemetry/authoring data sources to validate expansion or adjustments.
+  - Policy for console warnings vs silent ignore on token / role mismatches.
 
 ## Privacy and Security Considerations
 
