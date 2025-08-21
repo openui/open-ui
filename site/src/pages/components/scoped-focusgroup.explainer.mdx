@@ -16,7 +16,8 @@ layout: ../../layouts/ComponentLayout.astro
   - [CSS support is now a future consideration](#css-support-is-now-a-future-consideration)
   - [Grid support is now a future consideration](#grid-support-is-now-a-future-consideration)
   - [Focusgroup is now scoped to specific scenarios](#focusgroup-is-now-scoped-to-specific-scenarios)
-  - [Eligible Roles](#eligible-roles)
+  - [Supported Patterns](#supported-patterns)
+- [Why not just add new native elements to cover these patterns?](#why-not-just-add-new-native-elements-to-cover-these-patterns)
 - [Quickstart](#quickstart)
 - [Goal](#goal)
   - [Non-Goals](#non-goals)
@@ -55,6 +56,25 @@ layout: ../../layouts/ComponentLayout.astro
 ## Introduction
 
 Authors routinely hand-code “roving tabindex” logic for composite widgets like toolbars, tablists, menus, listboxes, and grids. In practice, this means providing a single tab stop to enter the control, then using arrow keys to move focus between items.
+
+Authors may use the proposed `focusgroup` HTML attribute to declare that
+a subtree of focusable elements will get:
+1. Focus navigation ([not selection](#non-goals)) using keyboard directional arrow keys (for lists
+   or grids).
+2. A guaranteed tab stop (when at least one focusable element is present).
+3. Automatic return to the last focused focusable element.
+4. Optional limited-axis arrow key navigation and optional wrap-around semantics.
+
+By standardizing `focusgroup`, authors can leverage these behaviors in
+[control patterns](https://www.w3.org/WAI/ARIA/apg/) to provide users with keyboard consistency,
+default accessibility, and interoperability over existing solutions.
+
+While this document emphasizes the usage of the keyboard arrow keys for accessibility
+navigation, we acknowledge that there are other input modalities that work (or can be adapted
+to work) equally well for `focusgroup` navigation behavior (e.g., game controllers, gesture
+recognizers, touch-based assistive technologies (AT), etc.).
+
+Benefits over ad-hoc scripts (FocusZone, Tabster, bespoke roving tabindex): less boilerplate, standardized axis + wrap behavior (including RTL / vertical), reduced misapplication, and a consistent, testable baseline for AT and UA interoperability.
 
 ### Before / After at a glance:
 
@@ -110,10 +130,10 @@ Benefits of this scoped, token-first approach:
 * Ergonomics: One attribute encodes both composite intent and navigation modifiers (`wrap`, `inline`, etc.).
 * Extensibility: Additional composite roles (or a role-agnostic mode) can be considered later based on demonstrated accessible patterns; narrowing later would be impractical.
 
-Open aspects still under discussion appear in the Open Questions (e.g., set of eligible roles, child role inference).
+Open aspects still under discussion appear in the Open Questions (e.g., set of supported patterns, child role inference).
 
-### Eligible Roles
-First token (container composite role) values:
+### Supported Patterns
+First token (container composite role) values (current pattern set):
 * `toolbar`
 * `tablist`
 * `radiogroup`
@@ -124,7 +144,7 @@ First token (container composite role) values:
 
 Child item role inference (automatic when author omits explicit child `role` attributes):
 
-`focusgroup` aims to reduce boilerplate while nudging authors toward patterns described in the WAI-ARIA Authoring Practices (APG). When the first token is a recognized composite role and a managed descendant lacks an explicit `role`, the user agent MAY assign the corresponding expected item role. Overriding is ALWAYS allowed: an explicit child `role` attribute wins. The table also calls out common, legitimate reasons you might intentionally override.
+`focusgroup` aims to reduce boilerplate while nudging authors toward patterns described in the WAI-ARIA Authoring Practices (APG). When the first token is a recognized composite role and a managed descendant lacks an explicit `role`, the user agent MAY assign the corresponding expected item role. Overriding is ALWAYS allowed: an explicit `role` attribute will take precedence. The table also calls out common, legitimate reasons you might intentionally override.
 
 | Composite token (first token) | Inferred child role(s) | Purpose / APG alignment | When you might override |
 |---|---|---|---|
@@ -141,25 +161,20 @@ Notes:
 * If an inferred role would conflict with native semantics that provide richer accessibility (e.g., a native `<button>` inside a `toolbar`), no change is made.
 * Tooling and validators can surface when explicit roles are unnecessary, helping authors simplify markup.
 
-Authors may use the proposed `focusgroup` HTML attribute to declare that
-a subtree of focusable elements will get:
-1. focus navigation ([not selection](#non-goals)) using keyboard directional arrow keys (for lists
-   or grids).
-2. a guaranteed tab stop (when at least one focusable element is present).
-3. automatic return to the last focused focusable element.
-4. start/end navigation (with Home/End keys).
-5. optional limited-axis arrow key navigation and optional wrap-around semantics.
+## Why not just add new native elements to cover these patterns?
+There are already proposals to add native versions of several of the patterns
+focusgroup would help with, rather than introduce this new attribute, why shouldn't we
+instead focus on building these patterns directly into HTML?
 
-By standardizing `focusgroup`, authors can leverage these behaviors in
-[control patterns](https://www.w3.org/WAI/ARIA/apg/) to provide users with keyboard consistency,
-default accessibility, and interoperability over existing solutions.
+Reasons to pursue `focusgroup` in parallel:
+1. Author choice (custom elements / design systems): Many teams intentionally wrap primitives in web components or framework components and may not adopt new native container elements even if available. `focusgroup` lets them keep existing markup patterns while still standardizing navigation and reducing JS.
+2. Incremental flexibility: Adding a new eligible composite token (and optional child inference) is a far smaller spec and implementation change than introducing a new HTML element with parsing, styling, accessibility mapping, and legacy considerations.
+3. Low friction upgrade path: Existing ARIA patterns (toolbar of buttons, listbox of options) become declarative with a single attribute rather than refactoring to new tags.
+4. Progressive expansion: We can start with a minimal, consensus set (toolbar, tablist, radiogroup, listbox, menu/menubar) and add more patterns as needed.
+6. Minimal surface risk: An attribute opt-in is easier to ship, iterate, or adjust (including potential deprecation of an unused token) than an element baked into the content model.
+7. Immediate boilerplate win: Solves today's repetitive roving tabindex logic without waiting for multiple element proposals to mature and achieve cross-browser implementation.
 
-While this document emphasizes the usage of the keyboard arrow keys for accessibility
-navigation, we acknowledge that there are other input modalities that work (or can be adapted
-to work) equally well for `focusgroup` navigation behavior (e.g., game controllers, gesture
-recognizers, touch-based assistive technologies (AT), etc.).
-
-Benefits over ad-hoc scripts (FocusZone, Tabster, bespoke roving tabindex): less boilerplate, standardized axis + wrap behavior (including RTL / vertical), reduced misapplication, and a consistent, testable baseline for AT and UA interoperability.
+`focusgroup` doesn't replace, but complements native elements. It standardizes a widely re-implemented behavioral layer and leaves room for richer, purpose-built elements to integrate or rely on it later.
 
 ## Quickstart
 
@@ -595,8 +610,8 @@ Fortunately, there are several solutions to this problem:
 
 Because `focusgroup` definitions are intended for grouping related controls, it does not make sense
 to provide `focusgroup` functionality on all elements. While the `focusgroup` attribute may be defined
-as a global attribute, its applicability is limited to a subset of elements. Only elements with the
-[eligible roles](#eligible-roles) support having `focusgroup` applied to them.
+as a global attribute, its applicability is limited to a subset of pattens, requiring the author to
+specify the pattern their control follows when using focusgroup, see: [supported patterns](#supported-patterns)
 
 The current proposal is to limit `focusgroup` to only the elements whose name match the DOM's
 [valid shadow host names](https://dom.spec.whatwg.org/#valid-shadow-host-name) (which are the
@@ -1076,7 +1091,7 @@ too complicated).
 3. Adopted (parent token + child inference): best balance of ergonomics, clarity, guidance.
 ## Open Questions
 
-1. **Eligible Roles:** The [list of roles eligible for `focusgroup`](#eligible-roles) is open for discussion, and I am open to input on what should be allowed.
+1. **Supported Patterns:** The [list of supported patterns for `focusgroup`](#supported-patterns) is open for discussion, and I am open to input on what should be allowed.
   * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that it is OK to use them in this scenario.
   * Are there other roles not listed here that have a strong use case for `focusgroup`?
 2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
