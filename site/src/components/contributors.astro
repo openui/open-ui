@@ -6,7 +6,8 @@ const CONTRIBUTORS = [];
 const fetchContributors = async (page) => {
   const response = await fetch(`${CONTRIBUTORS_URL}?page=${page}`);
   const contributors = await response.json();
-  CONTRIBUTORS.push(...contributors);
+  if (Array.isArray(contributors))
+    CONTRIBUTORS.push(...contributors);
 };
 
 // Fetch contributors from page 1

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'preact/hooks'
 import { componentOriginalNames, sources, sourcesCount } from '../sources'
 import './component-name-matrix.css'
 
