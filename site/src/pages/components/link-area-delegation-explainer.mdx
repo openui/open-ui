@@ -6,8 +6,8 @@ name: Link Area Delegation (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-- Authors and contributors: [@noamr](https://github.com/noamr), [@scottaohara](https://github.com/scottaohara), [@nmn](https://github.com/nmn), [@jakearchibald](https://github.com/jakearchibald)
-- Last updated: October 16, 2024
+- Authors and contributors: [@noamr](https://github.com/noamr), [@scottaohara](https://github.com/scottaohara), [@nmn](https://github.com/nmn), [@jakearchibald](https://github.com/jakearchibald), [@frehner](https://github.com/frehner)
+- Last updated: August 26, 2025
 - Feedback: https://github.com/openui/open-ui/issues/
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
@@ -61,10 +61,15 @@ At a high level, the proposed mental model of this problem is "the container is 
 Some more detailed points on what this means for the UI and UX of the feature:
 1. The default click action for the container would be the default click action of a required hyperlink descendant.
 2. The container's context menu behavior could be augmented with the descendant hyperlink's context menu behavior (e.g., "Open in a new window/tab" or "Save as...", etc.).
-3. Potentially, user agents can expand the hit-testing area for some of the descendants, to prioritize clicking them vs. clicking on the card (see [WCAG 2.5.8: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)).
-4. This feature has no effect on keyboard navigation, and would prevent the potential for otherwise unnecessary duplicate hyperlinks. It's a pointer click affordance, and would not affect the "semantics" of the container element (see also [the `popover` attribute](https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute:~:text=The%20popover%20attribute%20is%20a%20global%20attribute%20that%20allows%20authors%20flexibility%20to%20ensure%20popover%20functionality%20can%20be%20applied%20to%20elements%20with%20the%20most%20relevant%20semantics.)). 
-5. At this time, it is not expected that this feature would be exposed to the accessibility tree, much like a `label` element is not overtly exposed to the accessibility tree/to assistive technology users. It's purpose is to extend the clickable area of the referenced hyperlink - which is expected to be the accessibile object for people using AT/keyboard to interact with.
+3. Using modifier keys during a click, such as adding <kbd>Ctrl</kbd>, <kbd>⌘</kbd> (command), or a middle click, also pass through to the hyperlink and behave as if the hyperlink were clicked with those modifiers directly.
+4. Potentially, user agents can expand the hit-testing area for some of the descendants, to prioritize clicking them vs. clicking on the card (see [WCAG 2.5.8: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)).
+5. This feature has no effect on keyboard navigation, and would prevent the potential for otherwise unnecessary duplicate hyperlinks. It's a pointer click affordance, and would not affect the "semantics" of the container element (see also [the `popover` attribute](https://html.spec.whatwg.org/multipage/popover.html#the-popover-attribute:~:text=The%20popover%20attribute%20is%20a%20global%20attribute%20that%20allows%20authors%20flexibility%20to%20ensure%20popover%20functionality%20can%20be%20applied%20to%20elements%20with%20the%20most%20relevant%20semantics.)). 
+6. At this time, it is not expected that this feature would be exposed to the accessibility tree, much like a `label` element is not overtly exposed to the accessibility tree/to assistive technology users. It's purpose is to extend the clickable area of the referenced hyperlink - which is expected to be the accessibile object for people using AT/keyboard to interact with.
    a. **NOTE:** some screen readers, such as NVDA, may announce "clickable" for current instances of the JS variant of this pattern. This is not necessarily because it's important for users to know the container is clickable in this specific context - but because the screen reader is _only_ aware there is a click event on the container, but not what the click event will do. If the screen reader were aware of the relationship between the container and the nested hyperlink, and that they would perform the same function, it is far more likely that such instances of the "clickable" announcement would not be needed.
+
+Several new psuedo-classes will be applied to the delegated hyperlink to allow for styling it when the container has certain states, such as hovering. This is in addition to the hyperlink itself having the normal pseudo-classes, which enable you to style the hyperlink differently depending on whether the container or the element itself is in that state. Note that because this is a pointer click affordance, other pseudo-classes (such as one for focus) are not needed.
+- `:link-delegate-hover` when the container is in the `:hover` state
+- `:link-delegate-active` when the container is in the `:active` state
 
 ### Approach 1: Link delegation attributes
 Expressing link area delegation in HTML can look something like this:
