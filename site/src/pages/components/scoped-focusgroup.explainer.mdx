@@ -122,7 +122,7 @@ Applying `focusgroup` to grid-like structures (2-D navigation) is out of scope f
 Earlier drafts explored applying `focusgroup` to any container. Broad, role-agnostic usage risks normalizing arrow navigation in semantically neutral wrappers ("div soup"), masking missing semantics and creating unexpected keyboard loops. The proposal now:
 
 * Limits activation to a concise, enumerated set of established ARIA composite widget patterns (first token = composite role).
-* Allows (when omitted) safe child role inference for common item types to reduce boilerplate and steer toward APG-aligned structures.
+* Allows (when omitted) safe [child role inference](#open-questions) for common item types to reduce boilerplate and steer toward APG-aligned structures.
 * Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the first token.
 
 Benefits of this scoped, token-first approach:
@@ -153,13 +153,22 @@ Child item role inference (automatic when author omits explicit child `role` att
 | `menu` / `menubar` | `menuitem` | Provides baseline APG menu / menubar semantics. | To specify `menuitemcheckbox` / `menuitemradio` or custom interactive roles. |
 | `listbox` | `option` | Aligns with APG listbox option semantics. | For rich, grouped, or multi-role items (e.g. adding `role="option"` plus nested buttons). |
 | `toolbar` | (none) | Leaves native semantics of existing interactive descendants. | Usually no need; add roles only for custom elements lacking native semantics. |
-| `grid` (future) | (TBD) | 2‑D navigation future; no inference defined yet. | Will depend on future design. |
+| `grid` (future) | (TBD) | 2-D navigation future; no inference defined yet. | Will depend on future design. |
 
-Notes:
-* Overriding is always safe: the platform never blocks or second-guesses an explicit role.
-* Inference is intentionally conservative; it never assigns a role where multiple equally valid choices exist (e.g., it won’t guess between `menuitemradio` vs `menuitemcheckbox`).
-* If an inferred role would conflict with native semantics that provide richer accessibility (e.g., a native `<button>` inside a `toolbar`), no change is made.
-* Tooling and validators can surface when explicit roles are unnecessary, helping authors simplify markup.
+#### Role inference behavior
+User agents MAY infer roles to reduce boilerplate while preserving author control ([see open question #5](#open-questions)).
+1. Explicit container `role` overrides any pattern token; no child inference occurs in that case.
+2. Otherwise the first token (if a recognized pattern) supplies the container role.
+3. [Child role inference](#open-questions) only when ALL are true:
+  * Parent role came from the pattern token (no conflicting explicit role).
+  * Descendant is managed by `focusgroup` (and not inside `focusgroup="none"`).
+  * Pattern defines a child role for such descendants.
+  * Descendant lacks an explicit `role`.
+  * Assigning the inferred role would not replace richer native semantics already present (e.g., native `<button>` in a `toolbar`).
+4. Ambiguity skip: if multiple roles would be equally valid (e.g., `menuitemcheckbox` vs `menuitemradio`), no inference is applied.
+5. Explicit child roles always win (override silently); authors may add them for variants or to block inference.
+6. Tooling MAY suggest removing redundant explicit roles when inference would apply.
+7. Future: a modifier such as `no-infer` could disable child inference without forcing explicit roles (pending discussion).
 
 ## Why not just add new native elements to cover these patterns?
 There are already proposals to add native versions of several of the patterns
@@ -260,7 +269,7 @@ What to notice:
    the `autofocus` attribute to pick the first focusable element each time a menu is shown--the
    desired behavior in this case.
 
-Finally, the author is creating a data grid following the
+Here, the author is creating a data grid following the
 [data grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/examples/data-grids/) where each
 of the cells in the table are focusable.
 
@@ -321,6 +330,25 @@ What to notice:
 
 Empirical misuse in uncontrolled contexts; correct usage clusters around APG-backed widget roles. Scoping lowers ambiguity and accelerates interoperable implementation.
 
+Interactions with aria-role, also see [open question around child role inference](#open-questions)
+```html
+<nav id="one" focusgroup="menu inline wrap" aria-label="Formatting">
+  <button tabindex="0">Bold</button>
+  <button role="menuitemcheckbox" aria-checked="true" tabindex="-1">Italics</button>
+  <button tabindex="-1">Underline</button>
+</nav>
+<div id="two" role="toolbar" focusgroup="radiogroup wrap">
+  <button type="button" tabindex="0">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+```
+What to notice:
+* In `#one`, descendants without explicit roles (Bold, Underline) are inferred as `menuitem`; the explicit `menuitemcheckbox` (Italics) is unchanged.
+* Inference skips ambiguity: it does not guess a variant (`menuitemradio` vs `menuitemcheckbox`).
+* In `#two`, the explicit container `role="toolbar"` overrides the first token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
+* Arrow key navigation, wrap, and memory behaviors apply in both `#one` and `#two` regardless of whether roles were inferred.
+* Authors can obtain behavior without pattern role inference by supplying an explicit conflicting container role when needed.
 ## Goal
 
 The goal of this feature is to "pave the cow path" of an existing authoring practice
@@ -1081,11 +1109,9 @@ too complicated).
 
 
 ### Authoring guidance
-1. Put the composite role token first: `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
-2. Omit common child roles (radios in radiogroup, tabs in tablist, menuitems in menubar/menu, options in listbox, buttons in toolbar) unless you need an override.
-3. Avoid mismatches: if you also supply a `role` attribute on the container and it conflicts with the first token, the explicit `role` wins; UAs MAY warn.
-4. Explicit child roles override inference silently—use when combining heterogeneous items.
-5. Inference never assigns roles where multiple valid item roles could apply ambiguously.
+1. Put the composite role token first (if used): `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
+2. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.).
+3. For detailed precedence (mismatches, inference limits, overrides) see [Precedence & Overrides](#precedence--overrides).
 
 ### Alternatives considered
 When considering how to ensure that `focusgroup` usage is scoped to scenarios we want, the following
@@ -1103,8 +1129,16 @@ approaches were considered.
 4. **Attribute Functionality and Dependencies:** Feedback requested on adopted scoping (role token + optional child role inference):
   - Exact list & phased expansion of child role inference set (which roles, staged rollout?).
   - Should mismatched explicit container `role` vs first token trigger a console warning or be silent?
-  - Need an explicit opt-out token (e.g., `no-infer`) for child inference?
   - Policy for console warnings vs silent ignore on token / role mismatches.
+5. **Alternative approaches to scope focusgroup to specific scenarios**
+  - (A) Current: first token = pattern + (optional) child role inference.
+  - (B) Require explicit container `role`; tokens only modifiers (drops role token entirely).
+  - (C) Split into two attrs: `pattern="tablist" focusgroup="wrap"` (clearer separation, extra verbosity & API surface).
+  - (D) Native elements only (e.g., future `<tabs>`, `<toolbar>`, `<menubar>`); attribute becomes redundant—risk: slower coverage, custom element ecosystems still need declarative navigation.
+  - Criteria to decide: author error rate, implementation complexity, consistency with existing HTML token patterns, incremental ship path.
+8. **Keep or drop child role inference (or defer as future consideration):** Should v1 exclude automatic child role assignment entirely to reduce complexity
+      and perceived overreach (keeping only container pattern + navigation)? Rationale for revisiting: reviewer concern about mixing semantics & behavior;
+      authors can still supply explicit roles; deferring would let us ship navigation sooner and gather data on real author pain before standardizing inference.
 
 ## Privacy and Security Considerations
 
@@ -1134,7 +1168,7 @@ Tokens are space-separated. Order: first token MUST be a container composite rol
 
 ***Container role tokens (first token):***
 
-| Role | Implied container role if no explicit `role` attr | Child role inference (when role omitted) |
+| Role | Implied container role if no explicit `role` attr | [Child role inference](#open-questions) (when role omitted) |
 |---|---|---|
 | `toolbar` | toolbar | none (native button semantics) |
 | `tablist` | tablist | `tab` |
@@ -1143,6 +1177,8 @@ Tokens are space-separated. Order: first token MUST be a container composite rol
 | `menubar` | menubar | `menuitem` |
 | `listbox` | listbox | `option` |
 | `grid` (future) | grid | none (2-D navigation future) |
+
+Reminder: explicit container and child roles always override any inference described above.
 
 ***Focusgroup directions:***
 
