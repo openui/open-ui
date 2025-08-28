@@ -20,6 +20,9 @@ jobs:
           # We need to have a valid username/email - this could be anyone though.
           git config user.name "GitHub Actions"
           git config user.email "github-actions-bot@users.noreply.github.com"
+          # Recreate the branch:
+          git update-ref -d refs/heads/telecon-agenda
+          git switch -c telecon-agenda
           # Ensure that the agenda is set for this day of the week. If we ever change
           # the day we meet on, this should be changed!
           DAY="thursday"
@@ -32,7 +35,9 @@ jobs:
             # Commit and push
             git add ./meetings/telecon/
             git commit --message "Create $(date -d $DAY '+%Y-%m-%d').md"
-            git push
+            git push --force
+            gh pr create --title "Telecon agenda for $(date -d $DAY '+%Y-%m-%d')"
+            gh pr merge --auto --delete-branch --squash
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
