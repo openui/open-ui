@@ -1,4 +1,3 @@
-import React from 'react'
 import './anatomy.css'
 
 import { anatomiesByComponent } from '../sources'
