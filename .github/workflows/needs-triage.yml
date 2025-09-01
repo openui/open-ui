@@ -1,0 +1,19 @@
+name: Add labels to older issues needing triage
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v4
+        with:
+          days-before-issue-stale: 180
+          days-before-pr-stale: -1
+          days-before-issue-close: -1
+          days-before-pr-close: -1
+          stale-issue-label: "stale"
+          operations-per-run: 300
+          stale-issue-message: "There hasn't been any activity on this issue for a while, so we're marking it as needs-triage, to prompt maintainers to look over it."
+          stale-pr-message: "There hasn't been any activity on this PR for a while, so we're marking it as needs-triage, to prompt maintainers to look over it."
