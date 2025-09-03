@@ -35,7 +35,7 @@ jobs:
             # Commit and push
             git add ./meetings/telecon/
             git commit --message "Create $(date -d $DAY '+%Y-%m-%d').md"
-            git push --force
+            git push --force --set-upstream origin telecon-agenda
             gh pr create --title "Telecon agenda for $(date -d $DAY '+%Y-%m-%d')"
             gh pr merge --auto --delete-branch --squash
           fi
