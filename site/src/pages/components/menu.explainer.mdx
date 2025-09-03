@@ -18,6 +18,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [Grouping `<menuitem>`s together](#grouping-menuitems-together)
 - [Invoking `<menulist>` from a `<button>` element](#invoking-a-menulist-from-a-button-element)
 - [General questions](#general-questions)
+- [Accessibility considerations](#accessibility-considerations)
 - [Examples in code](#examples-in-code)
 - [Future enhancements](#future-enhancements)
 - [Reading List](#reading-list)
@@ -67,7 +68,7 @@ state-bearing menu items with the single `<menuitem>` element, we could also con
       menu items):
         * `<menuitem checkable name=foo>`
         * `<menuitem checkable name=foo>`
-* Add a `checkable` IDL attribute on the *grouping* element (`<fieldset>`, `<menulist>`)
+* Add a `checkable` IDL attribute on the *grouping* element (for now, proposed as `<fieldset>`)
     * This attribute can have the values `single` (for radios) or `multiple` (for checkbox)
 
 **Question: Should we allow radio and checkbox menu items as direct children of a `<menubar>`?**
@@ -394,7 +395,7 @@ We are evaluating the possibility to include **Navigation Menubar** pattern in o
 
 ### How can we use menu elements to support toolbars?
 
-A menubar provides a hierarchical structure of menus for accessing application functions while a  toolbar provides quick access to commonly used commands through icons and buttons. As such, a toolbar can contain a variety of controls beyond just menuitems. For example, buttons and [comboboxes](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) to invoke menulists.
+A menubar provides a hierarchical structure of menus for accessing application functions while a toolbar provides quick access to commonly used commands through icons and buttons. As such, a toolbar can contain a variety of controls beyond just menuitems. For example, buttons and [comboboxes](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) to invoke menulists.
 
 There are ARIA guidelines for the [toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/examples/toolbar/) pattern, which is different from the menubar and the navigation menu patterns. This proposal will not address this yet.
 
@@ -402,6 +403,57 @@ There are ARIA guidelines for the [toolbar](https://www.w3.org/WAI/ARIA/apg/patt
 ### How can we use menu elements to support Touch Bar?
 
 There is a history of attempting to do this in Webkit, for example for a [Touch Bar](https://github.com/whatwg/html/issues/3251). The idea for this is to collect all your "commands" and put them into the macOS menu bar (or expose them some other way). This proposal will not address this yet.
+
+
+## Accessibility concerns
+
+Our goal is to make the menu elements we propose accessible by default, by implementing the
+accessibility best practices gathered from the [ARIA Authoring Practices Guide
+(APG)](https://www.w3.org/WAI/ARIA/apg/), and curated from accessibility experts. This section
+describes the concrete implications on our proposal.
+
+### Native ARIA role mapping
+
+ - The `<menubar>` element will expose the [`menubar`](https://w3c.github.io/aria/#menubar) ARIA
+   role
+ - The `<menulist>` element will expose the [`menu`](https://w3c.github.io/aria/#menu) ARIA role
+ - The `<menuitem>` element will, by default, expose the
+   ['menuitem'](https://w3c.github.io/aria/#menuitem) ARIA role
+
+While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
+whether the element is embedded in a `<fieldset checkable=single|multiple>`, and exposes
+[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) or
+[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) accordingly.
+
+### Parent/child relationship in the accessibility tree
+
+### ARIA attributes
+
+ - [`aria-expanded`](https://w3c.github.io/aria/#aria-expanded)
+    - The `<menuitem>` element's `aria-expanded` attribute reflects whether or not a popover invoked
+      by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements (invokeable via
+      the `show-menu`, `toggle-menu`, and `hide-menu` commands), or other popovers unrelated to our
+      proposal
+ - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
+    - For checkable `<menuitem>` element, the `aria-checked` attribute reflects whether their
+      current [state](https://w3c.github.io/aria/#dfn-state) is checked
+ - [`aria-disabled`](https://w3c.github.io/aria/#aria-disabled)
+    - See [§ Soft disabling](#soft-disabling)
+
+### Soft disabling
+
+A `<menuitem disabled>` element will be marked as `aria-disabled`, however the element will still be
+keyboard reachable and focusable, just not activatable. See
+https://github.com/openui/open-ui/issues/1274 for more discussion.
+
+### Navigation menubars
+
+Using the menubar pattern as an in-page navigation component has longstanding accessibility issues.
+While we think it could be possible to address them to the satisfaction of the accessibility
+community, and users of accessibility technology, this usage of menus is still very much under
+discussion. See [§ How we can use menu elements to support navigation
+menus](#how-can-we-use-menu-elements-to-support-navigation-menus), and
+https://github.com/openui/open-ui/issues/1193.
 
 ## Examples in code
 
