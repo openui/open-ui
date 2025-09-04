@@ -44,6 +44,16 @@ navigation, we acknowledge that there are other input modalities that work (or c
 to work) equally well for focusgroup navigation behavior (e.g., game controllers, gesture
 recognizers, touch-based ATs, etc.)
 
+## Relationship to the Scoped Focusgroup Explainer
+
+An actively discussed, narrowed proposal now lives at [Scoped Focusgroup Explainer](/components/scoped-focusgroup.explainer). That document deliberately trims the design surface of this original explainer to accelerate interoperable implementation.
+
+Key differences (why the scoped version exists):
+* Scope & activation: This original draft allowed `focusgroup` broadly on many containers. The scoped explainer restricts usage to a small, enumerated set of composite widget pattern tokens to avoid normalizing arrow navigation in arbitrary containers.
+* CSS application: This document explored parallel CSS properties (e.g., `focus-group-*`). The scoped explainer defers CSS-based activation to a possible future phase (HTML attribute only for now).
+* Grid / 2-D navigation: Full (automatic/manual) grid behaviors described here are deferred; the scoped explainer treats grid support as a future consideration.
+
+
 ## Quickstart
 
 `focusgroup` enables authors to provide keyboard
