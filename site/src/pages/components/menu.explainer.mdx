@@ -421,9 +421,11 @@ describes the concrete implications on our proposal.
    ['menuitem'](https://w3c.github.io/aria/#menuitem) ARIA role
 
 While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
-whether the element is embedded in a `<fieldset checkable=single|multiple>`, and exposes
-[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) or
-[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) accordingly.
+whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
+[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role is exposed for items in a
+`<fieldset checkable=single>`, and the
+[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a
+`<fieldset checkable=multiple>`.
 
 ### Parent/child relationship in the accessibility tree
 
@@ -442,8 +444,8 @@ whether the element is embedded in a `<fieldset checkable=single|multiple>`, and
 
 ### Soft disabling
 
-A `<menuitem disabled>` element will be marked as `aria-disabled`, however the element will still be
-keyboard reachable and focusable, just not activatable. See
+A `<menuitem disabled>` element will be marked as `aria-disabled=true`, however the element will
+still be keyboard reachable and focusable, just not activatable. See
 https://github.com/openui/open-ui/issues/1274 for more discussion.
 
 ### Navigation menubars
