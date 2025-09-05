@@ -16,7 +16,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [CSS support is now a future consideration](#css-support-is-now-a-future-consideration)
   - [Grid support is now a future consideration](#grid-support-is-now-a-future-consideration)
   - [Focusgroup is now scoped to specific scenarios](#focusgroup-is-now-scoped-to-specific-scenarios)
-  - [Supported Patterns](#supported-patterns)
+  - [Supported Behaviors](#supported-behaviors)
 - [Why not just add new native elements to cover these patterns?](#why-not-just-add-new-native-elements-to-cover-these-patterns)
 - [Quickstart](#quickstart)
 - [Goal](#goal)
@@ -121,54 +121,42 @@ Applying `focusgroup` to grid-like structures (2-D navigation) is out of scope f
 ### Focusgroup is now scoped to specific scenarios
 Earlier drafts explored applying `focusgroup` to any container. Broad, role-agnostic usage risks normalizing arrow navigation in semantically neutral wrappers ("div soup"), masking missing semantics and creating unexpected keyboard loops. The proposal now:
 
-* Limits activation to a concise, enumerated set of established ARIA composite widget patterns (first token = composite role).
+* Limits activation to a concise, enumerated set of behavior tokens associated with recognized widget patterns.
 * Allows (when omitted) safe [child role inference](#open-questions) for common item types to reduce boilerplate and steer toward APG-aligned structures.
 * Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the first token.
 
-Benefits of this scoped, token-first approach:
+Benefits of this scoped, behavior-first approach:
 * Guardrails: Prevents accidental application to arbitrary layout groupings without a recognized composite role.
 * Ergonomics: One attribute encodes both composite intent and navigation modifiers (`wrap`, `inline`, etc.).
 * Extensibility: Additional composite roles (or a role-agnostic mode) can be considered later based on demonstrated accessible patterns; narrowing later would be impractical.
 
-Open aspects still under discussion appear in the Open Questions (e.g., set of supported patterns, child role inference).
+Open aspects still under discussion appear in the Open Questions (e.g., set of supported behaviors, child role inference).
 
-### Supported Patterns
-First token (container composite role) values (current pattern set):
-* `toolbar`
-* `tablist`
-* `radiogroup`
-* `listbox`
-* `menu`
-* `menubar`
-* [(Future consideration) `grid`](#future-consideration-grid-focusgroups)
+### Supported Behaviors
+The first token in a `focusgroup` attribute is a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author does not supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
+Minimum role application (container & children): User agents apply the minimum container role for a behavior only when (a) the author has not provided an explicit `role` AND (b) the element would otherwise expose a generic role (e.g., a plain `<div>`/`<span>`). If the host already has non-generic native semantics (e.g., `<ul>`, `<nav>`, `<table>`) or an explicit role, the mapping is skipped; navigation behavior still applies. Child role inference likewise only occurs when: (1) the container role was supplied via the behavior's minimum role mapping (not explicit/native), (2) the child lacks an explicit role, and (3) the child itself is otherwise generic or less specific than the inferred role. Native interactive elements (buttons, links, inputs, etc.) or anything with an explicit/non-generic role are never overwritten.
 
-Child item role inference (automatic when author omits explicit child `role` attributes):
+Current behavior tokens (APG alignment & minimum roles):
 
-`focusgroup` aims to reduce boilerplate while nudging authors toward patterns described in the WAI-ARIA Authoring Practices (APG). When the first token is a recognized composite role and a managed descendant lacks an explicit `role`, the user agent MAY assign the corresponding expected item role. Overriding is ALWAYS allowed: an explicit `role` attribute will take precedence. The table also calls out common, legitimate reasons you might intentionally override.
-
-| Composite token (first token) | Inferred child role(s) | Purpose / APG alignment | When you might override |
+| Behavior | APG-aligned pattern name | Minimum container role (when applied) | Minimum child role(s) (when applied) |
 |---|---|---|---|
-| `radiogroup` | `radio` | Matches APG radiogroup pattern (one roving tab stop, arrow movement among radios). | To mix a different toggle type (e.g. `role="switch"`) or introduce non-radio items. |
-| `tablist` | `tab` | Encourages APG-compliant tabs controlling `tabpanel`s. | For hybrid controls where some items are disclosure buttons not acting as tabs. |
-| `menu` / `menubar` | `menuitem` | Provides baseline APG menu / menubar semantics. | To specify `menuitemcheckbox` / `menuitemradio` or custom interactive roles. |
-| `listbox` | `option` | Aligns with APG listbox option semantics. | For rich, grouped, or multi-role items (e.g. adding `role="option"` plus nested buttons). |
-| `toolbar` | (none) | Leaves native semantics of existing interactive descendants. | Usually no need; add roles only for custom elements lacking native semantics. |
-| `grid` (future) | (TBD) | 2-D navigation future; no inference defined yet. | Will depend on future design. |
+| `toolbar` | Toolbar | `toolbar` | (none) |
+| `tablist` | Tabs | `tablist` | `tab` |
+| `radiogroup` | Radio Group | `radiogroup` | `radio` |
+| `listbox` | Listbox | `listbox` | `option` |
+| `menu` | Menu | `menu` | `menuitem` (upgrade/variant not inferred) |
+| `menubar` | Menubar | `menubar` | `menuitem` |
+| `grid` (future) | Grid (2-D) | `grid` | (TBD) |
 
-#### Role inference behavior
-User agents MAY infer roles to reduce boilerplate while preserving author control ([see open question #5](#open-questions)).
-1. Explicit container `role` overrides any pattern token; no child inference occurs in that case.
-2. Otherwise the first token (if a recognized pattern) supplies the container role.
-3. [Child role inference](#open-questions) only when ALL are true:
-  * Parent role came from the pattern token (no conflicting explicit role).
-  * Descendant is managed by `focusgroup` (and not inside `focusgroup="none"`).
-  * Pattern defines a child role for such descendants.
-  * Descendant lacks an explicit `role`.
-  * Assigning the inferred role would not replace richer native semantics already present (e.g., native `<button>` in a `toolbar`).
-4. Ambiguity skip: if multiple roles would be equally valid (e.g., `menuitemcheckbox` vs `menuitemradio`), no inference is applied.
-5. Explicit child roles always win (override silently); authors may add them for variants or to block inference.
-6. Tooling MAY suggest removing redundant explicit roles when inference would apply.
-7. Future: a modifier such as `no-infer` could disable child inference without forcing explicit roles (pending discussion).
+#### Behavior → role mapping & precedence
+2. No explicit container `role`: UA maps behavior token to its minimum role (subject to minimum-role conditions described above).
+3. Explicit container `role` identical to minimum role: keep as-is.
+4. Explicit compatible composite `role`: keep explicit role; behavior navigation still activates.
+5. Explicit incompatible `role` (e.g., `button`): UA MAY activate a developer warning.
+6. Child role inference only runs when: (a) container role came from behavior mapping, (b) descendant is managed (not opted-out), (c) behavior defines an inferred child role, (d) descendant lacks explicit `role`, (e) inference would not replace richer native semantics. This endures an inferred, minimum role will never override an explicit role.
+7. Inference never upgrades variant types (e.g., `menuitemcheckbox` vs `menuitemradio`)—authors must specify those explicitly.
+
+This approach separates behavioral intent (token) from accessibility semantics (minimum role mapping) and addresses concerns about reusing ARIA role strings directly as activation tokens.
 
 ## Why not just add new native elements to cover these patterns?
 There are already proposals to add native versions of several of the patterns
@@ -177,7 +165,7 @@ instead focus on building these patterns directly into HTML?
 
 Reasons to pursue `focusgroup` in parallel:
 1. Author choice (custom elements / design systems): Many teams intentionally wrap primitives in web components or framework components and may not adopt new native container elements even if available. `focusgroup` lets them keep existing markup patterns while still standardizing navigation and reducing JS.
-2. Incremental flexibility: Adding a new eligible composite token (and optional child inference) is a far smaller spec and implementation change than introducing a new HTML element with parsing, styling, accessibility mapping, and legacy considerations.
+2. Incremental flexibility: Adding a new eligible behavior token (and optional child inference) is a far smaller spec and implementation change than introducing a new HTML element with parsing, styling, accessibility mapping, and legacy considerations.
 3. Low friction upgrade path: Existing ARIA patterns (toolbar of buttons, listbox of options) become declarative with a single attribute rather than refactoring to new tags.
 4. Progressive expansion: We can start with a minimal, consensus set (toolbar, tablist, radiogroup, listbox, menu/menubar) and add more patterns as needed.
 6. Minimal surface risk: An attribute opt-in is easier to ship, iterate, or adjust (including potential deprecation of an unused token) than an element baked into the content model.
@@ -330,7 +318,7 @@ What to notice:
 
 Empirical misuse in uncontrolled contexts; correct usage clusters around APG-backed widget roles. Scoping lowers ambiguity and accelerates interoperable implementation.
 
-Interactions with aria-role, also see [open question around child role inference](#open-questions)
+Interactions with explicit `role` vs behavior token mapping; also see [open question around child role inference](#open-questions)
 ```html
 <nav id="one" focusgroup="menu inline wrap" aria-label="Formatting">
   <button tabindex="0">Bold</button>
@@ -640,8 +628,8 @@ Fortunately, there are several solutions to this problem:
 
 Because `focusgroup` definitions are intended for grouping related controls, it does not make sense
 to provide `focusgroup` functionality on all elements. While the `focusgroup` attribute may be defined
-as a global attribute, its applicability is limited to a subset of pattens, requiring the author to
-specify the pattern their control follows when using focusgroup, see: [supported patterns](#supported-patterns)
+as a global attribute, its applicability is limited to a subset of behaviors, requiring the author to
+specify the behavior their control follows when using focusgroup, see: [supported behaviors](#supported-behaviors)
 
 The current proposal is to limit `focusgroup` to only the elements whose name match the DOM's
 [valid shadow host names](https://dom.spec.whatwg.org/#valid-shadow-host-name) (which are the
@@ -1109,7 +1097,7 @@ too complicated).
 
 
 ### Authoring guidance
-1. Put the composite role token first (if used): `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
+1. Put the behavior token first: `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
 2. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.).
 3. For detailed precedence (mismatches, inference limits, overrides) see [Precedence & Overrides](#precedence--overrides).
 
@@ -1121,7 +1109,7 @@ approaches were considered.
 3. Adopted (parent token + child inference): Same as above, but additionally sets the expected role on children that participate in the `focusgroup`.
 ## Open Questions
 
-1. **Supported Patterns:** The [list of supported patterns for `focusgroup`](#supported-patterns) is open for discussion, and I am open to input on what should be allowed.
+1. **Supported Behaviors:** The [list of supported behaviors for `focusgroup`](#supported-behaviors) is open for discussion, and I am open to input on what should be allowed.
   * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that it is OK to use them in this scenario.
   * Are there other roles not listed here that have a strong use case for `focusgroup`?
 2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
@@ -1164,21 +1152,9 @@ See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui
 
 ## Index of focusgroup values
 
-Tokens are space-separated. Order: first token MUST be a container composite role (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
+Tokens are space-separated. Order: first token MUST be a supported behavior token (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
 
-***Container role tokens (first token):***
-
-| Role | Implied container role if no explicit `role` attr | [Child role inference](#open-questions) (when role omitted) |
-|---|---|---|
-| `toolbar` | toolbar | none (native button semantics) |
-| `tablist` | tablist | `tab` |
-| `radiogroup` | radiogroup | `radio` |
-| `menu` | menu | `menuitem` |
-| `menubar` | menubar | `menuitem` |
-| `listbox` | listbox | `option` |
-| `grid` (future) | grid | none (2-D navigation future) |
-
-Reminder: explicit container and child roles always override any inference described above.
+Behavior tokens: See the earlier Supported Behaviors mapping table for the definitive list, minimum container roles, and child inference notes. Explicit container and child roles always override any inference.
 
 ***Focusgroup directions:***
 
