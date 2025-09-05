@@ -429,7 +429,7 @@ There are two kinds of `focusgroup`s: **linear `focusgroup`s** and **grid `focus
 Linear `focusgroup`s provide arrow key navigation among a _list_ of elements. Grid `focusgroup`s provide
 arrow key navigation behavior for tabular (or 2-dimensional) data structures.
 
-* `focusgroup` or `focusgroup=""` (no value) defines a linear `focusgroup`.
+* `focusgroup` or `focusgroup="<behavior>"` (where `<behavior>` is one of the non-grid behaviors) defines a linear `focusgroup`.
 * `focusgroup="grid"` defines a grid `focusgroup` (2-D navigation).
 
 Focusgroups consist of a **focusgroup definition** that establishes **focusgroup candidates** and
@@ -678,8 +678,8 @@ The following `focusgroup` definition values change this behavior:
 
 | HTML (attribute value) | Applies To | Effect |
 |---|---|---|
-| (default) `focusgroup=""` | linear | No wrapping; edges are hard stops. |
-| `focusgroup="wrap"` | linear | Moving past one end wraps focus to the opposite end. |
+| `focusgroup="<behavior>"` (where `<behavior>` is one of the non-grid behaviors) | linear | No wrapping; edges are hard stops. |
+| `focusgroup="<behavior> wrap"` (where `<behavior>` is one of the non-grid behaviors) | linear | Moving past one end wraps focus to the opposite end. |
 | (default) `focusgroup="grid"` | grid | No wrapping; row and column edges are hard stops. |
 | `focusgroup="grid wrap"` | grid | Rows and columns wrap within their own row/column (end → start of same row/column). |
 | `focusgroup="grid row-wrap"` | grid | Rows wrap; columns do not. |
@@ -706,11 +706,12 @@ can limit the linear `focusgroup` to one-axis traversal.
 Note that the following only apply to linear `focusgroup` definitions (they have no effect on grid
 `focusgroup`s).
 
+_Note: `<behavior>` below refers to one of the non-grid behaviors._
 | HTML (attribute value) | Explanation |
 |---|---|
-| (default) `focusgroup=""` (unspecified) | Items respond to forward/backward movement via both inline and block arrow keys (where they map to forward/back). |
-| `focusgroup="inline"` | Items respond only to arrow keys parallel to the inline axis (e.g., Left/Right in `horizontal-tb`). |
-| `focusgroup="block"` | Items respond only to arrow keys parallel to the block axis (e.g., Up/Down in vertical menus or vertical writing modes). |
+| (default) `focusgroup="<behavior>"` | Items respond to forward/backward movement via both inline and block arrow keys (where they map to forward/back). |
+| `focusgroup="<behavior> inline"` | Items respond only to arrow keys parallel to the inline axis (e.g., Left/Right in `horizontal-tb`). |
+| `focusgroup="<behavior> block"` | Items respond only to arrow keys parallel to the block axis (e.g., Up/Down in vertical menus or vertical writing modes). |
 
 Example:
 
@@ -818,10 +819,11 @@ instead of the most-recently-focused element. For example, an active (selected) 
 
 To disable the `focusgroup`'s default memory, use the value `no-memory`:
 
+_Note: `<behavior>` below refers to any valid focusgroup behavior._
 | HTML (attribute value) | Explanation |
 |---|---|
-| (default) `focusgroup=""` (unspecified) | `focusgroup` remembers the last-focused element and redirects focus to it when entered via sequential focus navigation. |
-| `focusgroup="no-memory"` | `focusgroup` will not remember the last-focused element. |
+| (default) `focusgroup="<behavior>"` | `focusgroup` remembers the last-focused element and redirects focus to it when entered via sequential focus navigation. |
+| `focusgroup="<behavior> no-memory"` | `focusgroup` will not remember the last-focused element. |
 
 After the `focusgroup`'s memory has been set, it must be cleared whenever any one of the following
 change:
