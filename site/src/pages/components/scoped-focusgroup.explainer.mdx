@@ -1,0 +1,1197 @@
+---
+menu: Active Proposals
+name: Scoped Focusgroup (Explainer)
+path: /components/scoped-focusgroup.explainer
+layout: ../../layouts/ComponentLayout.astro
+---
+
+ - Authors: [Jacques Newman](https://github.com/janewman)
+ - Prior contributors (from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer)): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
+ - Last updated: 2025-08-21
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Differences from the original explainer](#differences-from-the-original-explainer)
+  - [CSS support is now a future consideration](#css-support-is-now-a-future-consideration)
+  - [Grid support is now a future consideration](#grid-support-is-now-a-future-consideration)
+  - [Focusgroup is now scoped to specific scenarios](#focusgroup-is-now-scoped-to-specific-scenarios)
+  - [Supported Behaviors](#supported-behaviors)
+- [Why not just add new native elements to cover these patterns?](#why-not-just-add-new-native-elements-to-cover-these-patterns)
+- [Quickstart](#quickstart)
+- [Goal](#goal)
+  - [Non-Goals](#non-goals)
+- [Principles](#principles)
+- [Use Cases](#use-cases)
+- [Focusgroup Concepts](#focusgroup-concepts)
+  - [Last-focused memory](#last-focused-memory)
+  - [Guaranteed tab stop](#guaranteed-tab-stop)
+  - [Shadow DOM boundaries](#shadow-dom-boundaries)
+  - [Key conflicts](#key-conflicts)
+  - [Interactive content inside focusgroups](#interactive-content-inside-focusgroups)
+  - [Restricted elements](#restricted-elements)
+  - [Feature detection](#feature-detection)
+  - [Additional features](#additional-features)
+- [Enabling wrapping behaviors](#enabling-wrapping-behaviors)
+- [Limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality)
+- [Opting-out](#opting-out)
+- [Disabling focusgroup memory](#disabling-focusgroup-memory)
+- [Adjustments to sequential focus navigation](#adjustments-to-sequential-focus-navigation)
+- [(Future Consideration) Grid focusgroups](#future-consideration-grid-focusgroups)
+  - [Applicability to tabular data](#applicability-to-tabular-data)
+  - [Setting up a grid focusgroup](#setting-up-a-grid-focusgroup)
+  - [Manual grids: row and cell connections](#manual-grids-row-and-cell-connections)
+  - [Grid focusgroup nesting](#grid-focusgroup-nesting)
+  - [Empty Cell data](#empty-cell-data)
+  - [Non-uniform cells](#non-uniform-cells)
+- [(Future Consideration) Additional Keyboard support](#future-consideration-additional-keyboard-support)
+- [Alternatives considered](#alternatives-considered)
+- [Open Questions](#open-questions)
+- [Privacy and Security Considerations](#privacy-and-security-considerations)
+  - [Privacy](#privacy)
+  - [Security](#security)
+- [Design decisions](#design-decisions)
+- [Index of focusgroup values](#index-of-focusgroup-values)
+- [Acknowledgments](#acknowledgments)
+## Introduction
+
+Authors routinely hand-code “roving tabindex” logic for composite widgets like toolbars, tablists, menus, listboxes, and grids. In practice, this means providing a single tab stop to enter the control, then using arrow keys to move focus between items.
+
+Authors may use the proposed `focusgroup` HTML attribute to declare that
+a subtree of focusable elements will get:
+1. Focus navigation ([not selection](#non-goals)) using keyboard directional arrow keys (for lists
+   or grids).
+2. A guaranteed tab stop (when at least one focusable element is present).
+3. Automatic return to the last focused focusable element.
+4. Optional limited-axis arrow key navigation and optional wrap-around semantics.
+
+By standardizing `focusgroup`, authors can leverage these behaviors in
+[control patterns](https://www.w3.org/WAI/ARIA/apg/) to provide users with keyboard consistency,
+default accessibility, and interoperability over existing solutions.
+
+While this document emphasizes the usage of the keyboard arrow keys for accessibility
+navigation, we acknowledge that there are other input modalities that work (or can be adapted
+to work) equally well for `focusgroup` navigation behavior (e.g., game controllers, gesture
+recognizers, touch-based assistive technologies (AT), etc.).
+
+Benefits over ad-hoc scripts (FocusZone, Tabster, bespoke roving tabindex): less boilerplate, standardized axis + wrap behavior (including RTL / vertical), reduced misapplication, and a consistent, testable baseline for AT and UA interoperability.
+
+### Before / After at a glance:
+
+Before (manual roving tabindex JS):
+```html
+<div role="toolbar" aria-label="Text formatting" id="fmtToolbar">
+  <button type="button">Bold</button>
+  <button type="button">Italic</button>
+  <button type="button">Underline</button>
+</div>
+<script>
+  // Without focusgroup an author script must implement:
+  //  - Focus management (roving tabindex: keep exactly one item tabbable, skip disabled/hidden).
+  //  - Keyboard navigation (Arrow keys, Home/End, optional wrap, writing mode/RTL handling).
+  //  - Memory (restore last focused item on re-entry).
+  // Plus any domain logic (selection state, toggles, menus, tooltips, custom commands, etc.).
+  // focusgroup makes the first three bullets declarative; authors keep only selection & feature logic.
+</script>
+```
+After (single declarative attribute):
+```html
+<div focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button">Bold</button>
+  <button type="button">Italic</button>
+  <button type="button">Underline</button>
+  <script>
+    // Now with focusgroup, the author only needs to implement selection & feature logic.
+  </script>
+</div>
+```
+What changed:
+* `focusgroup="toolbar wrap"` supplies the role (first token) + wrap behavior.
+* Roving tabindex + arrow key handling + memory are native (no JS for core movement).
+* Selection / pressed state (e.g., toggling Bold) and any advanced commands remain author logic.
+
+## Differences from the original explainer
+[Original focusgroup explainer.](/components/focusgroup.explainer)
+### CSS support is now a future consideration
+Applying `focusgroup` (and related behaviors) via CSS is out of scope for this explainer and deferred for a possible, backwards-compatible future addition.
+
+### Grid support is now a future consideration
+Applying `focusgroup` to grid-like structures (2-D navigation) is out of scope for this explainer and deferred for a possible, backwards-compatible future addition.
+
+### Focusgroup is now scoped to specific scenarios
+Earlier drafts explored applying `focusgroup` to any container. Broad, role-agnostic usage risks normalizing arrow navigation in semantically neutral wrappers ("div soup"), masking missing semantics and creating unexpected keyboard loops. The proposal now:
+
+* Limits activation to a concise, enumerated set of behavior tokens associated with recognized widget patterns.
+* Allows (when omitted) safe [child role inference](#open-questions) for common item types to reduce boilerplate and steer toward APG-aligned structures.
+* Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the first token.
+
+Benefits of this scoped, behavior-first approach:
+* Guardrails: Prevents accidental application to arbitrary layout groupings without a recognized composite role.
+* Ergonomics: One attribute encodes both composite intent and navigation modifiers (`wrap`, `inline`, etc.).
+* Extensibility: Additional composite roles (or a role-agnostic mode) can be considered later based on demonstrated accessible patterns; narrowing later would be impractical.
+
+Open aspects still under discussion appear in the Open Questions (e.g., set of supported behaviors, child role inference).
+
+### Supported Behaviors
+The first token in a `focusgroup` attribute is a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author does not supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
+Minimum role application (container & children): User agents apply the minimum container role for a behavior only when (a) the author has not provided an explicit `role` AND (b) the element would otherwise expose a generic role (e.g., a plain `<div>`/`<span>`). If the host already has non-generic native semantics (e.g., `<ul>`, `<nav>`, `<table>`) or an explicit role, the mapping is skipped; navigation behavior still applies. Child role inference likewise only occurs when: (1) the container role was supplied via the behavior's minimum role mapping (not explicit/native), (2) the child lacks an explicit role, and (3) the child itself is otherwise generic or less specific than the inferred role. Native interactive elements (buttons, links, inputs, etc.) or anything with an explicit/non-generic role are never overwritten.
+
+Current behavior tokens (APG alignment & minimum roles):
+
+| Behavior | APG-aligned pattern name | Minimum container role (when applied) | Minimum child role(s) (when applied) |
+|---|---|---|---|
+| `toolbar` | Toolbar | `toolbar` | (none) |
+| `tablist` | Tabs | `tablist` | `tab` |
+| `radiogroup` | Radio Group | `radiogroup` | `radio` |
+| `listbox` | Listbox | `listbox` | `option` |
+| `menu` | Menu | `menu` | `menuitem` (upgrade/variant not inferred) |
+| `menubar` | Menubar | `menubar` | `menuitem` |
+| `grid` (future) | Grid (2-D) | `grid` | (TBD) |
+
+#### Behavior → role mapping & precedence
+2. No explicit container `role`: UA maps behavior token to its minimum role (subject to minimum-role conditions described above).
+3. Explicit container `role` identical to minimum role: keep as-is.
+4. Explicit compatible composite `role`: keep explicit role; behavior navigation still activates.
+5. Explicit incompatible `role` (e.g., `button`): UA MAY activate a developer warning.
+6. Child role inference only runs when: (a) container role came from behavior mapping, (b) descendant is managed (not opted-out), (c) behavior defines an inferred child role, (d) descendant lacks explicit `role`, (e) inference would not replace richer native semantics. This endures an inferred, minimum role will never override an explicit role.
+7. Inference never upgrades variant types (e.g., `menuitemcheckbox` vs `menuitemradio`)—authors must specify those explicitly.
+
+This approach separates behavioral intent (token) from accessibility semantics (minimum role mapping) and addresses concerns about reusing ARIA role strings directly as activation tokens.
+
+## Why not just add new native elements to cover these patterns?
+There are already proposals to add native versions of several of the patterns
+focusgroup would help with, rather than introduce this new attribute, why shouldn't we
+instead focus on building these patterns directly into HTML?
+
+Reasons to pursue `focusgroup` in parallel:
+1. Author choice (custom elements / design systems): Many teams intentionally wrap primitives in web components or framework components and may not adopt new native container elements even if available. `focusgroup` lets them keep existing markup patterns while still standardizing navigation and reducing JS.
+2. Incremental flexibility: Adding a new eligible behavior token (and optional child inference) is a far smaller spec and implementation change than introducing a new HTML element with parsing, styling, accessibility mapping, and legacy considerations.
+3. Low friction upgrade path: Existing ARIA patterns (toolbar of buttons, listbox of options) become declarative with a single attribute rather than refactoring to new tags.
+4. Progressive expansion: We can start with a minimal, consensus set (toolbar, tablist, radiogroup, listbox, menu/menubar) and add more patterns as needed.
+6. Minimal surface risk: An attribute opt-in is easier to ship, iterate, or adjust (including potential deprecation of an unused token) than an element baked into the content model.
+7. Immediate boilerplate win: Solves today's repetitive roving tabindex logic without waiting for multiple element proposals to mature and achieve cross-browser implementation.
+
+`focusgroup` doesn't replace, but complements native elements. It standardizes a widely re-implemented behavioral layer and leaves room for richer, purpose-built elements to integrate or rely on it later.
+
+## Quickstart
+
+The following examples start with the most common composite: a formatting toolbar.
+
+In this example, the author is using a
+[tab control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) where the tab activation
+behavior is decoupled from selection ("manual tab activation"):
+
+```html
+<div focusgroup="tablist inline wrap no-memory" aria-label="Common Operating Systems">
+  <button id="tab-1" aria-selected="false" aria-controls="tabpanel-1" tabindex="-1">macOS</button>
+  <button id="tab-2" aria-selected="true" aria-controls="tabpanel-2" tabindex="0">Windows</button>
+  <button id="tab-3" aria-selected="false" aria-controls="tabpanel-3" tabindex="-1">Linux</button>
+</div>
+<div id="tabpanel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1" hidden> … </div>
+<div id="tabpanel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2"> … </div>
+<div id="tabpanel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden> … </div>
+```
+
+What to notice:
+* Sequential focus navigation within a `focusgroup` is respected. When entering the `focusgroup`,
+   focus will always go to the first selected tab (with `tabindex=0`). The `no-memory` value
+   [prevents the focusgroup from remembering the last focused tab](#disabling-focusgroup-memory) so
+   that focus will always go to the selected tab on re-entry regardless of which element was
+   focused last.
+* If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to
+   `tabpanel-2` which is next in sequential focus navigation order (because the other
+   `role=tabpanel`s are `hidden`).
+* focus will `wrap` from one end of the tablist to the other because of `focusgroup=wrap` attribute
+   value.
+*   the up and down arrow keys **will not** move the focus because of `focusgroup="inline"` which
+   restricts the axis of movement to keyboard directional arrow keys in the `role="tablist"`'s
+   **inline** direction (assuming the `<div>`'s `writing-mode` is `horizontal-tb`).
+*   The author code required to manage the selection of a tab is omitted for brevity. Such code on tab selection
+   change would update `aria-selected` values, the `hidden` state of the controlled `role="tabpanel"`
+   and the `tabindex` values of tabs such that the newly selected `role="tab"` element is `tabindex="0"`
+   while all others are `tabindex="-1"`.
+
+In a third example, the author is creating a
+[navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/).
+Both `menuitem`s in the `menubar` ("About" and "Admissions") have popover `menu`s. The "Admissions"
+menu has an additional submenu under "Tuition".
+
+```html
+<ul focusgroup="menubar inline wrap" aria-label="Mythical University">
+  <li role="none">
+    <a popovertarget="aboutpop" href="…" tabindex="-1" title="">About</a>
+    <ul focusgroup="menu block wrap" autofocus id="aboutpop" aria-label="About" popover>
+      <li role="none"><a href="…" tabindex="-1" title="">Overview</a></li>
+      <li role="none"><a href="…" tabindex="-1" title="">Administration</a></li>
+    </ul>
+  </li>
+  <li role="none">
+    <a popovertarget="admitpop" href="…" tabindex="-1" title="">Admissions</a>
+    <ul focusgroup="menu block wrap" autofocus id="admitpop" aria-label="Admissions" popover>
+      <li role="none"><a href="…" tabindex="-1" title="">Apply</a></li>
+      <li role="none">
+        <a popovertarget="tuitpop" href="…" tabindex="-1" title="">Tuition</a>
+        <ul focusgroup="menu block wrap" autofocus id="tuitpop" aria-label="Tuition" popover>
+          <li role="none"><a href="…" tabindex="-1" title="">Undergraduate</a></li>
+          <li role="none"><a href="…" tabindex="-1" title="">Graduate</a></li>
+        </ul>
+      </li>
+      <li role="none"><a href="…" tabindex="-1" title="">Visit</a></li>
+    </ul>
+  </li>
+</ul>
+```
+
+What to notice:
+- `focusgroup` declarations can be nested inside of other focusgroups. When a nested focusgroup
+   is declared on an element, it creates a new focusgroup and [opts-out](#opting-out) of its
+   ancestor focusgroup.
+- menuitems in `role=menubar` are limited to inline-direction arrow keys (e.g., left and right),
+   while menuitems in `role=menu` are limited to block-direction arrow keys (e.g., up and down).
+   This allows the orthogonal arrow keys (e.g., up and down on the menubar, left and right on the
+   menus) to be used for activation purposes (extra code that is not shown in the example).
+- Placement of focus on the menus (the nested focusgroups) from the menubar is not a feature of
+   `focusgroup` (nested focusgroups are completely independent of their ancestor focusgroup). In this
+   case, the focus placement is handled by built-in `popover` and `autofocus` attribute behaviors.
+- the "memory" of the nested `focusgroup`s is reset when the content is hidden/shown--this allows
+   the `autofocus` attribute to pick the first focusable element each time a menu is shown--the
+   desired behavior in this case.
+
+Here, the author is creating a data grid following the
+[data grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/examples/data-grids/) where each
+of the cells in the table are focusable.
+
+```html
+<table focusgroup="grid" role="grid" aria-label="Transactions">
+  <tbody><tr>
+    <th>Date</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Amount</th>
+    <th>Balance</th>
+  </tr>
+  <tr>
+    <td tabindex="-1">01-Jan-16</td>
+    <td tabindex="-1">Deposit</td>
+    <td><a tabindex="-1" href="#">Cash Deposit</a></td>
+    <td tabindex="-1">$1,000,000.00</td>
+    <td tabindex="-1">$1,000,000.00</td>
+  </tr>
+  <tr>
+    <td tabindex="-1">02-Jan-16</td>
+    <td tabindex="-1">Debit</td>
+    <td><a tabindex="-1" href="#">Downtown Grocery</a></td>
+    <td tabindex="-1">$250.00</td>
+    <td tabindex="-1">$999,750.00</td>
+  </tr>
+</tbody></table>
+```
+
+What to notice:
+- `focusgroup=grid` understands table layout and will provide logical cell navigation with arrow
+   keys around all the focusable grid cells.
+- `<th>` header cells are not made focusable in this example, and so are not navigable by the
+   `focusgroup`.
+- all focusable elements are declared with `tabindex=-1` to take them out of sequential focus
+   navigation. The `focusgroup` ensures that at least one of these focusable elements participates
+   in the sequential focus navigation order regardless. The `focusgroup` also remembers the last
+   focused element, and returns the user to that element when they re-enter the table via sequential
+   focus navigation.
+
+Opt-out subtree (explicit example):
+
+```html
+<div focusgroup="toolbar inline wrap">
+  <button tabindex="-1">A</button>
+  <span focusgroup="none">
+    <button tabindex="-1">(Not arrow reachable)</button>
+  </span>
+  <button tabindex="-1">B</button>
+</div>
+```
+Items inside the `focusgroup="none"` span are skipped by arrow navigation.
+
+What to notice:
+* The opt-out subtree removes its focusable descendants from arrow traversal (ancestor toolbar is eligible) but they remain reachable via Tab.
+* Arrow navigation treats the subtree as a single gap—focus jumps from the item before to the item after.
+* Useful for excluding infrequent/disruptive controls (e.g., help buttons) from high-frequency arrow flows.
+
+Empirical misuse in uncontrolled contexts; correct usage clusters around APG-backed widget roles. Scoping lowers ambiguity and accelerates interoperable implementation.
+
+Interactions with explicit `role` vs behavior token mapping; also see [open question around child role inference](#open-questions)
+```html
+<nav id="one" focusgroup="menu inline wrap" aria-label="Formatting">
+  <button tabindex="0">Bold</button>
+  <button role="menuitemcheckbox" aria-checked="true" tabindex="-1">Italics</button>
+  <button tabindex="-1">Underline</button>
+</nav>
+<div id="two" role="toolbar" focusgroup="radiogroup wrap">
+  <button type="button" tabindex="0">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+```
+What to notice:
+* In `#one`, descendants without explicit roles (Bold, Underline) are inferred as `menuitem`; the explicit `menuitemcheckbox` (Italics) is unchanged.
+* Inference skips ambiguity: it does not guess a variant (`menuitemradio` vs `menuitemcheckbox`).
+* In `#two`, the explicit container `role="toolbar"` overrides the first token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
+* Arrow key navigation, wrap, and memory behaviors apply in both `#one` and `#two` regardless of whether roles were inferred.
+* Authors can obtain behavior without pattern role inference by supplying an explicit conflicting container role when needed.
+## Goal
+
+The goal of this feature is to "pave the cow path" of an existing authoring practice
+(and accessibility best practice) implemented in nearly every Web UI library: the
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
+[[react](https://www.npmjs.com/package/react-roving-tabindex),
+[angular](https://material.angular.io/cdk/a11y/overview#listkeymanager),
+[fluent](https://developer.microsoft.com/en-us/fluentui#/controls/web/focuszone),
+[elix](https://component.kitchen/elix/KeyboardDirectionMixin)]].
+Note however, that certain design choices have been made to generalize the
+behavior so that additional scenarios are possible. See
+[comparing roving tabindex and focusgroup](https://docs.google.com/document/d/1cOxjjZdvFfpexiN1x-MpNJLXrmbrR0xp1sRCTbaQ29c/)
+for further details.
+
+To achieve this goal, we believe the solution must be available in declarative markup.
+If JavaScript is required, then there seems little advantage to using a built-in feature over
+what can be implemented completely in author code. Furthermore, a declarative solution provides
+the key signal that allows the platform's accessibility infrastructure to make the `focusgroup`
+accessible by default by:
+
+* providing a consistent and reliable navigation usage pattern for users with no extra author code required.
+* requiring no new screen reader features: the behaviors (roving tabindex, arrow + Home/End movement,
+  optional wrap, last-focused memory) already function today when authored via JavaScript, `focusgroup`
+  standardizes intent without introducing novel interaction semantics.
+  * Because `focusgroup` requires authors to specify a pattern, and the aria-role of the element and
+  controlled descendants are set appropriately, there should be no need for user agents to signal the
+  AT to switch to a ["Focus mode"](https://www.accessibility-developer-guide.com/knowledge/screen-readers/desktop/browse-focus-modes/) by default (the user has entered a control group).
+
+### Non-Goals
+
+**Selection Management**
+In some [control patterns](https://www.w3.org/WAI/ARIA/apg/) (such as radio groups or tablists)
+moving the focus to an element also toggles its **selection** state. While some use cases will
+require the selection state to follow the focus, in others these need to be decoupled. `focusgroup`
+is decoupled from selection. Tracking and changing selection based on focus will require author
+code. Note that a related proposal for tracking selection state,
+[**CSS Toggles**](https://tabatkins.github.io/css-toggle/), is
+[no longer being pursued](https://docs.google.com/document/d/10JxXgeDAJ5zerOdxoWM9ZU9d5iMOdzGJt0EhlhkOkxM/).
+
+**Visual Indicators**
+Implementations are welcome to experiment with additional UI (e.g., a "focusgroup focus ring") in
+order to help make users aware of focusgroups, however this proposal does not include any
+specific guidelines or recommendations.
+
+**Generic Container Navigation**
+This explainer proposes that `focusgroup` should be limited to a specific set of roles to ensure we don't encourage confusing or inaccessible behavior.
+
+## Principles
+
+1. Intuitive use in declarative scenarios. Focusgroups
+   - are easy to reason about (self-documenting) in the source markup.
+   - provide a rational behavior when nested.
+   - integrate well with other related platform semantics (e.g., `tabindex`).
+2. Focusgroups are easy to maintain and configure.
+   - Configuration is managed in one place.
+   - Provide easy to understand usage into HTML patterns.
+   - Avoid "spidery connections" e.g., using IDRefs or custom names that are hard to maintain.
+3. Complimentary declarative representations in HTML
+   - HTML attributes offers focusgroup usage directly with impacted content and provide for
+     the most straightforward scenarios.
+
+## Use Cases
+
+1. (Element and subtree opt-in) A focusable element with a supported role and its entire subtree can participate in a single `focusgroup`.
+2. (Cross Shadow DOM) Focusable elements contained inside a Shadow DOM are discoverable and focusable when their Shadow Host or an ancestor element declares a `focusgroup`.
+3. (Wrap) A `focusgroup` can be configured to have wrap-around focus semantics.
+4. (Limit directional arrow keys) A `focusgroup` can be configured to respond to either the logical
+   [inline-axis](https://drafts.csswg.org/css-writing-modes-4/#inline-axis) navigation keys (e.g.,
+   left and right arrow keys when the `focusgroup` is in a `horizontal-tb`
+   [writing mode](https://drafts.csswg.org/css-writing-modes/#block-flow)) or
+   [block-axis](https://drafts.csswg.org/css-writing-modes-4/#block-axis) navigation keys or both
+   (to trivially reserve one axis of arrow key behavior for supplementary actions, such as opening
+   nodes in a tree view control). See
+   [CSS Logical Properties and Values](https://drafts.csswg.org/css-logical/) for more about logical
+   directions.
+5. (Focus movement arrow keys follow content direction) The user's arrow key presses move the focus forward or backward in the DOM according to the writing mode and directionality of the content.  E.g., in RTL, an Arrow-Left key moves the focus forward according to the content direction.
+6. (Opt-out) Individual elements can opt-out of `focusgroup` participation.
+7. (Grid) A `focusgroup` can be used for grid-type navigation (`<table>`-structured content or other grid-like structured content).
+
+A use case we are evaluating:
+* (Grid) A `focusgroup` can be used on elements with `display: grid` to provide 2d grid navigation.
+
+## Focusgroup Concepts
+
+A `focusgroup` is a group of related elements that can be navigated by directional arrow keys and
+home/end keys and for which the web platform provides the navigation behavior by default. No
+JavaScript event handlers needed in many cases! The behavior of arrow keys depends on the content's writing mode. Keys pointing toward the `block-end` or `inline-end` navigate forward, while keys pointing toward `block-start` or `inline-start` navigate backward.
+
+There are two kinds of `focusgroup`s: **linear `focusgroup`s** and **grid `focusgroup`s**.
+Linear `focusgroup`s provide arrow key navigation among a _list_ of elements. Grid `focusgroup`s provide
+arrow key navigation behavior for tabular (or 2-dimensional) data structures.
+
+* `focusgroup` or `focusgroup="<behavior>"` (where `<behavior>` is one of the non-grid behaviors) defines a linear `focusgroup`.
+* `focusgroup="grid"` defines a grid `focusgroup` (2-D navigation).
+
+Focusgroups consist of a **focusgroup definition** that establishes **focusgroup candidates** and
+**focusgroup items**. Focusgroup definitions manage the desired behavior for the associated
+focusgroup items. Focusgroup items are the elements that actually participate in the focusgroup
+(from the set of focusgroup candidates). Focusgroup candidates are all the elements under the scope
+of a focusgroup definition. The **focusgroup scope** consists of the element with the focusgroup
+definition and its shadow-inclusive descendants, excluding elements that have opted out.
+
+The minimal focusgroup below demonstrates that the element declaring a focusgroup is also a
+focusgroup candidate and (in this case) the single focusgroup item.
+
+```html
+<div focusgroup="toolbar">
+  <button type="button">Only control</button>
+</div>
+```
+
+Focusgroup candidates become focusgroup items if they are focusable, e.g., implicitly focusable
+elements like `<button>` or explicitly made focusable via `tabindex` (e.g., a custom element or
+`contenteditable`).
+
+An element can only have _one_ **focusgroup definition** added via the `focusgroup` attribute:
+
+Example (toolbar with multiple items and one roving tab stop):
+
+```html
+<div id="ancestor" focusgroup="toolbar">
+  <button id="one" type="button">Bold</button>
+  <button id="two" type="button" tabindex="-1">Italic</button>
+  <button id="three" type="button" tabindex="-1">Underline</button>
+</div>
+```
+
+The `ancestor` element has the **focusgroup definition**. The elements with `id=one`, `two`, and
+`three` (and any other shadow-inclusive descendants of `ancestor` that may be added) are
+**focusgroup candidates**. Because each of these candidates are focusable, they are also
+**focusgroup items**. When one of the focusgroup items becomes focused, the user can move focus
+sequentially among all the focusgroup items using the arrow keys (up/right moves focus forward,
+down/left moves focus backwards assuming the `<p>` element has `writing-mode` `horizontal-tb` and
+`direction` `ltr`).
+
+Note that only the elements with `id=one` and `id=three` can be focused using the Tab key. The element with `id=two` has `tabindex="-1"`, which takes it out of sequential focus navigation ordering.
+
+### Last-focused memory
+
+By default, focusgroups will remember the last-focused element, and for sequential focus navigation,
+will restore focus to that element when a focusgroup is re-entered. This is important for large
+lists or tables so that users are returned the context they previously left without having to
+navigate from the start or end sequentially.
+
+The focusgroup's memory is initially empty. In that state, sequential focus navigation will pick
+the next element to focus using existing platform behavior
+[with the exception noted below](#guaranteed-tab-stop).
+
+The `focusgroup`'s memory is cleared if the last-focused item becomes non-focusable or if its relationship to the `focusgroup` container changes (e.g., it is removed from the DOM). See
+[additional details below](#disabling-focusgroup-memory).
+
+### Guaranteed tab stop
+
+Focusgroups provide a special behavior when used in conjunction with sequential focus navigation
+("tab navigation"). Focusgroups ensure that **at least one** focusgroup item will participate in
+sequential focus navigation even if all focusgroup items are declared to opt-out via `tabindex=-1`.
+This behavior ensures that a `focusgroup` can always be entered via sequential focus navigation.
+[See below for further details](#adjustments-to-sequential-focus-navigation).
+Aside from this one behavior change, there is no other impact to the way tab navigation works with
+`tabindex` nor the tab ordering behavior.
+
+Focusgroups can therefore be used to provide a
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
+among a set of related focusable controls such as this menubar:
+
+Example:
+
+```html
+<div focusgroup="toolbar" aria-label="Text Formatting" aria-controls="…">
+  <div>
+    <button type="button" aria-pressed="false" value="bold" tabindex="-1"><span>Bold</span></button>
+    <button type="button" aria-pressed="false" value="italic" tabindex="-1"><span>Italic</span></button>
+    <button type="button" aria-pressed="false" value="underline" tabindex="-1"><span>Underline</span></button>
+  </div>
+</div>
+```
+
+When pressing tab to enter this "toolbar" focusgroup from an element _before_ it, focus will go to
+the first `<button>` because:
+- There is no other element within the focusgroup with a `tabindex` >= 0 or that is sequentially
+   focusable by default (these `<button>`s are taken out of sequential focus navigation with
+   `tabindex=-1`).
+- This focusgroup has no "memory" of a last-focused element within (e.g., it has not been entered
+   before).
+- Since neither of the above cases resulted in focusing an alternate element, then the first
+   focusgroup item in the group is focused.
+
+At this point, the user can use the arrow keys to move from the beginning of the toolbar to the end,
+or press tab again to move outside of the focusgroup.
+
+Alternatively, `focusgroup` can be used to supplement existing tab-stop behavior to provide arrow key
+navigational support **in addition** to tab navigation. No problem: just ensure the desired elements
+are sequentially focusable via `tabindex="0"` (or stop excluding them via `tabindex="-1"`):
+
+Example:
+
+```html
+<div focusgroup="toolbar" aria-label="Text Formatting" aria-controls="…">
+  <div>
+    <button type="button" aria-pressed="false" value="bold"><span>Bold</span></button>
+    <button type="button" aria-pressed="false" value="italic"><span>Italic</span></button>
+    <button type="button" aria-pressed="false" value="underline"><span>Underline</span></button>
+  </div>
+</div>
+```
+
+### Shadow DOM boundaries
+
+Focusgroup definitions apply across Shadow DOM boundaries in order to make it easy for component
+developers to support focusgroup behavior across component boundaries. (Component authors that want
+to [opt-out of this behavior](#opting-out) can do so.)
+
+Example:
+
+```html
+<list-component focusgroup role="listbox" aria-label="Cute dogs">
+  <template shadowrootmode="open">
+    <my-listitem role="option" tabindex="0" aria-selected="true">Terrier</my-listitem>
+  <my-listitem role="option" tabindex="-1" aria-selected="false">Dalmatian</my-listitem>
+    <my-listitem role="option" tabindex="-1" aria-selected="false">Saint Bernard</my-listitem>
+  </template>
+</list-component>
+```
+
+### Key conflicts
+The focusgroup is a default handler for certain keystrokes (keydown events for arrow keys, home/end,
+etc.) that will cause focus to move among focusgroup items. This default keyboard handling could
+interfere with other actions the application would like to take. A common pattern is to
+[limit focusgroup directionality](#limiting-linear-focusgroup-directionality) so that certain
+cross-axis keystrokes won't trigger focusgroup behavior. However, if this doesn't address the use
+case, then authors may cancel the focusgroup's default behavior at any time by canceling
+(`preventDefault()`) the specific keydown event. Keydown events are dispatched by the currently
+focused element, and bubble through the focusgroup ancestor element in most cases.
+
+### Interactive content inside focusgroups
+
+Some built-in controls like `<input type=text>` provide keyboard behaviors that "trap" nearly all
+keys that would be handled by the focusgroup. Others such as `<input type=number>` trap only certain
+keys like the arrow keys that are also used for focusgroup navigation. This proposal **does not**
+provide a built-in workaround to prevent this from happening. Instead, authors are advised to be
+sure users can "escape" these elements. Built-in elements provide this via the tab key. Other
+strategies might include requiring an "activation" step before putting focus into the interactive
+control (and an Esc key exit to leave).
+
+The focusgroup's [memory](#last-focused-memory) may also cause unexpected user interactions if
+authors are not careful. For example, without any author mitigations, an interactive control inside
+a focusgroup may inadvertently prevent the user from accessing other focusgroup items:
+
+```html
+<div focusgroup="toolbar" aria-label="Font Adjustment" aria-controls="…">
+  <label for="font-input">Font</label>
+  <div>
+    <div>
+      <input type="text" id="font-input" role="combobox" aria-autocomplete="both" aria-expanded="false" aria-controls="font-listbox" aria-activedescendant="">
+      <button type="button" aria-label="Font List" aria-expanded="false" aria-controls="font-listbox" tabindex="-1">🔽</button>
+    </div>
+    <ul id="font-listbox" role="listbox" aria-label="Font List">
+      <li role="option">Arial</li>
+      <li role="option">Monospace</li>
+      <li role="option">Verdana</li>
+    </ul>
+  </div>
+  <button type="button" value="bigger" tabindex="-1"><span>Increase Font</span></button>
+  <button type="button" value="smaller" tabindex="-1"><span>Decrease Font</span></button>
+</div>
+```
+
+When the `combobox` input element is focused, it is remembered by the `focusgroup`'s memory.
+The `<input>` element traps nearly all keystrokes by default, including the arrow keys that might
+have been used to reach the "Increase/Decrease Font" buttons. When the user presses tab, focus
+exits the `focusgroup`. Later, when focus re-enters, the `focusgroup` will put focus back on the
+`<input>` element (because of its memory), and the cycle continues with no way to get to the two
+following buttons via keyboard interaction alone.
+
+Fortunately, there are several solutions to this problem:
+- Remove `tabindex=-1` from the "Increase/Decrease Font" buttons.
+- Move the "Increase/Decrease Font" buttons before the `combobox`. (Refer to "Avoid including
+   controls whose operation requires the pair of arrow keys used for toolbar navigation" in the
+   [Toolbar control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/).) Additionally,
+   [opt-out](#opting-out) the `<input>` control from `focusgroup` participation so that
+   arrow keys skip it. Alternatively,
+   [turn off the `focusgroup`'s memory](#disabling-focusgroup-memory) so that focus isn't
+   automatically returned to the `combobox`.
+- Use script to intercept `focusgroup`-related keydown events on the `<input>` and move focus
+   manually. Also consider [limiting the `focusgroup`](#limiting-linear-focusgroup-directionality) to
+   one axis and reserving the other axis for operating the `<input>`.
+
+### Restricted elements
+
+Because `focusgroup` definitions are intended for grouping related controls, it does not make sense
+to provide `focusgroup` functionality on all elements. While the `focusgroup` attribute may be defined
+as a global attribute, its applicability is limited to a subset of behaviors, requiring the author to
+specify the behavior their control follows when using focusgroup, see: [supported behaviors](#supported-behaviors)
+
+The current proposal is to limit `focusgroup` to only the elements whose name match the DOM's
+[valid shadow host names](https://dom.spec.whatwg.org/#valid-shadow-host-name) (which are the
+elements allowed to call `attachShadow()`). However, `<table>` and some table parts will need to
+be an exception in order to properly support grid `focusgroup`s.
+
+### Feature detection
+
+To enable feature detection, the DOM will include a `focusgroup` property, whose existence on
+elements is useful for feature detection.
+
+```webidl
+partial interface HTMLElement {
+  [CEReactions] attribute DOMString focusgroup;
+};
+```
+
+### Additional features
+
+Focusgroups have the following additional features:
+
+- [Wrap-around semantics](#enabling-wrapping-behaviors) - what to do when attempting to move past
+   the end of a `focusgroup`. The default/initial value is `no-wrap`, which means that focus is
+   not moved past the ends of a `focusgroup` with the arrow keys. `wrap` and other tabular wrapping
+   behaviors are available for `grid` `focusgroup`s.
+- [Directional axis limits](#limiting-linear-focusgroup-directionality) - applies to linear
+   `focusgroup`s only; respond to arrow keys in one axis only (either up/down or left/right when the
+   arrow key pressed matches the corresponding flow of the content). By default, linear `focusgroup`s
+   respond to all four arrow keys.
+- [`focusgroup` candidacy opt-out](#opting-out) - prevent an element and its
+   shadow-inclusive descendants from participating in an anscester's `focusgroup`.
+- [Memory opt-out](#disabling-focusgroup-memory) - prevent the `focusgroup` from remembering what the
+   last focused element was when focus leaves a `focusgroup`. By default `focusgroup`s remember that
+   element and will restore the focus to that element when the `focusgroup` is re-entered via
+   sequential focus navigation.
+
+These feature options are applied as space-separated token values to the `focusgroup`
+attribute.
+
+
+## Enabling wrapping behaviors
+
+By default, `focusgroup` traversal with arrow keys ends at boundaries of the `focusgroup` (the start and
+end of a linear `focusgroup`, and the start and end of both rows and columns in a grid `focusgroup`).
+The following `focusgroup` definition values change this behavior:
+
+| HTML (attribute value) | Applies To | Effect |
+|---|---|---|
+| `focusgroup="<behavior>"` (where `<behavior>` is one of the non-grid behaviors) | linear | No wrapping; edges are hard stops. |
+| `focusgroup="<behavior> wrap"` (where `<behavior>` is one of the non-grid behaviors) | linear | Moving past one end wraps focus to the opposite end. |
+| (default) `focusgroup="grid"` | grid | No wrapping; row and column edges are hard stops. |
+| `focusgroup="grid wrap"` | grid | Rows and columns wrap within their own row/column (end → start of same row/column). |
+| `focusgroup="grid row-wrap"` | grid | Rows wrap; columns do not. |
+| `focusgroup="grid col-wrap"` | grid | Columns wrap; rows do not. |
+| `focusgroup="grid flow"` | grid | Moving past row end jumps to start of NEXT row (and reverse); same for columns. Last row/column flows to first. |
+| `focusgroup="grid row-flow"` | grid | Rows flow; columns are hard stops. |
+| `focusgroup="grid col-flow"` | grid | Columns flow; rows are hard stops. |
+| `focusgroup="grid row-wrap col-flow"` | grid | Rows wrap; columns flow. |
+| `focusgroup="grid row-flow col-wrap"` | grid | Rows flow; columns wrap. |
+
+Specifying both `row-wrap` and `row-flow` in one HTML `focusgroup` definition is an author error. Only
+one declaration for row behavior is allowed. Similarly for `col-wrap` and `col-flow`.
+
+## Limiting linear focusgroup directionality
+
+In many cases, having multi-axis directional movement (e.g., both right arrow and down arrow linked
+to the forward direction) is not desirable, such as when implementing a
+[tablist control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/), in which case it may not
+make sense for the up and down arrows to also move the focus left and right. Likewise, when moving
+up and down in a vertical menu, the author might wish to use JavaScript to provide other behavior
+for the left and right arrow keys such as opening or closing sub-menus. In these situations, authors
+can limit the linear `focusgroup` to one-axis traversal.
+
+Note that the following only apply to linear `focusgroup` definitions (they have no effect on grid
+`focusgroup`s).
+
+_Note: `<behavior>` below refers to one of the non-grid behaviors._
+| HTML (attribute value) | Explanation |
+|---|---|
+| (default) `focusgroup="<behavior>"` | Items respond to forward/backward movement via both inline and block arrow keys (where they map to forward/back). |
+| `focusgroup="<behavior> inline"` | Items respond only to arrow keys parallel to the inline axis (e.g., Left/Right in `horizontal-tb`). |
+| `focusgroup="<behavior> block"` | Items respond only to arrow keys parallel to the block axis (e.g., Up/Down in vertical menus or vertical writing modes). |
+
+Example:
+
+```html
+<tab-group role="tablist" focusgroup="inline wrap">
+  <a-tab role="tab" tabindex="0" aria-selected="true" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+  <a-tab role="tab" tabindex="-1" aria-selected="false" aria-controls="…">…</a-tab>
+</tab-group>
+```
+
+In the above example, when the focus is on the first `<a-tab>` element, pressing either the up or
+down arrow key does nothing because the `focusgroup` is configured to only respond to the inline
+(left/right in this case) arrow keys.
+
+Because 2-axis directionality is the default, specifying both `inline` and `block` at the
+same time on one `focusgroup` is not allowed:
+
+Example:
+
+```html
+<!-- This is an example of what NOT TO DO -->
+<radiobutton-group focusgroup="inline block wrap" role="radiogroup">
+  ⚠️This `focusgroup` configuration is an error--neither constraint will be applied (which is actually
+  what the author intended).
+</radiobutton-group>
+```
+
+## Opting-out
+
+`focusgroup` definitions assigned to an element create `focusgroup` candidates that include
+the element itself and all its _shadow-inclusive descendant elements_. Any element within that
+`focusgroup` scope that is (or becomes) focusable will automatically become a `focusgroup` item
+belonging to its ancestor's `focusgroup`.
+
+With such an expansive opt-in behavior, it is important to provide an opt-out for elements or
+element subtrees. For example: focusable elements that wish to remain in sequential focus
+navigation and have arrow key navigation pass them over; or, components nested across a
+Shadow DOM boundary that wish to be excluded from `focusgroup` participation.
+
+Opting-out applies to the element making the declaration as well as its shadow-inclusive
+descendants.
+
+To opt-out:
+
+| HTML (attribute value) | Explanation |
+|---|---|
+| `focusgroup="none"` | Opt-out: this element and its shadow-inclusive descendants are not considered `focusgroup` candidates. |
+
+In the following example of a toolbar, a help section opts-out of `focusgroup` behavior so that any
+interactive content inside it is bypassed when arrowing among the primary formatting controls.
+
+Example:
+
+```html
+<div focusgroup="toolbar inline wrap" aria-label="Text formatting">
+  <button type="button" tabindex="-1">Bold</button>
+  <button type="button" tabindex="-1">Italic</button>
+  <span focusgroup="none" aria-label="Help group">
+    <button type="button">Help</button>
+    <button type="button">Shortcuts</button>
+  </span>
+  <button type="button" tabindex="-1">Underline</button>
+</div>
+```
+
+When a `focusgroup` definition is applied to an element, it implicitly opts out of any ancestor's
+`focusgroup`s. This ensures that every element can only belong in one `focusgroup` at a time.
+
+Example:
+
+```html
+<ul role="menubar" focusgroup aria-label="Site">
+  <li role="none">
+    <ul role="menu" focusgroup aria-label="Products">
+      <li role="none"><button role="menuitem" tabindex="-1">Item A</button></li>
+      <li role="none">
+        <ul role="menu" focusgroup aria-label="More">
+          <li role="none"><button role="menuitem" tabindex="-1">Sub A1</button></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+- The outer menubar `ul[role="menubar"][focusgroup]` defines one `focusgroup` (its direct menuitems would participate when present).
+- The first nested `ul[role="menu"][focusgroup]` creates an independent `focusgroup` and is implicitly not part of the menubar's arrow navigation.
+- The innermost `ul[role="menu"][focusgroup]` (submenu) defines yet another independent `focusgroup`, likewise not part of its ancestor menu's `focusgroup`; its `menuitem` participates only in that deepest scope.
+
+## Disabling focusgroup memory
+
+By default, when a linear or grid `focusgroup` is defined it includes a "memory" of the
+last-focused element within its scope, initially empty. Each time the focus is changed
+within a `focusgroup`, the "memory" is updated to refer to that element. This behavior is
+akin to the
+[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
+in which the "memory" is the stateful `tabindex="0"` value assigned to the currently
+focused element.
+
+In some scenarios it is not desirable to have a `focusgroup` maintain a memory. Usually this
+is because there is a more relevant element which should take focus when entering the `focusgroup`
+instead of the most-recently-focused element. For example, an active (selected) tab in a
+`role="tablist"` container, rather than the last-focused tab (when selection does not follow focus).
+
+To disable the `focusgroup`'s default memory, use the value `no-memory`:
+
+_Note: `<behavior>` below refers to any valid focusgroup behavior._
+| HTML (attribute value) | Explanation |
+|---|---|
+| (default) `focusgroup="<behavior>"` | `focusgroup` remembers the last-focused element and redirects focus to it when entered via sequential focus navigation. |
+| `focusgroup="<behavior> no-memory"` | `focusgroup` will not remember the last-focused element. |
+
+After the `focusgroup`'s memory has been set, it must be cleared whenever any one of the following
+change:
+
+* The element with the `focusgroup` definition is `hidden` or un-hidden; or if the currently remembered
+  element is `hidden` or un-hidden.
+* The element with the `focusgroup` definition has its `disabled` or `inert` status changed; or if the
+  currently remembered element has its `disabled` or `inert` status changed.
+* The element with the `focusgroup` definition is removed from the shadow-inclusive tree; or if the
+  currently remembered element is removed from the shadow-inclusive tree.
+* The currently remembered element stops being focusable (e.g., a `<div>` with a `tabindex` has its
+  `tabindex` attribute removed).
+* The currently remembered element is changed to become excluded from the `focusgroup` (through
+  `focusgroup="none" on itself or a shadow-inclusive ancestor, or by changing `focusgroup`s: if a new
+   `focusgroup` definition appears on itself or one of its shadow-inclusive ancestor elements).
+
+## Adjustments to sequential focus navigation
+
+To ensure that a `focusgroup` always has at least one tab stop in the sequential focus navigation
+order, and to provide the appropriate "hook" for a `focusgroup`'s "memory" to redirect focus to the
+last-focused element in a `focusgroup`, a change to sequential focus navigation is needed.
+
+This change is intended to ensure that focus is directed to one of the following `focusgroup`
+candidates whenever focus enters a `focusgroup`. The first matching condition is always taken:
+
+1. If there is an element in the `focusgroup` memory, focus is set on that element.
+2. If there is an element with `tabindex="0"` (or other built-in element with UA-defined keyboard
+    focusability like `<input>`, `<button>`, etc.) that is also a `focusgroup` candidate for the
+    current `focusgroup`, focus will be set on the first such element in DOM order (regardless of
+    the direction of traversal, i.e., via `tab` or `Shift+tab`). Note: this provides authors with a
+    predictable "entry" of their choosing within a `focusgroup`.
+3. The first focusable element (even if not intended for sequential focus navigation) if sequential
+    focus navigation is moving "forward", or the last focusable element if sequential focus
+    navigation is traversing "backward".
+
+Specifically, each `focusgroup` definition must maintain a:
+* first focusable `focusgroup` candidate - in DOM order, the first focusable element that is also a
+   `focusgroup` candidate (e.g., not excluded from `focusgroup` participation or in another `focusgroup`).
+* last focusable `focusgroup` candidate - see previous, but the **last** focusable in DOM order.
+* first sequentially-focusable `focusgroup` candidate - in DOM order, the first focusable element that
+   would participate in sequential focus navigation order (e.g., the element with the lowest
+   positive value of `tabindex`, or with `tabindex="0"`, or that is a built-in sequentially focusable
+   element that has not opted-out via `tabindex="-1"`).
+
+Algorithmically, during "forward" sequential focus navigation, if the element being considered is:
+1. a member of a `focusgroup` AND is the first focusable `focusgroup` candidate of that `focusgroup` THEN:
+   1. if the `focusgroup`'s memory is available and not empty, then move focus to the element referred
+       to by the `focusgroup`'s memory.
+   2. otherwise, if there is NO first sequentially-focusable `focusgroup` candidate in that
+       `focusgroup`, then move focus to this element.
+2. otherwise, continue with the sequential focus navigation algorithm as normal.
+
+For "reverse" sequential focus navigation, the algorithm is similar, but swap occurrences of the
+"first focusable `focusgroup` candidate" for "last focusable `focusgroup` candidate".
+
+Because this algorithm applies only when interrogating the first (or last) focusable `focusgroup`
+candidate, then any descendants that precede (or follow) the first (or last) focusable
+`focusgroup` candidate that themselves define a `focusgroup` are considered first. In other words,
+broad-reaching ancestral `focusgroup`s won't necessarily "steal" focus from descendant `focusgroup`s
+during sequential focus navigation.
+
+## (Future Consideration) Grid focusgroups
+
+Some focusable data is structured not as a series of nested linear groups, but as a
+2-dimensional grid such as in a spreadsheet app, where focus can move logically from
+cell-to-cell either horizontally or vertically. In these data structures, it makes
+sense to support the user's logical usage of the arrow keys to move around the data.
+
+Grid navigation is expected to happen within well-structured content with consistent
+rows and columns where DOM structure reflects this organization. In `focusgroup` grid
+navigation, only the cells in the grid are `focusgroup` candidates and only the focusable
+cells become `focusgroup` items. It is not currently possible to use grid `focusgroup`s to
+support other focusable tabular parts such as focusable row elements (see
+[comment in issue 1018](https://github.com/openui/open-ui/issues/1018#issuecomment-2013053227) for
+a possible future addition for this use case).
+
+### Applicability to tabular data
+
+The arrow navigation in the grid (and in the previous non-grid scenarios) should
+reflect the accessible structure of the document, not the presentation view made
+possible with CSS. For example, it is easy to create views that visually appear
+grid-like, but do not make sense to navigate like a grid if considering that the
+data model is fundamentally a list, which is how users of accessibility technology
+would perceive it. Wrapping a list of contact cards on screen in a grid-like
+presentation allows for more content density on screen for sighted users. In that
+scenario, arrow key navigation to move linearly (left-to-right following the
+line-breaking across each line) through the contents makes sense (especially if
+these are alphabetized), but orthogonal movement through the "grid" (up/down when
+cards are aligned or in a masonry layout) jumps the focus to seemingly arbitrary
+locations. Multi-directional arrow key navigation may seem appropriate for sighted
+users that have the visual context only, but are not appropriate for assistive
+technology. In the case of the list-presented-as-a-grid scenario, a linear
+focusgroup will make the most sense for sighted as well as users with accessibility
+needs.
+
+When considering using a grid `focusgroup`, be sure that the data is structured
+like a grid and that the structure makes semantic sense in two dimensions (and not
+just for a particular layout or presentation).
+
+Tabular data can be structured using column-major or row-major organization. Given
+that HTML tables and ARIA attributes for grids (`role="grid"`, `role="row"`, `role="gridcell"`)
+only exist for row-major grid types, this proposal does **not define** grid `focusgroup`
+organization for column-major data structures (and assumes row-major data structures
+throughout).
+
+
+### Setting up a grid focusgroup
+
+Grid `focusgroup`s can be created "automatically" or manually. Automatic grids use the context
+of existing HTML semantics for tables as the structural components necessary to provide grid-based
+navigation. Any elements with computed table layout are suitable for an automatic grid (e.g.,
+`display: table-row` in place of using a `<tr>` elements).
+[Manual grid](#manual-grids-row-and-cell-connections) creation requires
+annotating specific elements with their `focusgroup` grid component names.
+
+Note: We are evaluating the suitability for CSS `display: grid` to create automatic grids.
+
+The automatic grid approach will be preferable when the grid contents are uniform
+and consistent and when re-using semantic elements for grids (typical). The manual
+approach may be necessary when the grid structure is not uniform or structurally
+inconsistent (atypical), and involves identifying the parts of the grid on specific
+`focusgroup` candidates using CSS.
+
+Elements with the `grid` `focusgroup` definition on the root element of the structural
+grid become automatic grid `focusgroup`s. The implementation must attempt to validate
+the structure of the grid to ensure it has appropriate row and cell structures. In the
+event that the implementation cannot automatically determine the grid structure, then
+the definition is ignored (i.e., there is no fallback to a linear grid).
+
+| HTML | Explanation |
+|---|---|
+| `focusgroup="grid"` | Establishes the root of an automatic grid `focusgroup`. Shadow-inclusive descendants of the automatic grid are identified and assigned `focus-group-type: grid-row` and `focus-group-type: grid-cell` `focusgroup` candidate status automatically. |
+
+Example:
+
+```html
+<table aria-label="Tic tac toe grid" role="grid" focusgroup="grid">
+  <tr>
+    <td tabindex="-1"></td>
+    <td tabindex="-1"></td>
+    <td tabindex="-1"></td>
+  </tr>
+  <tr>
+    <td tabindex="-1"></td>
+    <td tabindex="-1"></td>
+    <td tabindex="-1"></td>
+  </tr>
+  <tr>
+    <td tabindex="-1"></td>
+    <td tabindex="-1"></td>
+    <td tabindex="-1"></td>
+  </tr>
+</table>
+```
+
+The `<table>`'s grid `focusgroup` definition automatically establishes each of its
+descendant `<tr>`s as `focusgroup` rows (the parser-generated `<tbody>` is
+accounted for) and `<td>`s as `focusgroup` cells. Each `focusgroup` cell is a scope
+root for one `focusgroup` item per cell, and the cell and its shadow-inclusive descendants are all
+`focusgroup` candidates. Among all `focusgroup` cells, the left/right arrow keys navigate between cells
+in the table, and up/down arrow keys will compute the new target based on the DOM position of the
+current `focusgroup` candidate cell in relation to the `focusgroup` candidate row.
+
+### Manual grids: row and cell connections
+
+A manual grid is declared in a `focusgroup` definition with the name `manual-grid`.
+With a manual grid, the rows and cells must be explicitly indicated using `grid-row` and
+`grid-cell`:
+
+| HTML (attribute value) | Explanation |
+|---|---|
+| `focusgroup="manual-grid"` | Establishes the root of a manual grid `focusgroup`. Shadow-inclusive descendants must be identified explicitly as grid rows and grid cells. |
+| `focusgroup="grid-row"` | Must be a shadow-inclusive descendant of a manual grid `focusgroup` root. |
+| `focusgroup="grid-cell"` | Must be a shadow-inclusive descendant of a manual grid `focusgroup` root and also a shadow-inclusive descendant of a grid row. |
+
+Cells cannot be descendants of other cells, and rows cannot be descendants of other rows.
+
+Each `focusgroup` candidate will perform an ancestor search to locate its nearest grid structural
+component: cells will look for their nearest row, and rows will look for their nearest grid root.
+
+In the following example, the `<my-cell>`s are all meant to be on the same row of the
+grid, and the rows are designated by `<my-row>` elements:
+
+Example:
+
+```html
+<my-root role="grid" focusgroup="manual-grid">
+  <div role="none" class="presentational_wrapper">…</div>
+  <my-row role="row" focusgroup="grid-row">
+    <first-thing role="gridcell" focusgroup="grid-cell">…</first-thing>
+    <cell-container role="none">
+      <my-cell role="gridcell" focusgroup="grid-cell">…</my-cell>
+      <my-cell role="gridcell" focusgroup="grid-cell">…</my-cell>
+    </cell-container>
+    <cell-container role="none">
+      <my-cell role="gridcell" focusgroup="grid-cell">…</my-cell>
+      <my-cell role="gridcell" focusgroup="grid-cell">…</my-cell>
+    </cell-container>
+  </my-row>
+  <!-- repeat pattern of div/my-row pairs... -->
+</my-root>
+```
+
+The following non-uniform structure can still have grid semantics added
+via `manual-grid`:
+
+Example:
+
+```html
+<div role="grid" focusgroup="manual-grid flow">
+  <div role="row" focusgroup="grid-row">
+    <div>
+      <div role="gridcell" focusgroup="grid-cell"></div>
+      <div role="gridcell" focusgroup="grid-cell"></div>
+    </div>
+  </div>
+  <div>
+    <div role="row" focusgroup="grid-row">
+      <div role="gridcell" focusgroup="grid-cell"></div>
+      <div role="gridcell" focusgroup="grid-cell"></div>
+    </div>
+  </div>
+  <div>
+    <div>
+      <div role="row" focusgroup="grid-row">
+        <div>
+          <div role="gridcell" focusgroup="grid-cell"></div>
+          <div role="gridcell" focusgroup="grid-cell"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Grid focusgroup nesting
+
+Unlike linear `focusgroup`s, an automatic or manual grid `focusgroup` requires a small degree of DOM
+structure to work correctly. Unless the proper structure exists, the grid `focusgroup` won't work.
+
+Attempts to define new grid or linear `focusgroup`s among the DOM elements that make up the
+structure of a grid `focusgroup` (such as on or between elements defining the root grid
+container, the grid-rows and the grid-cells) will be ignored. However new grid or linear
+`focusgroup`s **can be defined** on elements that are shadow-inclusive descendants of grid-cell
+elements (e.g., that are outside the set of elements making up the grid's DOM structure).
+
+### Empty Cell data
+
+Like linear `focusgroup`s, focus is only set on elements that are focusable. The arrow key navigation
+algorithms look for the first `focusgroup` item (in DOM order) of a grid `focusgroup` cell in the
+direction the arrow was pressed. Non-focusable grid `focusgroup` candidates of a `focusgroup` cell
+are passed over in the search.
+
+### Non-uniform cells
+
+It is entirely possible to have rows with non-uniform numbers of cells. In these
+cases, `focusgroup` navigation behaviors may not work as visibly desired. Algorithms
+for navigating grid `focusgroup`s will work based on content the grid content structure
+as specified. If the algorithms conclude that there is no "next candidate cell" to
+move to (e.g., in a grid with two rows, and the bottom row has three cells, and the
+top row only two, if the focus is on the 3rd cell, a request to move "up" to the prior
+row cannot be honored because there is no "3rd cell" in that row.
+
+## (Future Consideration) Additional Keyboard support
+
+In addition to arrow keys, the `focusgroup` should also enable other navigation keys such as
+pageup/down for paginated movement (TBD on how this could be calculated and in what
+increments), as well as the home/end keys to jump to the beginning and end of groups.
+
+It might also be interesting to add support for typeahead scenarios (though what values to
+look for when building an index would need to be worked out, and may ultimately prove to be
+too complicated).
+
+
+### Authoring guidance
+1. Put the behavior token first: `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
+2. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.).
+3. For detailed precedence (mismatches, inference limits, overrides) see [Precedence & Overrides](#precedence--overrides).
+
+### Alternatives considered
+When considering how to ensure that `focusgroup` usage is scoped to scenarios we want, the following
+approaches were considered.
+1. Role-required gating (original): only activates when an eligible `role` attribute is present. Rejected: couples behavior activation to ARIA; breaks precedent.
+2. Parent-only implicit role (earlier alternative): ensures that aria norms are followed, while still allowing authors to avoid repetition.
+3. Adopted (parent token + child inference): Same as above, but additionally sets the expected role on children that participate in the `focusgroup`.
+## Open Questions
+
+1. **Supported Behaviors:** The [list of supported behaviors for `focusgroup`](#supported-behaviors) is open for discussion, and I am open to input on what should be allowed.
+  * MDN documentation includes [a recommendation to **not**](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles) use `grid` and `listbox` as composite widgets, but supporting them here would send a signal that it is OK to use them in this scenario.
+  * Are there other roles not listed here that have a strong use case for `focusgroup`?
+2. **Grid Support:** The functionality for `grid` and other 2-D navigation has been moved to "Future Considerations" due to its complexity. I am open to discussing how to best implement this functionality in the future including if this should be moved into a separate explainer.
+3. **CSS Mappings:** This explainer does not currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
+4. **Attribute Functionality and Dependencies:** Feedback requested on adopted scoping (role token + optional child role inference):
+  - Exact list & phased expansion of child role inference set (which roles, staged rollout?).
+  - Should mismatched explicit container `role` vs first token trigger a console warning or be silent?
+  - Policy for console warnings vs silent ignore on token / role mismatches.
+5. **Alternative approaches to scope focusgroup to specific scenarios**
+  - (A) Current: first token = pattern + (optional) child role inference.
+  - (B) Require explicit container `role`; tokens only modifiers (drops role token entirely).
+  - (C) Split into two attrs: `pattern="tablist" focusgroup="wrap"` (clearer separation, extra verbosity & API surface).
+  - (D) Native elements only (e.g., future `<tabs>`, `<toolbar>`, `<menubar>`); attribute becomes redundant—risk: slower coverage, custom element ecosystems still need declarative navigation.
+  - Criteria to decide: author error rate, implementation complexity, consistency with existing HTML token patterns, incremental ship path.
+8. **Keep or drop child role inference (or defer as future consideration):** Should v1 exclude automatic child role assignment entirely to reduce complexity
+      and perceived overreach (keeping only container pattern + navigation)? Rationale for revisiting: reviewer concern about mixing semantics & behavior;
+      authors can still supply explicit roles; deferring would let us ship navigation sooner and gather data on real author pain before standardizing inference.
+
+## Privacy and Security Considerations
+
+### Privacy
+
+No considerable privacy concerns are expected, but we welcome community feedback.
+
+### Security
+
+No significant security concerns are expected.
+
+## Design decisions
+
+Here is a short list to issue discussions that led to the current design of focusgroup.
+
+* [focusgroup works across Shadow DOM boundaries by default](https://github.com/openui/open-ui/issues/521)
+* [arrow key movement and directionality constraints should be aligned with content direction (add inline/block)](https://github.com/openui/open-ui/issues/522)
+* [focusgroup definitions should not be limited to direct-children](https://github.com/openui/open-ui/issues/989)
+* [focusgroup should include a memory](https://github.com/openui/open-ui/issues/537)
+* [focusgroup should be restricted to some elements only](https://github.com/openui/open-ui/issues/995)
+
+See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
+
+## Index of focusgroup values
+
+Tokens are space-separated. Order: first token MUST be a supported behavior token (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
+
+Behavior tokens: See the earlier Supported Behaviors mapping table for the definitive list, minimum container roles, and child inference notes. Explicit container and child roles always override any inference.
+
+***Focusgroup directions:***
+
+| Description | HTML syntax |
+|---|---|
+| both directions for a linear `focusgroup` | (unspecified value; default value) |
+| inline direction for a linear `focusgroup` | `inline` |
+| block direction for a linear `focusgroup` | `block` |
+
+***Focusgroup wrapping:***
+
+| Description | HTML syntax |
+|---|---|
+| no wrap | (unspecified value; default value) |
+| wrap | `wrap` |
+| flow (grid focusgroups only) | `flow` |
+| column specific | `col-wrap`, `col-flow`, `col-none` |
+| row specific | `row-wrap`, `row-flow`, `row-none` |
+
+***Focusgroup memory:***
+
+| Description | HTML syntax |
+|---|---|
+| enable memory | (unspecified value; default value) |
+| disable memory | `no-memory` |
+
+Authoring shorthand examples:
+
+| Pattern | Markup |
+|---|---|
+| Wrapping toolbar | `<div focusgroup="toolbar wrap">…` |
+| Horizontal manual-activation tabs (no memory) | `<div focusgroup="tablist inline wrap no-memory">…` |
+| Simple radiogroup | `<div focusgroup="radiogroup">…` |
+| Vertical listbox (block axis) | `<div focusgroup="listbox block">…` |
+
+## Acknowledgments
+
+Thanks to everyone who spent time discussing and contributing to the focusgroup design and implementation, including the members of the OpenUI Community Group. Your insights, ideas, and contributions have been indispensable.
