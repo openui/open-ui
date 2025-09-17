@@ -1,0 +1,141 @@
+---
+menu: Active Proposals
+name: Toolbar Elements (Explainer)
+path: /components/toolbar.explainer
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors: [@lukewarlow](https://github.com/lukewarlow)
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [New `<toolbar>` element](#new-toolbar-element)
+- [General questions](#general-questions)
+- [Examples in code](#examples-in-code)
+- [Reading List](#reading-list)
+- [Issues / Discussions](#issues--discussions)
+
+## Introduction
+
+A toolbar is a common user interface pattern used to provide quick access to a group of commands, represented using controls such as [press buttons](/components/press-button.explainer), [menus](/components/menu.explainer) and other such controls.
+
+This proposal introduces a new `<toolbar>` element. The `<toolbar>` will:
+- Represent a grouping of controls (e.g. buttons, select boxes, press buttons).
+- Provide the correct implicit ARIA role and keyboard interaction model out of the box.
+- Allow web developers to create consistent, accessible toolbars without re-implementing ARIA patterns.
+
+Use cases:
+- The formatting toolbar in a document editor (bold, italic, underline, font family).
+- The main command toolbar in a drawing or photo editing app.
+- A simple toolbar with a search field and filter buttons in a catalogue.
+
+## New `<toolbar>` element
+
+`<toolbar>`
+
+- Represents a **group of controls**.
+- Provides implicit `role="toolbar"`.
+- Toolbars are displayed horizontally by default.
+- Provides correct keyboard navigation behaviour.
+
+## General questions
+
+### What should be the keyboard behavior?
+
+This element will implicitly provide the same behaviour as a [toolbar focusgroup](/components/scoped-focusgroup.explainer#supported-behaviors).
+
+- It will contain a single tab-stop.
+- Arrow-keys can be used to navigate between focusable children.
+- Home keys can be used to jump to the beginning or end of the toolbar.
+
+### How can users customize the UI of this toolbar element with CSS?
+
+We propose this element should not support the CSS appearance property and just have a "base" appearance by default like the `<dialog>` element.
+
+**Questions**
+
+* `<toolbar>` should display children horizontally, but support using CSS writing-mode.
+    * Can have vertical case by:
+        * Set CSS `writing-mode: vertical-lr` on the `<toolbar>`
+        * Should this affect arrow-key directionality?
+* Does `<toolbar>` support separators?
+    * If so, we should support `<hr>` for this.
+* Toolbars generally should be labelled, it is a MUST if there are multiple on a page. Should we support this via HTML,
+  or still rely on aria?
+    * Could use `<legend>` to do this?
+
+## Examples in code
+
+
+### Google Docs: Toolbar
+
+
+<img src="/images/toolbar-google-docs.png" alt="A toolbar element as seen in Google Docs." />
+
+```html
+<toolbar aria-label="Main">
+ <button id="undoButton" aria-label="Undo"><img src="..." alt=""></button>
+ <button id="redoButton" aria-label="Redo"><img src="..." alt=""></button>
+ <button id="printButton" aria-label="Print"><img src="..." alt=""></button>
+ <input id="zoomSelect" list="zoom" aria-label="Zoom">
+ ...
+</toolbar>
+<datalist id="zoom">
+  <option>Fit</option>
+  <option>50%</option>
+  ...
+</datalist>
+
+<script>
+undoButton.addEventListener("click", () => {
+  undo();
+});
+</script>
+```
+
+## Future enhancements
+
+We envision more advanced capabilities in the future that could enhance the usability of the toolbar
+designed in this explainer, but that are not necessarily in scope for our initial
+proposal.
+
+One such capability is keyboard shortcuts to invoke controls within the toolbar; see
+https://github.com/openui/open-ui/issues/1225. We envision that this could be provided by a more
+advanced version of the
+[`accesskey`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/accesskey)
+primitive, that would provide customizable key commands that apply outside the scope of our
+proposal.
+
+## Reading List
+
+### ARIA guidelines
+- the ARIA [toolbar role](https://w3c.github.io/aria/#toolbar)
+- the [Core AAM mappings](https://www.w3.org/TR/core-aam-1.2/#role-map-toolbar)
+
+### Relevant ARIA issues
+- [ARIA] [Allow posinset/setsize for toolbars](https://github.com/w3c/aria/issues/2158)
+
+### APG pattern recommendations (note these are not guidelines)
+- [toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/)
+  - [toolbar example](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/examples/toolbar/)
+
+### Blog posts from accessibility community
+- Fill as and when they're discovered
+
+### Blog posts for Design System
+- https://developer.apple.com/design/human-interface-guidelines/toolbars
+
+## Issues / Discussions
+
+This section links to all of the relevant discussions and [issues](https://github.com/openui/open-ui/issues?q=is%3Aissue%20state%3Aopen%20label%3Atoolbar) related to `toolbar`:
+
+### OpenUI
+- [Toolbar element proposal](https://github.com/openui/open-ui/issues/1283)
+- [Explicitly mention whether reading-flow should impact arrow key navigation](https://github.com/openui/open-ui/issues/1187)
+- [Improve distinction between menubar and toolbar](https://github.com/openui/open-ui/issues/1188)
+- [Define orientation attribute](https://github.com/openui/open-ui/issues/1201)
