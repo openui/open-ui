@@ -179,7 +179,7 @@ For mouse or keyboard users, delays are important for a number of reasons:
 1. Simply hovering or focusing an element should not be enough to show interest in that element, since the user might just be moving from one place to another, and not trying to pause and show interest. It would be highly distracting to the user if such a move caused many popovers to show up. For this reason, showing interest needs to be done by hovering/focusing an element **for a period of time**.
 2. For a similar reason, losing interest cannot be provided by *just* de-hovering/blurring the element. For example, in the common case of a link that has a hovercard, it is very common for the hovercard to be separated from the element by some padding space. And it is also common for mouse users to want to move their mouse *from* the link *to* the hovercard, e.g. to select and copy some text. However, since there's a gap between the elements, moving the mouse across that gap constitutes a de-hover of both the element and its target. For this reason, losing interest needs to be done by de-hovering the element (and its target) **for a period of time**.
 
-Both of these time periods need to be CSS-configurable, because different use cases can require different delays. For example, a responsive gaming site might want very short delays, including potentially zero-delay. On the other hand, information-rich sites such as Wikipedia might want longer delays to ensure their content is easily accessible to all. To achieve this, two properties, `interest-show-delay` and `interest-hide-delay`, will control the corresponding delays. Because, as described above, both of these delays are fairly critical to proper operation of the interest mechanism, both properties will default to a non-zero value, 0.5 seconds. A shorthand `interest-delay` property will control both.
+Both of these time periods need to be CSS-configurable, because different use cases can require different delays. For example, a responsive gaming site might want very short delays, including potentially zero-delay. On the other hand, information-rich sites such as Wikipedia might want longer delays to ensure their content is easily accessible to all. To achieve this, two properties, `interest-delay-start` and `interest-delay-end`, will control the corresponding delays. Because, as described above, both of these delays are fairly critical to proper operation of the interest mechanism, both properties will default to a non-zero value, 0.5 seconds. A shorthand `interest-delay` property will control both.
 
 There was some discussion about the need to allow UAs to modify these delays based on user needs. For example, some users might require longer delays to be able to navigate between popovers. There was a [discussion](https://github.com/w3c/csswg-drafts/issues/9236) about potentially using keywords (e.g. "short", "medium", "long") rather than explicit numbers for these properties. However, there was strong pushback against that for several reasons, the primary one being that it's not possible to normalize all sites down to a small set of named values. The alternative suggestion, which meets the use case, is that the UA is allowed to modify delays, as needed, to be a proper agent for the user. One example might be a setting like "multiply all delays by 10x", or "all delays have a minimum of 5s", etc.
 
@@ -199,14 +199,14 @@ It is handy to be able to select elements that both a) have the `interestfor` at
 }
 ```
 
-2. "Speeding up" the `interest-show-delay` when another element already has interest. This is a common request: for example, the first popover hovercard takes ~1 second to show up. But then if you quickly hover another element that also triggers a hovercard, that one shows up much more quickly:
+2. "Speeding up" the `interest-delay-start` when another element already has interest. This is a common request: for example, the first popover hovercard takes ~1 second to show up. But then if you quickly hover another element that also triggers a hovercard, that one shows up much more quickly:
 
 ```
 [interestfor] {
   interest-delay: 1s;
 }
 container:has(:interest-source) [interestfor] {
-  interest-show-delay: 0s;
+  interest-delay-start: 0s;
 }
 ```
 
@@ -289,8 +289,8 @@ Expanding on the example above, here we add custom hover delays for show and hid
 
 <style>
   [interestfor] {
-    interest-show-delay: 0.5s;
-    interest-hide-delay: 200ms;
+    interest-delay-start: 0.5s;
+    interest-delay-end: 200ms;
   }
 </style>
 ```
@@ -418,7 +418,7 @@ Since this API does not expose any details of *how* the user indicated interest,
 
 ### Safe Area Triangle
 
-The events `interest` and `loseinterest` are intentionally abstract to allow more complex usability concepts to unfold. It is possible that a future capability might be to add automatic "safe areas" or "hit triangles", which allow the user to move the pointer between the Interest Invoker (e.g. the button) and Interestee (e.g. the hovercard), regardless of the `interest-hide-delay` setting. See [#963](https://github.com/openui/open-ui/issues/963) for more.
+The events `interest` and `loseinterest` are intentionally abstract to allow more complex usability concepts to unfold. It is possible that a future capability might be to add automatic "safe areas" or "hit triangles", which allow the user to move the pointer between the Interest Invoker (e.g. the button) and Interestee (e.g. the hovercard), regardless of the `interest-delay-end` setting. See [#963](https://github.com/openui/open-ui/issues/963) for more.
 
 ### What if I (the developer) don't want the touchscreen context menu
 
