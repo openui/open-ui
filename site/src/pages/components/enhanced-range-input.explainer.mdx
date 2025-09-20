@@ -6,7 +6,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 
 - Author(s): [Brecht De Ruyte](https://utilitybend.com)
-- Last updated: 07 May 2025
+- Last updated: 19 Sep 2025
 
 ## Table of Contents
 
@@ -97,11 +97,12 @@ This opt-in approach allows developers to access enhanced styling capabilities w
 
 ## Multi-Handle Support with `<rangegroup>`
 
-
-
-
 Based on community feedback and discussions, we propose a new approach for multi-handle functionality. Instead of adding a new attribute to the existing `<input type="range">` element or adding a new type, we believe a new `<rangegroup>` element could offer us the correct flexibility.
-This would be a wrapper element that can contain multiple `<input type="range">` elements. This approach offers several advantages:
+This would be a wrapper element that can contain multiple `<input type="range">` elements.
+
+A live proof-of-concept demonstrating these ideas can be found at: [https://brechtdr.github.io/enhanced-range-slider-poc/](https://brechtdr.github.io/enhanced-range-slider-poc/)
+
+This approach offers several advantages:
 
 - Easy feature detection
 - Better progressive enhancement as browsers that don't support `<rangegroup>` will still display individual range inputs
@@ -111,9 +112,12 @@ This would be a wrapper element that can contain multiple `<input type="range">`
 
 ### Example usage:
 ```html
-<rangegroup name="temperature-range" min="-100" max="100">
-  <input type="range" name="temperature-range-min" min="-50" max="0" value="-25">
-  <input type="range" name="temperature-range-max" min="0" max="20" value="15">
+<rangegroup>
+  <legend>Temperature Range</legend>
+  <label for="temp-min">Minimum Temperature</label>
+  <input type="range" id="temp-min" name="temp-min" value="-25">
+  <label for="temp-max">Maximum Temperature</label>
+  <input type="range" id="temp-max" name="temp-max" value="15">
 </rangegroup>
 ```
 
@@ -122,23 +126,67 @@ The `<rangegroup>` element would visually present these as a single slider with 
 
 ## Accessibility Enhancements
 
-To improve accessibility, especially for multi-handle ranges, we propose making individual thumbs focusable and providing clear audio cues for screen readers. The `<rangegroup>` approach naturally supports this by preserving the individual input elements with their native accessibility features. For keyboard navigation, users can tab between individual range inputs within a `<rangegroup>`, and each input maintains its standard keyboard controls (arrow keys for adjustment).
+To improve accessibility, especially for multi-handle ranges, the `<rangegroup>` element is designed to work with established HTML patterns for labeling and grouping form controls.
+
+Individual thumbs must be focusable and operable via the keyboard. The `<rangegroup>` approach achieves this by using actual `<input type="range">` elements for each handle, preserving their native accessibility features. Users can tab between handles, and each handle maintains its standard keyboard controls (e.g., arrow keys for adjustment).
 
 ### Labeling
 
-A `<rangegroup>` can have an associated label by referencing the `id` and use the `for` attribute on the label.
+A robust labeling strategy is crucial for users of assistive technologies. We propose a pattern that mirrors the accessible and progressively enhanced structure of `<fieldset>` and `<legend>`.
 
-## Progressive Enhancement
+**Group Label:** The `<rangegroup>` element should be labeled by including a `<legend>` element as a direct child. This provides the accessible name for the entire group of sliders.
 
-The `<rangegroup>` approach provides natural progressive enhancement. Browsers that do not support the new element will display the individual range inputs as separate controls, maintaining basic functionality.For example, in a non-supporting browser, this code:
+**Individual Handle Labels:** Each `<input type="range">` within the group should have its own accessible name. This can be provided using standard methods, in the following order of preference:
+
+1.  A `<label>` element associated with the input's `id`.
+2.  An `aria-label` or `aria-labelledby` attribute on the `<input>`.
+
+If an explicit name is not provided, browsers could offer a localized default for common two-handle scenarios (e.g., "minimum" and "maximum"). However, authors should always provide explicit, descriptive labels for clarity, especially when more than two handles are present.
+
+#### Example Implementation
+
 ```html
-<rangegroup name="price-range" min="0" max="1000">
-    <input type="range" name="price-min" min="0" max="500" value="100">
-    <input type="range" name="price-max" min="500" max="1000" value="750">
+<rangegroup>
+  <legend>Price Range</legend>
+
+  <label for="price-min">Minimum Price</label>
+  <input type="range" id="price-min" name="price-min" value="25">
+
+  <label for="price-max">Maximum Price</label>
+  <input type="range" id="price-max" name="price-max" value="75">
 </rangegroup>
 ```
 
-Would render as two separate range inputs, still allowing users to select minimum and maximum values, but without the unified visual presentation.
+#### Focus Behavior
+
+This approach also defines clear focus behavior.
+- Clicking a `<label>` will focus its associated `<input>`'s handle, as is standard for form controls.
+- The `<legend>` element provides a group name but does not have a default click-to-focus behavior. This is appropriate, as there are multiple focusable targets within the group, avoiding ambiguity.
+
+## Progressive Enhancement
+
+The `<rangegroup>` approach is designed with progressive enhancement as a core principle. In browsers that do not support the element, the markup gracefully degrades to standard, functional HTML form controls.
+
+For example, consider a price range selector:
+```html
+<rangegroup>
+  <legend>Price Range</legend>
+
+  <label for="price-min">Minimum Price</label>
+  <input type="range" id="price-min" name="price-min" value="100" min="0" max="1000">
+
+  <label for="price-max">Maximum Price</label>
+  <input type="range" id="price-max" name="price-max" value="750" min="0" max="1000">
+</rangegroup>
+```
+
+**In a supporting browser:** This renders as a single slider track with two draggable handles, labeled "Minimum Price" and "Maximum Price", under a group heading of "Price Range".
+
+**In a non-supporting browser:** This renders as two separate, standard `<input type="range">` sliders. Each slider is correctly labeled, fully functional, and accessible. The `<legend>` will appear as plain text, still providing context for the group of inputs that follow. This ensures the form remains usable and understandable for all users, regardless of browser support, without requiring JavaScript polyfills for basic functionality.
+
+### Design Consideration: `range` vs. `number` inputs
+
+A consideration was raised whether `<input type="number">` might serve as a better base for progressive enhancement than multiple `<input type="range">` elements. While `<input type="number">` provides a valid fallback for setting a range, we believe using base `<input type="range">` elements better preserves the design intent. A range input is designed for selecting an *approximate* value within a scale, where the user is more interested in the position along the track than a precise number. This aligns with the visual metaphor of the enhanced `<rangegroup>` component. Using `<input type="range">` as the fallback provides a more equitable, if not identical, user experience.
 
 ## Datalist Integration
 
@@ -147,8 +195,11 @@ For `<rangegroup>` elements, the `<datalist>` can be associated with the group a
 
 ```html
 <rangegroup name="price-range" min="0" max="100" list="price-ticks">
-    <input type="range" name="price-min" min="0" max="50" value="20">
-    <input type="range" name="price-max" min="50" max="100" value="80">
+    <legend>Price Range</legend>
+    <label for="price-min-datalist">Minimum Price</label>
+    <input type="range" id="price-min-datalist" name="price-min" min="0" max="50" value="20">
+    <label for="price-max-datalist">Maximum Price</label>
+    <input type="range" id="price-max-datalist" name="price-max" min="50" max="100" value="80">
 </rangegroup>
 <datalist id="price-ticks">
     <option value="0">$0</option>
@@ -164,7 +215,7 @@ Alternatively, datalist could be provided on each input as well. While these won
 
 ## Multi-Color Range Segments
 
-To support different colors between handles in a `<rangegroup>`, we introduce the `::slider-segment` pseudo-element. This allows for granular control over the appearance of each segment in the range.Example usage:
+To support different colors between handles in a `<rangegroup>`, we introduce the `::slider-segment` pseudo-element. This allows for granular control over the appearance of each segment in the range, enabling rich user interfaces such as budget allocators where each segment can represent a different category. Example usage:
 
 ```css
 rangegroup::slider-segment:nth-child(1) {
@@ -189,29 +240,47 @@ The amount of segments get crated based on the amount of thumbs.
 
 ### `<rangegroup>` Attributes
 
-- `min`: Specifies the minimum value for the entire range group overruling the children's attribute.
-- `max`: Specifies the maximum value for the entire range group overruling the children's attribute.
+- `min`: Specifies the minimum value for the entire range group, defining the lower bound of the track.
+- `max`: Specifies the maximum value for the entire range group, defining the upper bound of the track.
 - `name`: The name of the range group, used for identification.
 - `list`: Links the range group to a `<datalist>` element, providing tick marks or predefined values.
 - `stepbetween`: Defines the minimum distance between handles in a range group.
 
-```html
-<rangegroup name="price-range" min="0" max="1000" stepbetween="50" list="price-ticks">
-    <input type="range" name="price-min" min="0" max="500" value="100">
-    <input type="range" name="price-max" min="500" max="1000" value="750">
-</rangegroup>
-```
-
 ### `<input type="range">` Attributes (within a `<rangegroup>`)
 
-In general, everything is still possible for individual inputs inside of the `<rangegroup>`.
-The following specifies how they would work together with the new wrapper element.
+These attributes function as they normally would, but their values are constrained by the parent `<rangegroup>`.
 
-- `min`: The minimum value for this specific handle.
-- `max`: The maximum value for this specific handle.
-- `value`: The current value of this handle. This still updates individually by changing the thumb
+- `min`: The minimum value for this specific handle. Its effective range is determined by its interaction with the parent `<rangegroup>`.
+- `max`: The maximum value for this specific handle. Its effective range is determined by its interaction with the parent `<rangegroup>`.
+- `value`: The current value of this handle. This still updates individually by changing the thumb.
 - `name`: The name of this specific range input for form submission.
 - `step`: The step increment for this specific handle. This results in the steps of the thumb in a rangegroup environment, meaning that each thumb could potentially have different steps.
+
+### `min` and `max` Attribute Interaction
+The `<rangegroup>` element and its child `<input type="range">` elements can both have `min` and `max` attributes. Their interaction is key to providing both flexibility and a coherent progressive enhancement story.
+
+- **`<rangegroup>` `min` and `max`**: These attributes define the overall coordinate space of the slider. They determine the full visual range of the track.
+- **`<input>` `min` and `max`**: These attributes define the allowable value range for that specific handle.
+
+The **effective range** for any given handle is the intersection of its own constraints and the parent `<rangegroup>`'s constraints. The tightest constraint always wins. In other words, a handle's value must be greater than or equal to both its own `min` and the group's `min`, and less than or equal to both its own `max` and the group's `max`.
+
+1.  **If a handle's range is within the group's range** (e.g., `rangegroup max="100"`, `input max="70"`): The track will render from 0 to 100, but the handle will be prevented from moving past 70. This is a desirable pattern for use cases like a seek bar for a live video stream, where the total buffer is visible but the user cannot seek into the future.
+2.  **If a handle's range exceeds the group's range** (e.g., `rangegroup max="100"`, `input max="200"`): The handle's movement will be **clamped** by the `<rangegroup>`'s bounds. The handle will not be able to exceed a value of 100. This ensures the component's visual representation is the source of truth and prevents invalid states.
+
+This model supports progressive enhancement. In a non-supporting browser, the individual inputs with their `min` and `max` attributes function correctly as standalone sliders. When `<rangegroup>` is supported, it unifies the UI and can apply overarching constraints without breaking the underlying inputs.
+
+### Track Click Behavior
+
+To provide an intuitive single-pointer interaction model, the `<rangegroup>` component's track-clicking behavior mirrors that of the native `<input type="range">`.
+
+When a user clicks or taps anywhere on the slider's track, the component identifies the thumb **closest** to the click location and moves it to that position.
+
+This approach offers several benefits:
+
+- **Familiarity:** It aligns with user expectations based on the standard behavior of single-handle sliders and some popular component libraries.
+- **Direct Manipulation:** It provides a quick and direct way for users to move any handle to a desired point with a single click, without needing to drag.
+
+While this interaction is powerful, it's worth noting that on touch devices with coarse pointers, care must be taken to avoid accidental adjustments. However, we believe the benefit of adhering to a well-established browser-native pattern provides the most valuable and predictable user experience.
 
 ## CSS Properties and Pseudo-elements
 
@@ -314,8 +383,11 @@ console.log(rangeGroup.values); // [150, 750]
 
 ```html
  <rangegroup name="price-range" min="0" max="1000">
-    <input type="range" name="price-min" min="0" max="500" value="250" step="10">
-    <input type="range" name="price-max" min="500" max="1000" value="750" step="10">
+    <legend>Price Range</legend>
+    <label for="price-min-ex1">Minimum Price</label>
+    <input type="range" id="price-min-ex1" name="price-min" min="0" max="500" value="250" step="10">
+    <label for="price-max-ex1">Maximum Price</label>
+    <input type="range" id="price-max-ex1" name="price-max" min="500" max="1000" value="750" step="10">
 </rangegroup>
 ```
 
@@ -353,9 +425,13 @@ rangegroup::slider-segment:nth-child(3) {
 
 ```html
 <rangegroup name="temperature-range" min="-100" max="100">
-    <input type="range" name="temp-low" min="-100" max="-25" value="-50">
-    <input type="range" name="temp-medium" min="-25" max="25" value="0">
-    <input type="range" name="temp-high" min="25" max="100" value="75">
+    <legend>Temperature Range</legend>
+    <label for="temp-low">Low</label>
+    <input type="range" id="temp-low" name="temp-low" min="-100" max="-25" value="-50">
+    <label for="temp-medium">Medium</label>
+    <input type="range" id="temp-medium" name="temp-medium" min="-25" max="25" value="0">
+    <label for="temp-high">High</label>
+    <input type="range" id="temp-high" name="temp-high" min="25" max="100" value="75">
 </rangegroup>
 ```
 ```css
@@ -402,13 +478,9 @@ rangegroup::slider-segment:nth-child(4) {
 - Should we provide built-in support for non-linear scales (e.g., logarithmic)?
 - Should we consider additional pseudo-elements for more granular styling control?
 - How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a slider-orientation property that could be adopted for this purpose.
-- Should we adopt the `::slider-*` naming convention from the CSS Forms specification for all pseudo-elements, or keep some with the `::range-*` prefix to distinguish between standard range functionality and the multi-handle extensions?
 - How should we handle the positioning and spacing of tick marks when using `<datalist>` with `<rangegroup>` elements?
 - Should we provide options for automatic tick mark generation (e.g., evenly spaced) without requiring a `<datalist>`? These could be auto-generated based on a step attribute of a rangegroup
 - How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks? Is this author responsibility?
-- How should we handle color transitions between segments in multi-handle ranges? Should there be an option for gradient transitions? Maybe grouping of segments?
 - Should we provide a way to programmatically set segment colors with a JavaScript API?
-- How should the individual range inputs' `min` and `max` attributes interact with the parent `<rangegroup>`'s `min` and `max` attributes, should they overrule?
 - What should the behavior be when a handle's value is updated programmatically to a value that would violate the constraints imposed by `stepbetween` or other range limits?
 - How should form submission work for `<rangegroup>` elements? Should they submit as a single value (comma-separated) or as multiple values with the same name?
-
