@@ -7,11 +7,13 @@ layout: ../../layouts/ComponentLayout.astro
 
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior contributors (from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer)): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
- - Last updated: 2025-08-21
+ - WHATWG issue: https://github.com/whatwg/html/issues/11641
+ - Last updated: 2025-09-18
 
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Focusgroup Tokens](#focusgroup-tokens)
 - [Differences from the original explainer](#differences-from-the-original-explainer)
   - [CSS support is now a future consideration](#css-support-is-now-a-future-consideration)
   - [Grid support is now a future consideration](#grid-support-is-now-a-future-consideration)
@@ -100,15 +102,40 @@ After (single declarative attribute):
   <button type="button">Bold</button>
   <button type="button">Italic</button>
   <button type="button">Underline</button>
-  <script>
-    // Now with focusgroup, the author only needs to implement selection & feature logic.
-  </script>
 </div>
+<script>
+  // Now with focusgroup, the author only needs to implement selection & feature logic.
+</script>
 ```
 What changed:
 * `focusgroup="toolbar wrap"` supplies the role (first token) + wrap behavior.
 * Roving tabindex + arrow key handling + memory are native (no JS for core movement).
 * Selection / pressed state (e.g., toggling Bold) and any advanced commands remain author logic.
+
+## Focusgroup Tokens
+
+Simple usage (space-separated tokens):
+
+```html
+<div focusgroup="<behavior> [inline|block] [wrap] [no-memory]">
+  <div tabindex="-1">One</div>
+  <div tabindex="-1">Two</div>
+  <div tabindex="-1">Three</div>
+</div>
+```
+
+Opting an element and its subtree out of an ancestor focusgroup, see: [Opting-out](#opting-out):
+```html
+<div focusgroup="none"></div>
+```
+
+| Token | Required? | What it does |
+|-------|-----------|--------------|
+| `<behavior>` | Yes (unless using `none`) | Token describing the intended behavior. See: [Supported Behaviors](#supported-behaviors). |
+| `inline` / `block` | Optional | Restrict arrow navigation to that logical axis. Omit to allow both axes. |
+| `wrap` | Optional | Loops end→start and start→end. |
+| `no-memory` | Optional | Disable restoring last-focused item on re-entry (memory is on by default). |
+| `none` | Standalone | Opt-out: exclude element and its subtree from ancestor focusgroup. Cannot be combined with any other token. |
 
 ## Differences from the original explainer
 [Original focusgroup explainer.](/components/focusgroup.explainer)
