@@ -714,6 +714,8 @@ In this example:
 - Focus is automatically scrolled into view when navigating between items that are off-screen
 - Authors should be aware that since focusgroup navigation takes priority over scrolling, they should take care when constructing large focusgroups to avoid a situation where content can be missed when jumping from one item to another.
 
+**Accessibility considerations:** When focusgroup items are separated by large amounts of content, arrow key navigation can skip over intermediate content that users might need to read. See the [open question about scrolling behavior](#open-questions) for potential solutions being considered.
+
 #### 2. Scrollable region within a focusgroup
 
 When a scrollable element is contained within a focusgroup, the behavior depends on whether there's a conflict between the focusgroup's arrow key handling and the scrollable element's needs.
@@ -1232,7 +1234,9 @@ approaches were considered.
   - (C) Split into two attrs: `pattern="tablist" focusgroup="wrap"` (clearer separation, extra verbosity & API surface).
   - (D) Native elements only (e.g., future `<tabs>`, `<toolbar>`, `<menubar>`); attribute becomes redundant—risk: slower coverage, custom element ecosystems still need declarative navigation.
   - Criteria to decide: author error rate, implementation complexity, consistency with existing HTML token patterns, incremental ship path.
-8. **Keep or drop child role inference (or defer as future consideration):** Should v1 exclude automatic child role assignment entirely to reduce complexity
+6. **Scrolling behavior when focus target is not in view:** Should focusgroup navigation automatically prioritize scrolling over focus movement when the next focusable item is not currently visible? This addresses accessibility concerns where arrow key navigation can skip over intermediate content that users need to read (see [GitHub issue #1008](https://github.com/openui/open-ui/issues/1008)). Potential solution:
+  - Temporarily disable focusgroup navigation when the target item is out of view, allowing normal scrolling until the item becomes visible.
+7. **Keep or drop child role inference (or defer as future consideration):** Should v1 exclude automatic child role assignment entirely to reduce complexity
       and perceived overreach (keeping only container pattern + navigation)? Rationale for revisiting: reviewer concern about mixing semantics & behavior;
       authors can still supply explicit roles; deferring would let us ship navigation sooner and gather data on real author pain before standardizing inference.
 
