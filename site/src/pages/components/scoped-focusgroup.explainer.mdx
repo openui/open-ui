@@ -679,22 +679,23 @@ This is the most common scenario—a focusgroup contained within a page or regio
 Example:
 ```html
 <div style="height: 200px; overflow: auto;">
-  <div focusgroup="toolbar inline wrap">
-    <button>Bold</button>
-    <button>Italic</button>
-    <!-- More content that makes the next button off-screen -->
-    <button>Underline</button>
+  <div focusgroup="listbox block">
+    <div tabindex="0" aria-selected="true">Item 1</div>
+    <div tabindex="-1" aria-selected="false">Item 2</div>
+    <div tabindex="-1" aria-selected="false">Item 3</div>
+    <!-- Items 4-97 would be here, creating a long scrollable list -->
+    <div tabindex="-1" aria-selected="false">Item 98</div>
+    <div tabindex="-1" aria-selected="false">Item 99</div>
+    <div tabindex="-1" aria-selected="false">Item 100</div>
   </div>
-  <!-- More content that makes this scrollable -->
 </div>
 ```
 
 In this example:
-- Left/right arrows navigate between toolbar buttons and wrap around
-- Up/down arrows scroll the container since the focusgroup is limited to `inline`
-- Focus is scrolled into view automatically when navigating between buttons
-
-Note: Focusgroup is primarily intended for grouping related controls, so it is not recommended to use focusgroup on large scrollable lists or grids of items. Instead, use focusgroup on a toolbar or menu that controls the larger scrollable content. The above example is provided to illustrate the interaction between focusgroup and scrolling, and is **not** a recommended use of focusgroup.
+- Up/down arrows navigate between list items in the focusgroup
+- Left/right arrows scroll the container horizontally (if needed) since the focusgroup is limited to `block`
+- Focus is automatically scrolled into view when navigating between items that are off-screen
+- Authors should take care to ensure that content between focusgroup items is limited to avoid a user "missing" content as they navigate through the focusgroup.
 
 #### 2. Scrollable region within a focusgroup
 
