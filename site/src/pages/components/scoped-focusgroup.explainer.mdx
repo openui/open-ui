@@ -32,7 +32,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [Key conflicts](#key-conflicts)
   - [Interactive content inside focusgroups](#interactive-content-inside-focusgroups)
   - [Key conflict elements](#key-conflict-elements)
-    - [Determining key conflict elements](#determining-key-conflict-elements)
+    - [Escape behavior for native key conflict elements](#escape-behavior-for-native-key-conflict-elements)
   - [Scrolling interactions](#scrolling-interactions)
   - [Restricted elements](#restricted-elements)
   - [Feature detection](#feature-detection)
@@ -658,11 +658,26 @@ For elements with built-in arrow key behaviors, user agents automatically provid
   <button>Print</button>
 </div>
 ```
-
 In this example:
 - The input field **is** a focusgroup item reachable via arrow keys.
 - Arrow keys are consumed for text cursor navigation once focus is within the input.
 - To ensure the user can still reach the other elements in the focusgroup, pressing Tab moves focus to the "Save" button, and Shift+Tab moves focus to the "Italic" button.
+- The "Go" button is reachable via arrow keys because it is still a focusgroup item, but the `tabindex` of -1 prevents it from being the next candidate when tabbing, matching the behavior used when entering a `focusgroup`.
+
+```html
+<div focusgroup="toolbar">
+  <button>Bold</button>
+  <button>Italic</button>
+  <div>
+    <input type="text" placeholder="Search" /> <!-- Native key conflict -->
+    <button>Go</button>
+  </div>
+  <button>Save</button>
+  <button>Print</button>
+</div>
+```
+In this example:
+- If focus was within the "Search" input, tab will invoke the escape behavior, moving focus to "Go".
 
 ### Scrolling interactions
 
@@ -1192,9 +1207,9 @@ too complicated).
 ### Authoring guidance
 1. Put the behavior token first: `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
 2. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.).
-3. For detailed precedence (mismatches, inference limits, overrides) see [Precedence & Overrides](#precedence--overrides).
+3. For detailed precedence (mismatches, inference limits, overrides) see [Behavior → role mapping & precedence](#behavior--role-mapping--precedence).
 
-### Alternatives considered
+## Alternatives considered
 When considering how to ensure that `focusgroup` usage is scoped to scenarios we want, the following
 approaches were considered.
 1. Role-required gating (original): only activates when an eligible `role` attribute is present. Rejected: couples behavior activation to ARIA; breaks precedent.
