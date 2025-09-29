@@ -37,6 +37,8 @@ layout: ../../layouts/ComponentLayout.astro
 - [Enabling wrapping behaviors](#enabling-wrapping-behaviors)
 - [Limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality)
 - [Opting-out](#opting-out)
+  - [Impact on sequential focus navigation](#impact-on-sequential-focus-navigation)
+  - [Nested Focusgroups](#nested-focusgroups)
 - [Disabling focusgroup memory](#disabling-focusgroup-memory)
 - [Adjustments to sequential focus navigation](#adjustments-to-sequential-focus-navigation)
 - [(Future Consideration) Grid focusgroups](#future-consideration-grid-focusgroups)
@@ -788,10 +790,11 @@ To opt-out:
 |---|---|
 | `focusgroup="none"` | Opt-out: this element and its shadow-inclusive descendants are not considered `focusgroup` candidates. |
 
-In the following example of a toolbar, a help section opts-out of `focusgroup` behavior so that any
-interactive content inside it is bypassed when arrowing among the primary formatting controls.
+### Impact on sequential focus navigation
 
-Example:
+When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order while splitting the focusgroup into separate segments.
+
+In the following example, a help section opts-out of `focusgroup` behavior so that any interactive content inside it is bypassed when arrowing among the primary formatting controls, but remains reachable via tabbing.
 
 ```html
 <div focusgroup="toolbar inline wrap" aria-label="Text formatting">
@@ -804,6 +807,24 @@ Example:
   <button type="button" tabindex="-1">Underline</button>
 </div>
 ```
+
+**Sequential focus navigation behavior:**
+
+1. **Entering from before:** Pressing Tab to enter this focusgroup from a preceding element will focus "Bold" (the first `focusgroup` item).
+2. **Tab from "Bold":** Pressing Tab moves focus to "Help" (the first opted-out element in sequential order).
+3. **Tab from "Help":** Pressing Tab moves focus to "Shortcuts" (following normal sequential focus navigation within the opted-out subtree).
+4. **Tab from "Shortcuts":** Pressing Tab will **re-enter the focusgroup**, but will only consider `focusgroup` items that follow "Shortcuts" in DOM order. In this case, focus moves to "Underline".
+5. **Shift+Tab from "Help":** Pressing Shift+Tab will move focus back to the focusgroup, but will only consider `focusgroup` items that precede "Help" in DOM order ("Bold" or "Italic"). The specific item chosen follows the standard [sequential focus navigation rules](#adjustments-to-sequential-focus-navigation), applied only to the focusgroup segment before "Help".
+
+**Key behaviors:**
+
+- **Multiple tab stops:** The focusgroup effectively has two sequential focus navigation entry points: one before the opted-out section and one after.
+- **Memory limitations:** When re-entering a focusgroup segment, focusgroup memory only applies to `focusgroup` items within that segment. Memory of items in other segments is not considered.
+- **Direction-based scope:** The direction of sequential focus navigation (Tab vs Shift+Tab) determines which focusgroup segment is considered for entry.
+
+**Arrow key navigation is unaffected:** Arrow keys will skip over the opted-out elements entirely. Pressing the right arrow on "Italic" will move focus directly to "Underline", treating the opted-out span as if it doesn't exist for arrow navigation purposes.
+
+### Nested Focusgroups
 
 When a `focusgroup` definition is applied to an element, it implicitly opts out of any ancestor's
 `focusgroup`s. This ensures that every element can only belong in one `focusgroup` at a time.
@@ -872,6 +893,10 @@ change:
 To ensure that a `focusgroup` always has at least one tab stop in the sequential focus navigation
 order, and to provide the appropriate "hook" for a `focusgroup`'s "memory" to redirect focus to the
 last-focused element in a `focusgroup`, a change to sequential focus navigation is needed.
+
+Note that when elements [opt-out of focusgroup participation](#impact-on-sequential-focus-navigation),
+they can create multiple entry points for sequential focus navigation within what would otherwise be
+a single focusgroup.
 
 This change is intended to ensure that focus is directed to one of the following `focusgroup`
 candidates whenever focus enters a `focusgroup`. The first matching condition is always taken:
