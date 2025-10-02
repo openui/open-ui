@@ -52,6 +52,15 @@ This element will implicitly provide the same behaviour as a [toolbar focusgroup
 - It will contain a single tab-stop.
 - Arrow-keys can be used to navigate between focusable children.
 - Home keys can be used to jump to the beginning or end of the toolbar.
+- It should potentially support an orientation attribute. [Issue 1201](https://github.com/openui/open-ui/issues/1201)
+
+#### How should we handle conflicting keyboard behavior from children?
+
+There are many types of built-in HTML controls that already have existing keyboard behavior,
+we should ensure that these don't lead to keyboard traps where users can't escape.
+
+[Issue 1281](https://github.com/openui/open-ui/issues/1281) tracks a possible solution to these cases. It's possible
+that there's more specific interventions that we can make to avoid these issues in the first place.
 
 ### How can users customize the UI of this toolbar element with CSS?
 
@@ -63,6 +72,7 @@ We propose this element should not support the CSS appearance property and just 
     * Can have vertical case by:
         * Set CSS `writing-mode: vertical-lr` on the `<toolbar>`
         * Should this affect arrow-key directionality?
+        * Should this also affect aria-orientation?
 * Does `<toolbar>` support separators?
     * If so, we should support `<hr>` for this.
 * Toolbars generally should be labelled, it is a MUST if there are multiple on a page. Should we support this via HTML,
