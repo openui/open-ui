@@ -8,7 +8,7 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior contributors (from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer)): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2025-09-18
+ - Last updated: 2025-09-25
 
 ## Table of Contents
 
@@ -31,6 +31,9 @@ layout: ../../layouts/ComponentLayout.astro
   - [Shadow DOM boundaries](#shadow-dom-boundaries)
   - [Key conflicts](#key-conflicts)
   - [Interactive content inside focusgroups](#interactive-content-inside-focusgroups)
+  - [Key conflict elements](#key-conflict-elements)
+    - [Escape behavior for native key conflict elements](#escape-behavior-for-native-key-conflict-elements)
+  - [Scrolling interactions](#scrolling-interactions)
   - [Restricted elements](#restricted-elements)
   - [Feature detection](#feature-detection)
   - [Additional features](#additional-features)
@@ -608,48 +611,122 @@ sure users can "escape" these elements. Built-in elements provide this via the t
 strategies might include requiring an "activation" step before putting focus into the interactive
 control (and an Esc key exit to leave).
 
-The focusgroup's [memory](#last-focused-memory) may also cause unexpected user interactions if
-authors are not careful. For example, without any author mitigations, an interactive control inside
-a focusgroup may inadvertently prevent the user from accessing other focusgroup items:
+#### Key conflict elements
+
+When there is a conflict between the arrow keys consumed by the interactive element and the focusgroup's navigation, focusgroup will **not** interfere with the interactive element's behavior. This means that the normal way to move focus between focusgroup items (arrow keys) will **not** work when focus is within such an element.
+
+Examples:
+- `<input>` elements (most, but not all types use arrow keys)
+- `<textarea>` elements
+- `<select>` elements when the arrow-key axis used by the focusgroup is the same axis used by the select
+- Elements with `contenteditable`
+- Focusable scrollable regions, when the scroll direction is in the same axis as the focusgroup
+- Custom elements with arrow key handlers
+- Elements with `preventDefault()` on arrow keys
+- Audio and video elements with visible controls
+- Iframes and object tags with focusable elements inside
+
+For native elements that conflict, the user agent will provide an [escape behavior](#escape-behavior-for-native-key-conflict-elements).
+
+For authors that add scripted key handlers that consume arrow keys, they should consider the following:
+- Implementing an escape behavior similar to the [one provided for native key conflict elements](#escape-behavior-for-native-key-conflict-elements)
+- Avoiding conflicts by limiting the focusgroup's axis of movement via [limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality)
+- Using `focusgroup="none"` to opt-out of focusgroup behavior entirely for conflicting elements
+- Implementing an "activation" step to enter the custom element (and an "escape" step to leave it)
+
+#### Escape behavior for native key conflict elements
+
+When there is a conflict between the arrow keys consumed by the interactive element and the focusgroup's navigation, focusgroup will **not** interfere with the interactive element's behavior. Instead, focusgroup will provide a way to "escape" the interactive element via the tab key (and Shift+Tab). This means that when focus is within such an element, pressing Tab will move focus to the next focusable element in the focusgroup (if any), and Shift+Tab will move focus to the previous focusable element in the focusgroup (if any).
+
+**Important:** These special behaviors only apply when there is an actual conflict between the arrow keys consumed by the interactive element and the focusgroup's navigation. For example, a focusable scroll container that only uses up/down arrows for scrolling in a focusgroup with `inline` restriction (left/right arrows only) would not be considered a key conflict element for up/down arrow keys, since those keys don't conflict with the focusgroup's navigation.
+
+There are two categories with different behaviors:
+
+**1. Native key conflict elements**
+
+For elements with built-in arrow key behaviors, user agents automatically provide tab-escape functionality. When focus is within such elements, the immediate neighboring focusgroup items become available in the normal tab order. Since focus is already within the focusgroup, memory is **not** taken into consideration, though the author has control over which element is focused next via `tabindex` ordering, using the same considerations as [sequential focus navigation](#adjustments-to-sequential-focus-navigation).
 
 ```html
-<div focusgroup="toolbar" aria-label="Font Adjustment" aria-controls="…">
-  <label for="font-input">Font</label>
+<div focusgroup="toolbar">
+  <button>Bold</button>
+  <button>Italic</button>
   <div>
-    <div>
-      <input type="text" id="font-input" role="combobox" aria-autocomplete="both" aria-expanded="false" aria-controls="font-listbox" aria-activedescendant="">
-      <button type="button" aria-label="Font List" aria-expanded="false" aria-controls="font-listbox" tabindex="-1">🔽</button>
-    </div>
-    <ul id="font-listbox" role="listbox" aria-label="Font List">
-      <li role="option">Arial</li>
-      <li role="option">Monospace</li>
-      <li role="option">Verdana</li>
-    </ul>
+    <input type="text" placeholder="Search" /> <!-- Native key conflict -->
+    <button tabindex="-1">Go</button>
   </div>
-  <button type="button" value="bigger" tabindex="-1"><span>Increase Font</span></button>
-  <button type="button" value="smaller" tabindex="-1"><span>Decrease Font</span></button>
+  <button>Save</button>
+  <button>Print</button>
+</div>
+```
+In this example:
+- The input field **is** a focusgroup item reachable via arrow keys.
+- Arrow keys are consumed for text cursor navigation once focus is within the input.
+- To ensure the user can still reach the other elements in the focusgroup, pressing Tab moves focus to the "Save" button, and Shift+Tab moves focus to the "Italic" button.
+- The "Go" button is reachable via arrow keys because it is still a focusgroup item, but the `tabindex` of -1 prevents it from being the next candidate when tabbing, matching the behavior used when entering a `focusgroup`.
+
+```html
+<div focusgroup="toolbar">
+  <button>Bold</button>
+  <button>Italic</button>
+  <div>
+    <input type="text" placeholder="Search" /> <!-- Native key conflict -->
+    <button>Go</button>
+  </div>
+  <button>Save</button>
+  <button>Print</button>
+</div>
+```
+In this example:
+- If focus was within the "Search" input, tab will invoke the escape behavior, moving focus to "Go".
+
+### Scrolling interactions
+
+Focusgroups must coexist with scrolling behavior, as arrow keys are commonly used for both focus navigation and scrolling. The priority and interaction between these behaviors depends on the context:
+
+#### 1. Focusgroup within a scrollable region
+
+This is the most common scenario—a focusgroup contained within a page or region that can scroll.
+
+**For focusgroups with wrap behavior:** Focus navigation takes priority over scrolling. Arrow keys will move focus between focusgroup items, wrapping from end to start as configured. Scrolling will only occur as needed to bring the focused element into view.
+
+**For focusgroups without wrap behavior:** Focus navigation takes priority until the focus reaches a boundary (first or last item). Once at a boundary, continuing to press arrow keys in the direction will allow normal scrolling behavior to resume.
+
+**For focusgroups with axis restrictions:** If a focusgroup limits arrow keys to a specific axis (using `inline` or `block` tokens), then arrow keys in the cross-axis will be available for scrolling.
+
+Example:
+```html
+<div style="height: 200px; overflow: auto;">
+  <div focusgroup="listbox block">
+    <div tabindex="0" aria-selected="true">Item 1</div>
+    <div tabindex="-1" aria-selected="false">Item 2</div>
+    <div tabindex="-1" aria-selected="false">Item 3</div>
+    <!-- Items 4-97 would be here, creating a long scrollable list -->
+    <div tabindex="-1" aria-selected="false">Item 98</div>
+    <div tabindex="-1" aria-selected="false">Item 99</div>
+    <div tabindex="-1" aria-selected="false">Item 100</div>
+  </div>
 </div>
 ```
 
-When the `combobox` input element is focused, it is remembered by the `focusgroup`'s memory.
-The `<input>` element traps nearly all keystrokes by default, including the arrow keys that might
-have been used to reach the "Increase/Decrease Font" buttons. When the user presses tab, focus
-exits the `focusgroup`. Later, when focus re-enters, the `focusgroup` will put focus back on the
-`<input>` element (because of its memory), and the cycle continues with no way to get to the two
-following buttons via keyboard interaction alone.
+In this example:
+- Up/down arrows navigate between list items in the focusgroup
+- Left/right arrows scroll the container horizontally (if needed) since the focusgroup is limited to `block`
+- Focus is automatically scrolled into view when navigating between items that are off-screen
+- Authors should be aware that since focusgroup navigation takes priority over scrolling, they should take care when constructing large focusgroups to avoid a situation where content can be missed when jumping from one item to another.
 
-Fortunately, there are several solutions to this problem:
-- Remove `tabindex=-1` from the "Increase/Decrease Font" buttons.
-- Move the "Increase/Decrease Font" buttons before the `combobox`. (Refer to "Avoid including
-   controls whose operation requires the pair of arrow keys used for toolbar navigation" in the
-   [Toolbar control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/).) Additionally,
-   [opt-out](#opting-out) the `<input>` control from `focusgroup` participation so that
-   arrow keys skip it. Alternatively,
-   [turn off the `focusgroup`'s memory](#disabling-focusgroup-memory) so that focus isn't
-   automatically returned to the `combobox`.
-- Use script to intercept `focusgroup`-related keydown events on the `<input>` and move focus
-   manually. Also consider [limiting the `focusgroup`](#limiting-linear-focusgroup-directionality) to
-   one axis and reserving the other axis for operating the `<input>`.
+**Accessibility considerations:** When focusgroup items are separated by large amounts of content, arrow key navigation can skip over intermediate content that users might need to read. See the [open question about scrolling behavior](#open-questions) for potential solutions being considered.
+
+#### 2. Scrollable region within a focusgroup
+
+When a scrollable element is contained within a focusgroup, the behavior depends on whether there's a conflict between the focusgroup's arrow key handling and the scrollable element's needs.
+
+**No conflict scenarios:**
+- Focusgroup limited to one axis, scrollable element scrolls on the cross-axis.
+- Scrollable element that scrolls via different keys (Page Up/Down, etc.)
+
+**Conflict scenarios:** When both the focusgroup and the scrollable element want to handle the same arrow keys, the scrollable element is treated as a [key conflict element](#key-conflict-elements). This means:
+- Arrow keys are consumed by the scrollable element for scrolling.
+- If this is a native element, and not custom script, then Tab/Shift+Tab can be used to move to adjacent focusgroup items following the [escape behavior for native key conflict elements](#escape-behavior-for-native-key-conflict-elements).
 
 ### Restricted elements
 
@@ -912,6 +989,10 @@ candidate, then any descendants that precede (or follow) the first (or last) foc
 broad-reaching ancestral `focusgroup`s won't necessarily "steal" focus from descendant `focusgroup`s
 during sequential focus navigation.
 
+Additionally, when focus is within [native key conflict elements](#key-conflict-elements), immediate
+neighboring focusgroup items are automatically made available in the tab order to provide an
+[escape mechanism](#escape-behavior-for-native-key-conflict-elements).
+
 ## (Future Consideration) Grid focusgroups
 
 Some focusable data is structured not as a series of nested linear groups, but as a
@@ -1128,9 +1209,9 @@ too complicated).
 ### Authoring guidance
 1. Put the behavior token first: `focusgroup="tablist wrap"`, `focusgroup="toolbar"`.
 2. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.).
-3. For detailed precedence (mismatches, inference limits, overrides) see [Precedence & Overrides](#precedence--overrides).
+3. For detailed precedence (mismatches, inference limits, overrides) see [Behavior → role mapping & precedence](#behavior--role-mapping--precedence).
 
-### Alternatives considered
+## Alternatives considered
 When considering how to ensure that `focusgroup` usage is scoped to scenarios we want, the following
 approaches were considered.
 1. Role-required gating (original): only activates when an eligible `role` attribute is present. Rejected: couples behavior activation to ARIA; breaks precedent.
@@ -1153,7 +1234,9 @@ approaches were considered.
   - (C) Split into two attrs: `pattern="tablist" focusgroup="wrap"` (clearer separation, extra verbosity & API surface).
   - (D) Native elements only (e.g., future `<tabs>`, `<toolbar>`, `<menubar>`); attribute becomes redundant—risk: slower coverage, custom element ecosystems still need declarative navigation.
   - Criteria to decide: author error rate, implementation complexity, consistency with existing HTML token patterns, incremental ship path.
-8. **Keep or drop child role inference (or defer as future consideration):** Should v1 exclude automatic child role assignment entirely to reduce complexity
+6. **Scrolling behavior when focus target is not in view:** Should focusgroup navigation automatically prioritize scrolling over focus movement when the next focusable item is not currently visible? This addresses accessibility concerns where arrow key navigation can skip over intermediate content that users need to read (see [GitHub issue #1008](https://github.com/openui/open-ui/issues/1008)). Potential solution:
+  - Temporarily disable focusgroup navigation when the target item is out of view, allowing normal scrolling until the item becomes visible.
+7. **Keep or drop child role inference (or defer as future consideration):** Should v1 exclude automatic child role assignment entirely to reduce complexity
       and perceived overreach (keeping only container pattern + navigation)? Rationale for revisiting: reviewer concern about mixing semantics & behavior;
       authors can still supply explicit roles; deferring would let us ship navigation sooner and gather data on real author pain before standardizing inference.
 
@@ -1176,6 +1259,8 @@ Here is a short list to issue discussions that led to the current design of focu
 * [focusgroup definitions should not be limited to direct-children](https://github.com/openui/open-ui/issues/989)
 * [focusgroup should include a memory](https://github.com/openui/open-ui/issues/537)
 * [focusgroup should be restricted to some elements only](https://github.com/openui/open-ui/issues/995)
+* [Default behaviour for key conflict elements](https://github.com/openui/open-ui/issues/1281)
+* [Scrolling interactions with focusgroup](https://github.com/whatwg/html/issues/11641)
 
 See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
 
