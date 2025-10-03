@@ -507,23 +507,26 @@ Note that only the elements with `id=one` and `id=three` can be focused using th
 
 ### Focusgroup segments
 
-A **focusgroup segment** is a contiguous group of focusgroup items that can be navigated without crossing any [opted-out elements](#opting-out). When elements within a focusgroup use `focusgroup="none"` to opt-out, they effectively divide the focusgroup into separate segments for sequential focus navigation purposes.
+A **focusgroup segment** is a contiguous group of focusgroup items that can be navigated without crossing any [opted-out elements](#opting-out) that are participating in sequential focus navigation. An opted-out element is considered as participating in sequential focus navigation if:
+1. The element is opting out of a focusgroup via `focusgroup="none"` or is a descendant of such an element.
+2. The element is focusable, i.e., it is either natively focusable or has a non-negative `tabindex`.
+3. If the element has a negative tabindex, but currently has focus.
+
+When one of these opted-out elements is between two focusgroup items, it divides the focusgroup into two segments, one segment on each side of the opted-out element.
 
 Each segment operates independently for certain behaviors:
-- **Memory:** Each segment maintains its own last-focused element memory
-- **Guaranteed tab stop:** Each segment ensures at least one tab-accessible element
+- **Guaranteed tab stop:** Each segment ensures exactly one tab-accessible element.
 - **Sequential navigation:** Tab and Shift+Tab treat each segment as a separate focusgroup entry point
 
-For example, if a focusgroup contains items A, B, C, D, E and item C opts-out, this creates two segments: [A, B] and [D, E]. Arrow key navigation can move freely within each segment and skip over the opted-out element C, but sequential focus navigation (Tab/Shift+Tab) will treat these as two separate tab stops.
+For example, if a focusgroup contains items A, B, C, D, E and item C opts-out and would participate in sequential focus navigation, the focusgroup would be split into two segments: [A, B] and [D, E]. Arrow key navigation can move freely across segments, skipping over the opted-out element C, but sequential focus navigation (Tab/Shift+Tab) will treat these as two separate tab stops.
 
 See [Impact on sequential focus navigation](#impact-on-sequential-focus-navigation) for detailed behavior and examples.
 
 ### Last-focused memory
 
-By default, [focusgroup segments](#focusgroup-segments) will remember the last-focused element, and for sequential focus navigation,
-will restore focus to that element when a focusgroup is re-entered. This is important for large
-lists or tables so that users are returned the context they previously left without having to
-navigate from the start or end sequentially.
+By default, focusgroups will remember the last-focused element, and for sequential focus navigation,
+will restore focus to that element when a focusgroup is re-entered, if it is present in the focusgroup segment being entered.
+This is important for large lists or tables so that users are returned the context they previously left without having to navigate from the start or end sequentially.
 
 The focusgroup's memory is initially empty. In that state, sequential focus navigation will pick
 the next element to focus using existing platform behavior
@@ -807,7 +810,7 @@ To opt-out:
 
 ### Impact on sequential focus navigation
 
-When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order while splitting the focusgroup into separate segments.
+When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating the splitting the focusgroup into separate segments to ensure content is not skipped.
 
 In the following example, a help section opts-out of `focusgroup` behavior so that any interactive content inside it is bypassed when arrowing among the primary formatting controls, but remains reachable via tabbing.
 
@@ -841,7 +844,7 @@ When a user navigates into a focusgroup using Tab or Shift+Tab, the user agent d
 
 - **Focusgroup segments:** As defined above, opted-out elements create boundaries that divide the focusgroup.
 - **Guaranteed tab stop per segment:** Each segment follows the [guaranteed tab stop algorithm](#guaranteed-tab-stop-algorithm).
-- **Memory scope:** Focusgroup memory only applies within the segment being entered.
+- **Memory scope:** Focusgroup memory restoration only applies if the memory item is in the segment being entered.
 - **Direction-based segment selection:** Tab vs Shift+Tab determines which segment is considered for entry.
 
 **Arrow key navigation is unaffected:** Arrow keys skip over opted-out elements entirely, treating them as if they don't exist for arrow navigation purposes.
@@ -916,8 +919,6 @@ To ensure that a `focusgroup` always has at least one tab stop in the sequential
 order, and to provide the appropriate "hook" for a `focusgroup`'s "memory" to redirect focus to the
 last-focused element in a `focusgroup`, a change to sequential focus navigation is needed.
 
-
-
 ### Guaranteed tab stop algorithm
 
 When a user navigates into a focusgroup using Tab or Shift+Tab, the user agent must:
@@ -932,9 +933,9 @@ When a user navigates into a focusgroup using Tab or Shift+Tab, the user agent m
    - Otherwise, if direction is "forward", focus the **first** focusable `focusgroup` item in the segment in tree order (including elements with negative `tabindex` values).
    - Otherwise, if direction is "backward", focus the **last** focusable `focusgroup` item in the segment in tree order (including elements with negative `tabindex` values).
 
-4. **Update tab navigation:** All other `focusgroup` items are removed from the sequential focus navigation order (e.g., by treating their `tabindex` as -1).
+4. **Update tab navigation:** All other `focusgroup` items are not considered in sequential focus navigation order. Memory is updated to be on the newly focused item if the [`no-memory`](#last-focused-memory) token is not present.
 
-This algorithm ensures that each [focusgroup segment](#focusgroup-segments) has a [guaranteed tab stop](#guaranteed-tab-stop), maintaining accessibility even when all items have `tabindex="-1"`.
+This algorithm ensures that each [focusgroup segment](#focusgroup-segments) has a single [guaranteed tab stop](#guaranteed-tab-stop), without the need for authors to manage `tabindex` values except to customize the first focused element when entering a `focusgroup`.
 
 ## (Future Consideration) Grid focusgroups
 
