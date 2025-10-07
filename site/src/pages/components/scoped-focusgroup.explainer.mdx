@@ -529,9 +529,9 @@ Example:
 ```html
 <div focusgroup="toolbar" aria-label="Text Formatting" aria-controls="…">
   <div>
-    <button type="button" aria-pressed="false" value="bold" tabindex="-1"><span>Bold</span></button>
-    <button type="button" aria-pressed="false" value="italic" tabindex="-1"><span>Italic</span></button>
-    <button type="button" aria-pressed="false" value="underline" tabindex="-1"><span>Underline</span></button>
+    <button type="button" aria-pressed="false" value="bold" ><span>Bold</span></button>
+    <button type="button" aria-pressed="false" value="italic"><span>Italic</span></button>
+    <button type="button" aria-pressed="false" value="underline"><span>Underline</span></button>
   </div>
 </div>
 ```
@@ -549,7 +549,9 @@ the first `<button>` because:
 At this point, the user can use the arrow keys to move from the beginning of the toolbar to the end,
 or press tab again to move outside of the focusgroup.
 
-Alternatively, even if multiple descendants are naturally tabbable (e.g., several `<button>`s without `tabindex`), `focusgroup` still collapses the group to a single sequential entry point per segment. Authors do NOT need to manually set `tabindex="-1"` on every non-active item to gain roving behavior; doing so remains an optional optimization for legacy consistency.
+Note that even if multiple descendants are naturally tabbable (e.g., several `<button>`s without `tabindex`),
+`focusgroup` still collapses the group to a single sequential entry point per segment.
+Authors do NOT need to manually set `tabindex="-1"` on every non-active item to gain roving behavior.
 
 Example:
 
