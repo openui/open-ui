@@ -513,12 +513,10 @@ The `focusgroup`'s memory is cleared if the last-focused item becomes non-focusa
 ### Guaranteed tab stop
 
 Focusgroups provide a special behavior when used in conjunction with sequential focus navigation
-("tab navigation"). Focusgroups ensure that **at least one** focusgroup item will participate in
-sequential focus navigation even if all focusgroup items are declared to opt-out via `tabindex=-1`.
+("tab navigation"). Focusgroups ensure that **exactly one** focusgroup item will participate in
+sequential focus navigation per [segment](#focusgroup-segments), unless there are no focusable items.
 This behavior ensures that a `focusgroup` can always be entered via sequential focus navigation.
 [See below for further details](#adjustments-to-sequential-focus-navigation).
-Aside from this one behavior change, there is no other impact to the way tab navigation works with
-`tabindex` nor the tab ordering behavior.
 
 Focusgroups can therefore be used to provide a
 [roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)
@@ -963,7 +961,7 @@ change:
 
 ## Adjustments to sequential focus navigation
 
-To ensure that a `focusgroup` always has at least one tab stop in the sequential focus navigation
+To ensure that a [focusgroup segment](#focusgroup-segments) has exactly one tab stop in the sequential focus navigation
 order, and to provide the appropriate "hook" for a `focusgroup`'s "memory" to redirect focus to the
 last-focused element in a `focusgroup`, a change to sequential focus navigation is needed.
 
