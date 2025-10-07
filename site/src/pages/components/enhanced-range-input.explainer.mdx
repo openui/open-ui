@@ -114,10 +114,12 @@ This approach offers several advantages:
 ```html
 <rangegroup>
   <legend>Temperature Range</legend>
-  <label for="temp-min">Minimum Temperature</label>
-  <input type="range" id="temp-min" name="temp-min" value="-25">
-  <label for="temp-max">Maximum Temperature</label>
-  <input type="range" id="temp-max" name="temp-max" value="15">
+  <label>Minimum Temperature
+    <input type="range" name="temp-min" value="-25">
+  </label>
+  <label>Maximum Temperature
+    <input type="range" name="temp-max" value="15">
+  </label>
 </rangegroup>
 ```
 
@@ -136,12 +138,7 @@ A robust labeling strategy is crucial for users of assistive technologies. We pr
 
 **Group Label:** The `<rangegroup>` element should be labeled by including a `<legend>` element as a direct child. This provides the accessible name for the entire group of sliders.
 
-**Individual Handle Labels:** Each `<input type="range">` within the group should have its own accessible name. This can be provided using standard methods, in the following order of preference:
-
-1.  A `<label>` element associated with the input's `id`.
-2.  An `aria-label` or `aria-labelledby` attribute on the `<input>`.
-
-If an explicit name is not provided, browsers could offer a localized default for common two-handle scenarios (e.g., "minimum" and "maximum"). However, authors should always provide explicit, descriptive labels for clarity, especially when more than two handles are present.
+**Individual Handle Labels:** Each `<input type="range">` within the group should have its own accessible name. This can be provided by wrapping the `<input>` within a `<label>` element (implicit labeling), which is the recommended approach. Alternatively, standard methods like an `aria-label` or `aria-labelledby` attribute on the `<input>` can be used.
 
 #### Example Implementation
 
@@ -149,11 +146,13 @@ If an explicit name is not provided, browsers could offer a localized default fo
 <rangegroup>
   <legend>Price Range</legend>
 
-  <label for="price-min">Minimum Price</label>
-  <input type="range" id="price-min" name="price-min" value="25">
+  <label>Minimum Price
+    <input type="range" name="price-min" value="25">
+  </label>
 
-  <label for="price-max">Maximum Price</label>
-  <input type="range" id="price-max" name="price-max" value="75">
+  <label>Maximum Price
+    <input type="range" name="price-max" value="75">
+  </label>
 </rangegroup>
 ```
 
@@ -172,11 +171,13 @@ For example, consider a price range selector:
 <rangegroup>
   <legend>Price Range</legend>
 
-  <label for="price-min">Minimum Price</label>
-  <input type="range" id="price-min" name="price-min" value="100" min="0" max="1000">
+  <label>Minimum Price
+    <input type="range" name="price-min" value="100" min="0" max="1000">
+  </label>
 
-  <label for="price-max">Maximum Price</label>
-  <input type="range" id="price-max" name="price-max" value="750" min="0" max="1000">
+  <label>Maximum Price
+    <input type="range" name="price-max" value="750" min="0" max="1000">
+  </label>
 </rangegroup>
 ```
 
@@ -196,10 +197,12 @@ For `<rangegroup>` elements, the `<datalist>` can be associated with the group a
 ```html
 <rangegroup name="price-range" min="0" max="100" list="price-ticks">
     <legend>Price Range</legend>
-    <label for="price-min-datalist">Minimum Price</label>
-    <input type="range" id="price-min-datalist" name="price-min" min="0" max="50" value="20">
-    <label for="price-max-datalist">Maximum Price</label>
-    <input type="range" id="price-max-datalist" name="price-max" min="50" max="100" value="80">
+    <label>Minimum Price
+        <input type="range" name="price-min" min="0" max="50" value="20">
+    </label>
+    <label>Maximum Price
+        <input type="range" name="price-max" min="50" max="100" value="80">
+    </label>
 </rangegroup>
 <datalist id="price-ticks">
     <option value="0">$0</option>
@@ -384,10 +387,12 @@ console.log(rangeGroup.values); // [150, 750]
 ```html
  <rangegroup name="price-range" min="0" max="1000">
     <legend>Price Range</legend>
-    <label for="price-min-ex1">Minimum Price</label>
-    <input type="range" id="price-min-ex1" name="price-min" min="0" max="500" value="250" step="10">
-    <label for="price-max-ex1">Maximum Price</label>
-    <input type="range" id="price-max-ex1" name="price-max" min="500" max="1000" value="750" step="10">
+    <label>Minimum Price
+        <input type="range" name="price-min" min="0" max="500" value="250" step="10">
+    </label>
+    <label>Maximum Price
+        <input type="range" name="price-max" min="500" max="1000" value="750" step="10">
+    </label>
 </rangegroup>
 ```
 
@@ -426,12 +431,15 @@ rangegroup::slider-segment:nth-child(3) {
 ```html
 <rangegroup name="temperature-range" min="-100" max="100">
     <legend>Temperature Range</legend>
-    <label for="temp-low">Low</label>
-    <input type="range" id="temp-low" name="temp-low" min="-100" max="-25" value="-50">
-    <label for="temp-medium">Medium</label>
-    <input type="range" id="temp-medium" name="temp-medium" min="-25" max="25" value="0">
-    <label for="temp-high">High</label>
-    <input type="range" id="temp-high" name="temp-high" min="25" max="100" value="75">
+    <label>Low
+        <input type="range" name="temp-low" min="-100" max="-25" value="-50">
+    </label>
+    <label>Medium
+        <input type="range" name="temp-medium" min="-25" max="25" value="0">
+    </label>
+    <label>High
+        <input type="range" name="temp-high" min="25" max="100" value="75">
+    </label>
 </rangegroup>
 ```
 ```css
@@ -475,10 +483,8 @@ rangegroup::slider-segment:nth-child(4) {
 - Should there be a limit on the number of range inputs that can be included in a `<rangegroup>`? Based on discussions, we've decided not to impose a limit, leaving it to authors to determine the appropriate number for their use case. A separate issue will be created to address potential accessibility concerns with a large number of handles.
 - How should we handle thumb collision in multi-handle ranges?
 - What is the best way to handle keyboard navigation for multi-handle ranges? While tabbing between inputs is natural, should there be additional keyboard shortcuts for more efficient navigation?
-- Should we provide built-in support for non-linear scales (e.g., logarithmic)?
 - Should we consider additional pseudo-elements for more granular styling control?
 - How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a slider-orientation property that could be adopted for this purpose.
-- How should we handle the positioning and spacing of tick marks when using `<datalist>` with `<rangegroup>` elements?
 - Should we provide options for automatic tick mark generation (e.g., evenly spaced) without requiring a `<datalist>`? These could be auto-generated based on a step attribute of a rangegroup
 - How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks? Is this author responsibility?
 - Should we provide a way to programmatically set segment colors with a JavaScript API?
