@@ -221,17 +221,17 @@ Alternatively, datalist could be provided on each input as well. While these won
 To support different colors between handles in a `<rangegroup>`, we introduce the `::slider-segment` pseudo-element. This allows for granular control over the appearance of each segment in the range, enabling rich user interfaces such as budget allocators where each segment can represent a different category. Example usage:
 
 ```css
-rangegroup::slider-segment:nth-child(1) {
+rangegroup::slider-segment(1) {
     background-color: #FF5733;
 }
 
 /* Style the second segment (between the first and second handles) */
-rangegroup::slider-segment:nth-child(2) {
+rangegroup::slider-segment(2) {
     background-color: #33FF57;
 }
 
 /* Style the third segment (between the second handle and the end) */
-rangegroup::slider-segment:nth-child(3) {
+rangegroup::slider-segment(3) {
     background-color: #3357FF;
 }
 ```
@@ -297,7 +297,7 @@ To address the current fragmentation and provide a unified styling API, we propo
 - `::slider-tick`: Represents individual tick marks on the range group with attached datalist.
 - `::slider-tick-label`: Represents the label associated with each tick mark of a datalist option.
 
-These pseudo-elements can be used in combination with other CSS selectors, such as `:nth-child()`, to provide granular control over individual elements.
+
 
 Example usage:
 
@@ -332,11 +332,11 @@ rangegroup::slider-track {
     background-color: #f0f0f0;
 }
 
-rangegroup::slider-segment:nth-child(1) {
+rangegroup::slider-segment(1) {
     background-color: #FF5733;
 }
 
-rangegroup::slider-segment:nth-child(2) {
+rangegroup::slider-segment(2) {
     background-color: #33FF57;
 }
 
@@ -407,15 +407,15 @@ rangegroup::slider-track {
     background-color: #f0f0f0;
 }
 
-rangegroup::slider-segment:nth-child(1) {
+rangegroup::slider-segment(1) {
     background-color: #ddd;
 }
 
-rangegroup::slider-segment:nth-child(2) {
+rangegroup::slider-segment(2) {
     background-color: #4CAF50;
 }
 
-rangegroup::slider-segment:nth-child(3) {
+rangegroup::slider-segment(3) {
     background-color: #ddd;
 }
  rangegroup input[type="range"]::slider-thumb {
@@ -461,19 +461,19 @@ rangegroup input[type="range"]::slider-thumb {
     border-radius: 50%;
 }
 
-rangegroup::slider-segment:nth-child(1) {
+rangegroup::slider-segment(1) {
     background-color: #FF5733;
 }
 
-rangegroup::slider-segment:nth-child(2) {
+rangegroup::slider-segment(2) {
     background-color: #33FF57;
 }
 
-rangegroup::slider-segment:nth-child(3) {
+rangegroup::slider-segment(3) {
     background-color: #3357FF;
 }
 
-rangegroup::slider-segment:nth-child(4) {
+rangegroup::slider-segment(4) {
     background-color: #FF33A8;
 }
 ```
