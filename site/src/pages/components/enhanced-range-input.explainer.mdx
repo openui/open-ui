@@ -218,7 +218,9 @@ Alternatively, datalist could be provided on each input as well. While these won
 
 ## Multi-Color Range Segments
 
-To support different colors between handles in a `<rangegroup>`, we introduce the `::slider-segment` pseudo-element. This allows for granular control over the appearance of each segment in the range, enabling rich user interfaces such as budget allocators where each segment can represent a different category. Example usage:
+To support different colors between handles in a `<rangegroup>`, we introduce the `::slider-segment` pseudo-element. This allows for granular control over the appearance of each segment in the range, enabling rich user interfaces such as budget allocators where each segment can represent a different category.
+Segments get numbered based on their start and end positions with 1 being at the start (based on writing mode).
+Example usage:
 
 ```css
 rangegroup::slider-segment(1) {
