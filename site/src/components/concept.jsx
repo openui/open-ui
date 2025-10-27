@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'preact/hooks'
 import ConceptCoverage from './concept-coverage'
 import Specimens from './specimens'
 import './concept.css'
@@ -11,7 +11,7 @@ export default function Concept({
   showDescriptions,
   initExpand,
 }) {
-  const [open, toggleOpen] = React.useState(initExpand)
+  const [open, toggleOpen] = useState(initExpand)
 
   useEffect(() => {
     toggleOpen(initExpand)
