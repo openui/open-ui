@@ -1,0 +1,77 @@
+---
+menu: Active Proposals
+name: Filterable Select Element (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+---
+
+import Image from '../../components/image.astro'
+
+## Table of Contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Background](#background)
+- [Associating an input with a select](#associating-an-input-with-a-select)
+- [Filtering behavior](#filtering-behavior)
+- [Options, focus, and keyboard behavior](#options-focus-and-keyboard-behavior)
+- [Making your own picker](#making-your-own-picker)
+- [Examples](#examples)
+- [Design decisions](#design-decisions)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Background
+
+The `<input type=text>` element with a `<datalist>` allows the user to filter the options in the datalist, but allows the user to type whatever value they want and does not support rich content. The `<select>` element supports rich content and forces the user to choose one predefined option, but does not allow the user to filter options. This proposal aims to bring the filtering capability to the `<select>` element.
+
+Filtering a list of predefined options and allowing the user to choose one without allowing the user to commit any arbitrary text value is common on websites, such as the "Labels" picker in the sidebar of GitHub issues and pull requests.
+
+This [survey](https://www.gwhitworth.com/posts/2019/can-we-please-style-select/#:~:text=Not%20being%20able%20to%20create%20a%20good%20user%20experience%20for%20searching%20within%20the%20list) shows that the number one request for enhancement of the `<select>` element is the ability to filter the options.
+
+## Associating an input with a select
+
+The `<input type=text>` element can be associated with a `<select>` element with the new `filter` attribute. The select element must be rendered as a listbox, not as a drop-down box.
+
+```html
+<input filter=select>
+<select id=select size=4>
+  <option>one</option>
+  <option>two</option>
+</select>
+```
+
+## Filtering behavior
+
+When the user types into the input element, it will filter out option elements which don't match by setting display:none on them with a UA style rule. Changing the filtering behavior will be covered by another explainer which also works for `<input>` with `<datalist>`.
+
+## Options, focus, and keyboard behavior
+
+In order to alloww the user to simultaneously type characters into the input element and choose options with the arrow keys and enter, the input element will always remain focused and the option which will be selected when pressing enter has the `:focused-option` pseudo-class.
+
+## Making your own picker
+
+Unlike alternative proposals which allowed the author to put a filtering input inside a drop-down select element, this proposal requires the author to make their own picker containing a listbox select element like this:
+
+```html
+<button popovertarget=picker>
+  <selectedcontent for=select></selectedcontent>
+</button>
+<dialog popover id=picker>
+  <input filter=select>
+  <select size=4 id=select>
+    <option>one</option>
+    <option>two</option>
+  </select>
+</dialog>
+```
+
+## Examples
+
+<!-- TODO add more examples and use code-image-container -->
+
+## Design decisions
+
+- Why not put `<input>` inside `<select>`
+  - https://github.com/openui/open-ui/issues/847#issuecomment-3391813132
+  - https://github.com/openui/open-ui/issues/847#issuecomment-3411919639
