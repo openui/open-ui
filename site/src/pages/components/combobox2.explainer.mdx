@@ -109,6 +109,8 @@ Option elements inside of a datalist are not keyboard focusable because focus is
 
 In both the input-with-datalist and input-with-select cases, in order to allow the user to simulatenously type characters into the input element and choose options with the arrow keys and the enter key, the input element will remain focused and the option which will be selected when pressing enter has the `:focused-option` pseudo-class.
 
+Pressing the down arrow key will move the `:focused-option` pseudo-class forwards one option element in DOM order. The up arrow key will move the pseudo-class backwards one option element in DOM order.
+
 ## Rendering filtered options
 
 In both the input-with-datalist and input-with-select cases, option elements which are being filtered out will have the `:filtered` pseudo-class set on them. There will be a UA style rule which sets `display:none` on `option:filtered` elements.
