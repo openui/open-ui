@@ -745,9 +745,9 @@ The `reading-flow` CSS property modifies the reading order of elements for seque
 Example:
 ```html
 <div focusgroup="toolbar" style="display: flex; flex-direction: row-reverse; reading-flow: flex-visual;">
-  <button tabindex="-1">First in DOM</button>
-  <button tabindex="-1">Second in DOM</button>
-  <button tabindex="-1">Third in DOM</button>
+  <button>First in DOM</button>
+  <button>Second in DOM</button>
+  <button>Third in DOM</button>
 </div>
 ```
 
@@ -767,18 +767,6 @@ The `aria-orientation` attribute indicates whether a widget's orientation is hor
 - These are related but distinct concerns: axis restrictions may be used to avoid key conflicts rather than to indicate orientation
 - When focusgroup applies a [minimum role](#supported-behaviors), that role's default `aria-orientation` applies unless explicitly overridden
 - Authors should set `aria-orientation` explicitly when the default doesn't match the widget's semantic structure
-
-Example:
-```html
-<!-- Vertical toolbar: explicitly set aria-orientation to match semantic structure -->
-<div focusgroup="toolbar block" aria-orientation="vertical">
-  <button tabindex="-1">Cut</button>
-  <button tabindex="-1">Copy</button>
-  <button tabindex="-1">Paste</button>
-</div>
-```
-
-In this example, `block` restricts navigation to the block axis (up/down arrows), while `aria-orientation="vertical"` explicitly overrides the `toolbar` role's default horizontal orientation to match the semantic structure.
 
 ### Restricted elements
 
@@ -1055,7 +1043,7 @@ To opt-out:
 
 When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating the splitting the focusgroup into separate segments to ensure content is not skipped.
 
-Sequential focus navigation within each resulting segment follows the visual reading order established by CSS [`reading-flow`](#reading-flow) when applied to the container or relevant ancestors; if no `reading-flow` affects the segment, DOM source order is used. The guaranteed tab stop algorithm operates on that segment order.
+Sequential focus navigation within each resulting segment follows the visual reading order established by CSS [`reading-flow`](#reading-flow) when applied to the container or relevant ancestors.
 
 In the following example, a help section opts-out of `focusgroup` behavior so that any interactive content inside it is bypassed when arrowing among the primary formatting controls, but remains reachable via tabbing.
 
