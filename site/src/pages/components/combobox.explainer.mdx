@@ -5,245 +5,186 @@ path: /components/combobox.explainer
 pathToResearch: /components/combobox.research
 layout: ../../layouts/ComponentLayout.astro
 ---
-import ComboboxAnatomy from '../../components/combobox-anatomy'
 import Image from '../../components/image.astro'
 
-- [@sudheer-gowrgiari](https://github.com/sudheer-gowrigari), [@gregwhitworth](https://github.com/gregwhitworth)
-- Last updated: May 1, 2024
+- [@sudheer-gowrgiari](https://github.com/sudheer-gowrigari), [@gregwhitworth](https://github.com/gregwhitworth), [@josepharhar](https://github.com/josepharhar)
+- Last updated: October 31, 2025
 - Feedback: https://github.com/openui/open-ui/issues/924
-
-{/* START doctoc generated TOC please keep comment here to allow auto update */}
-{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
 
 ## Table of Contents
 
-- [Background and scope of this document](#background-and-scope-of-this-document)
-- [Anatomy](#anatomy)
-- [Default Behavior](#default-behavior)
-- [Combobox with selectedoption/optgroup](#combobox-with-selectedoptionoptgroup)
-- [Introducing **filter** attribute](#introducing-filter-attribute)
-- [Introducing **search** attribute](#introducing-search-attribute)
-- [Future: Introduction of **multiple** attribute](#future-introduction-of-multiple-attribute)
-- [Keyboard Behavior](#keyboard-behavior)
-- [Key decisions](#key-decisions)
-- [Appendix](#appendix)
-  - [Explored Anatomy Options for `<combobox>`](#explored-anatomy-options-for-combobox)
+- [Background](#background)
+- [Use cases](#use-cases)
+- [Styling the input and datalist elements with base appearance](#styling-the-input-and-datalist-elements-with-base-appearance)
+- [Associating an input element with a select element](#associating-an-input-element-with-a-select-element)
+- [Making your own picker for a filterable select](#making-your-own-picker-for-a-filterable-select)
+- [Datalist becomes a popover](#datalist-becomes-a-popover)
+- [Options, focus, and keyboard behavior](#options-focus-and-keyboard-behavior)
+- [Rendering filtered options](#rendering-filtered-options)
+- [Controlling the filtering behavior](#controlling-the-filtering-behavior)
+  - [The `search` attribute](#the-search-attribute)
+  - [The `beforefilter` event](#the-beforefilter-event)
+- [Option element attributes](#option-element-attributes)
+- [Examples](#examples)
+  - [Basic](#basic)
+- [Design decisions](#design-decisions)
 
-## Background and scope of this document
+## Background
 
-### Background
-From the early days of the web, form controls have been pivotal in creating interactive and dynamic user experiences. Elements like `<input>`, `<button>`, and `<select>` were foundational, offering basic interactivity. As the web matured, so did the demands of web designers and developers. They sought more versatile and customizable controls to cater to a myriad of designs and functionalities.
+The combobox element currently supported by browsers by connecting an `<input type=text>` element to a `<datalist>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
 
-The `<select>` element, for instance, while functional, lacks flexibility. It offers limited customization, which often leads developers to craft their own solutions. These custom implementations, while visually appealing, often come at the cost of performance, reliability, and most importantly, accessibility.
-
-
-To address these limitations, the concept of a [Stylable Select Element](https://open-ui.org/components/selectlist/) has emerged. This element, inspired by the traditional `<select>` but with enhanced flexibility and customizability, allows developers to create button-triggered dropdowns with unique appearances and behaviors. Paired with `<datalist>` and including `<option>` and `<optgroup>` for structuring choices, the Stylable Select Element presents a modern, adaptable, and accessible solution for web controls.
-
-
-
-Right now, many websites have their own type of **'combobox'**, but they're all a bit different. We often see a mix of `<input>` fields and `<datalist>` elements trying to do the job, but it's not quite perfect. By creating a standard **`<combobox>`**, we're aiming to simplify things. 
-
-Further highlighting the need for such a solution, a recent [Twitter poll](https://twitter.com/openuicg/status/1717345237889351911) run by the Open UI Community Group underscored the widespread demand for a standardized ``combobox``
+OpenUI made a [Twitter poll](https://twitter.com/openuicg/status/1717345237889351911) which underscored the widespread demand for a customizable combobox:
 <Image
   src="/images/combobox/combobox-twitterpoll.png"
-  alt="Combobox twitter poll results"
+  alt="Poll results which shows more interest in combobox than listbox, tooltip, or range/slider."
 />
 
+In addition to the combobox use case where arbitrary text typed in by the user is acceptable, filtering a list of predefined options and forcing the user to choose one is an important use case. The `<select>` element is ideal for this and has been improved with the customizable select feature, but it does not support filtering the list of options.
 
-This proposal for `<combobox>` leverages the strengths of the Stylable Select Element and `<datalist>`, offering developers a versatile control that is intuitive for users and accessible to all. By establishing such a standard, we strive to bridge the gap between design requirements and the necessity for performant, reliable, and universally accessible web controls.
+This [survey](https://www.gwhitworth.com/posts/2019/can-we-please-style-select/#:~:text=Not%20being%20able%20to%20create%20a%20good%20user%20experience%20for%20searching%20within%20the%20list) shows that the number one request for enhancement of the `<select>` element is the ability to filter the options.
 
-### Scope of this document
+This proposal adds three pieces of functionality required to achieve these use cases:
+* Stylability for `<input type=text>` with `<datalist>` via `appearance:base`.
+* Filtering for `<select>` elements by adding the ability to connect an `<input>` to a `<select>` element.
+* Powerful filtering primitives for both of the above cases.
 
-This document aims to provide a complete view of combo-box utilisation across the web to inform a potential proposal within Open UI. The goal of this document is to propose a very basic anatomy to simplify the initial shipment of `<combobox>` (or some other name) in the web platform. It will heavily build upon stylable `select` but provide a better accessible and extensible solution than that of an `input` bound with `datalist`.
+## Use cases
 
-## Anatomy
-```
-<combobox>
-  <input type="text"/>
-  <button><selectedoption></selectedoption></button>
-  <datalist>
-    <option>Create a merge commit</option>
-    <option>Squash and merge</option>
-    <option>Rebase and merge</option>
-  </datalist>
-</combobox>
-```
-<ComboboxAnatomy />
+* Arbitrary styling for the datalist picker and its options:
+  * Basic properties such as colors, padding, and font
+  * Advanced styling such as highlighting individual characters in an option which the user searched for or changing styles of the filtered options
+* Replacing the default filtering behavior with:
+  * Basic types of alternate filtering, like startsWith or pattern
+  * Advanced filtering where a JS API can be used to replace the filtering entirely
+* Dynamically and asynchronously adding options in response to text added to the input element
+  * This enables fetching options from a server and appending them into the datalist in response to the user typing into the input element, as well as DOM virtualization
 
-- `<combobox>`: The root container that encapsulates the entire `combobox` structure. It provides context for the interaction between the `input` and the `datalist`.
-  - Attributes:
-    - **search**: Indicates the combobox will actively fetch results based on user input.
-    - **filter**: Indicates the combobox will narrow down visible options based on user input.
-    - **multiple**: Allows multiple options to be selected.
-- `<input type=text>`: This is where the user can type input. It acts as the trigger to display the datalist.
-In addition to the commonly used [**text**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text) type, other supported [**input  types**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types) that could be effectively utilized within the combobox including, [**search**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search) for query inputs, [**email**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email) for email addresses, [**url**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/url) for web addresses, and [**tel**](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/tel) for telephone numbers, each tailored to optimize user interaction and data entry specific to its context.
--  **selectedoption**: To display the currently selected option from the `datalist`.
+## Styling the input and datalist elements with base appearance
 
+The `<input>` and `<datalist>` elements will continue to render as they currently do unless they both have the `appearance:base` CSS propety applied to them.
 
-## Default Behavior
-
-The `<combobox>` doesn't need much to get started. Here's how you can set it up with the basics:
-
-
-```
-<combobox>
-  <option>Option 1</option>
-  <option>Option 2</option>
-  <option>Option 3</option>
-</combobox>
-```
-
-
-When an author uses it like this, the combobox creates the parts they need: an input to drop down the list, a place showing your selected option, and the `datalist` itself.
-
-## Combobox with selectedoption/optgroup
-
-To showcase the selected option within a `combobox`, you can include a `<selectedoption>` element. This allows you to present the chosen value separately from the `input` element,
-
-```
-<combobox>
-    <input type="text" placeholder="Select or type an item...">
-    <button><selectedoption></selectedoption></button>
-    <datalist>
-        <option>Apple</option>
-        <option>Banana</option>
-        <!-- Group of options with a legend -->
-        <optgroup>
-            <legend>Citrus Fruits</legend>
-            <option>Orange</option>
-            <option>Lemon</option>
-        </optgroup>
-        <!-- Another group of options with a legend -->
-        <optgroup>
-            <legend>Berries</legend>
-            <option>Strawberry</option>
-            <option>Blueberry</option>
-        </optgroup>
-    </datalist>
-</combobox>
-```
-
-## Introducing `filter` attribute
-
-The `filter` [_bool_ attribute](https://html.spec.whatwg.org/#boolean-attributes) enhances the `<combobox>` by dynamically narrowing down choices to match user input, making selection faster and more intuitive.
-
-
-```
-<combobox filter>
-    <input type="text" placeholder="Select fruit">
-    <datalist>
-        <option>Apple</option>
-        <option>Apricot</option>
-        <option>Banana</option>
-        <!-- ... -->
-    </datalist>
-</combobox>
-```
-
-Here's how the `filter` attribute simplifies finding and selecting options in a `combobox`:
-
-1. When the combobox loads, it's ready to filter options.
-2. Start typing, and it will only show you matching options.
-3. Only options that start with what you've typed will show up.
-4. Click or press enter to select from the shorter list.
-5. When you select, the list closes and shows your choice.
-
-<Image
-  src="/images/combobox/comobobox-filter.gif"
-  alt="Combobox showing filtered values"
-  style="width:30%"
-/>
-
-For discussion and suggestions on the naming of the `filter` attribute, please see [Issue #932](https://github.com/openui/open-ui/issues/932).
-
-## Introducing `search` attribute
-
-The `search` attribute adds smart search features to `<combobox>`. It lets users find options in different ways:
-
-**Attribute values:**
-
-* **pattern**: Matches options against a pattern. For example, typing "**^a**" finds options starting with "**a**". definition [here](https://html.spec.whatwg.org/#the-pattern-attribute).
-* **startswith**: Shows options that start with the user’s input. Typing "**Ap**" will display "Apple" and "Apricot" but not "Banana". This is the default behavior for **`<select>`** definition [here](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.startswith).
-* **includes** : Searches anywhere in the option text. Typing "**a**" will display "Apple", "Apricot", and "Banana". definition [here](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.includes).
-
-
-```
-<combobox search>
-    <input type="text" placeholder="Select fruit">
-    <datalist>
-       <option>Apple</option>
-        <option>Apricot</option>
-        <option>Banana</option>
-        <!-- ... -->
-    </datalist>
-</combobox>
-```
-<Image
-  src="/images/combobox/combo-search.gif"
-  alt="Combobox showing search results"
-  style="width:30%"
-/>
-Join the conversation on the naming and values of the `search` attribute in [Issue #931](https://github.com/openui/open-ui/issues/931).
-
-## Future: Introduction of `multiple` attribute
-
-The `multiple` attribute will be specified in detail in a forthcoming update.
-
-
-## Keyboard Behavior
-Details regarding keyboard interaction for the combobox will follow the [W3C ARIA Authoring Practices for combobox patterns](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). For further development and discussions, please see the [filed issue](https://github.com/openui/open-ui/issues/929).
-
-## Key decisions
- - Naming of `combobox` element: [Issue #930](https://github.com/openui/open-ui/issues/930)
-
-## Appendix
-### Explored Anatomy Options for ``<combobox>``
-#### Approach 1
-
-
-```
-<input type="text" list="browsers"  />
-<datalist id="browsers">
-	<option>firefox</option>
-	<option>Chrome</option>
+Here is a basic example:
+```html
+<input list=datalist style="appearance:base">
+<datalist id=datalist style="appearance:base">
+  <option>one</option>
+  <option>two</option>
 </datalist>
 ```
 
+## Associating an input element with a select element
 
-**Pros:**
-* Native elements
+The `<input type=text>` element can be associated with a `<select>` element with the new `filter` attribute. The select element must be rendered as a listbox, not as a drop-down box.
 
-**Cons:**
-
-
-
-* You can't achieve multi-select with `<datalist>`:
-* grouping options or adding icons next to options, the `<datalist>` approach falls short.
-* Inconsistent Browser Support: While most modern browsers support `<datalist>`, the appearance and behavior can be inconsistent across different browsers.
-
-
-#### Approach 2
-
-
-```
-<select combobox>
-  <input type=text>
-  <datalist>
-	<option>One</option>
-	<option>Two</option>
-  </datalist>
+```html
+<input filter=select>
+<select id=select size=4>
+  <option>one</option>
+  <option>two</option>
 </select>
 ```
 
+## Making your own picker for a filterable select
 
-**Pros:**
+Unlike alternative proposals which allowed the author to put a filtering input inside a drop-down select element, this proposal requires the author to make their own picker containing a listbox select element like this:
+
+```html
+<button popovertarget=picker>
+  <selectedcontent for=select></selectedcontent>
+</button>
+<dialog popover id=picker>
+  <input filter=select>
+  <select size=4 id=select>
+    <option>one</option>
+    <option>two</option>
+  </select>
+</dialog>
+```
+
+## Datalist becomes a popover
+
+When the datalist element has base appearance, it will automatically become a popover without the need for the author to set the popover attribute on it. When the input element is focused, the datalist will be shown as a popover and anchored to the input element.
+
+When the input element pointing to a datalist receives focus, it will show the datalist popover.
+
+Option elements inside of a datalist are not keyboard focusable because focus is intented to always stay inside of the input element.
+
+## Options, focus, and keyboard behavior
+
+In both the input-with-datalist and input-with-select cases, in order to allow the user to simulatenously type characters into the input element and choose options with the arrow keys and the enter key, the input element will remain focused and the option which will be selected when pressing enter has the `:focused-option` pseudo-class.
+
+Pressing the down arrow key will move the `:focused-option` pseudo-class forwards one option element in DOM order. The up arrow key will move the pseudo-class backwards one option element in DOM order.
+
+## Rendering filtered options
+
+In both the input-with-datalist and input-with-select cases, option elements which are being filtered out will have the `:filtered` pseudo-class set on them. There will be a UA style rule which sets `display:none` on `option:filtered` elements.
+
+## Controlling the filtering behavior
+
+The filtering behavior can be controlled by either setting the `search` attribute on the input element or by listening to the `beforefilter` event on the input element.
+
+### The `search` attribute
+
+Without the `search` attribute, the browser will decide how to do filtering. When the `search` attribute is set, the filtering behavior follows behavior defined by the supported attribute values:
+* `pattern`: Matches options against a pattern. For example, typing "^a" finds options starting with "a". definition [here](https://html.spec.whatwg.org/#the-pattern-attribute).
+* `startswith`: Shows options that start with the user’s input. Typing "Ap" will display "Apple" and "Apricot" but not "Banana". Definition [here](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.startswith).
+* `includes`: Searches anywhere in the option text. Typing "a" will display "Apple", "Apricot", and "Banana". definition [here](https://tc39.es/ecma262/multipage/text-processing.html#sec-string.prototype.includes).
+
+### The `beforefilter` event
+
+The `beforefilter` event is fired on the input element before the browser runs its filtering algorithm and applies the `:filtered` pseudo-class to option element. When the `beforefilter` event is `preventDefault()`ed, the browser does not run its filtering algorithm and script is free to implement whatever filtering it likes, such as removing all the option elements and re-appending relevant options.
+
+## Option element attributes
+
+Option elements rendered in a base appearance datalist will not render their label or value attributes. When an option is selected, its value attribute will be used to set the text inside of the input element in order to match the default native appearance.
+
+## Keyboard behavior
+Details regarding keyboard interaction for the combobox will follow the [W3C ARIA Authoring Practices for combobox patterns](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). For further development and discussions, please see the [filed issue](https://github.com/openui/open-ui/issues/929).
 
 
+## Multi-select combobox use case
 
-* Leveraging the existing `<select>`
+Several libraries offer a combobox where each selected option becomes added to a list of options at the start of the combobox:
+- https://primer.style/product/components/autocomplete/#multi-select-with-tokens-for-selected-items
+- https://select2.org/getting-started/basic-usage#multi-select-boxes-pillbox
 
-**Cons:**
+This explainer provides useful primitives for building this use case, but the action of creating a new button to represent the option which was selected is best left to script.
 
+## Examples
 
+{/* TODO add more examples and use code-image-container */}
 
-* Need to rely on an opt-in attribute(`combobox`) to modify the behavior of `<select>`.
+### Basic
+
+This example changes some padding, colors, and styling of the selected option.
+
+```html
+<input list=datalist>
+<datalist id=datalist>
+  <option>one</option>
+  <option>two</option>
+</datalist>
+<style>
+input, datalist {
+  appearance: base;
+}
+input {
+  border-radius: 0.5em;
+  font-family: monospace;
+}
+datalist {
+  border-radius: 0.5em;
+}
+option:focused-option {
+  background-color: lightblue;
+}
+</style>
+```
+
+## Design decisions
+
+- [Why not create a new combobox element](https://github.com/openui/open-ui/issues/1273)
+- [Why not make the author put the popover attribute on datalist](https://github.com/openui/open-ui/issues/703)
+- Why not put `<input>` inside `<select>`
+  - https://github.com/openui/open-ui/issues/847#issuecomment-3391813132
+  - https://github.com/openui/open-ui/issues/847#issuecomment-3411919639
