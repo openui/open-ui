@@ -26,32 +26,145 @@ layout: ../../layouts/ComponentLayout.astro
 
 ## Introduction
 
-A menu is an essential way to group menu items together and provide users the ability to execute commands. There is an existing [`<menu>` element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element), which represents a "toolbar" listing of commands. Though it is named "menu", it is not programmatically exposed like a "menu" or "menubar". There is also no native support to make listed commands look and behave cohesively. This proposal introduces new menu elements to give web developers more flexibility while following the [ARIA practices on menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/). Namely, our proposal includes adding `<menubar>`, `<menulist>`, and `<menuitem>` elements.
+An application menu is a common way to group actions together in the form of menu items, and provide
+users the ability to execute commands.
 
-Having native menu features will make it easier for web developers to add menulists, menubars and better configure the menu items to choose from. Furthermore, introducing these new features will expand on the baseline behaviors popover and anchor positioning provide.  New native menu elements will also have the correct implicit ARIA roles, states and properties as well as the expected keyboard navigation behaviors - ensuring consistent experiences for users on the platform they are engaging with.
+This proposal introduces the `<menubar>`, `<menulist>`, and `<menuitem>` elements to support
+application menus on the web. These menus will:
 
-Use cases:
+ - Represent commands as `<menuitem>`s, grouped together in `<menulist>` popovers or in-page
+   `<menubar>`s.
+ - Represent state in checkable and radio-style menu items.
+ - Provide the correct implicit ARIA roles and keyboard interaction model out of the box.
+ - Give web developers default styles that create functional menus without having to re-invent
+   common popover and anchor positioning patterns, or re-implement ARIA patterns.
 
-* Add an in-page horizontal menubar at the top of a content window; example: Google Doc has a menubar with the items File, Edit, View, Insert, Format, etc.
-* Add a filter button that opens a menulist to a shopping catalogue where user can check between "Sort by relevant", "Sort by newest", "Sort by price".
+## Examples & code snippets
 
+The goal of our proposal is to make it easy for web developers to author accessible menus with very
+little markup and JavaScript.
 
-## New `<menuitem>` elements
+<img src="/images/menu-elements-example-1.png" alt="menu elements expanded showing commands">
 
-`<menuitem>`
+<img src="/images/menu-elements-example-2.png" alt="menu elements expanded showing checkable state">
 
-* A focusable/activatable command in a `<menubar>` and `<menulist>`.
-* Supports the `disabled` attribute, and the `:disabled` CSS pseudo-class.
-* Supports the `command/commandfor` attributes to specify popover target.
+<em>These images were captured using the following site to test and demo these new elements: <a
+href=https://jsbin.com/vawevuc/edit?html,output></em>
+
+Because new elements in the markup above build off of existing features such as the [Popover
+API](https://open-ui.org/components/popover.research.explainer/), [Invoker
+Commands](https://open-ui.org/components/invokers.explainer/), and [CSS anchor
+positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning), much of the
+behaviors needed by the menu use case are provided natively, and do not need to be re-invented by
+web developers or library authors.
+
+Further, these elements will have the correct implicit ARIA roles, states, and properties, as well
+as a keyboard interaction & focus model that both sighted and accessibility technology users expect.
+
+## The `<menubar>` element
+
+The `<menubar>` element represents an in-page group of `<menuitem>` elements that can either invoke
+commands or open submenus of commands. It defaults to a horizontal orientation, and its child
+`<menuitem>` elements are flex items displayed in a row.
+
+This element:
+
+* Provides the implicit [`menubar`](https://w3c.github.io/aria/#menubar) ARIA role.
+* Provides the correct keyboard and focus behavior across child menu items and
+  sub menulists.
+
+## The `<menulist>` element
+
+The `<menulist>` element is another way to group `<menuitem>`s together. This element is a native
+**popover**, and must be invoked by a button or a `<menuitem>` to show what it represents—a stack
+of `<menuitem>`s with default styles that resemble an application drop-down menu.
+
+This element:
+
+* Provides the implicit [`menu`](https://w3c.github.io/aria/#menu) ARIA role.
+* Has default anchor positioning styles that anchor it to its
+  [implicit anchor](https://drafts.csswg.org/css-anchor-position/#implicit-anchor-element)—the
+  button or menuitem that invoked it.
+* Supports the `:popover-open` pseudo-class, as it is a native **popover**.
+* Supports the [`toggle`
+  event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event), as it is a
+  native **popover**.
+* Can be invoked with the existing `show-popover` command, and the new `show-menu` command. It is
+  referenced by its ID from its invoker.
+* Provides the correct keyboard and focus behavior across sub-menulists, menubars, and child menu
+  items.
+
+**Content model**: the `<menulist>` element allows the following elements as descendants:
+
+ - `<menuitem>`
+ - `<hr>`
+ - `<fieldset>`
+
+The `<fieldset>` element is used in a `<menulist>` to group menu items that serve a common purpose.
+It gives two key pieces of functionality:
+
+ - Captioned groups, with its optional `<legend>` for labeling.
+ - A common ancestor for checkable `<menuitem>`s. This supports both exclusively checkable and
+   multi-checkable menu items.
+
+To support checkable menu items, we propose the new `checkable` **content** attribute on
+`<fieldset>` (no corresponding **IDL** attribute), to group items as either radios or checkboxes;
+its allowed values are `checkable=single` and `checkable=multiple`:
+
+```html
+<menulist id=sort-menu>
+  <fieldset checkable=single>
+    <legend>Sort by</legend>
+    <menuitem>Recently added</menuitem>
+    <menuitem>Date created</menuitem>
+    <menuitem>Creator</menuitem>
+  </fieldset>
+
+  <fieldset checkable=multiple>
+    <menuitem>1 bedroom</menuitem>
+    <menuitem>2 bedrooms</menuitem>
+    <menuitem>3 bedrooms</menuitem>
+  </fieldset>
+</menulist>
+```
+
+Note that `<fieldset>` is totally optional—it is only needed to support captioned or checkable menu
+items. If `<menuitem>`s appear bare in a `<menulist>` or `<menubar>` without a `<fieldset>`, then
+they are just grouped together under their parent list or bar, but are logically separate and not
+checkable.
+
+## The `<menuitem>` element
+
+Activating the `<menuitem>` element is how users invoke actions from an application menu. As
+discussed, these can appear in `<menubar>` or `<menulist>` elements, and are used to invoke
+commands, track checkable state, or open submenus with more menu items.
+
+This element:
+
+* Provides the implicit [`menuitem`](https://w3c.github.io/aria/#menu) ARIA role.
+    * Provides the implicit [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox)
+      ARIA role when nested in a `<fieldset checkable=multiple>`
+    * Provides the implicit [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) ARIA role
+      when nested in a `<fieldset checkable=single>` will have the
+* Provides the correct keyboard and focus behavior across sub-menulists, menubars, and sibling menu
+  items.
+* Has `command/commandfor` attributes to invoke sub-menus or issue other commands.
+* Has a `disabled` **IDL** attribute and corresponding **content** attribute.
+* Supports the `:enabled` and `:disabled` CSS pseudo-classes.
 * Events:
-    * "toggle" on popover will be fired.
-    * "change" will be fired when the `<menuitem>` is checkable, and its state changes
+    * Either a `change` or `checked` event will be fired on checkable menu items that have their
+      state changed. See [Issue #1321](https://github.com/openui/open-ui/issues/1321).
+    * A `click` event is fired upon activation. See
+      [Issue #1312](https://github.com/openui/open-ui/issues/1312). Firing a synthetic `click` here
+      is consistent with the
+      [HTML Standard's prose on activation](https://html.spec.whatwg.org/C#activation).
 * Checkability:
-    * Supports "checkable" configuration and state, by wrapping `<menuitem>`s in a `<fieldset>` with
-      a new `checkable` IDL attribute (with no corresponding content attribute); see [Grouping
-      menuitems together](#grouping-menuitems-together).
-    * Supports the ability to set _initial_ checkedness in HTML, via the `defaultchecked` content
-      attribute (reflect by the `defaultChecked` IDL attribute).
+    * Supports checkability, by being contained in a `<fieldset checkable=single|multiple>`.
+    * Has a `checked` boolean **IDL** attribute that does NOT reflected any content attribute, to
+      track live-checked-ness.
+    * Has a `defaultchecked` **content** attribute reflected by a `defaultChecked` boolean **IDL**
+      attribute to cover checked initial-ness. See
+      [Issue #1205](https://github.com/openui/open-ui/issues/1205).
     * Supports the :checked CSS pseudo-class and ::checkmark CSS pseudo-element
 
 **Question: Should `<menuitem>`s be represented by a single element, or multiple elements?**
@@ -73,68 +186,11 @@ state-bearing menu items with the single `<menuitem>` element, we could also con
 
 **Question: Should we allow radio and checkbox menu items as direct children of a `<menubar>`?**
 
-Currently, we don’t see a need for this. All menuitems inside a menubar should perform some action
+Currently, we don't see a need for this. All menuitems inside a menubar should perform some action
 like opening a sub `<menulist>`, however we will reconsider this restriction if good use cases
 arise.
 
 For example, a text editor might need to provide a `<menulist>` to provide basic font style adjustments. A group of checkable `<menuitem>` elements to mark content as "Bold", "Italic" or "Underlined", could be provided.  The checked state representing whether the text is currently "Bold" (checked) or not.
-
-## Grouping `<menuitem>`s together
-
-Our proposal involves grouping `<menuitem>` elements together with the new `<menubar>` and
-`<menulist>` elements, and does not modify the existing [`<menu>`
-element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element) processing
-model. See https://github.com/openui/open-ui/issues/1194 for more discussion about this.
-
-`<menubar>`
-
-* Menubar should be used to represent a series of `<menuitem>`s that can then open submenus of commands.
-* In a menubar, a menuitem’s most common purpose is to invoke submenus (menulists).
-* An **in-page** menu that can contain a list of `<menuitem>`.
-* Menuitems within a menubar are displayed horizontally by default.
-* Supports :disabled, disabled attribute.
-
-`<menulist>`
-
-* Menulist should be used to represent submenus of commands.
-* In a menulist, a menu item's most common purpose is to invoke actions (commands) or other submenus (menulists).
-* Menulist is a **popover** menu that can contain a list of `<menuitem>`s.
-* Anchored to the button which is declaratively set up to open it.
-* Attributes
-    * disabled, open, name?
-
-**Question: Is `<fieldset>` necessary to group `<menuitem>` together?**
-
-Yes. While, we can use the <code>["name"](https://html.spec.whatwg.org/C#attr-fe-name)</code>
-attribute to logically group exclusive checkable `<menuitem>`s together, to support captioned groups
-of `<menulist>` items, we should use the existing `<fieldset>` element (and its optional labeling
-`<legend>` element) that give this functionality to forms. If multiple `<menuitem>`s are added
-without a `<fieldset>`, they are grouped together under their parent `<menulist>` or `<menubar>`,
-but are logically separate and are not checkable.
-
-Note, `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly
-considered, but decided against since it is used for grouping options.
-
-Our proposal includes adding a `checkable` attribute on `<fieldset>`, to group `<menuitem>`s as
-either radios or checkboxes, instead of introducing new `<menuitemcheckbox>` and `<menuitemradio>`
-elements. We envision the following markup:
-
-```html
-<menulist>
-  <fieldset checkable=single>
-    <legend>Sort by</legend>
-    <menuitem>Recently added</menuitem>
-    <menuitem>Date created</menuitem>
-    <menuitem>Creator</menuitem>
-  </fieldset>
-
-  <fieldset checkable=multiple>
-    <menuitem>1 bedroom</menuitem>
-    <menuitem>2 bedrooms</menuitem>
-    <menuitem>3 bedrooms</menuitem>
-  </fieldset>
-</menulist>
-```
 
 **Question: How should we expose the checked menu items to script?**
 
@@ -175,6 +231,43 @@ For instance:
 ```
 
 ## General questions
+
+Question: What about reusing the `<menu>` element?
+
+There is an existing [`<menu>`
+element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element), which
+represents a "toolbar" listing of commands. Though it is named "menu", it is not programmatically
+exposed like a "menu" or "menubar". There is also no native support to make listed commands look and
+behave cohesively. This proposal introduces new menu elements to give web developers more
+flexibility while following the [ARIA practices on menu and
+menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
+
+Our proposal does not modify the existing [`<menu>`
+element](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element) processing
+model. See https://github.com/openui/open-ui/issues/1194 for more discussion about this.
+
+
+
+Question: Why not introduce new `<menuitemcheckbox>` and `<menuitemradio>` elements?
+
+"instead of introducing new `<menuitemcheckbox>` and `<menuitemradio>` elements. We envision the
+following markup:"
+
+These represent ARIA roles, and could be exposed as elements, but this makes the proposal more
+complicated by adding more elements. We get the accessibility wins.
+
+Question: Is <fieldset> necessary to group <menuitem> together?
+
+*Fieldset alternatives*:
+ - We briefly considered using the [`name`](https://html.spec.whatwg.org/C#attr-fe-name) attribute
+   to group exclusively checkable menu items, similar to how radio form inputs work. However, we
+   don't need the `name` attribute if we're also grouping elements under a common `<fieldset>`.
+ - Note, `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly
+considered, but decided against since it is used for grouping options.
+
+
+
+
 
 
 ### When to use Select vs Menu
