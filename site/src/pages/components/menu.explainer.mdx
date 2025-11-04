@@ -184,42 +184,42 @@ support other interactive content in menus alongside the `<menuitem>` element, s
 
 <img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems">
 
-## Invoking a menulist from a button element
+## Invoking a `<menulist>` from a `<button>`
 
-While a `<menubar>` contains a collection of `<menuitem>` elements that can be used to invoke a
-submenu `<menulist>` element, `<menubar>`s are commonly used for more global or multi-component-level purposes.  If an author needs to provide a `<menulist>` of commands to
-interact with specific content or components of an interface, then a `<button>` element is commonly
-used to invoke a `<menulist>`.
+The `<menulist>` popover element can be used without a menubar invoking it through a menuitem. It
+can be invoked by any command invoker element, such as the `<button>` element. This is a pattern
+commonly seen on sites that provide one-off drop-down menus or filter overlays.
 
-For instance, `<button>` elements that are used to reveal menus are commonly used in tables/grids to
-allow for adjustments to the presentation of the tabular data, if not to invoke the editing or
-deleting of specific row or cell content.
+Similarly, `<button>` elements that reveal menus are commonly used in tables/grids to allow for
+adjustments to the presentation of the tabular data, or to edit or delete specific row or cell
+content:
 
 <img src="/images/menu-table-button.jpg" alt="a button invokes a menulist in a table column header, revealing the menuitems to resize, reorder or sort by the column of which it was invoked.">
 
-Toolbars or other groupings of related controls within complex web interfaces may need to include
-buttons that can perform _many_ actions - the specific action to perform is chosen by the user when
-they interact with the primary button, invoking its menu of commands.
+Toolbars or other groupings of controls beyond menubars may include buttons that display a popover
+list of actions that appear in a menulist:
 
 <img src="/images/menu-youtube-button.jpg" alt="the youtube player consists of multiple buttons that invoke their own menulists. The settings button invokes a menulist allowing for the adjustment of quality, playback speed, toggling annotations and more.">
 
 <img src="/images/menu-split-button.jpg" alt="the create new button in github's top bar invokes a menulist to add new or import a repository, create a new codepace or gist, or make a new orginization or project.">
 
-Leveraging the `command` and `commandfor` attributes, we propose that `<button>` elements, outside
-of the context of a `<menubar>`, can invoke `<menulist>` elements.  A `<button>` that invokes a
-`<menulist>` would have an implicit `aria-haspopup=menu` property, along with an impliict
-`aria-expanded` state, reflecting whether the element is rendered (expanded) or not (collapsed). 
-It would not have an implicit `aria-details` property. This is because unlike other more generic
-popovers, keyboard focus should immediately move from the invoking button to the first focusable
-element, or element with the autofocus attribute, of the rendered `<menulist>`.
+Button elements outside the context of a `<menubar>` can invoke `<menulist>` elements to fulfill the
+use cases above by leveraging the `command` and `commandfor` attributes, and the new menu (or
+existing popover) commands.
 
-For instance:
 ```html
-<button command=toggle-menu commandfor=m>Actions</button>
-<menulist id=m>
-  <!-- menuitems go here -->
+<button command=toggle-menu commandfor=menu>Actions</button>
+
+<menulist id=menu>
+  <menuitem>Foo</menuitem>
 </menulist>
 ```
+
+A button that invokes a menulist in this way would have an implicit `aria-haspopup=menu` property,
+along with an impliict `aria-expanded` state, reflecting whether the menulist is rendered (expanded)
+or not (collapsed). It would not have an implicit `aria-details` property. This is because unlike
+other more generic popovers, keyboard focus should immediately move from the invoking button to the
+first focusable element, or element with the autofocus attribute, of the rendered `<menulist>`.
 
 ## General questions
 
