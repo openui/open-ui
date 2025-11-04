@@ -73,6 +73,14 @@ This element:
 * Provides the correct keyboard and focus behavior across child menu items and
   sub menulists.
 
+**Content model**: the `<menubar>` element allows the following elements as descendants:
+* `<menuitem>`
+* Anchor `<a>` tags are disallowed in menu bars, due to accessibility concerns around exposing
+  links in ARIA menus, and concerns around the navigation menubar pattern. We enforce this with the
+  content model, and propose default `display: none` styles for anchors that are direct descendants
+  of `<menubar>` elements.
+
+
 ## The `<menulist>` element
 
 The `<menulist>` element is another way to group `<menuitem>`s together. This element is a native
@@ -103,6 +111,10 @@ This element:
   `<menuitem>`s, not nested inside them, as nested interactive content is generally inaccessible.
   See [Issue #1323](https://github.com/openui/open-ui/issues/1323) for more discussion on how we
   might support other interactive content in menus, such as `<input type=search>`.
+* Anchor `<a>` tags are disallowed in menu lists, due to accessibility concerns around exposing
+  links in ARIA menus, and concerns around the navigation menubar pattern. We enforce this with the
+  content model, and propose default `display: none` styles for anchors that are direct descendants
+  of `<menulist>` elements.
 
 The `<fieldset>` element is used in a `<menulist>` to group menu items that serve a common purpose.
 It gives two key pieces of functionality:
