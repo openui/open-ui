@@ -221,20 +221,119 @@ or not (collapsed). It would not have an implicit `aria-details` property. This 
 other more generic popovers, keyboard focus should immediately move from the invoking button to the
 first focusable element, or element with the autofocus attribute, of the rendered `<menulist>`.
 
+## Accessibility
+
+One goal of this proposal is to make the menu elements we propose accessible by default. To achieve
+this in part, our proposal follows the
+[ARIA Authoring Practices Guide on the Menu and Menubar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/)
+and best practices curated from accessibility experts as closely as possible; deviations are
+discussed with accessibility experts and documented here to the best of our ability. This section
+describes the concrete implications on our proposal.
+
+### Native ARIA role mapping
+
+ - The `<menubar>` element exposes the implicit ARIA
+   [`menubar`](https://w3c.github.io/aria/#menubar) role.
+ - The `<menulist>` element exposes the implicit ARIA
+   [`menu`](https://w3c.github.io/aria/#menu) role.
+ - The `<menuitem>` element exposes the implicit ARIA
+   ['menuitem'](https://w3c.github.io/aria/#menuitem) role by default.
+
+While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
+whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
+[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role is exposed for items in a
+`<fieldset checkable=single>`, and the
+[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a
+`<fieldset checkable=multiple>`.
+
+### Parent/child relationship in the accessibility tree via `aria-owns`
+
+Menu lists and sub-menulists are not nested in the DOM, however we considered using `aria-owns`
+natively to establish a parent-child relationship for these menus in the accessibility tree. This
+was discussed in [Issue 1297](https://github.com/openui/open-ui/issues/1297), where we resolved
+against doing this.
+
+### ARIA attributes
+
+ - [`aria-expanded`](https://w3c.github.io/aria/#aria-expanded)
+    - The `<menuitem>` element's `aria-expanded` attribute reflects whether or not a popover invoked
+      by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements (invokeable via
+      the `show-menu`, `toggle-menu`, and `hide-menu` commands), or other popovers unrelated to our
+      proposal
+ - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
+    - For checkable `<menuitem>` element, the `aria-checked` attribute reflects whether their
+      current [state](https://w3c.github.io/aria/#dfn-state) is checked
+ - [`aria-disabled`](https://w3c.github.io/aria/#aria-disabled)
+    - See [§ Soft disabling](#soft-disabling)
+
+### Soft disabling
+
+A `<menuitem disabled>` element will be marked as `aria-disabled=true`, however the element will
+still be keyboard reachable and focusable, just not activatable. See [Issue
+#1274](https://github.com/openui/open-ui/issues/1274) for more discussion.
+
+### Keyboard behavior
+
+See [§ What should the keyboard behavior be?](#what-should-the-key-board-behavior-be) for details.
+
+### Navigation menubars
+
+In short, there are longstanding accessibility issues with navigation menus are our proposal does
+not support the navigation menubar use case or pattern. See both the
+[§ How does this proposal relate to navigation
+menus?](#how-does-this-proposal-relate-to-navigation-menus) section and [Issue
+#1193](https://github.com/openui/open-ui/issues/1193) for more information.
+
+
 ## General questions
 
-### Can we reuse the `<menu>` element?
+### What should the keyboard behavior be?
+
+We propose the keyboard behavior as described in the table of the ARIA Authoring Practices Guide,
+which is demonstrative of the keyboard expectations for how menus and menubars work in operating
+systems.
+
+* A menubar has a single tab stop.
+* A menulist is invoked when its popovertarget (a menuitem or a button). Focus would automatically move to its first focusable child.
+* Tab focus will not trigger the menuitem to get selected/checked, but only when an explicit Enter/choice happens.
+* An explicit Enter/Space on a menuitem without popvertarget and inside a menulist will close that menulist.
+* An explicit Enter/Space does not close the menulist if the menuitem selected has a popovertarget that gets triggered.
+* An explicit ESC will close the current popover menulist that has focus and return focus to its invoking element (which may be a menuitem inside a menulist or a menubar; or is a button element).
+* Arrow keyboard events will allow navigating between menuitems.
+
+**Questions**
+* Is there any case where tab will close a menulist? For example, when we move from the last `<menuitem>` in a `<menulist>` and are moving to the next `<menuitem>` in the `<menubar>`.
+* Do we need special behavior for hot keys?
+
+### Why not reuse the `<menu>` element?
 
 The existing
 [`<menu>` element](https://html.spec.whatwg.org/C#the-menu-element) nominally represents a "toolbar"
 of commands, despite having no related implicit ARIA role, no native command-invoking behavior, and
 no other menu, menubar, or toolbar behaviors or keyboard interactions. Rather, it is a `<ul>` with a
-different name.
+different name. Due to these legacy behaviors (or lack thereof), we opted to not modify it at all,
+and instead introduce the new `<menubar>` and `<menulist>` elements. You can read more about what
+the existing menu element is and isn't [here](https://www.scottohara.me/blog/2021/10/21/menu.html).
 
 Our proposal does not modify this existing element or its processing model, although we could
 consider an opt-in that gives the existing `<menu>` element all of the semantics proposed here, or
 simply change its semantics and processing model when it contains a new `<menuitem>` element as a
 child. See https://github.com/openui/open-ui/issues/1194 for more discussion.
+
+
+### What's the difference between this and the `<toolbar>` proposal?
+
+There is a lot of nuance between the various menu-adjacent patterns: menubar, navigation menu, and
+toolbar. See [Issue #1188](https://github.com/openui/open-ui/issues/1188) for discussion about how
+to better crystalize this distinction in this explainer.
+
+In short, menu elements provide a hierarchical structure to represent application menus and their
+commands—they're generally used to acccess settings and application-wide configuration tools.
+Toolbars, on the other hand, provide quick, in-page access to commands pertaining to a specific
+component that the user is interacting with, like style settings for a document. Toolbars can
+contain a variety of controls, for example, buttons and
+[comboboxes](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) (which can also invoke menu lists).
+
 
 ### How best to represent checkable `<menuitem>`s?
 
@@ -262,6 +361,7 @@ participate in the same exclusive group, which would probably be the `name` attr
 order to create a group of radio exclusive menu items, you either have to set two attributes instead
 of one, or remember to use a new element and a new attribute.
 
+
 ### Is `<fieldset>` necessary to group `<menuitem>`s together?
 
 We considered using the [`name`](https://html.spec.whatwg.org/C#attr-fe-name) attribute to group
@@ -276,6 +376,7 @@ NOTE: `<fieldset>` is a more general grouping element than `<optgroup>`, which w
 considered, but decided against since it is used for grouping options in select elements, and should
 stay that way.
 
+
 ### Are radio and checkbox menu items allowed as direct children of a `<menubar>`?
 
 Currently, we don't see a need for this. All menuitems inside a menubar should perform some action
@@ -289,31 +390,35 @@ might seem reasonable to use checkable `<menuitem>` elements to style content as
 apt to satisfy this use case.
 
 
+### What's the difference between `<select>` and these new menu elements?
 
+Like `<select>`, the menu element we propose offer a list of choices to pick from, and with
+customizable select now available, users might be confused when to use which one.
 
+The `<select>` element is a form-associated element containing `<option>` elements. Each of these
+options must have a server-readable value. As a user chooses an option, specific events are
+triggered (change, input) and a new value is set.
 
-### When to use Select vs Menu
-
-Just like a select element, the menu element has a list of choices to pick from. And with customizable select now available, users might be confused on which one to use.
-
-The `<select>` element is a form-associated element and contains `<option>` elements. Each of these `<option>` elements must have a server-readable value. As a user chooses an option, specific events are triggered (change, input) and a new value is set.
-
-On the other hand, the proposed `<menulist>` element should be used to display a list of commands/actions. Each `<menuitem>` should be thought of as a command that is activable. That action could be to open a new nested menulist element or to trigger a specific command. It must adhere to [ARIA guidelines for menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
+On the other hand, our proposed menu elements display a list of commands/actions that carry an
+entirely different semantic meaning, along with a keyboard interaction model that generally adheres
+to the
+[ARIA guidelines for the menu and menubar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/),
+allowing users to traverse through deeply nested menu lists. Each menu item is a command that is
+activatable, and can open a new/nested menulist or to trigger a specific command.
 
 
 ### Why are we adding `<menuitem>` and not re-using the `<command>` element?
 
-See `<command>` element’s deprecated specification [here](https://udn.realityripple.com/docs/Web/HTML/Element/command). In the last year, the command and commandfor attributes were introduced so buttons can perform actions on other elements declaratively. We thought re-using this obsolete element with the same name would be confusing to developers.
+See `<command>` element’s deprecated specification
+[here](https://udn.realityripple.com/docs/Web/HTML/Element/command). In the last year, the command
+and commandfor attributes were introduced so buttons can perform actions on other elements
+declaratively. We thought re-using this obsolete element with the same name would be confusing to
+developers.
 
-Additionally - command is a single element, where as this proposal is introducing various elements with additional grouping semantics and keyboard behaviors beyond what a single 'command' element would represent - or reasonably be capable of creating parity with the various ARIA roles these new proposed elements would be natively introducing to HTML.
-
-
-### Why are we adding `<menubar>` and `<menulist>` and not re-using the `<menu>` element?
-
-The [`<menu>`](https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element) element already exists, but it is very barebones. It represents a "toolbar" but is exposed no differently than an unordered list containing list items, each list item then representing a command (represented by a button element) that the user can perform or activate. There is a lot of nuance between the various menu patterns (menubar, navigation menu, toolbar) that this one element cannot differentiate. It has no special keyboard behavior nor unique ARIA roles mapping beyond the implicit roles of the elements it represents. Due to these legacy restrictions, we recommend not modifying it and instead depend on the new elements `<menubar>` and `<menulist>`.
-
-You can read more about what the menu element is and isn’t, [here](https://www.scottohara.me/blog/2021/10/21/menu.html).
-
+Additionally, command is a single element, where as this proposal is introducing various elements
+with additional grouping semantics and keyboard behaviors beyond what a single 'command' element
+would represent - or reasonably be capable of creating parity with the various ARIA roles these new
+proposed elements would be natively introducing to HTML.
 
 ### Popover semantics for `<menulist>`
 
@@ -357,23 +462,6 @@ An element with `role=menu` is most commonly rendered as a popover. If someone w
 Someone *could* show/hide a menubar - much like how Google docs allows one to show/hide the menubar with the toggle on the right side of the toolbar (hide the menus (ctrl+shift+f) button).
 
 Openable is currently not standard. If there are valid cases of needing the `<menulist>` element to be in-page and the feature is mature enough, we can revisit this.
-
-
-### What should be the keyboard behavior?
-
-We can use the same keyboard behavior as described in the table of the ARIA Authoring Practices Guide, which is demonstrative of the keyboard expectations for how menus and menubars work at the operating system level.
-
-* A menubar has a single tab stop.
-* A menulist is invoked when its popovertarget (a menuitem or a button). Focus would automatically move to its first focusable child.
-* Tab focus will not trigger the menuitem to get selected/checked, but only when an explicit Enter/choice happens.
-* An explicit Enter/Space on a menuitem without popvertarget and inside a menulist will close that menulist.
-* An explicit Enter/Space does not close the menulist if the menuitem selected has a popovertarget that gets triggered.
-* An explicit ESC will close the current popover menulist that has focus and return focus to its invoking element (which may be a menuitem inside a menulist or a menubar; or is a button element).
-* Arrow keyboard events will allow navigating between menuitems.
-
-**Questions**
-* Is there any case where tab will close a menulist? For example, when we move from the last `<menuitem>` in a `<menulist>` and are moving to the next `<menuitem>` in the `<menubar>`.
-* Do we need special behavior for hot keys?
 
 
 ### Should clicking/activating a menuitem close the menu by default?
@@ -447,8 +535,6 @@ Per [comment](https://github.com/whatwg/html/issues/2929#issuecomment-322804888)
 
 From Chromium, the [reasoning for removing support](https://issues.chromium.org/issues/40589971#comment65) was:
 
-
-
 1. There is doubt whether the API is well designed.
 2. This was considered a low priority because "reaching outside the content area and contributing items to the browser’s context menu" is a new capability and needs thorough designing. There was no bandwidth for new capabilities work.
 3. This is not an interoperability priority (only existed in Firefox)
@@ -485,98 +571,50 @@ We understand it would be helpful to have this feature be natively supported. If
 * Before we can support this, we need to fix [this](https://github.com/whatwg/html/issues/10905) popover bug about values auto vs manual.
 
 
-### How can we use menu elements to support navigation menus?
+### How does this proposal relate to navigation menus?
 
-A "navigation menu" represents a means to allow users to access different pages/screen or sub-pages/screens of a website or web application - commonly used in many blogs, SPAs, news websites, really anywhere.  The most common way to create a navigation menu is by using a `<nav>` element, which implicitly exposes the ARIA landmark `navigation` role.  Lists, hyperlinks and buttons (to show/hide sub-navigation items) are the commonly expected child elements of many standard navigations, which generally do not need an author to declare specific ARIA roles to be accessible. Since all items in standard navigations are commonly hyperlinks and buttons, users can rely on standard <kbd>Tab</kbd> key navigation to reach each interactive element of the navigation. 
+Navigation menus allow users to access different pages or sub-pages of a web application. They
+commonly appear in a few different forms:
 
-Sometimes, to reduce the amount of keyboard tabbing to bypass large navigation menus, a [**Disclosure Navigation Menu** pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/) or [**Menubar Navigation** pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/) may be used.  Each have their own pros and cons.
+ - The `<nav>` element, which implicitly exposes the ARIA landmark
+   [`navigation`](https://w3c.github.io/aria/#navigation) role.
+    - Since hyperlinks and buttons are commonly children of this sort of navigation menu, authors
+      generally do not need to declare specific ARIA roles to be accessible, and users can rely on
+      standard <kbd>Tab</kbd> keey navigation to reach each interactive navigation element.
+ - The abused [Navigation Menubar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/)
+    - These generally have poor accessibility characteristics, and are not recommended.
+ - The [Disclosure Navigation Menu Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/)
+    - The APG describes this as a better alternative to the navigation menubar pattern above.
 
-We are evaluating the possibility to include **Navigation Menubar** pattern in our proposal.  We need to carefully evaluate if this is a valuable addition, as there are long standing UX concerns with using menubars in this way, and if such a pattern is introduced, we want to make sure it addresses the concerns of all users.
+In [Issue #1193](https://github.com/openui/open-ui/issues/1193) we discussed the possibility of
+supporting the Navigation Menubar Pattern with our proposal, and primarily due to accessibility
+concerns, ultimately resolved not support it. Conceretely, this means that our proposal will
+discourage the use of embedding `<a>` hyperlinks in menus alongside menuitems, likely through the
+content model and default styles.
 
-**Questions**
+Page navigation can still be triggered with menu items, but will have to be done so with JavaScript
+event listeners that handle the activation of the menu item, and do something like `location.href =
+foo;` in response. We expect that this will result in our menu elements not being used as primary
+navigation components on web pages; rather navigation menu items as we just described will be
+one-offs, much like the following "Training" example, which opens a new page upon activation, but
+does not need to be enumerated as anything other than an application menu item by screen readers:
 
-* Should we reuse the [`<nav>` element](https://html.spec.whatwg.org/multipage/#the-nav-element) if we were to support a "disclosure" or "menubar" navigation pattern?
-* Instead of using `<menubar>`, should we have a new `<navmenubar>` element?
-* Should we support anchor elements inside `<menuitem>`s?
-    * No, `<menuitem>` should only wrap non-interactive elements.
-* Should we support href attribute on `<menuitem>`s?
-    * Maybe, if we commit to the "navigation menu" use case.
+<img src="/images/google-docs-training.png" alt="a menu item that triggers a page navigation manually upon activation">
 
-**Questions about VoiceOver on navigation menubar**
-
-1. I tried Voiceover with on the chrome menus themselves and commands affecting the current context like copy/past aren't obviously distinguishable from commands that are more navigation like (e.g. settings...). Why is that uniquely important for the web?
-2. I tried Voiceover on google docs and tab navigation for the menus doesn't seem to work very well but when I am able to tab to Help => Privacy Policy (opens a new tab), it's not announced as a link.
-
-
-### How can we use menu elements to support toolbars?
-
-A menubar provides a hierarchical structure of menus for accessing application functions while a toolbar provides quick access to commonly used commands through icons and buttons. As such, a toolbar can contain a variety of controls beyond just menuitems. For example, buttons and [comboboxes](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) to invoke menulists.
-
-There are ARIA guidelines for the [toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/examples/toolbar/) pattern, which is different from the menubar and the navigation menu patterns. This proposal will not address this yet.
+To support something similar to the Disclosure Navigation Menu Pattern, a new OpenUI proposal will
+be formed, introducing something like a `<navigationbar>` element which is the navigation analogue
+to our proposal's `<menubar>`, and has the right keyboard interaction model out-of-the-box.
 
 
 ### How can we use menu elements to support Touch Bar?
 
-There is a history of attempting to do this in Webkit, for example for a [Touch Bar](https://github.com/whatwg/html/issues/3251). The idea for this is to collect all your "commands" and put them into the macOS menu bar (or expose them some other way). This proposal will not address this yet.
+There is a history of attempting to do this in Webkit, for example for a
+[Touch Bar](https://github.com/whatwg/html/issues/3251). The idea is to collect all your "commands"
+and put them into the macOS menu bar (or expose them some other way). Our proposal does not address
+this use case.
 
-
-## Accessibility concerns
-
-[ARIA practices on menu and menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
-
-
-Our goal is to make the menu elements we propose accessible by default, by implementing the
-accessibility best practices gathered from the [ARIA Authoring Practices Guide
-(APG)](https://www.w3.org/WAI/ARIA/apg/), and curated from accessibility experts. This section
-describes the concrete implications on our proposal.
-
-### Native ARIA role mapping
-
- - The `<menubar>` element will expose the [`menubar`](https://w3c.github.io/aria/#menubar) ARIA
-   role
- - The `<menulist>` element will expose the [`menu`](https://w3c.github.io/aria/#menu) ARIA role
- - The `<menuitem>` element will, by default, expose the
-   ['menuitem'](https://w3c.github.io/aria/#menuitem) ARIA role
-
-While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
-whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
-[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role is exposed for items in a
-`<fieldset checkable=single>`, and the
-[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a
-`<fieldset checkable=multiple>`.
-
-### Parent/child relationship in the accessibility tree
-
-### ARIA attributes
-
- - [`aria-expanded`](https://w3c.github.io/aria/#aria-expanded)
-    - The `<menuitem>` element's `aria-expanded` attribute reflects whether or not a popover invoked
-      by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements (invokeable via
-      the `show-menu`, `toggle-menu`, and `hide-menu` commands), or other popovers unrelated to our
-      proposal
- - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
-    - For checkable `<menuitem>` element, the `aria-checked` attribute reflects whether their
-      current [state](https://w3c.github.io/aria/#dfn-state) is checked
- - [`aria-disabled`](https://w3c.github.io/aria/#aria-disabled)
-    - See [§ Soft disabling](#soft-disabling)
-
-### Soft disabling
-
-A `<menuitem disabled>` element will be marked as `aria-disabled=true`, however the element will
-still be keyboard reachable and focusable, just not activatable. See
-https://github.com/openui/open-ui/issues/1274 for more discussion.
-
-### Navigation menubars
-
-Using the menubar pattern as an in-page navigation component has longstanding accessibility issues.
-While we think it could be possible to address them to the satisfaction of the accessibility
-community, and users of accessibility technology, this usage of menus is still very much under
-discussion. See [§ How we can use menu elements to support navigation
-menus](#how-can-we-use-menu-elements-to-support-navigation-menus), and
-https://github.com/openui/open-ui/issues/1193.
 
 ## Examples in code
-
 
 ### Google Docs: nested menulist
 
