@@ -41,6 +41,9 @@ application menus on the web. These menus will:
  - Give web developers default styles that create functional menus without having to re-invent
    common popover and anchor positioning patterns, or re-implement ARIA patterns.
 
+Note that this explainer only covers application menus, not navigation menus, which is a different
+pattern covered by a different (as yet unpublished) proposal altogether.
+
 ## Examples & code snippets
 
 The goal of our proposal is to make it easy for web developers to author accessible menus with very
@@ -48,10 +51,74 @@ little markup and JavaScript. Consider the following examples:
 
 <img src="/images/menu-elements-example-1.png" alt="menu elements expanded showing commands" />
 
+```html
+<menubar>
+  <menuitem commandfor="file-menu" command="toggle-menu">File</menuitem>
+  <menuitem commandfor="edit-menu" command="toggle-menu">Edit</menuitem>
+  <menuitem commandfor="view-menu" command="toggle-menu">View</menuitem>
+  <menuitem commandfor="help-menu" command="toggle-menu">Help</menuitem>
+</menubar>
+
+<!-- File Menu (Level 1) -->
+<menulist id="file-menu">
+  <menuitem>New</menuitem>
+  <!-- This item triggers a nested submenu (Level 2) -->
+  <menuitem commandfor="open-recent-menu" command="toggle-menu">Open Recent</menuitem>
+  <hr>
+  <menuitem>Save</menuitem>
+  <menuitem>Save As...</menuitem>
+  <menuitem disabled>Print</menuitem>
+  <hr>
+  <menuitem>Exit</menuitem>
+</menulist>
+
+<!-- Open Recent Menu (Level 2) -->
+<menulist id="open-recent-menu">
+  <menuitem>Document1.txt</menuitem>
+  <menuitem>Report.docx</menuitem>
+  <menuitem>Spreadsheet.xlsx</menuitem>
+  <hr>
+  <menuitem>Clear List</menuitem>
+</menulist>
+```
+
 <br/>
 <br/>
 
 <img src="/images/menu-elements-example-2.png" alt="menu elements expanded showing checkable state" />
+
+```html
+<menubar>
+  <menuitem commandfor="file-menu" command="toggle-menu">File</menuitem>
+  <menuitem commandfor="edit-menu" command="toggle-menu">Edit</menuitem>
+  <menuitem commandfor="view-menu" command="toggle-menu">View</menuitem>
+  <menuitem commandfor="help-menu" command="toggle-menu">Help</menuitem>
+</menubar>
+
+<!-- View Menu (Level 1) -->
+<menulist id="view-menu">
+  <!-- This item triggers a nested submenu (Level 2) -->
+  <menuitem commandfor="zoom-menu" command="toggle-menu">Zoom</menuitem>
+  <menuitem>Full Screen</menuitem>
+  <hr>
+  <fieldset checkable="multiple">
+    <menuitem defaultchecked>Show Ruler</menuitem>
+    <menuitem>Show Outline</menuitem>
+    <menuitem defaultchecked>Show Comments</menuitem>
+  </fieldset>
+</menulist>
+
+<!-- Zoom Menu (Level 2) -->
+<menulist id="zoom-menu">
+  <fieldset checkable="single">
+    <menuitem>50%</menuitem>
+    <menuitem>75%</menuitem>
+    <menuitem defaultchecked>100%</menuitem>
+    <menuitem>150%</menuitem>
+    <menuitem>200%</menuitem>
+  </fieldset>
+</menulist>
+```
 
 *These images were captured using [our test site](https://jsbin.com/vawevuc/edit?html,output) to
 test and demo these new elements.*
@@ -64,7 +131,7 @@ behaviors needed by the menu use case are provided natively, and do not need to 
 web developers or library authors.
 
 Further, these elements will have the correct implicit ARIA roles, states, and properties, as well
-as a keyboard interaction & focus model that both sighted and accessibility technology users expect.
+as a keyboard interaction & focus model that users expect.
 
 ## The `<menubar>` element
 
@@ -82,8 +149,8 @@ This element:
 * `<menuitem>`
 * Anchor `<a>` tags are disallowed in menu bars, due to accessibility concerns around exposing
   links in ARIA menus, and concerns around the navigation menubar pattern. We enforce this with the
-  content model, and propose default `display: none` styles for anchors that are direct descendants
-  of `<menubar>` elements.
+  content model, and propose default `display: none` styles for anchors that are descendants of
+  `<menubar>` elements.
 
 
 ## The `<menulist>` element
@@ -102,8 +169,7 @@ This element:
 * Supports the
   [`toggle` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event), as it
   is a native **popover**.
-* Can be invoked with the existing `show-popover` command, and the new `show-menu` command. It is
-  referenced by its ID from its invoker.
+* Can be invoked with the new `show-menu` command, and is referenced by its ID from its invoker.
 * Provides the correct keyboard and focus behavior across sub-menulists, menubars, and child menu
   items.
 
@@ -131,8 +197,8 @@ It gives two key pieces of functionality:
 **Checkable menu items**
 
 To support checkable menu items, we propose the new `checkable` **content** attribute on
-`<fieldset>` (no corresponding **IDL** attribute), to group items as either radios or checkboxes;
-its allowed values are `checkable=single` and `checkable=multiple`:
+`<fieldset>`, reflected by a corresponding boolean **IDL** attribute, to group items as either
+radios or checkboxes; its allowed values are `checkable=single` and `checkable=multiple`:
 
 ```html
 <menulist id=sort-menu>
@@ -254,7 +320,7 @@ describes the concrete implications on our proposal.
  - The `<menulist>` element exposes the implicit ARIA
    [`menu`](https://w3c.github.io/aria/#menu) role.
  - The `<menuitem>` element exposes the implicit ARIA
-   ['menuitem'](https://w3c.github.io/aria/#menuitem) role by default.
+   [`menuitem`](https://w3c.github.io/aria/#menuitem) role by default.
 
 While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
 whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
@@ -295,7 +361,7 @@ See [§ What should the keyboard behavior be?](#what-should-the-key-board-behavi
 
 ### Navigation menubars
 
-In short, there are longstanding accessibility issues with navigation menus are our proposal does
+In short, there are longstanding accessibility issues with navigation menus and our proposal does
 not support the navigation menubar use case or pattern. See both the
 [§ How does this proposal relate to navigation
 menus?](#how-does-this-proposal-relate-to-navigation-menus) section and [Issue
@@ -600,7 +666,7 @@ commonly appear in a few different forms:
       standard <kbd>Tab</kbd> keey navigation to reach each interactive navigation element.
  - The abused [Navigation Menubar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/)
     - These generally have poor accessibility characteristics, and are not recommended.
- - The [Disclosure Navigation Menu Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/)
+ - The [Disclosure Navigation Menu Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/)
     - The APG describes this as a better alternative to the navigation menubar pattern above.
 
 In [Issue #1193](https://github.com/openui/open-ui/issues/1193) we discussed the possibility of
@@ -635,33 +701,37 @@ this use case.
 
 ### Google Docs: nested menulist
 
-
 <img src="/images/menubar-google-docs.png" alt="menubar example" />
 
 ```html
 <menubar>
- <menuitem menu=format>Format</menuitem>
- <menuitem menu=tools>Tools</menuitem>
- <menuitem menu=extensions>Extensions</menuitem>
- <menuitem menu=help>Help</menuitem>
+ <menuitem command="show-menu" commandfor="format">Format</menuitem>
+ <menuitem command="show-menu" commandfor="tools">Tools</menuitem>
+ <menuitem command="show-menu" commandfor="extensions">Extensions</menuitem>
 </menubar>
-<menulist id=format>
-  <menuitem menu="format-text">Text</menuitem>
-  <menuitem menu="format-paragraph-styles">Paragraph styles</menuitem>
-  <menuitem menu="format-align-indent">Align & indent</menuitem>
-  ...
- <menulist id="format-text" checkable=multiple>
-  <menuitem id="bold">Bold</menuitem>
-  <menuitem>Italic</menuitem>
-  <menuitem>Underline</menuitem>
-  ...
- </menulist>
+
+<menulist id="format">
+  <menuitem command="show-menu" commandfor="text-format-menu">Text</menuitem>
+  <menuitem command="show-menu" commandfor="paragraph-format-menu">Paragraph styles</menuitem>
+  <menuitem command="show-menu" commandfor="align-format-menu">Align & indent</menuitem>
+</menulist>
+
+<menulist id="text-format-menu">
+  <fieldset checkable="multiple">
+    <menuitem id="bold-menuitem">Bold</menuitem>
+    <menuitem>Italic</menuitem>
+    <menuitem>Underline</menuitem>
+  </fieldset>
 </menulist>
 
 <script>
-bold.addEventListener("click", () => {
-  let text = document.getElementById("text");
-  text.style.fontWeight = 'bold';
+document.querySelector('#bold-menuitem').addEventListener("click", () => {
+  // Toggle bold-ness.
+  if (text.style.fontWeight === 'normal') {
+    text.style.fontWeight = 'bold';
+  } else {
+    text.style.fontWeight = 'normal';
+  }
 });
 </script>
 ```
