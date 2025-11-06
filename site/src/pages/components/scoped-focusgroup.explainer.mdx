@@ -44,6 +44,9 @@ layout: ../../layouts/ComponentLayout.astro
   - [Scrolling interactions](#scrolling-interactions)
     - [1. Focusgroup within a scrollable region](#1-focusgroup-within-a-scrollable-region)
     - [2. Scrollable region within a focusgroup](#2-scrollable-region-within-a-focusgroup)
+  - [Interaction with related web platform features](#interaction-with-related-web-platform-features)
+    - [Reading flow](#reading-flow)
+    - [ARIA orientation](#aria-orientation)
   - [Restricted elements](#restricted-elements)
   - [Feature detection](#feature-detection)
   - [Additional features](#additional-features)
@@ -93,9 +96,9 @@ Benefits over ad-hoc scripts (FocusZone, Tabster, bespoke roving tabindex): less
 Two complementary navigation paradigms are often used on the web today:
 
 #### 1. Sequential focus navigation
-(Tab / Shift+Tab): The browser-managed order of tabbable elements (`tabindex` / native semantics). Used to enter or leave a composite.
+ (Tab / Shift+Tab): The browser-managed order of tabbable elements (`tabindex` / native semantics). Used to enter or leave a composite. This navigation respects the CSS [`reading-flow`](#reading-flow) property when present, following the visual reading order rather than DOM order; if `reading-flow` is not set it follows DOM source order.
 #### 2. Directional navigation
-(Arrow keys, D-pad, some AT commands): Moves focus among a logically related set of items inside a composite without leaving it, the “[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)” pattern when hand-authored.
+ (Arrow keys, D-pad, some AT commands): Moves focus among a logically related set of items inside a composite without leaving it, the “[roving tabindex](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Keyboard-navigable_JavaScript_widgets#technique_1_roving_tabindex)” pattern when hand-authored. Directional movement aligns with the visual order established by [`reading-flow`](#reading-flow) so that an arrow key press moves focus in the expected visual direction.
 
 ### Before / After at a glance:
 
@@ -725,6 +728,46 @@ When a scrollable element is contained within a focusgroup, the behavior depends
 - Arrow keys are consumed by the scrollable element for scrolling.
 - If this is a native element, and not custom script, then Tab/Shift+Tab can be used to move to adjacent focusgroup items following the [escape behavior for native key conflict elements](#escape-behavior-for-native-key-conflict-elements).
 
+### Interaction with related web platform features
+
+Focusgroup interacts with two web platform features related to navigation and orientation: the CSS [`reading-flow`](https://developer.mozilla.org/en-US/docs/Web/CSS/reading-flow) property and the ARIA [`aria-orientation`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-orientation) attribute.
+
+#### Reading flow
+
+The `reading-flow` CSS property modifies the reading order of elements for sequential navigation (Tab key) and assistive technologies. Focusgroup's directional navigation (arrow keys) respects `reading-flow`, ensuring that arrow keys move focus in the expected visual direction.
+
+**Key points:**
+- Both **sequential focus navigation** (Tab/Shift+Tab) and **directional navigation** (arrow keys) follow `reading-flow` order
+- Arrow key direction is determined by visual position in the reading-flow order
+- Right/Down arrows move to the next item in reading-flow order; Left/Up arrows move to the previous item
+- This ensures arrow key navigation matches the visual layout established by `reading-flow`
+
+Example:
+```html
+<div focusgroup="toolbar" style="display: flex; flex-direction: row-reverse; reading-flow: flex-visual;">
+  <button>First in DOM</button>
+  <button>Second in DOM</button>
+  <button>Third in DOM</button>
+</div>
+```
+
+In this example:
+- Visual order (left to right): Third → Second → First
+- Tab order follows reading-flow: Third → Second → First
+- Arrow key navigation follows the same order: Right arrow moves from Third → Second → First
+- Pressing Right Arrow moves focus visually to the right, matching user expectations
+
+#### ARIA orientation
+
+The `aria-orientation` attribute indicates whether a widget's orientation is horizontal, vertical, or undefined. Focusgroup does not automatically infer or set `aria-orientation` from `inline`/`block` tokens.
+
+**Key points:**
+- Focusgroup's `inline`/`block` tokens control **keyboard behavior** (which arrow keys work)
+- `aria-orientation` conveys **semantic structure** to assistive technologies
+- These are related but distinct concerns: axis restrictions may be used to avoid key conflicts rather than to indicate orientation
+- When focusgroup applies a [minimum role](#supported-behaviors), that role's default `aria-orientation` applies unless explicitly overridden
+- Authors should set `aria-orientation` explicitly when the default doesn't match the widget's semantic structure
+
 ### Restricted elements
 
 Because `focusgroup` definitions are intended for grouping related controls, it does not make sense
@@ -999,6 +1042,8 @@ To opt-out:
 ### Impact on sequential focus navigation
 
 When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating the splitting the focusgroup into separate segments to ensure content is not skipped.
+
+Sequential focus navigation within each resulting segment follows the visual reading order established by CSS [`reading-flow`](#reading-flow) when applied to the container or relevant ancestors.
 
 In the following example, a help section opts-out of `focusgroup` behavior so that any interactive content inside it is bypassed when arrowing among the primary formatting controls, but remains reachable via tabbing.
 
