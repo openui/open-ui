@@ -787,9 +787,8 @@ The `focusgroup-entry-priority` attribute can be set on individual focusgroup it
 When multiple elements within the same [focusgroup segment](#focusgroup-segments) have the `focusgroup-entry-priority` attribute, the first element with the attribute in DOM order will be prioritized, or if the items are also being managed by reading-flow, the first such item in reading order. The direction of navigation (Tab vs Shift+Tab) does not affect which element is chosen - the same element will always receive focus when entering the segment, promoting consistent user experience.
 
 **Key behaviors:**
-- Elements with `focusgroup-entry-priority` are prioritized over elements that are merely sequentially focusable
-- If no element has `focusgroup-entry-priority`, the first sequentially focusable element in the segment is chosen (in DOM order, or if the items are also being managed by reading-flow, in reading order)
-- If no sequentially focusable elements exist, the first focusable element in the segment is chosen (excluding elements with negative `tabindex`) (in DOM order, or if the items are also being managed by reading-flow, in reading order)
+- Focusgroup items with `focusgroup-entry-priority` are prioritized.
+- If no focusgroup item has `focusgroup-entry-priority`, the first focusgroup item in the segment is chosen (in DOM order, or if the items are also being managed by reading-flow, in reading order).
 - Memory (when enabled) takes precedence over entry priority - a previously focused element will be restored even if other elements have `focusgroup-entry-priority`
 
 #### Memory vs Entry Priority Example
@@ -842,6 +841,7 @@ When focusgroups are nested, each focusgroup manages its own entry priority inde
   <button>Close</button>
   <button focusgroup-entry-priority>Exit</button>
 </div>
+<button>After</button>
 ```
 
 In this example, there are two distinct focusgroups, and three focusgroup segments:
@@ -856,7 +856,7 @@ In this example, there are two distinct focusgroups, and three focusgroup segmen
 1. **Tab into main toolbar:** Focus goes to "Print" (entry priority)
 2. **Tab from "Print":** Focus moves to "Italic" (entry priority in nested toolbar)
 3. **Tab from nested toolbar:** Focus moves to "Close" (continuing in main toolbar)
-4. **Shift+Tab into main toolbar from after:** Focus goes to "Print" (entry priority)
+4. **Shift+Tab into main toolbar from "After":** Focus goes to "Exit" (entry priority)
 
 **Directional navigation behavior:**
 - Arrow key navigation within the main toolbar moves between "Save", "Print", "Close", and "Exit", but skips over the nested toolbar
