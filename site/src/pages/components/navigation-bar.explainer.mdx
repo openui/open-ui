@@ -21,8 +21,8 @@ layout: ../../layouts/ComponentLayout.astro
 
 ## The Pitch
 
-Navigation bars with hover-triggered overlays, rich design items, and a hierarchy of links are a
-common pattern across the web, as seen below.
+Navigation bars with hover-triggered overlays, rich design items, a hierarchy of links, and some
+form of keyboard interaction, are a common pattern across the web, as seen below.
 
 <img src="/images/mega-menu-01.png" alt="Korean Air navigation mega menu" />
 
@@ -34,15 +34,16 @@ common pattern across the web, as seen below.
 Unfortunately, implementations across the web vary significantly in accessibility, keyboard
 behavior, and other characteristics. Furthermore, navigation bars on the web often misuse the ARIA
 application menu role for navigation "menus", creating a poor accessibility experience and
-inconsistent behavior for all users.
+inconsistent behavior.
 
 Our **goal** is to offer an accessible and user-friendly alternative to the common, but often
-misused ARIA menu pattern for site navigation. This allows authors to bring "mega menus" to their
-users with predictable behavior and good accessibility.
+misused ARIA menu pattern for site navigation. **Note** that this proposal is in a *very* early
+stage, and many details are not included in this document yet.
 
-A mega menu is a large, expandable navigation menu that displays multiple options in a single panel
-when a user clicks or hovers over a navigation item. Unlike traditional dropdowns with a single
-column of links, mega menus organize content into multiple columns with subcategories, often
+This allows authors to bring so-called "mega menus" to users with predictable behavior and good
+accessibility. A mega menu is a large, expandable navigation menu that displays multiple options in
+a panel when a user clicks or hovers over a navigation item. Unlike traditional dropdowns with a
+single column of links, mega menus organize content into multiple columns with subcategories, often
 incorporating visuals like images, icons, and text to provide an overview of a website's structure.
 
 **Note** that this explainer only covers navigation menus, not application menus, which are covered
@@ -52,15 +53,15 @@ by the [Menu Elements Proposal](https://open-ui.org/components/menu.explainer/).
 
 The `<navigationbar>` element represents an in-page group of either links, or disclosure buttons
 that display a popover consisting of the navigation bar's links. It defaults to a horizontal
-orientation, and its child `<menuitem>` elements are flex items displayed in a row, however like the
-application menus proposal, we are discussing an `orientation` attribute to support horizontal
-navigation bars. See [Issue #1201](https://github.com/openui/open-ui/issues/1201) for more.
+orientation, and its child elements are flex items displayed in a row, however like the application
+menus proposal, we are discussing an `orientation` attribute to support horizontal navigation bars.
+See [Issue #1201](https://github.com/openui/open-ui/issues/1201) for more.
 
 This element:
 
 * Provides the implicit [`navigation`](https://w3c.github.io/aria/#navigation) ARIA role.
 * Provides the correct keyboard and focus behavior, drawing from both the
-  [Disclosure Navigation ~Menu~ Patter](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/),
+  [Disclosure Navigation ~Menu~ Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/),
   [Disclosure Navigation Hybrid
   Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation-hybrid/),
   and the the [Menubar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/).
