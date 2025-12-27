@@ -1,4 +1,3 @@
-import React from 'react'
 import { sources } from '../sources'
 import './design-systems-list.css'
 
