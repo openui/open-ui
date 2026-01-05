@@ -123,9 +123,9 @@ Option elements inside of a datalist are not keyboard focusable because focus is
 
 ## Options, focus, and keyboard behavior
 
-In both the input-with-datalist and input-with-select cases, in order to allow the user to simulatenously type characters into the input element and choose options with the arrow keys and the enter key, the input element will remain focused and the option which will be selected when pressing enter has the `:focused-option` pseudo-class.
+In both the input-with-datalist and input-with-select cases, in order to allow the user to simulatenously type characters into the input element and choose options with the arrow keys and the enter key, the input element will remain focused and the option which will be selected when pressing enter has the `:active-option` pseudo-class.
 
-Pressing the down arrow key will move the `:focused-option` pseudo-class forwards one option element in DOM order. The up arrow key will move the pseudo-class backwards one option element in DOM order.
+Pressing the down arrow key will move the `:active-option` pseudo-class forwards one option element in DOM order. The up arrow key will move the pseudo-class backwards one option element in DOM order.
 
 ## Rendering filtered options
 
@@ -187,7 +187,7 @@ input {
 datalist {
   border-radius: 0.5em;
 }
-option:focused-option {
+option:active-option {
   background-color: lightblue;
 }
 </style>
