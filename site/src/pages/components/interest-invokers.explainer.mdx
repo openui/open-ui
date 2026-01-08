@@ -20,7 +20,8 @@ layout: ../../layouts/ComponentLayout.astro
 - [HIDs and Interest](#hids-and-interest)
   - [Mouse](#mouse)
   - [Keyboard](#keyboard)
-  - [Touchscreen](#touchscreen)
+  - [Touchscreen and AR](#touchscreen-and-ar)
+    - [The `::interest-button` pseudo element](#the-interest-button-pseudo-element)
   - [Other](#other)
   - [Exceptions](#exceptions)
 - [Mouse and Keyboard delays](#mouse-and-keyboard-delays)
@@ -153,7 +154,7 @@ Mouse users will show interest in an element by mouse-hovering the element for a
 
 For keyboard users, there is a tension between discoverability and annoyance. The most discoverable way to "show interest" via the keyboard is simply for keyboard focus to trigger interest. The downside of this pattern is that users who are merely trying to keyboard-navigate through a document might be annoyed if popovers begin to appear as they tab through the document. An activation delay, combined with the ESC key always losing interest and closing popovers, mitigates this problem. A prior proposal (see [the alternatives section](#alternatives-considered)) included a more complicated "partial interest" concept that was intended to remedy this problem. However, it turned out to be very complicated for developers, and annoying for users. The presence of the ESC key to "escape" from interest turns out to fix most annoyance problems.
 
-### Touchscreen
+### Touchscreen and AR
 
 For touchscreen users, the [widely-adopted standard](https://docs.google.com/spreadsheets/d/11Bt_FCAqu1hd5llGRGpzgwlgHaqLmOC4SJEMRtNQY-g/edit?gid=113109928) for "showing interest" in an element is the [long-press gesture](https://en.wikipedia.org/wiki/Pointing_device_gesture#:~:text=0%3A04-,Long%20Press,-Duration%3A%205%20seconds). For native apps, this is the user-expected shortcut to show context menus and access other actions without explicitly activating the element. (See [this comment](https://github.com/openui/open-ui/issues/1052#issuecomment-2394446599) for more context on this point, from developers.) While "inventing" a new interaction pattern such as long-press-and-drag or other "magic" might sound appealing, users would not know or expect this pattern to work, since it would only exist on one (or a handful) of apps on their phone: browsers. For all other native mobile apps, long-press is the standard way to show interest, and for that reason, developers need `interestfor` to re-use this standard UX pattern.
 
@@ -161,12 +162,35 @@ On the web, however, most browsers *already overload* the long-press gesture to 
 
 Many different options for providing touchscreen support were discussed and even prototyped, and the details can be found in [the alternatives section](#alternatives-considered). The final selected proposal is to simply add an item to the pre-existing long-press context menu, such as "Show Details", which (if selected) shows interest in the element. If the element being long-pressed would not ordinarily show a context menu (such as a `<button>` in many browsers), then the long press itself is enough to show interest directly.
 
+#### The `::interest-button` pseudo element
+
+This is "Option 3.5" in the [Touchscreen options](#touchscreen-options) section. Adding an item to the long-press context menu meets the use case of ensuring all users have access to hovercard content. However, it is a bit more difficult to discover and use. In some cases, developers might want to provide a more visible way to show the user that there is more content to access. Importantly, in other cases, developers (or more often *designers*) explicitly do not want this - they want to keep an uncluttered page layout without extra affordances.
+
+In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the `::interest-button` pseudo element:
+
+```css
+@media (any-pointer: coarse) {
+  /* On touch devices, show the interest-button pseudo */
+  .my-link::interest-button {
+    content: '?';
+    /* button-like styles */
+  }
+}
+```
+
+When the `::interest-button` pseudo element has content, and is used on an element with the `interestfor` attribute, the pseudo-element is generated following the element. Typically, this is rendered as a small `(i)` icon or `?` or similar, but the decision of what to render in the button will be up to the developer. When the user taps or clicks (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard. Importantly, the [CSS delays](#Mouse-and-Keyboard-delays) do not apply here - clicking/tapping immediately shows interest.
+
+In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-button` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
+
+Importantly, this new pseudo element is **not** keyboard focusable. Adding another focus navigation stop is not good from a keyboard and AT user perspective, because keyboard focus already shows interest. Adding it to the focus navigation order would add a) two sibling elements that do the same thing, and b) additional noise in the keyboard navigation order. The desired behavior for this pseudo element is that of `<span onclick="{show interest}">`.
 
 ### Other
 
 The "other" category includes many HID types, including assistive technologies, eye tracking and VR interfaces, voice control systems, switch access, and future HIDs that haven't been developed yet.
 
-Since this category of HIDs contains less-commonly-used HID types, and because it also contains future HIDs that don't even exist yet, the specification for `interestfor` will simply mandate that the User Agent provide *a way* for users to both "show interest" and "lose interest" in elements, no matter what HID is in use, without specifying exactly what form that might take. In some cases, this behavior likely cannot be specified, and must be left to the discretion of the user agent. For example, an explicit hand gesture might be needed for an eye tracking VR interface, to preserve privacy. In the to-be-invented case, it stands to reason that devices might introduce new and novel concepts for showing/losing interest.
+Since this category of HIDs contains less-commonly-used HID types, and because it also contains future HIDs that don't even exist yet, the specification for `interestfor` will simply mandate that the User Agent provide *a way* for users to both "show interest" and "lose interest" in elements, no matter what HID is in use, without specifying exactly what form that might take.
+
+Likely, most HIDs in this category will need to rely on the existing affordances described above, such as invoking the context menu, or clicking on the `::interest-button` pseudo element.
 
 ### Exceptions
 
@@ -488,12 +512,12 @@ This is **likely the most straightforward approach that still meets all of the r
 
 While Option 3 is a great way to ensure that all users have access to hovercard content, it is a bit more difficult to discover. In some cases, developers might want to provide a more visible way to show the user that there is more content to access. (In other cases, developers explicitly do not want this - they want to keep an uncluttered page layout.)
 
-In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the new `::interest-hint` pseudo element:
+In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the new `::interest-button` pseudo element:
 
 ```css
 @media (any-pointer: coarse) {
-  /* On touch devices, show the interest-hint pseudo */
-  .my-link::interest-hint {
+  /* On touch devices, show the interest-button pseudo */
+  .my-link::interest-button {
     content: '' / 'profile preview';
     background-image: url('icon.png');
     /* styles */
@@ -501,9 +525,9 @@ In the case that the developer wants to add additional visibility, they can opt 
 }
 ```
 
-When the `::interest-hint` pseudo element has a value set for `content` on an element with the `interestfor` attribute, the pseudo-element is generated as a button following the element. Typically, this is rendered as a small `(i)` icon or similar, but the decision of what to render in the button will be up to the developer. When the user taps (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard.
+When the `::interest-button` pseudo element has a value set for `content` on an element with the `interestfor` attribute, the pseudo-element is generated as a button following the element. Typically, this is rendered as a small `(i)` icon or similar, but the decision of what to render in the button will be up to the developer. When the user taps (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard.
 
-In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-hint` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
+In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-button` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
 
 | `<a>` - long-press | `<button>` - long-press |
 |-------|------------|
