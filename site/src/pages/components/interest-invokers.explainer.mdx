@@ -488,12 +488,12 @@ This is **likely the most straightforward approach that still meets all of the r
 
 While Option 3 is a great way to ensure that all users have access to hovercard content, it is a bit more difficult to discover. In some cases, developers might want to provide a more visible way to show the user that there is more content to access. (In other cases, developers explicitly do not want this - they want to keep an uncluttered page layout.)
 
-In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the new `::interest-hint` pseudo element:
+In the case that the developer wants to add additional visibility, they can opt in to an addition button/icon via the new `::interest-button` pseudo element:
 
 ```css
 @media (any-pointer: coarse) {
-  /* On touch devices, show the interest-hint pseudo */
-  .my-link::interest-hint {
+  /* On touch devices, show the interest-button pseudo */
+  .my-link::interest-button {
     content: '' / 'profile preview';
     background-image: url('icon.png');
     /* styles */
@@ -501,9 +501,9 @@ In the case that the developer wants to add additional visibility, they can opt 
 }
 ```
 
-When the `::interest-hint` pseudo element has a value set for `content` on an element with the `interestfor` attribute, the pseudo-element is generated as a button following the element. Typically, this is rendered as a small `(i)` icon or similar, but the decision of what to render in the button will be up to the developer. When the user taps (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard.
+When the `::interest-button` pseudo element has a value set for `content` on an element with the `interestfor` attribute, the pseudo-element is generated as a button following the element. Typically, this is rendered as a small `(i)` icon or similar, but the decision of what to render in the button will be up to the developer. When the user taps (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard.
 
-In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-hint` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
+In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "View more info" item that can also be used to show interest. And tapping the originating element (not the `::interest-button` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
 
 | `<a>` - long-press | `<button>` - long-press |
 |-------|------------|
