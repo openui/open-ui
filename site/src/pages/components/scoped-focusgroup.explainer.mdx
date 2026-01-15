@@ -8,7 +8,7 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior Authors from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2025-10-7
+ - Last updated: 2026-1-15
 
 ## Table of Contents
 <details>
@@ -465,9 +465,9 @@ focusgroup candidate and (in this case) the single focusgroup item.
 </div>
 ```
 
-Focusgroup candidates become focusgroup items if they are focusable and do not have a negative `tabindex` value, e.g., implicitly focusable
-elements like `<button>` or explicitly made focusable via non-negative `tabindex` values (e.g., a custom element or
-`contenteditable`). Elements with `tabindex="-1"` are excluded from focusgroup management entirely.
+Focusgroup candidates become focusgroup items if they are focusable, e.g., implicitly focusable
+elements like `<button>` or explicitly made focusable via `tabindex` values (e.g., a custom element or
+`contenteditable`). Elements with non-negative `tabindex` values (or no `tabindex` if naturally focusable) are reachable via directional navigation. Elements with `tabindex="-1"` are not initially reachable via directional navigation, but once focused (e.g., programmatically or via mouse), they participate in focusgroup navigation and can be navigated away from using arrow keys. However, they cannot be navigated back to via arrow keys unless their `tabindex` is changed to a non-negative value.
 
 An element can only have _one_ **focusgroup definition** added via the `focusgroup` attribute:
 
@@ -490,14 +490,16 @@ sequentially among all the focusgroup items using the arrow keys (up/right moves
 down/left moves focus backwards assuming the `<div>` element has `writing-mode` `horizontal-tb` and
 `direction` `ltr`).
 
-Note that only the elements with `id=one`, `id=two` and `id=three` can be focused via arrow keys. The element with `id=four` has `tabindex="-1"`, which takes it out of both [sequential (Tab/Shift+Tab)](#1-sequential-focus-navigation) and [directional (arrow keys)](#2-directional-navigation) navigation via focusgroup.
+Note that the elements with `id=one`, `id=two` and `id=three` can be reached via arrow keys from other focusgroup items. The element with `id=four` has `tabindex="-1"`, which excludes it from both [sequential (Tab/Shift+Tab)](#1-sequential-focus-navigation) and initial directional navigation. However, if `id=four` is focused programmatically or by other means (e.g., mouse click), it will participate in directional navigation, allowing the user to navigate away from it using arrow keys, though they cannot navigate back to it via arrow keys.
 
 ### Focusgroup segments
 
 A **focusgroup segment** is a contiguous group of focusgroup items that can be navigated without crossing any [opted-out elements](#opting-out) that are participating in sequential focus navigation. An opted-out element is considered as participating in sequential focus navigation if:
 1. The element is opting out of a focusgroup via `focusgroup="none"` or is a descendant of such an element.
 2. The element is focusable, i.e., it is either natively focusable or has a non-negative `tabindex`.
-3. If the element has a negative tabindex, but currently has focus.
+3. The element has a negative tabindex, but currently has focus.
+
+Note: Elements with `tabindex="-1"` that are not opted-out participate in focusgroup directional navigation when focused, but do not create segment boundaries since they are not participating in sequential focus navigation (unless currently focused, per condition 3 above).
 
 When one of these opted-out elements is between two focusgroup items, it divides the focusgroup into two segments, one segment on each side of the opted-out element.
 
@@ -548,9 +550,8 @@ Example:
 
 When pressing tab to enter this "toolbar" focusgroup from an element _before_ it, focus will go to
 the first `<button>` because:
-- There is no other element within the focusgroup with a `tabindex` >= 0 or that is sequentially
-   focusable by default (these `<button>`s are taken out of sequential focus navigation with
-   `tabindex=-1`).
+- There is no other element within the focusgroup with a `tabindex` >= 0 specified (these `<button>`s
+   are sequentially focusable by default, but the focusgroup collapses them to a single tab stop).
 - This focusgroup has no "memory" of a last-focused element within (e.g., it has not been entered
    before).
 - Since neither of the above cases resulted in focusing an alternate element, then the first
@@ -1042,7 +1043,7 @@ To opt-out:
 
 ### Impact on sequential focus navigation
 
-When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating the splitting the focusgroup into separate segments to ensure content is not skipped.
+When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating splitting the focusgroup into separate segments to ensure content is not skipped.
 
 Sequential focus navigation within each resulting segment follows the visual reading order established by CSS [`reading-flow`](#reading-flow) when applied to the container or relevant ancestors.
 
