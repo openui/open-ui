@@ -51,8 +51,8 @@ interactivity, and how the button may need to respond to such actions.
 | `<*>`                 | `'exit-fullscreen'`    | If the element is fullscreen, then exit                                                                        |
 | `<*>`                 | [`'copy-text'`](https://github.com/openui/open-ui/issues/952)          | Copy the inner text of the target element to the clipboard. Special case when self referencing to use the value attribute. |
 | `<*>`                 | [`'share'`](https://github.com/openui/open-ui/issues/974)          | Share the inner text of the target element, special casing URLs. Special case when self referencing to use the value attribute. |
-| `<input type=number>` | `'step-up'`            | Call `.stepUp()` on the invokee                                                                                |
-| `<input type=number>` | `'step-down'`          | Call `.stepDown()` on the invokee                                                                              |
+| `<input type=number>` (and other steppable inputs) | `'step-up'`            | Call `.stepUp()` on the invokee, using the value attribute to override the step amount if present.             |
+| `<input type=number>` (and other steppable inputs) | `'step-down'`          | Call `.stepDown()` on the invokee, using the value attribute to override the step amount if present.           |
 
 > Note: Ideas are welcome. Please submit an issue if you have one!
 
