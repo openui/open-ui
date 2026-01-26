@@ -1,4 +1,3 @@
-import React from 'react'
 import { componentsByName, get, uniqBy, groupBy } from '../sources'
 import './component-coverage.css'
 

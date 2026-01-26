@@ -1,4 +1,3 @@
-import React from 'react'
 import './missing-images.css'
 
 export function MissingImages(props) {

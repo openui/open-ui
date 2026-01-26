@@ -1,16 +1,15 @@
 import { defineConfig } from 'astro/config'
-import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import mdx from '@astrojs/mdx'
-import prefetch from '@astrojs/prefetch'
 import compress from 'astro-compress'
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import { autolinkHeadingsPlugin } from './src/plugins/rehypeHeadings'
 import rehypeResponsiveTables from './src/plugins/rehypeResponsiveTable'
 
+import preact from '@astrojs/preact';
+
 export default defineConfig({
   integrations: [
-    react(),
     sitemap({
       filter: (page) =>
         !page.endsWith("/component-spec-template/"),
@@ -18,10 +17,13 @@ export default defineConfig({
     mdx({
       rehypePlugins: [rehypeHeadingIds, autolinkHeadingsPlugin, rehypeResponsiveTables],
     }),
-    prefetch(),
     compress(),
+    preact(),
   ],
   site: 'https://open-ui.org',
+  prefetch: {
+    prefetchAll: true,
+  },
   markdown: {
     syntaxHighlight: 'prism',
   },
