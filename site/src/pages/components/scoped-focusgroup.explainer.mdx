@@ -8,7 +8,7 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior Authors from the earlier, broader [focusgroup explainer](/components/focusgroup.explainer): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2025-10-7
+ - Last updated: 2026-1-15
 
 ## Table of Contents
 <details>
@@ -50,6 +50,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [Restricted elements](#restricted-elements)
   - [Feature detection](#feature-detection)
   - [Additional features](#additional-features)
+  - [The focusgroupstart Attribute](#the-focusgroupstart-attribute)
 - [Enabling wrapping behaviors](#enabling-wrapping-behaviors)
 - [Limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality)
 - [Opting-out](#opting-out)
@@ -87,7 +88,7 @@ default accessibility, and interoperability over existing solutions.
 
 While this document emphasizes the usage of the keyboard arrow keys for accessibility
 navigation, we acknowledge that there are other input modalities that work (or can be adapted
-to work) equally well for `focusgroup` navigation behavior (e.g., game controllers,D-pads, remote controls, gesture
+to work) equally well for `focusgroup` navigation behavior (e.g., game controllers, D-pads, remote controls, gesture
 recognizers, touch-based assistive technologies (AT), etc.).
 
 Benefits over ad-hoc scripts (FocusZone, Tabster, bespoke roving tabindex): less boilerplate, standardized axis + wrap behavior (including RTL / vertical), reduced misapplication, and a consistent, testable baseline for AT and UA interoperability.
@@ -151,11 +152,11 @@ Opting an element and its subtree out of an ancestor focusgroup, see: [Opting-ou
 <div focusgroup="none"></div>
 ```
 
-Specifying a specific item as the [entry point](#entry-point) for focus when entering a focusgroup:
+Specifying a specific item as the [start element](#the-focusgroupstart-attribute) for focus when entering a focusgroup:
 ```html
 <div focusgroup="<behavior> [inline|block] [wrap] [no-memory]">
   <button>One</button>
-  <button>Two</button>
+  <button focusgroupstart>Two</button>
   <button>Three</button>
 </div>
 ```
@@ -207,12 +208,12 @@ Current behavior tokens (APG alignment & minimum roles). All listed (except the 
 | `grid` (future) | Grid (2-D) | [`grid`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) | (TBD) | [APG Grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) |
 
 #### Behavior → role mapping & precedence
-2. No explicit container `role`: UA maps behavior token to its minimum role (subject to minimum-role conditions described above).
-3. Explicit container `role` identical to minimum role: keep as-is.
-4. Explicit compatible composite `role`: keep explicit role; behavior navigation still activates.
-5. Explicit incompatible `role` (e.g., `button`): UA MAY activate a developer warning.
-6. Child role inference only runs when: (a) container role came from behavior mapping, (b) descendant is managed (not opted-out), (c) behavior defines an inferred child role, (d) descendant lacks explicit `role`, (e) inference would not replace richer native semantics. This endures an inferred, minimum role will never override an explicit role.
-7. Inference never upgrades variant types (e.g., `menuitemcheckbox` vs `menuitemradio`)—authors must specify those explicitly.
+1. No explicit container `role`: UA maps behavior token to its minimum role (subject to minimum-role conditions described above).
+2. Explicit container `role` identical to minimum role: keep as-is.
+3. Explicit compatible composite `role`: keep explicit role; behavior navigation still activates.
+4. Explicit incompatible `role` (e.g., `button`): UA MAY activate a developer warning.
+5. Child role inference only runs when: (a) container role came from behavior mapping, (b) descendant is managed (not opted-out), (c) behavior defines an inferred child role, (d) descendant lacks explicit `role`, (e) inference would not replace richer native semantics. This ensures an inferred, minimum role will never override an explicit role.
+6. Inference never upgrades variant types (e.g., `menuitemcheckbox` vs `menuitemradio`)—authors must specify those explicitly.
 
 This approach separates behavioral intent (token) from accessibility semantics (minimum role mapping) and addresses concerns about reusing ARIA role strings directly as activation tokens.
 
@@ -226,14 +227,14 @@ Reasons to pursue `focusgroup` in parallel:
 2. Incremental flexibility: Adding a new eligible behavior token (and optional child inference) is a far smaller spec and implementation change than introducing a new HTML element with parsing, styling, accessibility mapping, and legacy considerations.
 3. Low friction upgrade path: Existing ARIA patterns (toolbar of buttons, listbox of options) become declarative with a single attribute rather than refactoring to new tags.
 4. Progressive expansion: We can start with a minimal, consensus set (toolbar, tablist, radiogroup, listbox, menu/menubar) and add more patterns as needed.
-6. Minimal surface risk: An attribute opt-in is easier to ship, iterate, or adjust (including potential deprecation of an unused token) than an element baked into the content model.
-7. Immediate boilerplate win: Solves today's repetitive roving tabindex logic without waiting for multiple element proposals to mature and achieve cross-browser implementation.
+5. Minimal surface risk: An attribute opt-in is easier to ship, iterate, or adjust (including potential deprecation of an unused token) than an element baked into the content model.
+6. Immediate boilerplate win: Solves today's repetitive roving tabindex logic without waiting for multiple element proposals to mature and achieve cross-browser implementation.
 
 `focusgroup` doesn't replace, but complements native elements. It standardizes a widely re-implemented behavioral layer and leaves room for richer, purpose-built elements to integrate or rely on it later.
 
 ## Quickstart
 
-The following examples start with the most common composite: a formatting toolbar.
+The following examples demonstrate common focusgroup patterns.
 
 In this example, the author is using a
 [tab control pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) where the tab activation
@@ -242,7 +243,7 @@ behavior is decoupled from selection ("manual tab activation"):
 ```html
 <div focusgroup="tablist inline wrap no-memory" aria-label="Common Operating Systems">
   <button id="tab-1" aria-selected="false" aria-controls="tabpanel-1">macOS</button>
-  <button id="tab-2" aria-selected="true" aria-controls="tabpanel-2" focusgroup-entry-priority>Windows</button>
+  <button id="tab-2" aria-selected="true" aria-controls="tabpanel-2" focusgroupstart>Windows</button>
   <button id="tab-3" aria-selected="false" aria-controls="tabpanel-3">Linux</button>
 </div>
 <div id="tabpanel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1" hidden> … </div>
@@ -251,9 +252,9 @@ behavior is decoupled from selection ("manual tab activation"):
 ```
 
 What to notice:
-* The `focusgroup-entry-priority` attribute on the selected tab determines which tab receives focus when entering the focusgroup.
+* The `focusgroupstart` attribute on the selected tab determines which tab receives focus when entering the focusgroup.
    The `no-memory` value [prevents the focusgroup from remembering the last focused tab](#disabling-focusgroup-memory) so
-   that focus will always go to the tab with `focusgroup-entry-priority` on re-entry regardless of which element was
+   that focus will always go to the tab with `focusgroupstart` on re-entry regardless of which element was
    focused last.
 * If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to
    `tabpanel-2` which is next in sequential focus navigation order (because the other
@@ -265,7 +266,7 @@ What to notice:
    **inline** direction (assuming the `<div>`'s `writing-mode` is `horizontal-tb`).
 *   The author code required to manage the selection of a tab is omitted for brevity. Such code on tab selection
    change would update `aria-selected` values, the `hidden` state of the controlled `role="tabpanel"`
-   and move the `focusgroup-entry-priority` attribute to the newly selected tab.
+   and move the `focusgroupstart` attribute to the newly selected tab.
 
 In a third example, the author is creating a
 [navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/).
@@ -337,12 +338,12 @@ Empirical misuse in uncontrolled contexts; correct usage clusters around APG-bac
 Interactions with explicit `role` vs behavior token mapping; also see [open question around child role inference](#open-questions)
 ```html
 <nav id="one" focusgroup="menu inline wrap" aria-label="Formatting">
-  <button focusgroup-entry-priority>Bold</button>
+  <button focusgroupstart>Bold</button>
   <button role="menuitemcheckbox" aria-checked="true">Italics</button>
   <button>Underline</button>
 </nav>
 <div id="two" role="toolbar" focusgroup="radiogroup wrap">
-  <button type="button" focusgroup-entry-priority>Bold</button>
+  <button type="button" focusgroupstart>Bold</button>
   <button type="button">Italic</button>
   <button type="button">Underline</button>
 </div>
@@ -464,9 +465,9 @@ focusgroup candidate and (in this case) the single focusgroup item.
 </div>
 ```
 
-Focusgroup candidates become focusgroup items if they are focusable and do not have a negative `tabindex` value, e.g., implicitly focusable
-elements like `<button>` or explicitly made focusable via non-negative `tabindex` values (e.g., a custom element or
-`contenteditable`). Elements with `tabindex="-1"` are excluded from focusgroup management entirely.
+Focusgroup candidates become focusgroup items if they are focusable, e.g., implicitly focusable
+elements like `<button>` or explicitly made focusable via `tabindex` values (e.g., a custom element or
+`contenteditable`). Elements with non-negative `tabindex` values (or no `tabindex` if naturally focusable) are reachable via directional navigation. Elements with `tabindex="-1"` are not initially reachable via directional navigation, but once focused (e.g., programmatically or via mouse), they participate in focusgroup navigation and can be navigated away from using arrow keys. However, they cannot be navigated back to via arrow keys unless their `tabindex` is changed to a non-negative value.
 
 An element can only have _one_ **focusgroup definition** added via the `focusgroup` attribute:
 
@@ -486,17 +487,19 @@ The `ancestor` element has the **focusgroup definition**. The elements with `id=
 **focusgroup candidates**. Because candidates one through three are keyboard focusable, they are considered
 **focusgroup items**. When one of the focusgroup items becomes focused, the user can move focus
 sequentially among all the focusgroup items using the arrow keys (up/right moves focus forward,
-down/left moves focus backwards assuming the `<p>` element has `writing-mode` `horizontal-tb` and
+down/left moves focus backwards assuming the `<div>` element has `writing-mode` `horizontal-tb` and
 `direction` `ltr`).
 
-Note that only the elements with `id=one`, `id=two` and `id=three` can be focused via arrow keys. The element with `id=four` has `tabindex="-1"`, which takes it out of both [sequential(tab/shift+tab)](##1-sequential-focus-navigation) and [directional(arrow keys)](#2-Directional-navigation) navigation via focusgroup.
+Note that the elements with `id=one`, `id=two` and `id=three` can be reached via arrow keys from other focusgroup items. The element with `id=four` has `tabindex="-1"`, which excludes it from both [sequential (Tab/Shift+Tab)](#1-sequential-focus-navigation) and initial directional navigation. However, if `id=four` is focused programmatically or by other means (e.g., mouse click), it will participate in directional navigation, allowing the user to navigate away from it using arrow keys, though they cannot navigate back to it via arrow keys.
 
 ### Focusgroup segments
 
 A **focusgroup segment** is a contiguous group of focusgroup items that can be navigated without crossing any [opted-out elements](#opting-out) that are participating in sequential focus navigation. An opted-out element is considered as participating in sequential focus navigation if:
 1. The element is opting out of a focusgroup via `focusgroup="none"` or is a descendant of such an element.
 2. The element is focusable, i.e., it is either natively focusable or has a non-negative `tabindex`.
-3. If the element has a negative tabindex, but currently has focus.
+3. The element has a negative tabindex, but currently has focus.
+
+Note: Elements with `tabindex="-1"` that are not opted-out participate in focusgroup directional navigation when focused, but do not create segment boundaries since they are not participating in sequential focus navigation (unless currently focused, per condition 3 above).
 
 When one of these opted-out elements is between two focusgroup items, it divides the focusgroup into two segments, one segment on each side of the opted-out element.
 
@@ -547,9 +550,8 @@ Example:
 
 When pressing tab to enter this "toolbar" focusgroup from an element _before_ it, focus will go to
 the first `<button>` because:
-- There is no other element within the focusgroup with a `tabindex` >= 0 or that is sequentially
-   focusable by default (these `<button>`s are taken out of sequential focus navigation with
-   `tabindex=-1`).
+- There is no other element within the focusgroup with a `tabindex` >= 0 specified (these `<button>`s
+   are sequentially focusable by default, but the focusgroup collapses them to a single tab stop).
 - This focusgroup has no "memory" of a last-focused element within (e.g., it has not been entered
    before).
 - Since neither of the above cases resulted in focusing an alternate element, then the first
@@ -585,7 +587,7 @@ Example:
 ```html
 <list-component focusgroup="listbox" role="listbox" aria-label="Cute dogs">
   <template shadowrootmode="open">
-    <my-listitem role="option" focusgroup-entry-priority aria-selected="true">Terrier</my-listitem>
+    <my-listitem role="option" focusgroupstart aria-selected="true">Terrier</my-listitem>
     <my-listitem role="option" aria-selected="false">Dalmatian</my-listitem>
     <my-listitem role="option" aria-selected="false">Saint Bernard</my-listitem>
   </template>
@@ -813,76 +815,76 @@ Focusgroups have the following additional features:
 These feature options are applied as space-separated token values to the `focusgroup`
 attribute.
 
-### Entry Priority Control
+### The focusgroupstart Attribute
 
-The `focusgroup-entry-priority` attribute can be set on individual focusgroup items to control which element receives focus when entering a focusgroup segment via sequential focus navigation (Tab/Shift+Tab). This attribute provides explicit control over the initial focus target within a focusgroup when no previous focus memory exists.
+The `focusgroupstart` attribute can be set on individual focusgroup items to control which element receives focus when entering a focusgroup segment via sequential focus navigation (Tab/Shift+Tab). This attribute provides explicit control over the initial focus target within a focusgroup when no previous focus memory exists.
 
-**Important:** If a focusgroup has memory enabled (the default) and a last-focused element exists within the segment being entered, that element will be restored instead of the element with `focusgroup-entry-priority`. Entry priority only applies when focus is entering the focusgroup for the first time or when using `no-memory` to disable the memory feature.
+**Important:** If a focusgroup has memory enabled (the default) and a last-focused element exists within the segment being entered, that element will be restored instead of the element with `focusgroupstart`. The `focusgroupstart` attribute only applies when focus is entering the focusgroup for the first time or when using `no-memory` to disable the memory feature.
 
 ```html
 <div focusgroup="toolbar">
   <button>Bold</button>
-  <button focusgroup-entry-priority>Italic (recommended)</button>
+  <button focusgroupstart>Italic (recommended)</button>
   <button>Underlined</button>
 </div>
 ```
 
-When multiple elements within the same [focusgroup segment](#focusgroup-segments) have the `focusgroup-entry-priority` attribute, the first element with the attribute in DOM order will be prioritized, or if the items are also being managed by reading-flow, the first such item in reading order. The direction of navigation (Tab vs Shift+Tab) does not affect which element is chosen - the same element will always receive focus when entering the segment, promoting consistent user experience.
+When multiple elements within the same [focusgroup segment](#focusgroup-segments) have the `focusgroupstart` attribute, the first element with the attribute in DOM order will be prioritized, or if the items are also being managed by reading-flow, the first such item in reading order. The direction of navigation (Tab vs Shift+Tab) does not affect which element is chosen - the same element will always receive focus when entering the segment, promoting consistent user experience.
 
 **Key behaviors:**
-- Focusgroup items with `focusgroup-entry-priority` are prioritized.
-- If no focusgroup item has `focusgroup-entry-priority`, the first focusgroup item in the segment is chosen (in DOM order, or if the items are also being managed by reading-flow, in reading order).
-- Memory (when enabled) takes precedence over entry priority - a previously focused element will be restored even if other elements have `focusgroup-entry-priority`
+- Focusgroup items with `focusgroupstart` are prioritized.
+- If no focusgroup item has `focusgroupstart`, the first focusgroup item in the segment is chosen (in DOM order, or if the items are also being managed by reading-flow, in reading order).
+- Memory (when enabled) takes precedence over `focusgroupstart` - a previously focused element will be restored even if other elements have `focusgroupstart`
 
-#### Memory vs Entry Priority Example
+#### Memory vs focusgroupstart Example
 
-This example demonstrates how memory takes precedence over entry priority:
+This example demonstrates how memory takes precedence over `focusgroupstart`:
 
 ```html
 <div focusgroup="toolbar" aria-label="Text formatting">
   <button>Bold</button>
-  <button focusgroup-entry-priority>Italic (entry priority)</button>
+  <button focusgroupstart>Italic (focusgroupstart)</button>
   <button>Underline</button>
 </div>
 ```
 
 **Behavior sequence:**
-1. **First time entering the focusgroup:** Focus goes to "Italic" (entry priority applies since no memory exists)
+1. **First time entering the focusgroup:** Focus goes to "Italic" (`focusgroupstart` applies since no memory exists)
 2. **User arrows to "Underline":** Focus moves to "Underline" and memory is updated
-3. **User tabs away and then back:** Focus goes to "Underline" (memory restored, entry priority ignored)
+3. **User tabs away and then back:** Focus goes to "Underline" (memory restored, `focusgroupstart` ignored)
 4. **Using `no-memory`:** With `focusgroup="toolbar no-memory"`, focus would always go to "Italic" regardless of previous focus
 
-#### Multiple Items with the Entry Priority Attribute (Not Recommended)
-Focusgroup will always prioritize the first element with the `focusgroup-entry-priority` attribute in DOM order when entering a focusgroup segment, or if the items are also being managed by reading-flow, the first such item in reading order, and will not consider any subsequent elements with the same attribute.
+#### Multiple Items with focusgroupstart (Not Recommended)
+Focusgroup will always prioritize the first element with the `focusgroupstart` attribute in DOM order when entering a focusgroup segment, or if the items are also being managed by reading-flow, the first such item in reading order, and will not consider any subsequent elements with the same attribute.
 
 ```html
 <div focusgroup="toolbar no-memory">
   <button>Bold</button>
-  <button focusgroup-entry-priority>Italic</button>
-  <button focusgroup-entry-priority>Underline</button>
+  <button focusgroupstart>Italic</button>
+  <button focusgroupstart>Underline</button>
   <button>Strikethrough</button>
 </div>
 ```
-In this example, "Italic" will receive focus when entering the focusgroup because it appears first in DOM order among elements with `focusgroup-entry-priority`, or if the items are also being managed by reading-flow, it would be the first in reading order among elements with `focusgroup-entry-priority`.
+In this example, "Italic" will receive focus when entering the focusgroup because it appears first in DOM order among elements with `focusgroupstart`, or if the items are also being managed by reading-flow, it would be the first in reading order among elements with `focusgroupstart`.
 
 #### Interaction with Nested Focusgroups
 
-When focusgroups are nested, each focusgroup manages its own entry priority independently. The `focusgroup-entry-priority` attribute only affects the focusgroup that directly contains the element.
+When focusgroups are nested, each focusgroup manages its own `focusgroupstart` independently. The `focusgroupstart` attribute only affects the focusgroup that directly contains the element.
 
 ```html
 <div focusgroup="toolbar" aria-label="Main toolbar">
   <button>Save</button>
-  <button focusgroup-entry-priority>Print</button>
+  <button focusgroupstart>Print</button>
 
-  <!-- Nested focusgroup with its own entry priority -->
+  <!-- Nested focusgroup with its own focusgroupstart -->
   <div focusgroup="toolbar" aria-label="Text formatting">
     <button>Bold</button>
-    <button focusgroup-entry-priority>Italic</button>
+    <button focusgroupstart>Italic</button>
     <button>Underline</button>
   </div>
 
   <button>Close</button>
-  <button focusgroup-entry-priority>Exit</button>
+  <button focusgroupstart>Exit</button>
 </div>
 <button>After</button>
 ```
@@ -890,32 +892,32 @@ When focusgroups are nested, each focusgroup manages its own entry priority inde
 In this example, there are two distinct focusgroups, and three focusgroup segments:
 
 **Main toolbar**: `[Save, Print]`, `[Close, Exit]`
-- Entry priority: "Print" (has `focusgroup-entry-priority`)
+- Start element: "Print" (has `focusgroupstart`)
 
 **Nested toolbar**: `[Bold, Italic, Underline]`
-- Entry priority: "Italic" (has `focusgroup-entry-priority`)
+- Start element: "Italic" (has `focusgroupstart`)
 
 **Sequential navigation behavior:**
-1. **Tab into main toolbar:** Focus goes to "Print" (entry priority)
-2. **Tab from "Print":** Focus moves to "Italic" (entry priority in nested toolbar)
+1. **Tab into main toolbar:** Focus goes to "Print" (`focusgroupstart`)
+2. **Tab from "Print":** Focus moves to "Italic" (`focusgroupstart` in nested toolbar)
 3. **Tab from nested toolbar:** Focus moves to "Close" (continuing in main toolbar)
-4. **Shift+Tab into main toolbar from "After":** Focus goes to "Exit" (entry priority)
+4. **Shift+Tab into main toolbar from "After":** Focus goes to "Exit" (`focusgroupstart`)
 
 **Directional navigation behavior:**
 - Arrow key navigation within the main toolbar moves between "Save", "Print", "Close", and "Exit", but skips over the nested toolbar
 - Arrow key navigation within the nested toolbar moves between "Bold", "Italic", and "Underline"
 - Each focusgroup maintains independent arrow navigation
 
-This demonstrates how entry priority works independently for each nested focusgroup and how exiting and entering nested focusgroups respects each segment's entry priority.
+This demonstrates how `focusgroupstart` works independently for each nested focusgroup and how exiting and entering nested focusgroups respects each segment's start element.
 
 #### Interaction with Opted-Out Subtrees
 
-When elements opt out of a focusgroup using `focusgroup="none"`, they can create multiple [focusgroup segments](#focusgroup-segments), each with their own entry priority behavior.
+When elements opt out of a focusgroup using `focusgroup="none"`, they can create multiple [focusgroup segments](#focusgroup-segments), each with their own `focusgroupstart` behavior.
 
 ```html
 <div focusgroup="toolbar no-memory" aria-label="Document toolbar">
   <button>New</button>
-  <button focusgroup-entry-priority>Open</button>
+  <button focusgroupstart>Open</button>
   <button>Save</button>
 
   <!-- Opted-out help section -->
@@ -925,28 +927,28 @@ When elements opt out of a focusgroup using `focusgroup="none"`, they can create
   </div>
 
   <button>Close</button>
-  <button focusgroup-entry-priority>Exit</button>
+  <button focusgroupstart>Exit</button>
 </div>
 ```
 
 In this example, the opted-out help section creates two focusgroup segments:
 
 **Segment 1** (before the opted-out section): `[New, Open, Save]`
-- Entry priority: "Open" (has `focusgroup-entry-priority`)
+- Start element: "Open" (has `focusgroupstart`)
 
 **Segment 2** (after the opted-out section): `[Close, Exit]`
-- Entry priority: "Exit" (has `focusgroup-entry-priority`)
+- Start element: "Exit" (has `focusgroupstart`)
 
 **Sequential navigation behavior:**
 1. **Tab into Segment 1:** Focus goes to "Open"
 2. **Tab from "Save":** Focus moves to "Help" (first opted-out element)
-3. **Tab from "Shortcuts":** Focus moves to "Exit" (entry priority in Segment 2)
-4. **Shift+Tab from "Help":** Focus returns to Segment 1, going to "Open" (entry priority)
+3. **Tab from "Shortcuts":** Focus moves to "Exit" (`focusgroupstart` in Segment 2)
+4. **Shift+Tab from "Help":** Focus returns to Segment 1, going to "Open" (`focusgroupstart`)
 
-** Directional navigation behavior:**
+**Directional navigation behavior:**
 - Arrow key navigation can move freely across both segments, skipping over the opted-out help section.
 
-This demonstrates how entry priority works independently within each segment created by opted-out elements.
+This demonstrates how `focusgroupstart` works independently within each segment created by opted-out elements.
 
 
 ## Enabling wrapping behaviors
@@ -1012,7 +1014,7 @@ Example:
 
 ```html
 <!-- This is an example of what NOT TO DO -->
-<radiobutton-group focusgroup="inline block wrap" role="radiogroup">
+<radiobutton-group focusgroup="radiogroup inline block wrap" role="radiogroup">
   ⚠️This `focusgroup` configuration is an error--neither constraint will be applied (which is actually
   what the author intended).
 </radiobutton-group>
@@ -1041,7 +1043,7 @@ To opt-out:
 
 ### Impact on sequential focus navigation
 
-When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating the splitting the focusgroup into separate segments to ensure content is not skipped.
+When elements opt-out of a `focusgroup` using `focusgroup="none"`, they can effectively divide the focusgroup for sequential focus navigation purposes, creating multiple tab stops where the focusgroup would normally have only one. This happens because opted-out elements remain in the normal sequential focus navigation order, necessitating splitting the focusgroup into separate segments to ensure content is not skipped.
 
 Sequential focus navigation within each resulting segment follows the visual reading order established by CSS [`reading-flow`](#reading-flow) when applied to the container or relevant ancestors.
 
@@ -1143,7 +1145,7 @@ change:
 * The currently remembered element stops being focusable (e.g., a `<div>` with a `tabindex` has its
   `tabindex` attribute removed).
 * The currently remembered element is changed to become excluded from the `focusgroup` (through
-  `focusgroup="none" on itself or a shadow-inclusive ancestor, or by changing `focusgroup`s: if a new
+  `focusgroup="none"` on itself or a shadow-inclusive ancestor, or by changing `focusgroup`s: if a new
    `focusgroup` definition appears on itself or one of its shadow-inclusive ancestor elements).
 
 ## Adjustments to sequential focus navigation
@@ -1160,14 +1162,14 @@ When a user navigates into a focusgroup using Tab or Shift+Tab, the user agent m
 
 #### 2. **Apply focus priority (first match wins):**
   - If the focusgroup has a **last focused item** and the [`no-memory`](#disabling-focusgroup-memory) token is not present, and the last focused item is within the current segment, focus that item.
-   - Otherwise, if an item within the segment has the `focusgroup-entry-priority` attribute, focus the first such item in tree order, or if the items are also being managed by reading-flow, focus the first such item in reading order.
+   - Otherwise, if an item within the segment has the `focusgroupstart` attribute, focus the first such item in tree order, or if the items are also being managed by reading-flow, focus the first such item in reading order.
    - Otherwise, if an item within the segment is **sequentially focusable** (e.g., has `tabindex="0"` or is a natively focusable element like `<button>`), focus the first such item in tree order, or if the items are also being managed by reading-flow, focus the first such item in reading order.
 
 
 #### 3. **Update tab navigation:**
 All other `focusgroup` items are not considered in sequential focus navigation order. Memory is updated to be on the newly focused item if the [`no-memory`](#disabling-focusgroup-memory) token is not present.
 ____
-This algorithm ensures that each [focusgroup segment](#focusgroup-segments) has a single [guaranteed tab stop](#guaranteed-tab-stop), without the need for authors to manage `tabindex` values. Authors can use the `focusgroup-entry-priority` attribute to explicitly specify which element should receive focus when entering a focusgroup segment.
+This algorithm ensures that each [focusgroup segment](#focusgroup-segments) has a single [guaranteed tab stop](#guaranteed-tab-stop), without the need for authors to manage `tabindex` values. Authors can use the `focusgroupstart` attribute to explicitly specify which element should receive focus when entering a focusgroup segment.
 
 Additionally, when focus is within [native key conflict elements](#key-conflict-elements), immediate
 neighboring focusgroup items are automatically made available in the tab order to provide an
