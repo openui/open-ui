@@ -37,7 +37,9 @@ accessible fallback interaction (click/Enter) without extra developer effort.
 * **Zero-JS Gestures:** Enable swipe-to-reveal and pull-to-refresh interactions
   using only HTML and CSS.
 * **Accessibility by Default:** Enforce the existence of a semantic button to
-  toggle the view, ensuring keyboard and assistive technology support.
+  toggle the view, ensuring keyboard and assistive technology support. Since
+  the feature lives in HTML, standard `aria-*` attributes can be used for any
+  necessary accessibility fixups, only as needed.
 * **Performance:** Offload gesture physics and animation to the browser's
   compositor thread (via scroll timelines).
 
@@ -54,7 +56,7 @@ overscroll area).
 
 ```html
 <div id="container" overscrollcontainer>
-    <button commandfor="menu" command="toggle-overscroll">
+    <button id=btn commandfor="menu" command="toggle-overscroll">
       Toggle Menu
     </button>
 
@@ -67,18 +69,54 @@ overscroll area).
 
 ### Behavior
 
-1.  **Positioning:** `#menu` is effectively absolutely positioned within the
-    "overscroll" area of `#container`.
+1.  **Positioning:** the `#menu` is effectively absolutely positioned within
+    the "overscroll" area of the overscroll container.
 2.  **Chaining:** When a user scrolls `#container` to its limit, the scroll
     chains to the `#menu`, pulling it onto the screen.
 3.  **Activation:** Clicking the `<button>` performs a `scrollIntoView`-like
-    action on the `#menu`.
+    action on the `#menu`. Clicking it again scrolls it back out of view.
+
+### Terminology
+
+In this explainer, we'll use the following terminology:
+
+- "overscroll container" - the scrolling container with the `overscrollcontainer`
+attribute. `#container` in the above code snippet.
+- "overscroll area" - the element (and its descendants) within the overscroll
+container that gets rendered as overscrolled content. `#menu` in the above
+code snippet.
+- "overscroll invoker" - the command invoker with `command=toggle-overscroll`
+pointing to the overscroll area. `#btn` in the above code snippet.
+
+### Nesting and Structure
+
+*   **Overscroll invoker:** The `<button>` does not need to be a descendant of
+    the container. It can live anywhere in the tree scope, subject to the normal
+    rules for command invoker relationships.
+*   **Overscroll area:** The overscroll area element (`#menu`) must be a descendant
+    of the overscroll container, but it does not have to be a direct child.
+    It can also have other "normal" scrollable content before or after it.
+    Crucially, the overscroll area behaves as if it is a layout child of the
+    scroller, allowing it to escape containing blocks and clips of intermediate
+    ancestors. This behaves in a very similar fashion to how popovers escape
+    ancestors.
+
+### Chaining and Ordering
+
+A scroller can have multiple overscroll areas (e.g., one on each side). The
+`::overscroll-area-parent` manages these as siblings.
+
+*   **LIFO Order:** Chaining follows a "last-in, first-out" order. The last
+    overscroll area in DOM order within the overscroll container is chained,
+    and scrolls, first.
+*   **Chaining Path:** When the innermost scroller reaches its limit, it chains
+    to the next overscroll area, and so on.
 
 ### Overlay Mode
 
-By default, overscroll pushes the content. We also support an overlay mode
-(similar to `position: sticky`) where the overscroll content slides *over* the
-container.
+By default, overscroll pushes the container's content. The
+`overscrollcontainer="overlay"` mode changes this so that the overscroll
+content slides *over* the container, similar to `position: sticky`.
 
 ```html
 <div id="container" overscrollcontainer="overlay">
@@ -87,8 +125,9 @@ container.
 ```
 
 Note that this is a property of the overscrollcontainer for simplicity of API
-design. If use cases arise that require different overflowing elements to have
-different overlay mode, we can revisit the shape of the API.
+design. This affects all overscroll areas within that container. If use cases
+arise that require different overflowing elements to have different overlay
+modes, we can revisit this. But that does not seem to be a common use case.
 
 ## Events
 
@@ -124,14 +163,45 @@ hit-testing and painting order:
 
 ## Accessibility Considerations
 
-This proposal solves a major accessibility hurdle in gesture UIs. By attaching
-the behavior to a `<button>`:
+We think this proposal solves a major accessibility hurdle in gesture UIs. By
+attaching the behavior to a `<button>`:
 
 * **Keyboard Users:** Can tab to the button and activate it to reveal the
   menu/action.
 * **Screen Readers:** Perceive a standard button connection rather than an
   invisible gesture zone.
 * **Discoverability:** The button provides a visible affordance for the action.
+
+### Focus Management
+
+The overscroll area functions similarly to a popover with respect to focus. Activating
+the overscroll invoker button should not move focus to the menu automatically,
+but the menu should be next in the focus order.
+
+It is a bit unclear what to do if the overscroll invoker is located *within* the overscroll
+area, especially if (see below) the overscroll content should be `aria-hidden`.
+Perhaps an overscroll invoker always remains focusable, and tab-focusing it
+automatically activates the overscroll area and scrolls it into view?
+
+## Progressive Enhancement
+
+For browsers that do not support `overscrollcontainer`, the content simply
+becomes an inline part of the ordinary scroller. This likely presents as a
+broken experience.
+
+A polyfill strategy might be to switch the overscroll content to a
+`popover` and switch the command invoker to `command=toggle-popover`. This would
+preserve the semantic relationship and a11y, while providing a functional fallback.
+
+## Interaction with Browser Gestures
+
+Many browsers provide built-in overscroll behaviors, such as "pull-to-refresh"
+(reload) or "swipe-to-navigate" (back/forward).
+
+These behaviors continue to function as-is, since the overscroll area is simply
+a chained scroller. Once the overscroll area is scrolled fully into view, the
+scroll will chain to the viewport scroller, and will activate these browser-
+based overscroll actions.
 
 ## Alternatives Considered
 
@@ -142,3 +212,23 @@ lacks the semantic enforcement of an interactive element. A CSS-only solution
 runs the risk of creating "invisible" gestures that are inaccessible to users
 who cannot perform swipe actions. By requiring an HTML activator, we enforce
 progressive enhancement.
+
+## Open questions
+* **ARIA Attributes:** Should the browser automatically handle `aria-expanded`
+    and `aria-controls` on the overscroll invoker button based on the
+    visibility of the overscroll content, in the same way that popovers are
+    handled?
+* **Visibility:** When not revealed, should the overscroll content be treated
+    as `aria-hidden="true"`?
+* **Backdrop:** Should there be a `::backdrop` pseudo element when the overscroll
+    area is activated?
+* **Light Dismiss:** Should overscroll areas support a "light dismiss"
+    behavior where clicking outside or pressing Escape closes them? If so, how,
+    exactly?
+* **Modal Behavior:** Should there be a way to make an overscroll area modal
+    when opened? (Feels like no.)
+* **Activatable Elements:** Are there any interactive elements (like
+    `<area>`) that should *not* be allowed as overscroll invokers?
+* **Pseudo Classes:** Should the `:open` pseudo class match the overscroll
+    area when it is scrolled into view? Or perhaps a new pseudo class?
+    
