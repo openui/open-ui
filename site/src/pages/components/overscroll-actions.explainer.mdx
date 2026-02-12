@@ -11,6 +11,26 @@ layout: ../../layouts/ComponentLayout.astro
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
 
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Proposal](#proposal)
+  - [Goals](#goals)
+- [The API](#the-api)
+  - [Behavior](#behavior)
+  - [Terminology](#terminology)
+  - [Nesting and Structure](#nesting-and-structure)
+  - [Chaining and Ordering](#chaining-and-ordering)
+  - [Overlay Mode](#overlay-mode)
+- [Events](#events)
+- [Implementation Model](#implementation-model)
+- [Accessibility Considerations](#accessibility-considerations)
+  - [Focus Management](#focus-management)
+- [Progressive Enhancement](#progressive-enhancement)
+- [Interaction with Browser Gestures](#interaction-with-browser-gestures)
+- [Alternatives Considered](#alternatives-considered)
+  - [CSS-only Properties](#css-only-properties)
+- [Open questions](#open-questions)
+
 ## Introduction
 
 The web platform allows for sophisticated scrolling experiences, but it
@@ -34,12 +54,10 @@ accessible fallback interaction (click/Enter) without extra developer effort.
 
 ### Goals
 
-* **Zero-JS Gestures:** Enable swipe-to-reveal and pull-to-refresh interactions
-  using only HTML and CSS.
+* **No JavaScript:** Enable swipe-to-reveal and pull-to-refresh gesture-based
+  interactions using only HTML and CSS.
 * **Accessibility by Default:** Enforce the existence of a semantic button to
-  toggle the view, ensuring keyboard and assistive technology support. Since
-  the feature lives in HTML, standard `aria-*` attributes can be used for any
-  necessary accessibility fixups, only as needed.
+  toggle the view, ensuring keyboard and assistive technology support.
 * **Performance:** Offload gesture physics and animation to the browser's
   compositor thread (via scroll timelines).
 
@@ -48,23 +66,24 @@ accessible fallback interaction (click/Enter) without extra developer effort.
 There are two parts to the API:
 
 First, the container needs to be identified as supporting overscroll areas. This
-is done by specifying `overscrollcontainer` property on the container.
+is done by specifying `overscrollcontainer` attribute on the container.
 
-Second, we introduce command values to bind a trigger button to both the
-container (the scroll port) and the content (the element hidden in the
-overscroll area).
+Second, we introduce a new `command` value, `toggle-overscroll`, to bind a
+trigger button to both the container (the scroll port) and the content (the
+element hidden in the overscroll area).
 
 ```html
 <div id="container" overscrollcontainer>
-    <button id=btn commandfor="menu" command="toggle-overscroll">
-      Toggle Menu
-    </button>
-
     <menu id="menu">
         <li>Home</li>
         <li>Settings</li>
     </menu>
+    Some content.
 </div>
+
+<button commandfor="menu" command="toggle-overscroll" id=btn>
+  Toggle Menu
+</button>
 ```
 
 ### Behavior
@@ -72,20 +91,23 @@ overscroll area).
 1.  **Positioning:** the `#menu` is effectively absolutely positioned within
     the "overscroll" area of the overscroll container.
 2.  **Chaining:** When a user scrolls `#container` to its limit, the scroll
-    chains to the `#menu`, pulling it onto the screen.
-3.  **Activation:** Clicking the `<button>` performs a `scrollIntoView`-like
-    action on the `#menu`. Clicking it again scrolls it back out of view.
+    chains to the `#menu`, pulling it into view.
+3.  **Activation:** As an alternative to scroll gestures, activating the
+    `<button>` will perform a `scrollIntoView`-like action on the `#menu`.
+    Activating it again scrolls `#menu` back out of view.
+
+([Here is a simple demo implementation on Github.io](https://flackr.github.io/web-demos/css-scroll-snap/menu2/). This demo does not require any browser features.) 
 
 ### Terminology
 
 In this explainer, we'll use the following terminology:
 
-- "overscroll container" - the scrolling container with the `overscrollcontainer`
+- **"overscroll container":** the scrolling container with the `overscrollcontainer`
 attribute. `#container` in the above code snippet.
-- "overscroll area" - the element (and its descendants) within the overscroll
+- **"overscroll area":** the element (and its descendants) within the overscroll
 container that gets rendered as overscrolled content. `#menu` in the above
 code snippet.
-- "overscroll invoker" - the command invoker with `command=toggle-overscroll`
+- **"overscroll invoker":** the command invoker with `command=toggle-overscroll`
 pointing to the overscroll area. `#btn` in the above code snippet.
 
 ### Nesting and Structure
@@ -124,10 +146,11 @@ content slides *over* the container, similar to `position: sticky`.
 </div>
 ```
 
-Note that this is a property of the overscrollcontainer for simplicity of API
-design. This affects all overscroll areas within that container. If use cases
-arise that require different overflowing elements to have different overlay
-modes, we can revisit this. But that does not seem to be a common use case.
+Note that this is a value of the `overscrollcontainer` attribute on the overall
+scroller, for simplicity of API design. It therefore affects all overscroll
+areas within that container. If use cases arise that require different
+overflowing elements to have different overlay modes, we can revisit this. But
+that does not seem to be a common use case today on the web.
 
 ## Events
 
@@ -159,7 +182,6 @@ hit-testing and painting order:
 
 ![Overscroll Animation](/images/overscroll_polyfill_demo.gif)
 
-([Simple polyfill (no native feature use) on Github.io](https://flackr.github.io/web-demos/css-scroll-snap/menu2/))
 
 ## Accessibility Considerations
 
@@ -171,6 +193,9 @@ attaching the behavior to a `<button>`:
 * **Screen Readers:** Perceive a standard button connection rather than an
   invisible gesture zone.
 * **Discoverability:** The button provides a visible affordance for the action.
+* **Mitigation:** Because the invoking element and the content both live in HTML,
+  standard `aria-*` attributes can be used for any necessary accessibility
+  mitigations, as needed.
 
 ### Focus Management
 
