@@ -173,12 +173,13 @@ hit-testing and painting order:
 
 ![Box Structure Diagram](/images/overscroll_box_structure.png)
 
-1.  **`.container`** creates an internal `::overscroll-area-parent`. This acts
-    as a scroll and layout _parent_ of the container
-2.  **`::overscroll-area-parent`** contains both the container and the menu
-    elements as siblings. This ensures that when the container scroll chains, it
-    chains to the overscroll-area-parent which can bring in the typically
-    offscreen menu on screen.
+1.  **`.container`** creates an internal `::overscroll-area-parent`. This is not
+    affected by scrolling container, and scroll chains to
+    `::overscroll-area-parent` after `container`.
+2.  **`::overscroll-area-parent`** contains the menu element. As a result,
+    scrolls targeting the menu element chain directly to the
+    `::overscroll-area-parent`, which can bring the typically-offscreen menu
+    into view.
 
 ![Overscroll Animation](/images/overscroll_polyfill_demo.gif)
 
