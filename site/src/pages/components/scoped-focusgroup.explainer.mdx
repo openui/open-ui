@@ -80,7 +80,7 @@ Authors may use the proposed `focusgroup` HTML attribute to declare that
 a subtree of focusable elements will get:
 1. Focus navigation ([not selection](#non-goals)) using directional navigation (arrow key, D-pads, etc.).
 2. A guaranteed tab stop (when at least one focusable element is present) (see [Guaranteed tab stop](#guaranteed-tab-stop)).
-3. Automatic return to the last focused focusable element (unless [`no-memory`](#disabling-focusgroup-memory) is set).
+3. Automatic return to the last focused focusable element (unless [`nomemory`](#disabling-focusgroup-memory) is set).
 4. Optional limited-axis arrow key navigation and optional wrap-around semantics.
 
 By standardizing `focusgroup`, authors can leverage these behaviors in
@@ -141,7 +141,7 @@ What changed:
 Simple usage (space-separated tokens):
 
 ```html
-<div focusgroup="<behavior> [inline|block] [wrap|no-wrap] [no-memory]">
+<div focusgroup="<behavior> [inline|block] [wrap|nowrap] [nomemory]">
   <button>One</button>
   <button>Two</button>
   <button>Three</button>
@@ -155,7 +155,7 @@ Opting an element and its subtree out of an ancestor focusgroup, see: [Opting-ou
 
 Specifying a specific item as the [start element](#the-focusgroupstart-attribute) for focus when entering a focusgroup:
 ```html
-<div focusgroup="<behavior> [inline|block] [wrap|no-wrap] [no-memory]">
+<div focusgroup="<behavior> [inline|block] [wrap|nowrap] [nomemory]">
   <button>One</button>
   <button focusgroupstart>Two</button>
   <button>Three</button>
@@ -167,8 +167,8 @@ Specifying a specific item as the [start element](#the-focusgroupstart-attribute
 | `<behavior>` | Yes (unless using [`none`](#opting-out)) | Token describing the intended behavior. See: [Supported Behaviors](#supported-behaviors). Some behavior tokens carry [default modifiers](#default-modifiers) (e.g., `tablist` defaults to `inline` `wrap`). |
 | [`inline`](#limiting-linear-focusgroup-directionality) / [`block`](#limiting-linear-focusgroup-directionality) | Optional | Restrict arrow navigation to that logical axis. Omit to allow both axes (unless a [default modifier](#default-modifiers) supplies one). |
 | [`wrap`](#enabling-wrapping-behaviors) | Optional | Loops end→start and start→end (some behavior tokens enable this by [default](#default-modifiers)). |
-| [`no-wrap`](#enabling-wrapping-behaviors) | Optional | Explicitly disable wrapping. Useful for overriding a behavior token's default `wrap` modifier (e.g., `focusgroup="tablist no-wrap"`). Cannot be combined with `wrap`. |
-| [`no-memory`](#disabling-focusgroup-memory) | Optional | Disable restoring last-focused item on re-entry (memory is on by default). |
+| [`nowrap`](#enabling-wrapping-behaviors) | Optional | Explicitly disable wrapping. Useful for overriding a behavior token's default `wrap` modifier (e.g., `focusgroup="tablist nowrap"`). Cannot be combined with `wrap`. |
+| [`nomemory`](#disabling-focusgroup-memory) | Optional | Disable restoring last-focused item on re-entry (memory is on by default). |
 | [`none`](#opting-out) | Standalone | Opt-out: exclude element and its subtree from ancestor focusgroup. Cannot be combined with any other token. |
 
 ## Major Differences from the original explainer
@@ -201,7 +201,7 @@ Current behavior tokens (APG alignment & minimum roles). All listed (except the 
 
 | Behavior | APG Pattern | Minimum container role (when applied) | Minimum child role(s) (when applied) | Default modifiers | APG Pattern Link |
 |---|---|---|---|---|---|
-| `toolbar` | Toolbar | [`toolbar`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role) | (none) | (none) | [APG Toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) |
+| `toolbar` | Toolbar | [`toolbar`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role) | (none) | `inline` | [APG Toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) |
 | `tablist` | Tabs | [`tablist`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tablist_role) | [`tab`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tab_role) | `inline` `wrap` | [APG Tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) |
 | `radiogroup` | Radio Group | [`radiogroup`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radiogroup_role) | [`radio`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radio_role) | (none) | [APG Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) |
 | `listbox` | Listbox | [`listbox`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role) | [`option`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/option_role) | (none) | [APG Listbox](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) |
@@ -216,7 +216,7 @@ Certain behavior tokens carry **default modifiers** that are automatically appli
 **Key points:**
 - Default modifiers are applied implicitly when the behavior token is used and no explicit modifier of the same kind is present.
 - An explicit modifier always overrides the corresponding default. For example, `focusgroup="tablist block"` overrides the `inline` default with `block`.
-- The `no-wrap` token explicitly disables wrapping, overriding a behavior token's default `wrap` modifier. For example, `focusgroup="tablist no-wrap"` produces a tablist that does not wrap.
+- The `nowrap` token explicitly disables wrapping, overriding a behavior token's default `wrap` modifier. For example, `focusgroup="tablist nowrap"` produces a tablist that does not wrap.
 - Explicitly specifying the same modifier as the default is redundant but valid (e.g., `focusgroup="tablist inline wrap"` is equivalent to `focusgroup="tablist"`).
 - Tokens that do not appear in the default modifiers column behave as documented in [Enabling wrapping behaviors](#enabling-wrapping-behaviors) and [Limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality) (i.e., no wrapping, both axes enabled).
 
@@ -224,7 +224,7 @@ For example:
 - `focusgroup="tablist"` is equivalent to `focusgroup="tablist inline wrap"` — tabs conventionally navigate horizontally and wrap.
 - `focusgroup="menu"` is equivalent to `focusgroup="menu block wrap"` — menus conventionally navigate vertically and wrap.
 - `focusgroup="menubar"` is equivalent to `focusgroup="menubar inline wrap"` — menubars conventionally navigate horizontally and wrap.
-- `focusgroup="toolbar"` has no default modifiers — toolbars respond to all arrow keys without wrapping by default.
+- `focusgroup="toolbar"` is equivalent to `focusgroup="toolbar inline"` — toolbars conventionally navigate horizontally without wrapping by default.
 
 #### Behavior → role mapping & precedence
 1. No explicit container `role`: UA maps behavior token to its minimum role (subject to minimum-role conditions described above).
@@ -260,7 +260,7 @@ In this example, the author is using a
 behavior is decoupled from selection ("manual tab activation"):
 
 ```html
-<div focusgroup="tablist no-memory" aria-label="Common Operating Systems">
+<div focusgroup="tablist nomemory" aria-label="Common Operating Systems">
   <button id="tab-1" aria-selected="false" aria-controls="tabpanel-1">macOS</button>
   <button id="tab-2" aria-selected="true" aria-controls="tabpanel-2" focusgroupstart>Windows</button>
   <button id="tab-3" aria-selected="false" aria-controls="tabpanel-3">Linux</button>
@@ -273,7 +273,7 @@ behavior is decoupled from selection ("manual tab activation"):
 What to notice:
 * The `<button>` elements receive the inferred `tab` role because `<button>` is eligible for child role inference when inside a `focusgroup="tablist"` container.
 * The `focusgroupstart` attribute on the selected tab determines which tab receives focus when entering the focusgroup.
-   The `no-memory` value [prevents the focusgroup from remembering the last focused tab](#disabling-focusgroup-memory) so
+   The `nomemory` value [prevents the focusgroup from remembering the last focused tab](#disabling-focusgroup-memory) so
    that focus will always go to the tab with `focusgroupstart` on re-entry regardless of which element was
    focused last.
 * If focus is moved via left arrow key to `tab-1`, then pressing the tab key moves focus to
@@ -339,7 +339,7 @@ What to notice:
 Opt-out subtree (explicit example):
 
 ```html
-<div focusgroup="toolbar inline wrap">
+<div focusgroup="toolbar wrap">
   <button>A</button>
   <span focusgroup="none">
     <button>(Not arrow reachable)</button>
@@ -508,9 +508,9 @@ The `ancestor` element has the **focusgroup definition**. The elements with `id=
 `three` (and any other shadow-inclusive descendants of `ancestor` that may be added) are
 **focusgroup candidates**. Because candidates one through three are keyboard focusable, they are considered
 **focusgroup items**. When one of the focusgroup items becomes focused, the user can move focus
-sequentially among all the focusgroup items using the arrow keys (up/right moves focus forward,
-down/left moves focus backwards assuming the `<div>` element has `writing-mode` `horizontal-tb` and
-`direction` `ltr`).
+among all the focusgroup items using the inline-axis arrow keys (right moves focus forward,
+left moves focus backwards assuming the `<div>` element has `writing-mode` `horizontal-tb` and
+`direction` `ltr`), because `toolbar` carries `inline` as a [default modifier](#default-modifiers).
 
 Note that the elements with `id=one`, `id=two` and `id=three` can be reached via arrow keys from other focusgroup items. The element with `id=four` has `tabindex="-1"`, which excludes it from both [sequential (Tab/Shift+Tab)](#1-sequential-focus-navigation) and initial directional navigation. However, if `id=four` is focused programmatically or by other means (e.g., mouse click), it will participate in directional navigation, allowing the user to navigate away from it using arrow keys, though they cannot navigate back to it via arrow keys.
 
@@ -579,8 +579,9 @@ the first `<button>` because:
 - Since neither of the above cases resulted in focusing an alternate element, then the first
    focusgroup item in the group is focused (in DOM order, or if the items are also being managed by reading-flow, in reading order).
 
-At this point, the user can use the arrow keys to move from the beginning of the toolbar to the end,
-or press tab again to move outside of the focusgroup.
+At this point, the user can use the inline-axis arrow keys (e.g., Left/Right in `horizontal-tb`) to move
+from the beginning of the toolbar to the end, or press tab again to move outside of the focusgroup.
+Up/Down arrows do not move focus because `toolbar` carries `inline` as a [default modifier](#default-modifiers).
 
 Note that even if multiple descendants are naturally tabbable (e.g., several `<button>`s without `tabindex`),
 `focusgroup` still collapses the group to a single sequential entry point per segment.
@@ -684,8 +685,8 @@ For elements with built-in arrow key behaviors, user agents automatically provid
 </div>
 ```
 In this example:
-- The input field **is** a focusgroup item reachable via arrow keys.
-- Arrow keys are consumed for text cursor navigation once focus is within the input.
+- The input field **is** a focusgroup item reachable via inline-axis arrow keys (e.g., Left/Right).
+- Those same arrow keys are consumed for text cursor navigation once focus is within the input.
 - To ensure the user can still reach the other elements in the focusgroup, pressing Tab moves focus to the "Save" button, and Shift+Tab moves focus to the "Italic" button.
 
 ```html
@@ -820,7 +821,7 @@ partial interface HTMLElement {
 Focusgroups have the following additional features:
 
 - [Wrap-around semantics](#enabling-wrapping-behaviors) - what to do when attempting to move past
-   the end of a `focusgroup`. The default/initial value is `no-wrap`, which means that focus is
+   the end of a `focusgroup`. The default/initial value is `nowrap`, which means that focus is
    not moved past the ends of a `focusgroup` with the arrow keys. `wrap` and other tabular wrapping
    behaviors are available for `grid` `focusgroup`s.
 - [Directional axis limits](#limiting-linear-focusgroup-directionality) - applies to linear
@@ -841,7 +842,7 @@ attribute.
 
 The `focusgroupstart` attribute can be set on individual focusgroup items to control which element receives focus when entering a focusgroup segment via sequential focus navigation (Tab/Shift+Tab). This attribute provides explicit control over the initial focus target within a focusgroup when no previous focus memory exists.
 
-**Important:** If a focusgroup has memory enabled (the default) and a last-focused element exists within the segment being entered, that element will be restored instead of the element with `focusgroupstart`. The `focusgroupstart` attribute only applies when focus is entering the focusgroup for the first time or when using `no-memory` to disable the memory feature.
+**Important:** If a focusgroup has memory enabled (the default) and a last-focused element exists within the segment being entered, that element will be restored instead of the element with `focusgroupstart`. The `focusgroupstart` attribute only applies when focus is entering the focusgroup for the first time or when using `nomemory` to disable the memory feature.
 
 ```html
 <div focusgroup="toolbar">
@@ -874,13 +875,13 @@ This example demonstrates how memory takes precedence over `focusgroupstart`:
 1. **First time entering the focusgroup:** Focus goes to "Italic" (`focusgroupstart` applies since no memory exists)
 2. **User arrows to "Underline":** Focus moves to "Underline" and memory is updated
 3. **User tabs away and then back:** Focus goes to "Underline" (memory restored, `focusgroupstart` ignored)
-4. **Using `no-memory`:** With `focusgroup="toolbar no-memory"`, focus would always go to "Italic" regardless of previous focus
+4. **Using `nomemory`:** With `focusgroup="toolbar nomemory"`, focus would always go to "Italic" regardless of previous focus
 
 #### Multiple Items with focusgroupstart (Not Recommended)
 Focusgroup will always prioritize the first element with the `focusgroupstart` attribute in DOM order when entering a focusgroup segment, or if the items are also being managed by reading-flow, the first such item in reading order, and will not consider any subsequent elements with the same attribute.
 
 ```html
-<div focusgroup="toolbar no-memory">
+<div focusgroup="toolbar nomemory">
   <button>Bold</button>
   <button focusgroupstart>Italic</button>
   <button focusgroupstart>Underline</button>
@@ -926,8 +927,8 @@ In this example, there are two distinct focusgroups, and three focusgroup segmen
 4. **Shift+Tab into main toolbar from "After":** Focus goes to "Exit" (`focusgroupstart`)
 
 **Directional navigation behavior:**
-- Arrow key navigation within the main toolbar moves between "Save", "Print", "Close", and "Exit", but skips over the nested toolbar
-- Arrow key navigation within the nested toolbar moves between "Bold", "Italic", and "Underline"
+- Inline-axis arrow key navigation (e.g., Left/Right) within the main toolbar moves between "Save", "Print", "Close", and "Exit", but skips over the nested toolbar
+- Inline-axis arrow key navigation within the nested toolbar moves between "Bold", "Italic", and "Underline"
 - Each focusgroup maintains independent arrow navigation
 
 This demonstrates how `focusgroupstart` works independently for each nested focusgroup and how exiting and entering nested focusgroups respects each segment's start element.
@@ -937,7 +938,7 @@ This demonstrates how `focusgroupstart` works independently for each nested focu
 When elements opt out of a focusgroup using `focusgroup="none"`, they can create multiple [focusgroup segments](#focusgroup-segments), each with their own `focusgroupstart` behavior.
 
 ```html
-<div focusgroup="toolbar no-memory" aria-label="Document toolbar">
+<div focusgroup="toolbar nomemory" aria-label="Document toolbar">
   <button>New</button>
   <button focusgroupstart>Open</button>
   <button>Save</button>
@@ -985,7 +986,7 @@ _Note: Some behavior tokens carry `wrap` as a [default modifier](#default-modifi
 |---|---|---|
 | `focusgroup="<behavior>"` (where `<behavior>` is one of the non-grid behaviors) | linear | No wrapping; edges are hard stops (unless the behavior token's [default modifiers](#default-modifiers) include `wrap`). |
 | `focusgroup="<behavior> wrap"` (where `<behavior>` is one of the non-grid behaviors) | linear | Moving past one end wraps focus to the opposite end. |
-| `focusgroup="<behavior> no-wrap"` (where `<behavior>` is one of the non-grid behaviors) | linear | Explicitly disable wrapping; edges are hard stops. Overrides a behavior token's default `wrap` modifier. |
+| `focusgroup="<behavior> nowrap"` (where `<behavior>` is one of the non-grid behaviors) | linear | Explicitly disable wrapping; edges are hard stops. Overrides a behavior token's default `wrap` modifier. |
 | (default) `focusgroup="grid"` | grid | No wrapping; row and column edges are hard stops. |
 | `focusgroup="grid wrap"` | grid | Rows and columns wrap within their own row/column (end → start of same row/column). |
 | `focusgroup="grid row-wrap"` | grid | Rows wrap; columns do not. |
@@ -996,7 +997,7 @@ _Note: Some behavior tokens carry `wrap` as a [default modifier](#default-modifi
 | `focusgroup="grid row-wrap col-flow"` | grid | Rows wrap; columns flow. |
 | `focusgroup="grid row-flow col-wrap"` | grid | Rows flow; columns wrap. |
 
-Specifying both `wrap` and `no-wrap` in one HTML `focusgroup` definition is an author error.
+Specifying both `wrap` and `nowrap` in one HTML `focusgroup` definition is an author error.
 
 Specifying both `row-wrap` and `row-flow` in one HTML `focusgroup` definition is an author error. Only
 one declaration for row behavior is allowed. Similarly for `col-wrap` and `col-flow`.
@@ -1081,7 +1082,7 @@ Sequential focus navigation within each resulting segment follows the visual rea
 In the following example, a help section opts-out of `focusgroup` behavior so that any interactive content inside it is bypassed when arrowing among the primary formatting controls, but remains reachable via tabbing.
 
 ```html
-<div focusgroup="toolbar inline wrap" aria-label="Text formatting">
+<div focusgroup="toolbar wrap" aria-label="Text formatting">
   <button type="button">Bold</button>
   <button type="button">Italic</button>
   <span focusgroup="none" aria-label="Help group">
@@ -1156,13 +1157,13 @@ is because there is a more relevant element which should take focus when enterin
 instead of the most-recently-focused element. For example, an active (selected) tab in a
 `role="tablist"` container, rather than the last-focused tab (when selection does not follow focus).
 
-To disable the `focusgroup`'s default memory, use the value `no-memory`:
+To disable the `focusgroup`'s default memory, use the value `nomemory`:
 
 _Note: `<behavior>` below refers to any valid focusgroup behavior._
 | HTML (attribute value) | Explanation |
 |---|---|
 | (default) `focusgroup="<behavior>"` | `focusgroup` remembers the last-focused element and redirects focus to it when entered via sequential focus navigation. |
-| `focusgroup="<behavior> no-memory"` | `focusgroup` will not remember the last-focused element. |
+| `focusgroup="<behavior> nomemory"` | `focusgroup` will not remember the last-focused element. |
 
 After the `focusgroup`'s memory has been set, it must be cleared whenever any one of the following
 change:
@@ -1192,13 +1193,13 @@ When a user navigates into a focusgroup using Tab or Shift+Tab, the user agent m
 #### 1. **Identify the focusgroup segment:** The set of `focusgroup` items that are reachable without crossing any [opted-out items](#opting-out) in tree order from the entry point.
 
 #### 2. **Apply focus priority (first match wins):**
-  - If the focusgroup has a **last focused item** and the [`no-memory`](#disabling-focusgroup-memory) token is not present, and the last focused item is within the current segment, focus that item.
+  - If the focusgroup has a **last focused item** and the [`nomemory`](#disabling-focusgroup-memory) token is not present, and the last focused item is within the current segment, focus that item.
    - Otherwise, if an item within the segment has the `focusgroupstart` attribute, focus the first such item in tree order, or if the items are also being managed by reading-flow, focus the first such item in reading order.
    - Otherwise, if an item within the segment is **sequentially focusable** (e.g., has `tabindex="0"` or is a natively focusable element like `<button>`), focus the first such item in tree order, or if the items are also being managed by reading-flow, focus the first such item in reading order.
 
 
 #### 3. **Update tab navigation:**
-All other `focusgroup` items are not considered in sequential focus navigation order. Memory is updated to be on the newly focused item if the [`no-memory`](#disabling-focusgroup-memory) token is not present.
+All other `focusgroup` items are not considered in sequential focus navigation order. Memory is updated to be on the newly focused item if the [`nomemory`](#disabling-focusgroup-memory) token is not present.
 ____
 This algorithm ensures that each [focusgroup segment](#focusgroup-segments) has a single [guaranteed tab stop](#guaranteed-tab-stop), without the need for authors to manage `tabindex` values. Authors can use the `focusgroupstart` attribute to explicitly specify which element should receive focus when entering a focusgroup segment.
 
@@ -1497,7 +1498,7 @@ Behavior tokens: See the earlier Supported Behaviors mapping table for the defin
 | Description | HTML syntax |
 |---|---|
 | no wrap | (unspecified value; default value) |
-| no wrap (explicit, overrides default) | `no-wrap` |
+| no wrap (explicit, overrides default) | `nowrap` |
 | wrap | `wrap` |
 | flow (grid focusgroups only) | `flow` |
 | column specific | `col-wrap`, `col-flow`, `col-none` |
@@ -1508,20 +1509,20 @@ Behavior tokens: See the earlier Supported Behaviors mapping table for the defin
 | Description | HTML syntax |
 |---|---|
 | enable memory | (unspecified value; default value) |
-| disable memory | `no-memory` |
+| disable memory | `nomemory` |
 
 Authoring shorthand examples:
 
 | Pattern | Markup | Notes |
 |---|---|---|
-| Wrapping toolbar | `<div focusgroup="toolbar wrap">…` | `toolbar` has no default modifiers; `wrap` must be explicit. |
-| Horizontal manual-activation tabs (no memory) | `<div focusgroup="tablist no-memory">…` | `inline` and `wrap` are [default modifiers](#default-modifiers) for `tablist`. |
+| Wrapping toolbar | `<div focusgroup="toolbar wrap">…` | `inline` is a [default modifier](#default-modifiers) for `toolbar`; `wrap` must be explicit. |
+| Horizontal manual-activation tabs (no memory) | `<div focusgroup="tablist nomemory">…` | `inline` and `wrap` are [default modifiers](#default-modifiers) for `tablist`. |
 | Vertical tabs (override default axis) | `<div focusgroup="tablist block">…` | Explicit `block` overrides the default `inline`; `wrap` still applies from default. |
 | Simple radiogroup | `<div focusgroup="radiogroup">…` | No default modifiers. |
 | Vertical listbox (block axis) | `<div focusgroup="listbox block">…` | No default modifiers; `block` is explicit. |
 | Vertical menu | `<div focusgroup="menu">…` | `block` and `wrap` are [default modifiers](#default-modifiers) for `menu`. |
 | Horizontal menubar | `<div focusgroup="menubar">…` | `inline` and `wrap` are [default modifiers](#default-modifiers) for `menubar`. |
-| Non-wrapping tablist | `<div focusgroup="tablist no-wrap">…` | `no-wrap` overrides the default `wrap`; `inline` still applies from default. |
+| Non-wrapping tablist | `<div focusgroup="tablist nowrap">…` | `nowrap` overrides the default `wrap`; `inline` still applies from default. |
 
 ## Acknowledgments
 
