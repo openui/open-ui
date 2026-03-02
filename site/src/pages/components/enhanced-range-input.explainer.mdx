@@ -4,28 +4,23 @@ name: Enhanced Range Input (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-
 - Author(s): [Brecht De Ruyte](https://utilitybend.com)
-- Last updated: 19 Sep 2025
+- Last updated: 2 Mar 2026
 
 ## Table of Contents
 
 - [Background](#background)
 - [Goals](#goals)
 - [Current State of Range Styling](#current-state-of-range-styling)
-- [Proposed Solution](#proposed-solution)
-- [Standardized Anatomy](#standardized-anatomy)
-- [Styling API](#styling-api)
 - [Multi-Handle Support with `<rangegroup>`](#multi-handle-support-with-rangegroup)
 - [Accessibility Enhancements](#accessibility-enhancements)
+- [Disabled State](#disabled-state)
 - [Progressive Enhancement](#progressive-enhancement)
 - [Datalist Integration](#datalist-integration)
 - [Multi-Color Range Segments](#multi-color-slider-segments)
 - [Detailed Design](#detailed-design)
-- [HTML Attributes](#html-attributes)
-- [CSS Properties and Pseudo-elements](#css-properties-and-pseudo-elements)
-- [JavaScript API](#javascript-api)
-- [Extra examples](#extra-examples)
+- [Extra Examples](#extra-examples)
+- [Resolved Decisions](#resolved-decisions)
 - [Considerations and Open Questions](#considerations-and-open-questions)
 
 ## Background
@@ -54,28 +49,49 @@ Currently, the state of styling `<input type="range">` across browsers is incons
 ### WebKit/Blink (Chrome/Opera/Safari):
 
 ```css
-::-webkit-slider-thumb { /* Styles the thumb */ }
-::-webkit-slider-runnable-track { /* Styles the track */ }
+::-webkit-slider-thumb {
+    /* Styles the thumb */
+}
+::-webkit-slider-runnable-track {
+    /* Styles the track */
+}
 ```
 
 ### Firefox:
+
 ```css
-::-moz-range-thumb { /* Styles the thumb */ }
-::-moz-range-track { /* Styles the track */ }
-::-moz-range-progress { /* Styles the progress/fill below the thumb */ }
+::-moz-range-thumb {
+    /* Styles the thumb */
+}
+::-moz-range-track {
+    /* Styles the track */
+}
+::-moz-range-progress {
+    /* Styles the progress/fill below the thumb */
+}
 ```
 
 ### IE/Edge:
+
 ```css
-::-ms-thumb { /* Styles the thumb */ }
-::-ms-track { /* Styles the track */ }
-::-ms-fill-lower { /* Styles the progress/fill below the thumb */ }
-::-ms-fill-upper { /* Styles the fill above the thumb */ }
+::-ms-thumb {
+    /* Styles the thumb */
+}
+::-ms-track {
+    /* Styles the track */
+}
+::-ms-fill-lower {
+    /* Styles the progress/fill below the thumb */
+}
+::-ms-fill-upper {
+    /* Styles the fill above the thumb */
+}
 ```
 
 This fragmentation makes it difficult for developers to create consistent range input styles across browsers, often requiring browser-specific code or fallbacks.
 
-There currently is running a draft solution for this found at: (https://drafts.csswg.org/css-forms/)[https://drafts.csswg.org/css-forms/]. We would at least like to maintain the same naming convention:
+There currently is a running draft solution for this found at: [https://www.w3.org/TR/css-forms-1/](https://www.w3.org/TR/css-forms-1/). We would at least like to maintain the same naming convention:
+
 - `::slider-track`: The main track along which the thumb(s) move.
 - `::slider-fill`: The filled portion of the track, typically between the minimum value and the thumb (or between thumbs for multi-handle ranges).
 - `::slider-thumb`: The draggable handle(s) used to select values.
@@ -87,6 +103,7 @@ Taking this further, we would like to propose new pseudo elements following the 
 - `::slider-tick-label`: Labels associated with tick marks. (when datalist is paired.)
 
 This would follow the idea of the `appearance: base` value from the CSS Forms specification:
+
 ```css
 input[type="range"] {
     appearance: base;
@@ -111,20 +128,22 @@ This approach offers several advantages:
 - Simplified styling and attribute management
 
 ### Example usage:
+
 ```html
 <rangegroup>
-  <legend>Temperature Range</legend>
-  <label>Minimum Temperature
-    <input type="range" name="temp-min" value="-25">
-  </label>
-  <label>Maximum Temperature
-    <input type="range" name="temp-max" value="15">
-  </label>
+    <legend>Temperature Range</legend>
+    <label>
+        Minimum Temperature
+        <input type="range" name="temp-min" value="-25" />
+    </label>
+    <label>
+        Maximum Temperature
+        <input type="range" name="temp-max" value="15" />
+    </label>
 </rangegroup>
 ```
 
 The `<rangegroup>` element would visually present these as a single slider with multiple handles on a common track, while maintaining the individual inputs for form submission and JavaScript interaction.
-
 
 ## Accessibility Enhancements
 
@@ -144,40 +163,118 @@ A robust labeling strategy is crucial for users of assistive technologies. We pr
 
 ```html
 <rangegroup>
-  <legend>Price Range</legend>
+    <legend>Price Range</legend>
 
-  <label>Minimum Price
-    <input type="range" name="price-min" value="25">
-  </label>
+    <label>
+        Minimum Price
+        <input type="range" name="price-min" value="25" />
+    </label>
 
-  <label>Maximum Price
-    <input type="range" name="price-max" value="75">
-  </label>
+    <label>
+        Maximum Price
+        <input type="range" name="price-max" value="75" />
+    </label>
 </rangegroup>
 ```
 
 #### Focus Behavior
 
 This approach also defines clear focus behavior.
+
 - Clicking a `<label>` will focus its associated `<input>`'s handle, as is standard for form controls.
 - The `<legend>` element provides a group name but does not have a default click-to-focus behavior. This is appropriate, as there are multiple focusable targets within the group, avoiding ambiguity.
+
+### Keyboard Interaction
+
+Each thumb within a `<rangegroup>` is a tab stop. Keyboard behavior for each thumb follows the existing conventions for `<input type="range">`:
+
+- **Tab / Shift+Tab**: Moves focus between thumbs (and in/out of the group).
+- **Arrow Left / Arrow Down**: Decreases the focused thumb's value by one step.
+- **Arrow Right / Arrow Up**: Increases the focused thumb's value by one step.
+- **Page Down**: Decreases the value by a larger step increment.
+- **Page Up**: Increases the value by a larger step increment.
+- **Home**: Sets the focused thumb to its minimum value.
+- **End**: Sets the focused thumb to its maximum value.
+
+This preserves familiarity with native range input behavior. When a `<datalist>` is associated, arrow keys snap to the nearest datalist value rather than stepping by a fixed increment.
+
+### Screen Reader Announcements
+
+When a user navigates into a `<rangegroup>` for the first time (focusing the first thumb), the group's overall `min`, `max`, and `stepbetween` values should be announced. Each individual thumb then announces its own `min`, `max`, and current value. This layered announcement model ensures users of assistive technologies understand both the group context and the specific handle they are controlling.
+
+## Disabled State
+
+The `<rangegroup>` element supports the `disabled` attribute, following the same propagation model as `<fieldset>`. This provides both group-level and individual-handle control over interactivity.
+
+### Group-Level Disabling
+
+When the `disabled` attribute is set on the `<rangegroup>` element, the entire control becomes non-interactive. All thumbs are removed from the tab order, pointer interactions on the track and thumbs are ignored, and the contained inputs are excluded from form submission.
+
+```html
+<rangegroup disabled>
+    <legend>Price Range</legend>
+    <label>
+        Minimum Price
+        <input type="range" name="price-min" value="200" />
+    </label>
+    <label>
+        Maximum Price
+        <input type="range" name="price-max" value="800" />
+    </label>
+</rangegroup>
+```
+
+The track and all thumbs should be rendered in a visually distinct disabled style (e.g., reduced opacity) to communicate the non-interactive state.
+
+### Individual Thumb Disabling
+
+The `disabled` attribute can also be set on individual `<input type="range">` elements within a `<rangegroup>`. A disabled thumb is locked at its current value, removed from the tab order, and cannot be moved by pointer or keyboard. Other thumbs in the group remain fully interactive.
+
+```html
+<rangegroup>
+    <legend>Price Range</legend>
+    <label>
+        Minimum Price (locked)
+        <input type="range" name="price-min" value="200" disabled />
+    </label>
+    <label>
+        Maximum Price
+        <input type="range" name="price-max" value="800" />
+    </label>
+</rangegroup>
+```
+
+### All Thumbs Disabled
+
+When every `<input type="range">` within a `<rangegroup>` has the `disabled` attribute, the group should behave as if the `<rangegroup>` itself were disabled. The track is painted in its disabled state and there are no tab stops within the group.
+
+### State Persistence
+
+If a `<rangegroup>` is disabled and later re-enabled (by removing the `disabled` attribute), any child inputs that were individually disabled before the group was disabled retain their own `disabled` state. This matches the standard behavior of `<fieldset>` with its child form controls.
+
+### Progressive Enhancement
+
+This behavior aligns well with progressive enhancement. In a non-supporting browser, setting `disabled` on individual `<input type="range">` elements works as expected with standard HTML semantics. When `<rangegroup>` is supported, its `disabled` attribute provides the additional capability of disabling all handles at once.
 
 ## Progressive Enhancement
 
 The `<rangegroup>` approach is designed with progressive enhancement as a core principle. In browsers that do not support the element, the markup gracefully degrades to standard, functional HTML form controls.
 
 For example, consider a price range selector:
+
 ```html
 <rangegroup>
-  <legend>Price Range</legend>
+    <legend>Price Range</legend>
 
-  <label>Minimum Price
-    <input type="range" name="price-min" value="100" min="0" max="1000">
-  </label>
+    <label>
+        Minimum Price
+        <input type="range" name="price-min" value="100" min="0" max="1000" />
+    </label>
 
-  <label>Maximum Price
-    <input type="range" name="price-max" value="750" min="0" max="1000">
-  </label>
+    <label>
+        Maximum Price
+        <input type="range" name="price-max" value="750" min="0" max="1000" />
+    </label>
 </rangegroup>
 ```
 
@@ -187,7 +284,7 @@ For example, consider a price range selector:
 
 ### Design Consideration: `range` vs. `number` inputs
 
-A consideration was raised whether `<input type="number">` might serve as a better base for progressive enhancement than multiple `<input type="range">` elements. While `<input type="number">` provides a valid fallback for setting a range, we believe using base `<input type="range">` elements better preserves the design intent. A range input is designed for selecting an *approximate* value within a scale, where the user is more interested in the position along the track than a precise number. This aligns with the visual metaphor of the enhanced `<rangegroup>` component. Using `<input type="range">` as the fallback provides a more equitable, if not identical, user experience.
+A consideration was raised whether `<input type="number">` might serve as a better base for progressive enhancement than multiple `<input type="range">` elements. While `<input type="number">` provides a valid fallback for setting a range, we believe using base `<input type="range">` elements better preserves the design intent. A range input is designed for selecting an _approximate_ value within a scale, where the user is more interested in the position along the track than a precise number. This aligns with the visual metaphor of the enhanced `<rangegroup>` component. Using `<input type="range">` as the fallback provides a more equitable, if not identical, user experience.
 
 ## Datalist Integration
 
@@ -197,11 +294,13 @@ For `<rangegroup>` elements, the `<datalist>` can be associated with the group a
 ```html
 <rangegroup name="price-range" min="0" max="100" list="price-ticks">
     <legend>Price Range</legend>
-    <label>Minimum Price
-        <input type="range" name="price-min" min="0" max="50" value="20">
+    <label>
+        Minimum Price
+        <input type="range" name="price-min" min="0" max="50" value="20" />
     </label>
-    <label>Maximum Price
-        <input type="range" name="price-max" min="50" max="100" value="80">
+    <label>
+        Maximum Price
+        <input type="range" name="price-max" min="50" max="100" value="80" />
     </label>
 </rangegroup>
 <datalist id="price-ticks">
@@ -215,7 +314,6 @@ For `<rangegroup>` elements, the `<datalist>` can be associated with the group a
 
 Alternatively, datalist could be provided on each input as well. While these won't render inside of the `<rangegroup>`, they would render on individual inputs when there is no support for the feature.
 
-
 ## Multi-Color Range Segments
 
 To support different colors between handles in a `<rangegroup>`, we introduce the `::slider-segment` pseudo-element. This allows for granular control over the appearance of each segment in the range, enabling rich user interfaces such as budget allocators where each segment can represent a different category.
@@ -224,34 +322,36 @@ Example usage:
 
 ```css
 rangegroup::slider-segment(1) {
-    background-color: #FF5733;
+    background-color: #ff5733;
 }
 
 /* Style the second segment (between the first and second handles) */
 rangegroup::slider-segment(2) {
-    background-color: #33FF57;
+    background-color: #33ff57;
 }
 
 /* Style the third segment (between the second handle and the end) */
 rangegroup::slider-segment(3) {
-    background-color: #3357FF;
+    background-color: #3357ff;
 }
 ```
-The amount of segments get crated based on the amount of thumbs.
+
+The number of segments is determined by the number of thumbs.
 
 ## Detailed Design
 
-## HTML Attributes
+### HTML Attributes
 
-### `<rangegroup>` Attributes
+#### `<rangegroup>` Attributes
 
 - `min`: Specifies the minimum value for the entire range group, defining the lower bound of the track.
 - `max`: Specifies the maximum value for the entire range group, defining the upper bound of the track.
 - `name`: The name of the range group, used for identification.
 - `list`: Links the range group to a `<datalist>` element, providing tick marks or predefined values.
 - `stepbetween`: Defines the minimum distance between handles in a range group.
+- `disabled`: When present, disables the entire range group. All contained handles become non-interactive, are removed from the tab order, and their values are excluded from form submission. This mirrors the behavior of the `disabled` attribute on `<fieldset>`.
 
-### `<input type="range">` Attributes (within a `<rangegroup>`)
+#### `<input type="range">` Attributes (within a `<rangegroup>`)
 
 These attributes function as they normally would, but their values are constrained by the parent `<rangegroup>`.
 
@@ -260,8 +360,10 @@ These attributes function as they normally would, but their values are constrain
 - `value`: The current value of this handle. This still updates individually by changing the thumb.
 - `name`: The name of this specific range input for form submission.
 - `step`: The step increment for this specific handle. This results in the steps of the thumb in a rangegroup environment, meaning that each thumb could potentially have different steps.
+- `disabled`: Disables this specific handle. The thumb is locked at its current value, removed from the tab order, and excluded from pointer interactions. Other handles in the group remain interactive. When all child inputs are disabled, the group behaves as if it were disabled as a whole.
 
-### `min` and `max` Attribute Interaction
+#### `min` and `max` Attribute Interaction
+
 The `<rangegroup>` element and its child `<input type="range">` elements can both have `min` and `max` attributes. Their interaction is key to providing both flexibility and a coherent progressive enhancement story.
 
 - **`<rangegroup>` `min` and `max`**: These attributes define the overall coordinate space of the slider. They determine the full visual range of the track.
@@ -274,7 +376,7 @@ The **effective range** for any given handle is the intersection of its own cons
 
 This model supports progressive enhancement. In a non-supporting browser, the individual inputs with their `min` and `max` attributes function correctly as standalone sliders. When `<rangegroup>` is supported, it unifies the UI and can apply overarching constraints without breaking the underlying inputs.
 
-### Track Click Behavior
+#### Track Click Behavior
 
 To provide an intuitive single-pointer interaction model, the `<rangegroup>` component's track-clicking behavior mirrors that of the native `<input type="range">`.
 
@@ -285,21 +387,19 @@ This approach offers several benefits:
 - **Familiarity:** It aligns with user expectations based on the standard behavior of single-handle sliders and some popular component libraries.
 - **Direct Manipulation:** It provides a quick and direct way for users to move any handle to a desired point with a single click, without needing to drag.
 
+Disabled thumbs are excluded from the closest-thumb calculation. If only one thumb is active and the other is disabled, a track click will always move the active thumb.
+
 While this interaction is powerful, it's worth noting that on touch devices with coarse pointers, care must be taken to avoid accidental adjustments. However, we believe the benefit of adhering to a well-established browser-native pattern provides the most valuable and predictable user experience.
 
-## CSS Properties and Pseudo-elements
-
+### CSS Properties and Pseudo-elements
 
 To address the current fragmentation and provide a unified styling API, we propose the following pseudo-elements, aligning with the [CSS Forms specification](https://drafts.csswg.org/css-forms-1/):
-
 
 - `::slider-track`: Represents the main track of the range group.
 - `::slider-segment`: Represents sections of the track between handles.
 - `::slider-thumb`: Represents the draggable handles within the group.
 - `::slider-tick`: Represents individual tick marks on the range group with attached datalist.
 - `::slider-tick-label`: Represents the label associated with each tick mark of a datalist option.
-
-
 
 Example usage:
 
@@ -315,13 +415,13 @@ input[type="range"]::slider-track {
 }
 
 input[type="range"]::slider-fill {
-    background-color: #4CAF50;
+    background-color: #4caf50;
 }
 
 input[type="range"]::slider-thumb {
     width: 20px;
     height: 20px;
-    background-color: #2196F3;
+    background-color: #2196f3;
     border-radius: 50%;
 }
 
@@ -335,26 +435,24 @@ rangegroup::slider-track {
 }
 
 rangegroup::slider-segment(1) {
-    background-color: #FF5733;
+    background-color: #ff5733;
 }
 
 rangegroup::slider-segment(2) {
-    background-color: #33FF57;
+    background-color: #33ff57;
 }
 
 rangegroup input[type="range"]::slider-thumb {
     width: 24px;
     height: 24px;
-    background-color: #2196F3;
+    background-color: #2196f3;
     border-radius: 50%;
 }
-
 ```
 
-## JavaScript API
+### JavaScript API
 
-
-The existing JavaScript API for `<input type="range">` remains unchanged inside of the gorup.
+The existing JavaScript API for `<input type="range">` remains unchanged inside of the group.
 
 For groups specifically we'd like to introduce a few new ones:
 
@@ -380,20 +478,20 @@ rangeGroup.setRangeValue(0, 150);
 console.log(rangeGroup.values); // [150, 750]
 ```
 
-
 ## Extra Examples
-
 
 **Dual-Handle Range Group**
 
 ```html
- <rangegroup name="price-range" min="0" max="1000">
+<rangegroup name="price-range" min="0" max="1000">
     <legend>Price Range</legend>
-    <label>Minimum Price
-        <input type="range" name="price-min" min="0" max="500" value="250" step="10">
+    <label>
+        Minimum Price
+        <input type="range" name="price-min" min="0" max="500" value="250" step="10" />
     </label>
-    <label>Maximum Price
-        <input type="range" name="price-max" min="500" max="1000" value="750" step="10">
+    <label>
+        Maximum Price
+        <input type="range" name="price-max" min="500" max="1000" value="750" step="10" />
     </label>
 </rangegroup>
 ```
@@ -414,16 +512,16 @@ rangegroup::slider-segment(1) {
 }
 
 rangegroup::slider-segment(2) {
-    background-color: #4CAF50;
+    background-color: #4caf50;
 }
 
 rangegroup::slider-segment(3) {
     background-color: #ddd;
 }
- rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb {
     width: 24px;
     height: 24px;
-    background-color: #2196F3;
+    background-color: #2196f3;
     border-radius: 50%;
 }
 ```
@@ -433,17 +531,21 @@ rangegroup::slider-segment(3) {
 ```html
 <rangegroup name="temperature-range" min="-100" max="100">
     <legend>Temperature Range</legend>
-    <label>Low
-        <input type="range" name="temp-low" min="-100" max="-25" value="-50">
+    <label>
+        Low
+        <input type="range" name="temp-low" min="-100" max="-25" value="-50" />
     </label>
-    <label>Medium
-        <input type="range" name="temp-medium" min="-25" max="25" value="0">
+    <label>
+        Medium
+        <input type="range" name="temp-medium" min="-25" max="25" value="0" />
     </label>
-    <label>High
-        <input type="range" name="temp-high" min="25" max="100" value="75">
+    <label>
+        High
+        <input type="range" name="temp-high" min="25" max="100" value="75" />
     </label>
 </rangegroup>
 ```
+
 ```css
 rangegroup {
     appearance: base;
@@ -459,36 +561,44 @@ rangegroup::slider-track {
 rangegroup input[type="range"]::slider-thumb {
     width: 20px;
     height: 20px;
-    background-color: #2196F3;
+    background-color: #2196f3;
     border-radius: 50%;
 }
 
 rangegroup::slider-segment(1) {
-    background-color: #FF5733;
+    background-color: #ff5733;
 }
 
 rangegroup::slider-segment(2) {
-    background-color: #33FF57;
+    background-color: #33ff57;
 }
 
 rangegroup::slider-segment(3) {
-    background-color: #3357FF;
+    background-color: #3357ff;
 }
 
 rangegroup::slider-segment(4) {
-    background-color: #FF33A8;
+    background-color: #ff33a8;
 }
 ```
 
+## Resolved Decisions
+
+The following questions have been discussed and resolved in Open UI telecons:
+
+- **Handle count limits** ([#1337](https://github.com/openui/open-ui/issues/1337)): No limit is imposed on the number of range inputs in a `<rangegroup>`. It is the author's responsibility to determine the appropriate number for their use case. Community feedback is being gathered on the prevalence of 3+ thumb use cases to determine whether a simpler two-thumb attribute API should coexist with the N-thumb `<rangegroup>` approach.
+- **Keyboard navigation** ([#1185](https://github.com/openui/open-ui/issues/1185)): Each thumb gets a tab stop. Arrow keys, Page Up/Down, Home, and End behave as they do on a standard `<input type="range">`. See the [Keyboard Interaction](#keyboard-interaction) section.
+- **Disabled attribute propagation** ([#1338](https://github.com/openui/open-ui/issues/1338)): `disabled` on `<rangegroup>` cascades to all thumbs. Individual thumbs can be disabled independently. When all thumbs are disabled, the group behaves as fully disabled. See the [Disabled State](#disabled-state) section.
+- **Screen reader announcements** ([#1339](https://github.com/openui/open-ui/issues/1339)): The group's min, max, and stepbetween should be announced when entering the group (first thumb). Each thumb then announces its own min, max, and current value. See the [Screen Reader Announcements](#screen-reader-announcements) section.
+- **Naming convention** ([#1197](https://github.com/openui/open-ui/issues/1197)): All pseudo-elements use the `slider-` prefix (e.g., `::slider-track`, `::slider-thumb`), following the CSSWG decision in the [CSS Forms specification](https://drafts.csswg.org/css-forms/).
+
 ## Considerations and Open Questions
 
-- Should there be a limit on the number of range inputs that can be included in a `<rangegroup>`? Based on discussions, we've decided not to impose a limit, leaving it to authors to determine the appropriate number for their use case. A separate issue will be created to address potential accessibility concerns with a large number of handles.
-- How should we handle thumb collision in multi-handle ranges?
-- What is the best way to handle keyboard navigation for multi-handle ranges? While tabbing between inputs is natural, should there be additional keyboard shortcuts for more efficient navigation?
-- Should we consider additional pseudo-elements for more granular styling control?
-- How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a slider-orientation property that could be adopted for this purpose.
-- Should we provide options for automatic tick mark generation (e.g., evenly spaced) without requiring a `<datalist>`? These could be auto-generated based on a step attribute of a rangegroup
-- How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks? Is this author responsibility?
-- Should we provide a way to programmatically set segment colors with a JavaScript API?
-- What should the behavior be when a handle's value is updated programmatically to a value that would violate the constraints imposed by `stepbetween` or other range limits?
-- How should form submission work for `<rangegroup>` elements? Should they submit as a single value (comma-separated) or as multiple values with the same name?
+- **Thumb collision handling** ([#1184](https://github.com/openui/open-ui/issues/1184)): How should overlapping thumbs behave? Current consensus leans toward allowing overlap for the initial version, with the option to refine behavior based on real-world usage. Authors can prevent overlap using `stepbetween` or per-thumb `min`/`max` constraints. The UX of selecting overlapping thumbs (e.g., disambiguating via drag direction) remains an area for further work.
+- **Track click behavior** ([#1278](https://github.com/openui/open-ui/issues/1278)): The current proposal moves the closest thumb to the click position. Alternative approaches (e.g., only moving thumbs when clicking outside the selected range, or no track-click on touch devices) have been suggested and remain under discussion.
+- **Vertical orientation**: How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a slider-orientation property that could be adopted for this purpose.
+- **Automatic tick mark generation**: Should we provide options for generating tick marks without requiring a `<datalist>` (e.g., evenly spaced ticks based on a `step` attribute on the rangegroup)?
+- **Tick mark legibility**: How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks? Is this author responsibility?
+- **Programmatic segment styling**: Should we provide a way to set segment colors via a JavaScript API?
+- **Programmatic constraint violations**: What should the behavior be when a handle's value is updated programmatically to a value that would violate `stepbetween` or other range limits?
+- **Form submission**: How should form submission work for `<rangegroup>` elements? Each child `<input>` submits its own name/value pair individually, as standard form controls. Should the `<rangegroup>` also support a group-level submission format?
