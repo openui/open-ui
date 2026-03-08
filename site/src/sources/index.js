@@ -21,6 +21,7 @@ import semantic from './semantic.json'
 import spectrum from './spectrum.json'
 import stardust from './stardust.json'
 import tailwind from './tailwind.json'
+import uswds from './uswds.json'
 import w3 from './w3.json'
 import web from './web.json'
 import webkit from './webkit.json'
@@ -50,6 +51,7 @@ export const sources = [
   spectrum,
   stardust,
   tailwind,
+  uswds,
   w3,
   web,
   webkit,
