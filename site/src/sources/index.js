@@ -15,6 +15,7 @@ import lightning from './lightning.json'
 import lion from './lion.json'
 import materialComponentsWeb from './materialComponentsWeb.json'
 import materialUI from './materialUI.json'
+import oat from './oat.json'
 import primer from './primer.json'
 import semantic from './semantic.json'
 import spectrum from './spectrum.json'
@@ -43,6 +44,7 @@ export const sources = [
   lion,
   materialComponentsWeb,
   materialUI,
+  oat,
   primer,
   semantic,
   spectrum,
