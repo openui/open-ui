@@ -1,6 +1,6 @@
 ---
 menu: Active Proposals
-name: beforefocus/focusNext (Explainer)
+name: advanceFocus/beforefocus (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 ---
 
@@ -14,7 +14,7 @@ Authors: [Marat Abdullin](https://github.com/mshoho)
 
 Browsers include complex heuristics for determining the next element to focus, but these aren't
 exposed to web developers, leaving them to implement these heuristics from scratch, often requiring
-DOM modificatons, or writing code that causes reflows and style recomputations. It can be hard or
+DOM modifications, or writing code that causes reflows and style recomputations. It can be hard or
 sometimes impossible to apply in some particular scenarios (for example, you might have control of
 a parent list component, but not the contents of the list items).
 
@@ -22,225 +22,444 @@ While having additional new high level abstractions to handle keyboard navigatio
 [focusgroup](./focusgroup.explainer)) will be useful, there is a multitude of different
 scenarios for focus management, and lower level primitives will give web developers more flexibility.
 
-This proposal focuses on having two fairly simple lower level functions which would arguably allow
+This proposal focuses on having two fairly simple lower level primitives which would arguably allow
 the developers to implement whatever patterns they prefer without working around the browser
 limitations and impossibilities.
 
-Namely, one method called `document.focusNext()` and one event called `beforefocus`.
-Let's dive deeper into it.
+Namely, one method called `document.advanceFocus()` and one event called `beforefocus`.
 
-## document.focusNext()
+> **Status:** I have a full-featured implementation for Chromium, it is reasonably simple and
+> straightforward, because everything needed is already present in the browser internally. I work on
+> submitting it to Chromium Gerrit as a prototype behind the `FocusNavigation` feature flag.
 
-`document.focusNext()` method just exposes the default action the browsers have for `Tab` and
-`Shift+Tab` presses.
+## Opting In
 
-The method's signature should be like:
+Both `document.advanceFocus()` and the `beforefocus` event require explicit opt-in via a meta tag. 
+This design choice ensures explicit developer intent and prevents the Universe from overheating
+by unnecessarily dispatching new events on every page:
 
-```ts
-focusNext(options?: {
-   contextElement?: HTMLElement,
-   direction?: FORWARD | BACKWARD,
-   trapped?: boolean,
-   includeContextElement?: boolean,
-});
+```html
+<meta name="focus-navigation" content="advanceFocus beforefocus">
 ```
 
-`contextElement` is the starting point from which the browser should start looking for the next
-element to focus. It is optional and equals to `document.activeElement` by default.
+You can enable one or both features independently:
 
-`direction` is the direction of the search. `FORWARD` to get the `Tab` press behaviour and
-`BACKWARD` to get `Shift+Tab` press behaviour. It is also optional and equals to `FORWARD` by
-default.
+```html
+<!-- Enable only advanceFocus -->
+<meta name="focus-navigation" content="advanceFocus">
 
-`trapped` means that instead of going to the address bar after the last element, the search
-should continue from the beginnig of the page (or from the end of it in case of moving
-backwards). False by default.
+<!-- Enable only beforefocus -->
+<meta name="focus-navigation" content="beforefocus">
 
-By setting `includeContextElement` to true, `focusNext()` will also include `contextElement` in the
-search for next element to focus (and focus it if it is focusable). False by default.
-In some scenarios it is more convenient to start considering elements including `contextElement`,
-for example, if you have a group of focusable elements that needs to be skipped, it could be more
-convenient to specify next group's container instead of locating last deepest child of the current
-group that needs to be skipped.
+<!-- Enable both (recommended for most use cases) -->
+<meta name="focus-navigation" content="advanceFocus beforefocus">
+```
 
-This method should invoke exactly the same internal routine to locate and focus
-elements which the currently existing default action for `Tab` and `Shift+Tab` invokes.
+The meta tag values are case-insensitive, so `"AdvanceFocus BeforeFocus"` works the same way.
 
-The important expected behaviours:
+Without the meta tag:
+- `document.advanceFocus()` exists but returns `false` and has no effect
+- The `beforefocus` event does not fire
 
-* If the `contextElement` is the last element in the DOM, calling `document.focusNext()` moves
-   focus outside of the page to the browser's address bar — the same thing `Tab` press default
-   action does.
-* If an `<iframe>` comes after the `contextElement`, calling `document.focusNext()` should
-   move focus to the first focusable element inside the iframe (if the iframe has focusable
-   elements) or past the iframe (if there is nothing to focus in the iframe) — the same thing
-   `Tab` press default action does.
-* The same logic applies for mirroring `Shift+Tab` behaviour when `direction` is set ot `BACKWARD`.
-* `document.focusNext()` should have no effect if the page is not focused or the focus is in
-   the address bar.
-* When `trapped` is true, the focus should cycle inside the page, skipping the address bar.
+## document.advanceFocus()
 
-## beforefocus Event
+`document.advanceFocus()` exposes the default action the browsers have for `Tab` and
+`Shift+Tab` presses for programmatic usage.
 
-`beforefocus` event is dispatched _before_ the browser wants to focus an element. Most important
-part is that `preventDefault()` of the `beforefocus` event should prevent the element from
-receiving focus.
+### Signature
 
-The event should have an important property to distinguish the reason for the focusing:
+```webidl
+dictionary AdvanceFocusOptions {
+  Element? startElement;
+  Element? stayWithinElement;
+  boolean backward = false;
+  boolean wrap = false;
+  boolean includeStartElement = false;
+};
 
-```ts
-interface BeforeFocusEvent extends FocusEvent {
-  reason: FOCUS_FORWARD | FOCUS_BACKWARD | PROGRAMMATIC | AUTOFOCUS | UI
+partial interface Document {
+  boolean advanceFocus(optional AdvanceFocusOptions options = {});
+};
+```
+
+### Return Value
+
+- Returns `true` if focus was successfully moved to an element
+- Returns `false` if:
+  - No focusable element was found
+  - The `beforefocus` event was cancelled
+  - The feature is not enabled via meta tag
+
+### Options Explained
+
+#### `startElement`
+
+The starting point from which the browser should start looking for the next element to focus.
+
+```js
+// Start navigation from a specific element
+document.advanceFocus({ startElement: myButton });
+```
+
+If not specified, defaults to `document.activeElement`.
+
+#### `backward`
+
+The direction of navigation. When `false` (default), behaves like `Tab`. When `true`, behaves
+like `Shift+Tab`.
+
+```js
+// Navigate forward (like Tab)
+document.advanceFocus();
+document.advanceFocus({ backward: false });
+
+// Navigate backward (like Shift+Tab)
+document.advanceFocus({ backward: true });
+```
+
+#### `stayWithinElement`
+
+Constrains the focus navigation to stay within a specified container element. Focus will not
+move outside of this element.
+
+```js
+// Only navigate within a specific container
+const list = document.getElementById('my-list');
+document.advanceFocus({ stayWithinElement: list });
+```
+
+This is useful for implementing circular arrow keys navigable lists and tables, custom dropdown
+menus, focus traps in custom modal dialogs and similar UI patterns.
+
+#### `wrap`
+
+Controls whether focus wraps around when reaching the boundaries.
+
+When `stayWithinElement` is specified:
+- `wrap: true`: Focus wraps from last element back to first (or vice versa for backward)
+- `wrap: false` (default): Focus stops at the boundary and `advanceFocus()` returns `false`
+
+When `stayWithinElement` is not specified:
+- `wrap: true`: Focus wraps from the end of the page to the beginning
+- `wrap: false` (default): Focus can move to the browser's address bar (normal Tab behavior)
+
+```js
+// Stop at boundaries instead of wrapping
+const result = document.advanceFocus({
+  stayWithinElement: container,
+  wrap: false
+});
+
+if (!result) {
+  // Reached the boundary - handle accordingly
 }
 ```
 
-`FOCUS_FORWARD` means that the element is about to be focused because `Tab` is pressed or
-`document.focusNext()` is called with `direction` set to `FORWARD`.
+#### `includeStartElement`
 
-`FOCUS_BACKWARD` means that the element is about to be focused because `Shift+Tab` is
-pressed or `document.focusNext()` is called with `direction` set to `BACKWARD`.
+When `true`, the `startElement` itself is considered as a candidate for focus if it is focusable.
+This is useful when you want to to skip some part of the application and continue from a specific
+place. For example, you have a tree and want to skip the subtree and move to the next tree item on
+the same level when the down arrow is pressed.
 
-`PROGRAMMATIC` means that the element is about to be focused because the application has
-called `element.focus()`.
-
-`AUTOFOCUS` means that the element is about to be focused because of the `autofocus` DOM
-attribute.
-
-`UI` means that the element is about to be focused because the user has clicked (or tapped)
-an element.
-
-It is important that calling `preventDefault()` actually prevents the element focus.
-
-Some important expected behaviours:
-
-* When you `Tab` into a page from the address bar, `beforefocus` should be dispatched for
-   the element the browser wants to focus first and focusing it should be preventable with
-   `preventDefault()`.
-* When something inside an `<iframe>` is about to be focused, `beforefocus` should first be
-   dispatched in the parent application that contains the iframe, the iframe element should
-   be the target of that `beforefocus` event instance, allowing the parent application to
-   `preventDefault()` the focus grab by the iframe. Next, if the parent application has not
-   called `preventDefault()`, `beforefocus` event should be dispatched inside an iframe.
-* When a user clicks an input (or any `tabindex=0` element), `beforefocus` for
-   that input is dispatched (with the `reason=UI`) and if `preventDefault()` is called,
-   the input shoudn't receive focus (effectively leaving `document.activeElement` set to
-   `<body>` as if the click has happened on an empty space of the page).
-* When screen readers want to move focus with virtual cursor, `reason` should be either
-   `FOCUS_FORWARD` or `FOCUS_BACKWARD` (relative to currently focused element position).
-
-## Usage Examples
-
-### List Example
-
-Consider the following example — a page containing a list of focusable items:
-<img src="/images/beforefocus-example-1.png" alt="List example to describe beforefocus event usage" width="400" />
-
-From the keyboard navigation perspective, it is a common practice that when you are tabbing
-through the page, only one item of the list receives focus, next Tab moves you outside of the
-list (otherwise it will take forever to tab through a very long or infinite virtualized list).
-And to move between the list items, the arrow keys are normally used. It is also a common practice
-to send focus to the selected item while tabbing through the page.
-
-In the example above, tabbing from the address bar will move to `Focusable Item 1`, not to the
-selected one.
-
-First way for working this around is a technique called roving tabindex — you set `tabindex=-1`
-to all list items but the selected one which has `tabindex=0`. To implement roving tabindex in a,
-for example, React application, `tabindex` attribute updates need to be done either in the
-React tree or as direct DOM manipulations on top of the React life cycle. Doing it in the
-React tree requires rerendering of the entire list when the selected item changes, doing it as
-direct DOM manipulations could lead to conflicts and inconsistencies with the components inside
-the list item (they might legitimately be using/changing `tabindex` for their own purposes).
-
-Things get even more complicated with roving tabindex when a list item contains multiple
-focusable components inside — you have to go deep inside the item and make sure every focusable
-element inside inactive item gets `tabindex` properly set/unset. Those could be the components
-owned by different teams and various third party components. Imagine rich chat message with links
-and buttons inside as an example of such a list item. And when your list item contains a cross
-origin iframe, roving tabindex technique completely hits the wall.
-
-A cherry on top with roving tabindex is the necessity to carefully maintain the state — if the
-data layer decides that the currently selected item needs to be removed, you have to make sure
-that the list is not left in a state when all items are `tabindex=-1` — this might be very
-nontrivial in a complex application.
-
-And of course, mainting roving tabindex is a continuous set of DOM updates which lead to
-reflows, style recalculations and generally have a toll on the application performance.
-
-After roving tabindex, our next resort is putting two invisible inputs before and after our list.
-Their purpose is to receive focus when a user tabs through the page and immediately redirect
-that focus to a selected item. This works in a lot of cases, but it also is hacky and far from
-ideal. Those dummy inputs need to be inserted in the DOM and maintained properly. In a React
-application example, they again need either to be a part of React tree or inserted at the proper
-moment and into the proper place as direct DOM manipulations (making sure that they stay
-first/last when React rerenders the tree).
-
-Additionally, to prevent the screen readers from choking when the dummy input receives focus
-and moves it right away, those dummy inputs need to be focusable elements with `aria-hidden=true`.
-`axe-core` that is commonly used to validate the DOM state from the accessibility point, will
-highlight those elements as violations and you will have to train your testing team to distinguish
-those intentional violations from the actual violations.
-
-Another complication is that even though those dummy inputs are invisible, you need to position them
-properly to make sure that focusing them doesn't cause the scrollable containers to scroll in
-unexpected ways.
-
-And iframes might ruin the party again — you can call `iframe.focus()` but that won't focus the
-proper element inside the iframe.
-
-That is when `beforefocus` event might come into play.
-
-```ts
-listContainer.addEventListener('beforefocus', event => {
-  ...
-
-  // When we are moving through the page.
-  if (event.reason === FOCUS_FORWARD || event.reason === FOCUS_BACKWARD) {
-    if (
-      !selectedItem?.contains(event.target) // If the browser is going to focus something other
-                                            // than an element from the selected item,
-      listContainer.contains(selectedItem) && // and the selectedItem is still in the DOM,
-      !listContainer.contains(event.relatedTarget) // and we are moving into the list from outside of the list.
-    ) {
-      event.preventDefault(); // Don't focus the element the browser wanted to focus.
-
-      document.focusNext({
-         contextElement: selectedItem, // But do focus the selected item.
-         includeContextElement: true
-      });
-    }
-  }
-
-  ...
+```js
+// Focus the startElement if it's focusable
+document.advanceFocus({
+  startElement: myElement,
+  includeStartElement: true
 });
 ```
 
-### Unstolen Focus Example
+### Expected Behaviors
 
-`beforefocus` would also be useful for preventing unexpected focus movements in complex applications.
+- If an `<iframe>` comes after the starting element, `advanceFocus()` moves focus to the first
+  focusable element inside the iframe (if any), or past the iframe — the same behavior as `Tab`.
+- The same logic applies for backward navigation with `Shift+Tab`.
+- `advanceFocus()` only has effect when the document is focused. It also requires user
+activation (it doesn't have an effect when called in some setTimeout callback without an actual
+user interaction with the page). If focus is in the browser's address bar or another frame, it
+returns `false`.
 
-Imagine you have two tabs in the UI: Tab1 and Tab2. You render them at once, but Tab1 is currently active and
-your focus is inside Tab1 contents. At the same time, you have an iframe inside Tab2 contents, it will become
-visible when you activate Tab2. But the iframe is an embedded application which doesn't really know that it's
-not active now. But it has autofocus or a programmatic focus on load. Once it loads, the focusing logic
-inside that yet inactive iframe in Tab2 contents will steal the focus from whatever you currently have focused
-in your active Tab1. With `beforefocus` you might do something like:
+## beforefocus Event
 
-```ts
-tabs.addEventListener('beforefocus', event => {
-  // When an inactive tab claims focus, just tell it no.
-  if (!activeTabContents.contains(event.target)) {
-   event.preventDefault();
+The `beforefocus` event is dispatched *before* the browser wants to focus an element. Calling
+`preventDefault()` on the event prevents the element from receiving focus.
+
+### Event Properties
+
+```webidl
+enum FocusReason {
+  "page",
+  "script",
+  "forward",
+  "backward",
+  "ui"
+};
+
+interface BeforeFocusEvent : UIEvent {
+  readonly attribute Element target;
+  readonly attribute FocusReason reason;
+};
+```
+
+The event has the following characteristics:
+- `bubbles: true`
+- `cancelable: true`
+- `composed: true` (crosses shadow DOM boundaries)
+
+### The `reason` Property
+
+The `reason` property indicates why the element is about to receive focus:
+
+| Value | Triggered By |
+|-------|--------------|
+| `"page"` | The browser wants to move focus (e.g., `autofocus` attribute) |
+| `"script"` | Programmatic focus via `element.focus()` |
+| `"forward"` | `Tab` key or `advanceFocus()` |
+| `"backward"` | `Shift+Tab` or `advanceFocus({ backward: true })` |
+| `"ui"` | User interaction (mouse click, touch) on a focusable element |
+
+> **Note:** For screen reader focus movements, we most likely want to use `"forward"` or
+> `"backward"` value depending on the relative position of the new element compared to
+> the current one.
+
+```js
+element.addEventListener('beforefocus', (event) => {
+  switch (event.reason) {
+    case 'page':
+      console.log('Focus via autofocus');
+      break;
+    case 'script':
+      console.log('Focus via element.focus()');
+      break;
+    case 'forward':
+      console.log('Tab pressed or advanceFocus() called');
+      break;
+    case 'backward':
+      console.log('Shift+Tab pressed');
+      break;
+    case 'ui':
+      console.log('User clicked or tapped the element');
+      break;
+  }
+});
+```
+
+### Event Timing
+
+The `beforefocus` event fires *before* the `blur` and `focus` events in the focus sequence:
+
+1. `beforefocus` (on the target element, cancelable)
+2. `blur` (on the previously focused element)
+3. `focus` (on the new element)
+
+If `beforefocus` is cancelled, neither `blur` nor `focus` events fire, and focus remains unchanged.
+
+### Important Behaviors
+
+- **Cancellation prevents focus**: Calling `event.preventDefault()` stops the element from
+  receiving focus. This is the core functionality that enables focus redirection and prevention.
+- **Bubbles through the DOM**: The event bubbles, allowing parent elements to intercept and
+  potentially cancel focus changes for their children.
+- **Composed**: The event crosses shadow DOM boundaries, enabling web components to participate
+  in focus management.
+
+## Behavior with Iframes
+
+Both features work across iframe boundaries with specific behaviors designed for security
+and flexibility:
+
+### beforefocus and Iframes
+
+When focus is about to move into an iframe:
+
+1. **Parent frame first**: The `beforefocus` event fires on the `<iframe>` element in the
+   parent document first
+2. **Cancellation at parent**: If the parent cancels the event, focus does not enter the iframe
+3. **Child frame next**: If not cancelled, `beforefocus` fires on the actual target element
+   inside the iframe (if the iframe has opted in)
+
+This allows parent applications to control whether child iframes can receive focus (when, for
+example, an embedded third party iframe uncontollably wants to steal focus):
+
+```js
+// Parent document
+iframe.addEventListener('beforefocus', (event) => {
+  if (shouldPreventIframeFocus()) {
+    event.preventDefault();
+  }
+});
+```
+
+### Per-Frame Opt-In
+
+Each frame must independently opt in via its own meta tag:
+
+```html
+<!-- Parent document -->
+<meta name="focus-navigation" content="advanceFocus beforefocus">
+<iframe src="child.html"></iframe>
+```
+
+```html
+<!-- child.html -->
+<meta name="focus-navigation" content="advanceFocus beforefocus">
+```
+
+- If parent has the meta tag but child doesn't: Parent receives `beforefocus` on the iframe
+  element, but child never fires `beforefocus` on its elements
+- If child has the meta tag but parent doesn't: Parent doesn't receive `beforefocus`, but
+  child elements fire `beforefocus` normally
+
+### advanceFocus and Iframes
+
+- `advanceFocus()` naturally navigates into and out of iframes, following the same tab order
+  as the `Tab` key
+- When called from a frame that doesn't have focus, it returns `false`
+- Each frame's `advanceFocus()` operates within the context of that frame unless navigation
+  naturally crosses frame boundaries
+
+## Usage Examples
+
+### Focus Trap for Modal Dialogs
+
+Implement a focus trap without sentinel elements:
+
+```js
+const dialog = document.getElementById('modal-dialog');
+
+dialog.addEventListener('beforefocus', (event) => {
+  // If focus is trying to leave the dialog, prevent it
+  if (!dialog.contains(event.target)) {
+    event.preventDefault();
+  }
+});
+
+// Navigate within the dialog only
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab' && dialogIsOpen) {
+    e.preventDefault();
+    document.advanceFocus({
+      stayWithinElement: dialog,
+      backward: e.shiftKey,
+      wrap: true
+    });
+  }
+});
+```
+
+### List Navigation with Selected Item
+
+Common pattern: Tab into a list should focus the selected item, not the first item.
+
+```html
+<ul id="listbox" role="listbox">
+  <li tabindex="0">Item 1</li>
+  <li tabindex="0" aria-selected="true">Item 2 (selected)</li>
+  <li tabindex="0">Item 3</li>
+</ul>
+```
+
+```js
+const list = document.getElementById('listbox');
+
+list.addEventListener('beforefocus', (event) => {
+  const selectedItem = list.querySelector('[aria-selected="true"]');
+
+  // When tabbing into the list from outside
+  if ((event.reason === 'forward' || event.reason === 'backward') &&
+      !list.contains(document.activeElement) &&       // Coming from outside the list
+      selectedItem &&
+      !selectedItem.contains(event.target)) {         // Not already targeting selected item
+
+    event.preventDefault();
+    selectedItem.focus();
+  }
+});
+```
+
+### Preventing Unwanted Focus Theft
+
+Prevent background content from stealing focus (e.g., lazy-loaded iframes):
+
+```js
+const activePanel = document.querySelector('.active-panel');
+
+document.addEventListener('beforefocus', (event) => {
+  // Only allow focus within the active panel
+  if (!activePanel.contains(event.target)) {
+    event.preventDefault();
+  }
+});
+```
+
+### Focus Redirection
+
+Redirect focus to a different element:
+
+```js
+const deprecatedButton = document.getElementById('old-button');
+const newButton = document.getElementById('new-button');
+
+deprecatedButton.addEventListener('beforefocus', (event) => {
+  event.preventDefault();
+  newButton.focus();
+});
+```
+
+### Skip Navigation Links
+
+Implement skip links that work with Tab navigation:
+
+```js
+const skipLink = document.getElementById('skip-to-main');
+const mainContent = document.getElementById('main');
+
+skipLink.addEventListener('beforefocus', (event) => {
+  if (event.reason === 'forward') {
+    event.preventDefault();
+
+    document.advanceFocus({
+      startElement: mainContent,
+      includeStartElement: true
+    });
+  }
+});
+```
+
+### Custom Focusgroup-like Navigation
+
+Skip non-entry items in a focusgroup pattern:
+
+```js
+const toolbar = document.getElementById('toolbar');
+const items = toolbar.querySelectorAll('.toolbar-item');
+const entryItem = items[0]; // First item is the entry point
+
+toolbar.addEventListener('beforefocus', (event) => {
+  // If navigating to a toolbar item that isn't the entry point
+  if ((event.reason === 'forward' || event.reason === 'backward') &&
+      event.target.classList.contains('toolbar-item') &&
+      event.target !== entryItem) {
+
+    event.preventDefault();
+
+    // Focus the entry item instead
+    entryItem.focus();
   }
 });
 ```
 
 ## Summary
 
-A combination of `document.focusNext()` and `beforefocus` event would allow to easily
-implement various high level keyboard navigation abstractions — all kinds of modal dialogs,
-lists, arrow navigation areas, groups of focusables — without fundamentally arguing about
-how these abstractions should look like.
+The combination of `document.advanceFocus()` and the `beforefocus` event provides low-level
+primitives for implementing various high-level keyboard navigation patterns. These primitives
+enable developers to implement:
+- Modal dialogs with focus traps
+- List navigations
+- Focus theft prevention
+- Skip navigation
+- Custom focusgroup patterns
+- And much more...
 
-These changes are not breaking anything that already exists and don't seem very complex to
-implement.
+All without relying on DOM mutations, roving tabindex, or invisible sentinel elements.
