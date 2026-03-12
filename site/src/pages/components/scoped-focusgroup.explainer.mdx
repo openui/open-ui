@@ -203,8 +203,8 @@ Current behavior tokens (APG alignment & minimum roles). All listed (except the 
 |---|---|---|---|---|---|
 | `toolbar` | Toolbar | [`toolbar`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role) | (none) | `inline` | [APG Toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) |
 | `tablist` | Tabs | [`tablist`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tablist_role) | [`tab`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tab_role) | `inline` `wrap` | [APG Tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) |
-| `radiogroup` | Radio Group | [`radiogroup`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radiogroup_role) | [`radio`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radio_role) | (none) | [APG Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) |
-| `listbox` | Listbox | [`listbox`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role) | [`option`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/option_role) | (none) | [APG Listbox](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) |
+| `radiogroup` | Radio Group | [`radiogroup`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radiogroup_role) | [`radio`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radio_role) | `wrap` | [APG Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) |
+| `listbox` | Listbox | [`listbox`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role) | [`option`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/option_role) | `block` | [APG Listbox](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) |
 | `menu` | Menu | [`menu`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role) | [`menuitem`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menuitem_role) | `block` `wrap` | [APG Menu / Menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) |
 | `menubar` | Menubar | [`menubar`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menubar_role) | [`menuitem`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menuitem_role) | `inline` `wrap` | [APG Menu / Menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) |
 | `grid` (future) | Grid (2-D) | [`grid`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) | (TBD) | (TBD) | [APG Grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) |
@@ -1518,8 +1518,8 @@ Authoring shorthand examples:
 | Wrapping toolbar | `<div focusgroup="toolbar wrap">…` | `inline` is a [default modifier](#default-modifiers) for `toolbar`; `wrap` must be explicit. |
 | Horizontal manual-activation tabs (no memory) | `<div focusgroup="tablist nomemory">…` | `inline` and `wrap` are [default modifiers](#default-modifiers) for `tablist`. |
 | Vertical tabs (override default axis) | `<div focusgroup="tablist block">…` | Explicit `block` overrides the default `inline`; `wrap` still applies from default. |
-| Simple radiogroup | `<div focusgroup="radiogroup">…` | No default modifiers. |
-| Vertical listbox (block axis) | `<div focusgroup="listbox block">…` | No default modifiers; `block` is explicit. |
+| Simple radiogroup | `<div focusgroup="radiogroup">…` | `wrap` is a [default modifier](#default-modifiers) for `radiogroup`. |
+| Vertical listbox (block axis) | `<div focusgroup="listbox">…` | `block` is a [default modifier](#default-modifiers) for `listbox`. |
 | Vertical menu | `<div focusgroup="menu">…` | `block` and `wrap` are [default modifiers](#default-modifiers) for `menu`. |
 | Horizontal menubar | `<div focusgroup="menubar">…` | `inline` and `wrap` are [default modifiers](#default-modifiers) for `menubar`. |
 | Non-wrapping tablist | `<div focusgroup="tablist nowrap">…` | `nowrap` overrides the default `wrap`; `inline` still applies from default. |
