@@ -6,7 +6,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 - [Vladimir Levin](https://github.com/vmpstr), [Rob Flack](https://github.com/flackr), [Mason Freed](https://github.com/mfreed7)
 
-- Last updated: February 12, 2026
+- Last updated: March 16, 2026
 
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -22,7 +22,15 @@ layout: ../../layouts/ComponentLayout.astro
   - [Chaining and Ordering](#chaining-and-ordering)
   - [Overlay Mode](#overlay-mode)
 - [Events](#events)
+- [Use case examples](#use-case-examples)
+  - [Drawer menu](#drawer-menu)
+  - [Swipe to reveal](#swipe-to-reveal)
+  - [Swipe to dismiss](#swipe-to-dismiss)
+  - [Pull to refresh](#pull-to-refresh)
 - [Implementation Model](#implementation-model)
+- [Light Dismiss](#light-dismiss)
+  - [Blur as a light dismiss signal](#blur-as-a-light-dismiss-signal)
+- [Modalness](#modalness)
 - [Accessibility Considerations](#accessibility-considerations)
   - [Focus Management](#focus-management)
 - [Progressive Enhancement](#progressive-enhancement)
@@ -37,7 +45,7 @@ The web platform allows for sophisticated scrolling experiences, but it
 currently lacks a semantic way to utilize "overscroll" space (the area beyond
 the scroll boundary).
 
-Common UI patterns like **side-menus** (swiping past the edge to reveal a menu)
+Common UI patterns like **drawer-menus** (swiping past the edge to reveal a menu)
 or **swipe-to-action** (swiping a list item to reveal delete buttons) currently
 rely on complex nested scrollers or JavaScript gesture polyfills. These
 workarounds are difficult to implement, computationally expensive, and often
@@ -164,6 +172,122 @@ logic or haptics), we expose the following events on the host container:
 | `overscrollend` | Fired when the gesture completes and the state has changed. |
 | `overscrollcancel` | Fired when the gesture ends but snaps back to the original state. |
 
+
+## Use case examples
+
+### Drawer menu
+
+A hidden navigation panel that typically slides in from the edge of the screen
+when triggered by a button, such as a hamburger menu icon. It allows users to
+access site-wide navigation, settings, or profile information without
+permanently cluttering the primary view.
+
+Behaviors:
+- Light dismissable: yes
+- Modal: sometimes
+
+<img src="/images/overscroll-drawer.jpg" width="400" alt="A drawer menu mockup,
+with a side menu that can be opened with a swipe" />
+
+```html
+<button commandfor="drawer-menu" command="toggle-overscroll">
+  ☰ Menu
+</button>
+<div id="app-layout" overscrollcontainer="overlay">
+  <nav id="drawer-menu">
+    <li><a href="/">Home</a></li>
+    <li><a href="/profile">Profile</a></li>
+  </nav>
+  <main>Primary view content...</main>
+</div>
+```
+
+### Swipe to reveal
+
+An interaction pattern where a user swipes horizontally on a specific list item
+or card to expose hidden secondary actions, like delete, archive, or edit. It is
+frequently used in touch-based and mobile interfaces to efficiently manage
+screen real estate while keeping quick actions accessible.
+
+Behaviors:
+- Light dismissable: yes
+- Modal: sometimes
+
+<img src="/images/overscroll-swipe-to-reveal.jpg" width="400" alt="A
+swipe-to-reveal mockup, with a list of email items that have additional archive
+and delete buttons that can be revealed via a swipe" />
+
+Example code:
+
+```html
+<!-- A single list item acting as its own overscroll container -->
+<div id="message-item" overscrollcontainer>
+  <div class="primary-content">
+    Sender: Hello world!
+  </div>
+  <div id="message-actions">
+    <button>Archive</button>
+    <button>Delete</button>
+  </div>
+</div>
+```
+
+### Swipe to dismiss
+
+A gesture-based interaction where a user slides an element—such as a
+notification, toast message, or temporary card—horizontally or vertically off
+the screen to remove or close it. This pattern provides an intuitive, fluid way
+to clear transient information or dismiss temporary views without requiring a
+click/tap on a close button.
+
+Behaviors:
+- Light dismissable: yes
+- Modal: sometimes
+
+<img src="/images/overscroll-swipe-to-dismiss.jpg" width="400" alt="A
+swipe-to-dismiss mockup, with a file notification toast that can be dismissed" />
+
+Example code:
+
+```html
+<body overscrollcontainer="overlay">
+  <div class="toast-body">
+    File successfully uploaded. (Swipe me to dismiss)
+  </div>
+  <main> Rest of the page </main>
+</div>
+```
+
+### Pull to refresh
+
+A gesture-based interaction where the user drags the top of a scrollable area
+downward to manually trigger a data update. As the screen is pulled down, a
+loading spinner or animation briefly appears to signal that the application is
+actively fetching the latest content.
+
+Behaviors:
+- Light dismissable: no
+- Modal: no
+
+<img src="/images/overscroll-pull-to-refresh.jpg" width="400" alt="A
+pull-to-refresh mockup, with a list of news items that can be refreshed by
+pulling down" />
+
+Example code:
+
+```html
+<div id="news-feed" overscrollcontainer>
+  <div id="refresh-indicator">
+    <span>↻ Pull to refresh...</span>
+  </div>
+  <div class="feed-content">
+    <article>News item 1</article>
+    <article>News item 2</article>
+    <article>News item 3</article>
+  </div>
+</div>
+```
+
 ## Implementation Model
 
 *Note: This section details the conceptual rendering tree structure.*
@@ -182,6 +306,73 @@ hit-testing and painting order:
     into view.
 
 ![Overscroll Animation](/images/overscroll_polyfill_demo.gif)
+
+## Light Dismiss
+
+As seen in the [use case examples](#use-case-examples) section, several of the common
+use cases typically require a "light dismiss" type behavior, wherein clicking
+outside the overscroll area, or hitting ESC, scrolls the overscroll area back
+out. In some cases, this behavior is not desired, however. For example, in the
+[pull to refresh](#pull-to-refresh) use case example, the “refreshing” widget
+usually stays open until the refresh process is complete, and then closes on its
+own. The proposed mechanism to allow this to be under the developer's control is:
+
+1. The default behavior for overscroll areas is that they support light dismiss
+by default. This is important, since the majority of use cases need this, and
+it is bad for users if expected patterns like light dismiss aren't supported by
+default.
+
+2. The existing platform
+[`closedby`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy)
+attribute (currently only supported for `<dialog>` elements) would be expanded
+to support all elements. As discussed above, the implied default value would be `any`,
+indicating all light dismiss signals are supported. However, the developer could
+set another value, such as `closerequest` or `none`, to limit that behavior. 
+
+### Blur as a light dismiss signal
+
+In contrast to popovers, where `blur` (focus leaving the popover) [is not a
+light dismiss signal](https://github.com/openui/open-ui/issues/415#issuecomment-1285995113),
+the same is not true for overscroll areas. Because popovers often lack clear
+visual boundaries, closing them the moment focus shifts outside the popover
+would cause frustrating, accidental dismissals for keyboard users just trying
+to tab through their contents. On the other hand, drawers and overscroll actions
+typically take up large, obvious sections of the screen for specific tasks. When
+a user intentionally moves their focus out of these big areas and back to the
+main page, it is a clear signal they are done, making `blur` a safe and helpful
+trigger to automatically close them.
+
+Making `blur` light dismiss the overscroll area also helps in the case that a
+`::backdrop` pseudo element is being used to darken or obscure the rest of the
+page. The `::backdrop` pseudo should be clickable by default (i.e. not
+`pointer-events: none` as with popovers), so that clicking it causes a light
+dismissal of the overscroll area. And by making `blur` also a light dismiss
+signal, there’s no issue with users moving focus into the obscured portion of
+the page, since that will close the overscroll area.
+
+## Modalness
+
+As seen in the [use case examples](#use-case-examples) section, a few use cases might
+need some form of "modality". E.g. when a menu is expanded, and obscures the
+rest of the page (or pushes it off screen), it might be desirable to make that
+menu fully modal, causing the rest of the page to be `inert`. The proposed
+mechanism for this is:
+
+1. The developer should use a `<dialog>` element for the overscroll area
+element.
+
+2. A new value for the `command` attribute would be added, e.g.
+`toggle-overscroll-modal`, which would cause the dialog to be opened as a modal
+dialog. Without this (i.e. with a `<dialog>` overscroll area element, but with
+`command=toggle-overscroll`), the dialog will be opened as a non-modal dialog.
+
+Important note: in this use case, very much [akin to the guidance for a
+“regular” modal
+`<dialog>`](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#:~:text=It%20is%20strongly%20recommended%20that%20the%20tab%20sequence%20of%20all%20dialogs%20include),
+the developer must provide a button within the overscroll area that closes it.
+The easiest such solution would be
+`<button commandfor=area command=toggle-overscroll>Close</button>`.
+
 
 
 ## Accessibility Considerations
@@ -208,6 +399,8 @@ It is a bit unclear what to do if the overscroll invoker is located *within* the
 area, especially if (see below) the overscroll content should be `aria-hidden`.
 Perhaps an overscroll invoker always remains focusable, and tab-focusing it
 automatically activates the overscroll area and scrolls it into view?
+
+
 
 ## Progressive Enhancement
 
