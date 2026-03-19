@@ -43,6 +43,28 @@ Use cases:
 - Toolbars are displayed horizontally by default.
 - Provides correct keyboard navigation behaviour.
 
+```webidl
+[Exposed=Window]
+interface HTMLToolbarElement : HTMLElement {
+  [HTMLConstructor] constructor();
+
+  [CEReactions, Reflect] attribute boolean disabled;
+};
+```
+
+Toolbars will support a disabled attribute, when specified it will cause all descendents that support a disabled state to be disabled;
+with the exception of any descendents within its first `<legend>` element (this matches fieldset).
+
+### Naming
+
+Toolbars situationally need an accessible name. Naming can become particularly important when there are multiple
+toolbars on a page, or in situations where authors provide a visible label for a toolbar, with the intent that it would
+serve as the identifier (name) of the toolbar, programmatically.
+
+To facilitate labeling and naming, toolbars will support the `<legend>` element similarly to its use in `fieldset`,
+and more recently its allowance within the `optgroup` element.
+The first child legend, if present, will be used for calculating the accessible name of the toolbar.
+
 ### Keyboard behaviour
 
 This element will implicitly provide the same behaviour as a [toolbar focusgroup](/components/scoped-focusgroup.explainer#supported-behaviors):
@@ -72,9 +94,14 @@ toolbar {
 
   display: inline-flex;
   flex-direction: row;
+  flex-wrap: wrap;
   inline-size: max-content;
   gap: 0.25em;
   padding: 0.25em;
+}
+
+toolbar > legend:first-of-type {
+  flex-bases: 100%;
 }
 ```
 
@@ -90,8 +117,6 @@ as well as setting aria-orientation appropriately, would solve this? [Issue 1201
 ## Extra questions
 
 * Does `<toolbar>` support separators? [Issue 1400](https://github.com/openui/open-ui/issues/1400)
-* Toolbars generally should be labelled, it is a MUST if there are multiple on a page. Should we support this via HTML,
-  or still rely on aria? [Issue 1399](https://github.com/openui/open-ui/issues/1399)
 
 ## Examples
 
