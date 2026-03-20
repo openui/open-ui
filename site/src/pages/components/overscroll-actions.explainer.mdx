@@ -6,7 +6,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 - [Vladimir Levin](https://github.com/vmpstr), [Rob Flack](https://github.com/flackr), [Mason Freed](https://github.com/mfreed7)
 
-- Last updated: March 16, 2026
+- Last updated: March 20, 2026
 
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -29,8 +29,10 @@ layout: ../../layouts/ComponentLayout.astro
   - [Pull to refresh](#pull-to-refresh)
 - [Implementation Model](#implementation-model)
 - [Light Dismiss](#light-dismiss)
+  - [Cancelling light dismissability](#cancelling-light-dismissability)
   - [Blur as a light dismiss signal](#blur-as-a-light-dismiss-signal)
 - [Modalness](#modalness)
+  - [Backdrops](#backdrops)
 - [Accessibility Considerations](#accessibility-considerations)
   - [Focus Management](#focus-management)
 - [Progressive Enhancement](#progressive-enhancement)
@@ -260,7 +262,6 @@ Example code:
 </body>
 ```
 
-
 ### Pull to refresh
 
 A gesture-based interaction where the user drags the top of a scrollable area
@@ -292,7 +293,8 @@ Example code:
 ```
 
 To prevent light dismiss from happening for use cases like this, the
-`overscrollstart` event should be canceled for the open-to-closed transition.
+`overscrollstart` event should be [canceled](#cancelling-light-dismissability)
+for the open-to-closed transition.
 
 ## Implementation Model
 
@@ -321,7 +323,7 @@ outside the overscroll area, or hitting ESC, scrolls the overscroll area back
 out. In limited cases, this behavior is not desired, however. For example, in the
 [pull to refresh](#pull-to-refresh) use case example, the “refreshing” widget
 usually stays open until the refresh process is complete, and then closes on its
-own, via Javascript.
+own, via JavaScript.
 
 Because most common use cases require light dismiss, that will be the default
 behavior. This is important, since the majority of use cases need this, and it is
@@ -337,8 +339,9 @@ is the "pull to refresh" pattern.
 In this specific case, the proposal is to make the `overscrollstart` event
 cancelable, which will stop the overscroll transition and prevent the area from
 being dismissed. Furthermore, the `overscrollstart` event will include `newState`
-and `oldState` fields, similar to `ToggleEvent`, so that developers can determine
-the direction of the overscroll before cancelling.
+and `oldState` fields, with values `"open"` or `"closed"`, similar to
+`ToggleEvent`, so that developers can determine the direction of the overscroll
+before cancelling.
 
 ### Blur as a light dismiss signal
 
@@ -410,14 +413,14 @@ the overscroll invoker button should not move focus to the menu automatically,
 but the menu should be next in the focus order.
 
 Furthermore, interactive elements within the overscroll area should *not* be in
-the sequential focus navigation order (the tab order). You can refer to
+the sequential focus navigation order (the tab order).
 [WCAG 3.2.1 Understanding "On Focus"](https://www.w3.org/WAI/WCAG20/Understanding/on-focus)
-which says that focus shouldn't "change the context". If there are interactive
+says that focus shouldn't "change the context". If there are interactive
 elements in the overscroll area that remain focusable while the area is closed,
 then focusing them would need to scroll them into view (required by
-[WCAG 2.4.11 "Focus Not Obscured"](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum))
-and that would activate the area. Typically, overscroll areas such as a drawer
-menu represent a context change.
+[WCAG 2.4.11 "Focus Not Obscured"](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)),
+and that would activate the overscroll area. Typically, overscroll areas such
+as a drawer menu represent a context change, so this would be bad.
 
 It is a bit unclear what to do if the overscroll invoker is located *within* the overscroll
 area, especially if (see below) the overscroll content should be `aria-hidden`.
@@ -462,14 +465,7 @@ progressive enhancement.
     visibility of the overscroll content, in the same way that popovers are
     handled?
 * **Visibility:** When not revealed, should the overscroll content be treated
-    as `aria-hidden="true"`?
-* **Backdrop:** Should there be a `::backdrop` pseudo element when the overscroll
-    area is activated?
-* **Light Dismiss:** Should overscroll areas support a "light dismiss"
-    behavior where clicking outside or pressing Escape closes them? If so, how,
-    exactly?
-* **Modal Behavior:** Should there be a way to make an overscroll area modal
-    when opened? (Feels like no.)
+    as `aria-hidden="true"`? Seems like yes.
 * **Activatable Elements:** Are there any interactive elements (like
     `<area>`) that should *not* be allowed as overscroll invokers?
 * **Pseudo Classes:** Should the `:open` pseudo class match the overscroll
