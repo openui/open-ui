@@ -6,7 +6,7 @@ layout: ../../layouts/ComponentLayout.astro
 
 - [Vladimir Levin](https://github.com/vmpstr), [Rob Flack](https://github.com/flackr), [Mason Freed](https://github.com/mfreed7)
 
-- Last updated: March 16, 2026
+- Last updated: March 20, 2026
 
 ## Table of Contents
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -29,8 +29,10 @@ layout: ../../layouts/ComponentLayout.astro
   - [Pull to refresh](#pull-to-refresh)
 - [Implementation Model](#implementation-model)
 - [Light Dismiss](#light-dismiss)
+  - [Cancelling light dismissability](#cancelling-light-dismissability)
   - [Blur as a light dismiss signal](#blur-as-a-light-dismiss-signal)
 - [Modalness](#modalness)
+  - [Backdrops](#backdrops)
 - [Accessibility Considerations](#accessibility-considerations)
   - [Focus Management](#focus-management)
 - [Progressive Enhancement](#progressive-enhancement)
@@ -82,10 +84,10 @@ element hidden in the overscroll area).
 
 ```html
 <div id="container" overscrollcontainer>
-    <menu id="menu">
-        <li>Home</li>
-        <li>Settings</li>
-    </menu>
+    <menubar id="menu">
+        <menuitem>Home</menuitem>
+        <menuitem>Settings</menuitem>
+    </menubar>
     Some content.
 </div>
 
@@ -184,7 +186,7 @@ permanently cluttering the primary view.
 
 Behaviors:
 - Light dismissable: yes
-- Modal: sometimes
+- Modal: yes
 
 <img src="/images/overscroll-drawer.jpg" width="600" alt="A drawer menu mockup,
 with a side menu that can be opened with a swipe" />
@@ -194,10 +196,12 @@ with a side menu that can be opened with a swipe" />
   ☰ Menu
 </button>
 <div id="app-layout" overscrollcontainer="overlay">
-  <nav id="drawer-menu">
-    <li><a href="/">Home</a></li>
-    <li><a href="/profile">Profile</a></li>
-  </nav>
+  <dialog id="drawer-menu" closedby="any">
+    <nav>
+      <li><a href="/">Home</a></li>
+      <li><a href="/profile">Profile</a></li>
+    </nav>
+  </dialog>
   <main>Primary view content...</main>
 </div>
 ```
@@ -211,7 +215,7 @@ screen real estate while keeping quick actions accessible.
 
 Behaviors:
 - Light dismissable: yes
-- Modal: sometimes
+- Modal: no
 
 <img src="/images/overscroll-swipe-to-reveal.jpg" width="400" alt="A
 swipe-to-reveal mockup, with a list of email items that have additional archive
@@ -225,10 +229,10 @@ Example code:
   <div class="primary-content">
     Sender: Hello world!
   </div>
-  <div id="message-actions">
-    <button>Archive</button>
-    <button>Delete</button>
-  </div>
+  <menubar id="message-actions">
+    <menuitem>Archive</menuitem>
+    <menuitem>Delete</menuitem>
+  </menubar>
 </div>
 ```
 
@@ -242,7 +246,7 @@ click/tap on a close button.
 
 Behaviors:
 - Light dismissable: yes
-- Modal: sometimes
+- Modal: no
 
 <img src="/images/overscroll-swipe-to-dismiss.jpg" width="600" alt="A
 swipe-to-dismiss mockup, with a file notification toast that can be dismissed" />
@@ -251,11 +255,11 @@ Example code:
 
 ```html
 <body overscrollcontainer="overlay">
-  <div class="toast-body">
+  <div role="status" class="toast-body">
     File successfully uploaded. (Swipe me to dismiss)
   </div>
   <main> Rest of the page </main>
-</div>
+</body>
 ```
 
 ### Pull to refresh
@@ -288,6 +292,10 @@ Example code:
 </div>
 ```
 
+To prevent light dismiss from happening for use cases like this, the
+`overscrollstart` event should be [canceled](#cancelling-light-dismissability)
+for the open-to-closed transition.
+
 ## Implementation Model
 
 *Note: This section details the conceptual rendering tree structure.*
@@ -309,46 +317,47 @@ hit-testing and painting order:
 
 ## Light Dismiss
 
-As seen in the [use case examples](#use-case-examples) section, several of the common
-use cases typically require a "light dismiss" type behavior, wherein clicking
+As seen in the [use case examples](#use-case-examples) section, all of the common
+use cases (save one) require a "light dismiss" type behavior, wherein clicking
 outside the overscroll area, or hitting ESC, scrolls the overscroll area back
-out. In some cases, this behavior is not desired, however. For example, in the
+out. In limited cases, this behavior is not desired, however. For example, in the
 [pull to refresh](#pull-to-refresh) use case example, the “refreshing” widget
 usually stays open until the refresh process is complete, and then closes on its
-own. The proposed mechanism to allow this to be under the developer's control is:
+own, via JavaScript.
 
-1. The default behavior for overscroll areas is that they support light dismiss
-by default. This is important, since the majority of use cases need this, and
-it is bad for users if expected patterns like light dismiss aren't supported by
-default.
+Because most common use cases require light dismiss, that will be the default
+behavior. This is important, since the majority of use cases need this, and it is
+bad for users if expected patterns like light dismiss aren't supported by default.
 
-2. The existing platform
-[`closedby`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy)
-attribute (currently only supported for `<dialog>` elements) would be expanded
-to support all elements. As discussed above, the implied default value would be `any`,
-indicating all light dismiss signals are supported. However, the developer could
-set another value, such as `closerequest` or `none`, to limit that behavior. 
+
+### Cancelling light dismissability
+Cancelling light dismiss is an exception to the rule. Commonly, for use cases that
+do not support light dismiss, JavaScript (timers, network fetches, etc.) are used
+do decide when to close the overscroll area. The only such example in this explainer
+is the "pull to refresh" pattern.
+
+In this specific case, the proposal is to make the `overscrollstart` event
+cancelable, which will stop the overscroll transition and prevent the area from
+being dismissed. Furthermore, the `overscrollstart` event will include `newState`
+and `oldState` fields, with values `"open"` or `"closed"`, similar to
+`ToggleEvent`, so that developers can determine the direction of the overscroll
+before cancelling.
 
 ### Blur as a light dismiss signal
 
 In contrast to popovers, where `blur` (focus leaving the popover) [is not a
 light dismiss signal](https://github.com/openui/open-ui/issues/415#issuecomment-1285995113),
-the same is not true for overscroll areas. Because popovers often lack clear
-visual boundaries, closing them the moment focus shifts outside the popover
+overscroll areas will light dismiss when focus leaves the area and moves on to
+another part of the page.
+
+For the popover case, the container is more generic, and the end boundaries
+are unclear. Closing them the moment focus shifts outside the popover
 would cause frustrating, accidental dismissals for keyboard users just trying
-to tab through their contents. On the other hand, drawers and overscroll actions
-typically take up large, obvious sections of the screen for specific tasks. When
-a user intentionally moves their focus out of these big areas and back to the
+to tab through their contents. For overscroll areas, however, the role is usually
+better defined, and the end boundaries more clear. When
+a user intentionally moves their focus out of these areas and back to the
 main page, it is a clear signal they are done, making `blur` a safe and helpful
 trigger to automatically close them.
-
-Making `blur` light dismiss the overscroll area also helps in the case that a
-`::backdrop` pseudo element is being used to darken or obscure the rest of the
-page. The `::backdrop` pseudo should be clickable by default (i.e. not
-`pointer-events: none` as with popovers), so that clicking it causes a light
-dismissal of the overscroll area. And by making `blur` also a light dismiss
-signal, there’s no issue with users moving focus into the obscured portion of
-the page, since that will close the overscroll area.
 
 ## Modalness
 
@@ -365,6 +374,14 @@ element.
 `toggle-overscroll-modal`, which would cause the dialog to be opened as a modal
 dialog. Without this (i.e. with a `<dialog>` overscroll area element, but with
 `command=toggle-overscroll`), the dialog will be opened as a non-modal dialog.
+
+### Backdrops
+
+If a darkened or obscured `::backdrop` is needed behind the overscroll area
+content, then it should *always* be accomplished with a *modal* `<dialog>`.
+Obscuring the content behind the element, while leaving it non-inert (so it
+can still be focused or interacted with), is an accessibility anti-pattern.
+In this case, a true modal `<dialog>` is neeeded.
 
 Important note: in this use case, very much [akin to the guidance for a
 “regular” modal
@@ -395,11 +412,21 @@ The overscroll area functions similarly to a popover with respect to focus. Acti
 the overscroll invoker button should not move focus to the menu automatically,
 but the menu should be next in the focus order.
 
+Furthermore, interactive elements within the overscroll area should *not* be in
+the sequential focus navigation order (the tab order).
+[WCAG 3.2.1 Understanding "On Focus"](https://www.w3.org/WAI/WCAG20/Understanding/on-focus)
+says that focus shouldn't "change the context". If there are interactive
+elements in the overscroll area that remain focusable while the area is closed,
+then focusing them would need to scroll them into view (required by
+[WCAG 2.4.11 "Focus Not Obscured"](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum)),
+and that would activate the overscroll area. Typically, overscroll areas such
+as a drawer menu represent a context change, so this would be bad.
+
 It is a bit unclear what to do if the overscroll invoker is located *within* the overscroll
 area, especially if (see below) the overscroll content should be `aria-hidden`.
-Perhaps an overscroll invoker always remains focusable, and tab-focusing it
-automatically activates the overscroll area and scrolls it into view?
-
+The best solution might be to make this case not work. I.e. if the button is
+contained within the area, then there must *also* be another `command=toggle-overscroll`
+button outside the area. Otherwise, the overscroll area will not be enabled.
 
 
 ## Progressive Enhancement
@@ -438,14 +465,7 @@ progressive enhancement.
     visibility of the overscroll content, in the same way that popovers are
     handled?
 * **Visibility:** When not revealed, should the overscroll content be treated
-    as `aria-hidden="true"`?
-* **Backdrop:** Should there be a `::backdrop` pseudo element when the overscroll
-    area is activated?
-* **Light Dismiss:** Should overscroll areas support a "light dismiss"
-    behavior where clicking outside or pressing Escape closes them? If so, how,
-    exactly?
-* **Modal Behavior:** Should there be a way to make an overscroll area modal
-    when opened? (Feels like no.)
+    as `aria-hidden="true"`? Seems like yes.
 * **Activatable Elements:** Are there any interactive elements (like
     `<area>`) that should *not* be allowed as overscroll invokers?
 * **Pseudo Classes:** Should the `:open` pseudo class match the overscroll
