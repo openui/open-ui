@@ -1,4 +1,3 @@
-import React from 'react'
 import { sourceNames, getSourcesWithComponentConcept } from '../sources'
 import './concept-coverage.css'
 
