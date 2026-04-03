@@ -238,12 +238,15 @@ This element:
 * Has a `disabled` **IDL** attribute and corresponding **content** attribute.
 * Supports the `:enabled` and `:disabled` CSS pseudo-classes.
 * Events:
-    * Either a `change` or `checked` event will be fired on checkable menu items that have their
-      state changed. See [Issue #1321](https://github.com/openui/open-ui/issues/1321).
     * A `click` event is fired upon activation. See
       [Issue #1312](https://github.com/openui/open-ui/issues/1312). Firing a synthetic `click` here
       is consistent with the
       [HTML Standard's prose on activation](https://html.spec.whatwg.org/C#activation).
+    * A `checked` event is fired on checkable menu items that have their state changed. This happens
+      synchronously after their `click` event fires, and after their activation behavior—which
+      toggles the internal checked state—runs. See
+      [Issue #1321](https://github.com/openui/open-ui/issues/1321). Note that this happens before
+      any popovers that need to be closed as a result of activation, are dismissed.
 * Checkability:
     * Supports checkability, by being contained in a `<fieldset checkable=single|multiple>`.
     * Has a `checked` boolean **IDL** attribute that does NOT reflected any content attribute, to
