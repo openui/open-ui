@@ -8,7 +8,7 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior Authors from the earlier, broader [focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2026-4-8
+ - Last updated: 2026-4-23
 
 ## Table of contents
 <details>
@@ -57,6 +57,7 @@ layout: ../../layouts/ComponentLayout.astro
 - [Opting-out](#opting-out)
   - [Impact on sequential focus navigation](#impact-on-sequential-focus-navigation)
   - [Nested focusgroups](#nested-focusgroups)
+  - [Top layer elements](#top-layer-elements)
 - [Disabling focusgroup memory](#disabling-focusgroup-memory)
 - [Adjustments to sequential focus navigation](#adjustments-to-sequential-focus-navigation)
   - [Guaranteed tab stop algorithm](#guaranteed-tab-stop-algorithm)
@@ -482,7 +483,7 @@ Focusgroups consist of a **focusgroup definition** that establishes **focusgroup
 focusgroup items. Focusgroup items are the elements that actually participate in the focusgroup
 (from the set of focusgroup candidates). Focusgroup candidates are all the elements under the scope
 of a focusgroup definition. The **focusgroup scope** consists of the element with the focusgroup
-definition and its shadow-inclusive descendants, excluding elements that have opted out.
+definition and its shadow-inclusive descendants, excluding elements that have opted out and excluding subtrees rooted at elements in the [top layer](#top-layer-elements) (when computing ancestor focusgroup participation).
 
 The minimal focusgroup below demonstrates that the element declaring a focusgroup is also a
 focusgroup candidate and (in this case) the single focusgroup item.
@@ -522,8 +523,8 @@ Note that the elements with `id=one`, `id=two`, and `id=three` can be reached vi
 
 ### Focusgroup segments
 
-A **focusgroup segment** is a contiguous group of focusgroup items that can be navigated without crossing any [opted-out elements](#opting-out) that are participating in sequential focus navigation. An opted-out element is considered as participating in sequential focus navigation if:
-1. The element is opting out of a focusgroup via `focusgroup="none"` or is a descendant of such an element.
+A **focusgroup segment** is a contiguous group of focusgroup items that can be navigated without crossing any [opted-out elements](#opting-out) or [top-layer excluded subtrees](#top-layer-elements) that are participating in sequential focus navigation. An opted-out or excluded element is considered as participating in sequential focus navigation if:
+1. The element is opting out of a focusgroup via `focusgroup="none"`, is a descendant of such an element, or is in a [top-layer excluded subtree](#top-layer-elements).
 2. The element is focusable, i.e., it is either natively focusable or has a non-negative `tabindex`.
 3. The element has a negative tabindex, but currently has focus.
 
@@ -1141,6 +1142,54 @@ Example:
 - The outer `ul[focusgroup="menubar"]` defines one `focusgroup` (its direct menuitems would participate when present).
 - The first nested `ul[focusgroup="menu"]` creates an independent `focusgroup` and isn't part of the menubar's arrow navigation.
 - The innermost `ul[focusgroup="menu"]` (submenu) defines yet another independent `focusgroup`, likewise not part of its ancestor menu's `focusgroup`; its `menuitem` participates only in that deepest scope.
+
+### Top layer elements
+
+The **top layer** is a document-level ordered set of elements that user agents use to render shown popovers, modal dialogs, and fullscreen elements above the document. Elements in the [top layer](https://drafts.csswg.org/css-position-4/#document-top-layer) are excluded from any shadow-inclusive ancestor `focusgroup` while they remain there. When an element enters the top layer (e.g., a popover shown with `showPopover()`, a modal `<dialog>`, or a fullscreen element), it and its shadow-inclusive descendants no longer participate in any ancestor focusgroup. For ancestor participation, this carries the same exclusion and segment-boundary effect as `focusgroup="none"`.
+
+After the element leaves the top layer (e.g., the popover is hidden), it and its descendants participate in the ancestor focusgroup again under the normal rules.
+
+A top-layer element can appear far from the visual region covered by its ancestor focusgroup, because user agents render it in a separate layer above the document. Keeping such elements in the ancestor's arrow key traversal would let focus jump to content rendered at a completely different location on screen.
+
+A `focusgroup` on the top-layer element continues to operate normally. Only participation in ancestor focusgroups changes. A popover or dialog with its own `focusgroup` therefore keeps its internal arrow key navigation.
+
+```html
+<div focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button" commandfor="color-picker" command="show-popover">Text color</button>
+  <button type="button">Bold</button>
+  <button type="button">Italic</button>
+  <div id="color-picker" popover>
+    <button type="button">Red</button>
+    <button type="button">Green</button>
+    <button type="button">Blue</button>
+  </div>
+  <button type="button">Underline</button>
+</div>
+```
+
+What to notice:
+- When the `#color-picker` popover is not shown, it is hidden and its contents are not rendered or focusable. Arrow key navigation in the toolbar moves among "Text color", "Bold", "Italic", and "Underline".
+- When the popover is shown (and enters the top layer), its subtree is excluded from the ancestor toolbar's focusgroup. Arrow keys continue to move among the same four toolbar items.
+- Tab from a toolbar item can reach the popover's buttons via sequential focus navigation, since the exclusion creates a segment boundary.
+
+If the popover itself defines a `focusgroup`, that inner focusgroup operates independently:
+
+```html
+<div focusgroup="toolbar wrap" aria-label="Text formatting">
+  <button type="button" commandfor="color-picker" command="show-popover">Text color</button>
+  <button type="button">Bold</button>
+  <div id="color-picker" popover focusgroup="radiogroup" aria-label="Color palette">
+    <button type="button" role="radio" aria-checked="true">Red</button>
+    <button type="button" role="radio" aria-checked="false">Green</button>
+    <button type="button" role="radio" aria-checked="false">Blue</button>
+  </div>
+  <button type="button">Underline</button>
+</div>
+```
+
+What to notice:
+- The `#color-picker` subtree is excluded from the parent toolbar's focusgroup when shown.
+- Once focus moves into `#color-picker`, its own `focusgroup="radiogroup"` provides independent arrow key navigation among "Red", "Green", and "Blue".
 
 ## Disabling focusgroup memory
 
