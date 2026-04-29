@@ -802,9 +802,11 @@ The `aria-orientation` attribute indicates whether a widget's orientation is hor
 
 #### Modifier keys
 
-Focusgroup directional navigation is only triggered when an arrow key is pressed without modifier keys. When any of Ctrl, Alt, Meta, or Shift is held, the user agent does not perform focusgroup navigation, allowing modifier+arrow combinations to retain their platform-specific behaviors (such as word-by-word text navigation with Ctrl+Arrow, or text selection with Shift+Arrow).
+Focusgroup defines an abstract **directional navigation** operation — moving focus up, down, left, or right within the [focusgroup scope](#focusgroup-concepts). It does not require a specific input device. As noted in the [introduction](#introduction), arrow keys are one common way to trigger directional navigation, but the same operation can be driven by D-pads, remote controls, game controllers, gesture recognizers, or touch-based assistive technologies. Mapping platform input onto the directional-navigation operation is the user agent's responsibility.
 
-This rule, along with the rationale per behavior token, is captured normatively in the [WHATWG focusgroup pull request](https://github.com/whatwg/html/pull/11723) — see the [modifier-key handling additions](https://github.com/whatwg/html/pull/11723/changes/1017afbf2920147b4658a986d71813936e431a57) for the specification text. Default modifier expectations for individual behavior tokens (e.g., `radiogroup`, `listbox`) are tracked in [Open UI issue #1418](https://github.com/openui/open-ui/pull/1418).
+For keyboard input specifically, user agents are expected to suppress focusgroup directional navigation when an arrow key is pressed together with a modifier key (Ctrl, Alt, Meta, or Shift). This preserves modifier+arrow combinations for their established platform-specific behaviors, such as word-by-word text navigation with Ctrl+Arrow or text selection with Shift+Arrow. Other input modalities typically lack an equivalent "modifier" concept; the user agent's mapping for those modalities determines when directional navigation is triggered.
+
+This keyboard-mapping rule is captured normatively in the [WHATWG focusgroup pull request](https://github.com/whatwg/html/pull/11723) — see the [modifier-key handling additions](https://github.com/whatwg/html/pull/11723/changes/1017afbf2920147b4658a986d71813936e431a57) for the specification text.
 
 #### CSS spatial navigation
 
@@ -1553,7 +1555,7 @@ Here is a short list of issue discussions that led to the current design of focu
 - [focusgroup should be restricted to some elements only](https://github.com/openui/open-ui/issues/995)
 - [Default behaviour for key conflict elements](https://github.com/openui/open-ui/issues/1281)
 - [Scrolling interactions with focusgroup](https://github.com/whatwg/html/issues/11641)
-- [Modifier keys suppress focusgroup directional navigation, preserving platform behaviors such as Ctrl+Arrow and Shift+Arrow](https://github.com/whatwg/html/pull/11723/changes/1017afbf2920147b4658a986d71813936e431a57)
+- [For keyboard input, user agents suppress focusgroup directional navigation when modifier keys are held, preserving platform behaviors such as Ctrl+Arrow and Shift+Arrow](https://github.com/whatwg/html/pull/11723/changes/1017afbf2920147b4658a986d71813936e431a57)
 - [Focusgroup and CSS spatial navigation are complementary and expected to compose](https://github.com/whatwg/html/issues/11641#issuecomment-4028039082)
 
 See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
