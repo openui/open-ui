@@ -8,7 +8,7 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior Authors from the earlier, broader [focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2026-4-23
+ - Last updated: 2026-4-29
 
 ## Table of contents
 <details>
@@ -48,6 +48,8 @@ layout: ../../layouts/ComponentLayout.astro
   - [Interaction with related web platform features](#interaction-with-related-web-platform-features)
     - [Reading flow](#reading-flow)
     - [ARIA orientation](#aria-orientation)
+    - [Modifier keys](#modifier-keys)
+    - [CSS spatial navigation](#css-spatial-navigation)
   - [Restricted elements](#restricted-elements)
   - [Feature detection](#feature-detection)
   - [Additional features](#additional-features)
@@ -798,6 +800,23 @@ The `aria-orientation` attribute indicates whether a widget's orientation is hor
 - When focusgroup applies a [minimum role](#supported-behaviors), that role's default `aria-orientation` applies unless explicitly overridden.
 - Authors should set `aria-orientation` explicitly when the default doesn't match the widget's semantic structure.
 
+#### Modifier keys
+
+Focusgroup directional navigation is only triggered when an arrow key is pressed without modifier keys. When any of Ctrl, Alt, Meta, or Shift is held, the user agent does not perform focusgroup navigation, allowing modifier+arrow combinations to retain their platform-specific behaviors (such as word-by-word text navigation with Ctrl+Arrow, or text selection with Shift+Arrow).
+
+This rule, along with the rationale per behavior token, is captured normatively in the [WHATWG focusgroup pull request](https://github.com/whatwg/html/pull/11723) — see the [modifier-key handling additions](https://github.com/whatwg/html/pull/11723/changes/1017afbf2920147b4658a986d71813936e431a57) for the specification text. Default modifier expectations for individual behavior tokens (e.g., `radiogroup`, `listbox`) are tracked in [Open UI issue #1418](https://github.com/openui/open-ui/pull/1418).
+
+#### CSS spatial navigation
+
+[CSS spatial navigation](https://www.w3.org/TR/css-nav-1/) defines a general model for moving focus with arrow keys (or D-pad) across an entire document, oriented to spatial position rather than to a specific composite widget. Focusgroup and CSS spatial navigation address different scopes and are expected to compose:
+
+- **Focusgroup** governs directional navigation _within_ author-defined composite widgets (toolbars, tablists, menus, listboxes, radiogroups, etc.). It defines a single tab stop per [segment](#focusgroup-segments), [last-focused memory](#last-focused-memory), [axis restriction](#limiting-linear-focusgroup-directionality), and [wrapping](#enabling-wrapping-behaviors) — semantics tied to a recognized interaction pattern.
+- **CSS spatial navigation** governs directional navigation _between_ controls across the document, providing arrow-key (or D-pad) traversal as an alternative or assistive means of reaching any focusable element on the page.
+
+When focus is on a focusgroup item, focusgroup handles arrow-key movement within the segment; when the user moves focus out of the focusgroup (via Tab, or when the segment provides no further movement in the requested direction), spatial navigation can take over for document-level traversal. Initial author exploration on the focusgroup demo page suggests that the two features compose well in practice — focusgroup facilitating navigation within author-defined controls, and spatial navigation facilitating document-level traversal.
+
+This composition is particularly relevant for devices that rely on directional input (TVs and remote controls, D-pads, game controllers) and for assistive technologies that expose arrow-key traversal as a primary input modality. Focusgroup intentionally does not attempt to specify spatial-navigation semantics beyond a focusgroup's own scope; the surrounding document's traversal model — whether sequential, spatial, or AT-driven — remains the responsibility of the user agent and any applicable specifications such as CSS spatial navigation.
+
 ### Restricted elements
 
 Because `focusgroup` definitions are intended for grouping related controls, it doesn't make sense
@@ -1534,6 +1553,8 @@ Here is a short list of issue discussions that led to the current design of focu
 - [focusgroup should be restricted to some elements only](https://github.com/openui/open-ui/issues/995)
 - [Default behaviour for key conflict elements](https://github.com/openui/open-ui/issues/1281)
 - [Scrolling interactions with focusgroup](https://github.com/whatwg/html/issues/11641)
+- [Modifier keys suppress focusgroup directional navigation, preserving platform behaviors such as Ctrl+Arrow and Shift+Arrow](https://github.com/whatwg/html/pull/11723/changes/1017afbf2920147b4658a986d71813936e431a57)
+- [Focusgroup and CSS spatial navigation are complementary and expected to compose](https://github.com/whatwg/html/issues/11641#issuecomment-4028039082)
 
 See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Afocusgroup).
 
