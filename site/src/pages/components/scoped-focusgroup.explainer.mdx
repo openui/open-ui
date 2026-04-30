@@ -8,7 +8,7 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior Authors from the earlier, broader [focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2026-4-23
+ - Last updated: 2026-4-29
 
 ## Table of contents
 <details>
@@ -48,6 +48,8 @@ layout: ../../layouts/ComponentLayout.astro
   - [Interaction with related web platform features](#interaction-with-related-web-platform-features)
     - [Reading flow](#reading-flow)
     - [ARIA orientation](#aria-orientation)
+    - [Modifier keys](#modifier-keys)
+    - [CSS spatial navigation](#css-spatial-navigation)
   - [Restricted elements](#restricted-elements)
   - [Feature detection](#feature-detection)
   - [Additional features](#additional-features)
@@ -797,6 +799,25 @@ The `aria-orientation` attribute indicates whether a widget's orientation is hor
 - These are related but distinct concerns: axis restrictions may be used to avoid key conflicts rather than to indicate orientation.
 - When focusgroup applies a [minimum role](#supported-behaviors), that role's default `aria-orientation` applies unless explicitly overridden.
 - Authors should set `aria-orientation` explicitly when the default doesn't match the widget's semantic structure.
+
+#### Modifier keys
+
+Focusgroup defines an abstract **directional navigation** operation — moving focus up, down, left, or right within the [focusgroup scope](#focusgroup-concepts). It does not require a specific input device. As noted in the [introduction](#introduction), arrow keys are one common way to trigger directional navigation, but the same operation can be driven by D-pads, remote controls, game controllers, gesture recognizers, or touch-based assistive technologies. Mapping platform input onto the directional-navigation operation is the user agent's responsibility.
+
+For keyboard input specifically, user agents are expected to suppress focusgroup directional navigation when an arrow key is pressed together with a modifier key (Ctrl, Alt, Meta, or Shift). This preserves modifier+arrow combinations for their established platform-specific behaviors. Other input modalities typically lack an equivalent "modifier" concept, but if one exists, the user agent's mapping for those modalities determines when directional navigation is triggered.
+
+#### CSS spatial navigation
+
+[CSS spatial navigation](https://www.w3.org/TR/css-nav-1/) defines a general model for moving focus with arrow keys (or D-pad) across an entire document, oriented to spatial position rather than to a specific composite widget. Focusgroup and CSS spatial navigation address different scopes and are expected to compose:
+
+- **Focusgroup** governs directional navigation _within_ author-defined composite widgets (toolbars, tablists, menus, listboxes, radiogroups, etc.). It defines a single tab stop per [segment](#focusgroup-segments), [last-focused memory](#last-focused-memory), [axis restriction](#limiting-linear-focusgroup-directionality), and [wrapping](#enabling-wrapping-behaviors) — semantics tied to a recognized interaction pattern.
+- **CSS spatial navigation** governs directional navigation _between_ controls across the document, providing arrow-key (or D-pad) traversal as an alternative or assistive means of reaching any focusable element on the page.
+
+When focus is on a focusgroup item, focusgroup handles arrow-key movement within the segment; when the user moves focus out of the focusgroup (via Tab, or when the segment provides no further movement in the requested direction), spatial navigation can take over for document-level traversal. These two features compose well in practice, with focusgroup facilitating navigation within author-defined controls, and spatial navigation facilitating document-level traversal.
+
+The composition matters most for devices that rely on directional input (TVs and remote controls, D-pads, game controllers) and for assistive technologies that expose arrow-key traversal as a primary input modality. Focusgroup intentionally does not attempt to specify spatial-navigation semantics beyond a focusgroup's own scope; the surrounding document's traversal model — whether sequential, spatial, or AT-driven — remains the responsibility of the user agent and any applicable specifications such as CSS spatial navigation.
+
+Authors should take care that the [`wrap`](#enabling-wrapping-behaviors) behavior does not impede spatial navigation out of a focusgroup. With `wrap`, arrow-key navigation cycles within the segment indefinitely and never reaches the segment's edge, which can prevent a spatial-navigation algorithm from receiving a "no further item in this direction" signal that would otherwise let it move focus to a neighboring control outside the focusgroup. Authors should consider using [`nowrap`](#enabling-wrapping-behaviors) or rely on a behavior token whose [default modifiers](#default-modifiers) do not include `wrap` when there is no target for spatial navigation in the cross-axis. The same authoring consideration applies today when implementing roving-tabindex composites in JavaScript.
 
 ### Restricted elements
 
