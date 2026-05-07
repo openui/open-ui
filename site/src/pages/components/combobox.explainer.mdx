@@ -86,6 +86,10 @@ Here is a basic example:
 
 ## Associating an input element with a select element
 
+There are two alternative solutions being considered to associate an input with a select element:
+
+### Sibling input and listbox select elements
+
 The `<input type=text>` element can be associated with a `<select>` element with the new `filter` attribute. The select element must be rendered as a listbox, not as a drop-down box.
 
 ```html
@@ -96,9 +100,7 @@ The `<input type=text>` element can be associated with a `<select>` element with
 </select>
 ```
 
-## Making your own picker for a filterable select
-
-Unlike alternative proposals which allowed the author to put a filtering input inside a drop-down select element, this proposal requires the author to make their own picker containing a listbox select element like this:
+Making a drop-down select with this pattern would look like this:
 
 ```html
 <button commandfor=picker command=toggle-popover>
@@ -112,6 +114,29 @@ Unlike alternative proposals which allowed the author to put a filtering input i
   </select>
 </dialog>
 ```
+
+Cons:
+- Author is required to set up idrefs
+- In order to use the `<selectedcontent>` element, we would have to make the selectedcontent element work outside of a select element with an idref, which would be a separate new feature.
+- Significantly more markup is required to make a dropdown select with this pattern.
+
+### Nested input and select elements
+
+The `<input type=text>` element can be associated with a `<select>` element by putting an input element inside of a listbox or dropdown select element:
+
+```html
+<select>
+  <input>
+  <option>one</option>
+  <option>two</option>
+</select>
+```
+
+Cons:
+- Have to make additional changes to the HTML parser to allow `<input>` in `<select>`, which requires that it doesn't end up breaking existing sites and makes this feature harder to polyfill.
+- Option elements need to be slotted into a separate wrapper element from the input element in the UA shadow root of the select element, which may need a new part-like pseudo-element.
+- Input element could end up inside the scroller for the options, [see this issue](https://github.com/openui/open-ui/issues/1441).
+- May have to define how input in select works for appearance:auto dropdown select elements.
 
 ## Datalist becomes a popover
 
@@ -163,6 +188,12 @@ Several libraries offer a combobox where each selected option becomes added to a
 This explainer provides useful primitives for building this use case, but the action of creating a new button to represent the option which was selected is best left to script.
 
 ## Examples
+
+### Demos
+
+* Country picker: https://codepen.io/jarhar/pen/dPpPjqy
+* Wikipedia search box (uses combobox): https://codepen.io/jarhar/pen/vEXvWrW
+* Github labels picker (uses filterable select): https://codepen.io/jarhar/pen/NPRezMv
 
 {/* TODO add more examples and use code-image-container */}
 
