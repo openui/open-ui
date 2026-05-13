@@ -5,7 +5,7 @@ path: /components/menu.explainer
 layout: ../../layouts/ComponentLayout.astro
 ---
 
-- Authors: [@domfarolino](https://github.com/domfarolino), [@dizhang168](https://github.com/dizhang168), [@josepharhar](https://github.com/josepharhar), [@mfreed7](https://github.com/mfreed7)
+- Authors: [@domfarolino](https://github.com/domfarolino), [@dizhang168](https://github.com/dizhang168), [@josepharhar](https://github.com/josepharhar), [@mfreed7](https://github.com/mfreed7), [@dbaron](https://github.com/dbaron)
 
 {/* START doctoc generated TOC please keep comment here to allow auto update */}
 {/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
@@ -41,8 +41,11 @@ application menus on the web. These menus will:
  - Give web developers default styles that create functional menus without having to re-invent
    common popover and anchor positioning patterns, or re-implement ARIA patterns.
 
-Note that this explainer only covers application menus, not navigation menus, which is a different
-pattern covered by a different (as yet unpublished) proposal altogether.
+Note that this explainer only covers application menus, not navigation menus.
+Navigation menus are a different pattern
+covered by a different (as yet unpublished) proposal altogether.
+However, we hope that a future proposal for navigation menus will be able to reuse
+many pieces of this proposal, and differ only where differences are necessary or useful.
 
 ## Examples & code snippets
 
@@ -165,11 +168,14 @@ This element:
 * Has default anchor positioning styles that anchor it to its
   [implicit anchor](https://drafts.csswg.org/css-anchor-position/#implicit-anchor-element)—the
   button or menuitem that invoked it.
-* Supports the `:popover-open` pseudo-class, as it is a native **popover**.
-* Supports the
-  [`toggle` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event), as it
-  is a native **popover**.
-* Can be invoked with the new `show-menu` command, and is referenced by its ID from its invoker.
+  (This means the positioning of the `<menulist>` happens through anchor positioning
+  rather than through DOM tree relationships.)
+* Behaves as though it has `popover=auto` when no `popover` attribute is present, which means that it:
+  * Supports the `:popover-open` pseudo-class, as it is a native **popover**.
+  * Supports the
+    [`toggle` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event), as it
+    is a native **popover**.
+* Can be invoked with the new `toggle-menu` command, and is referenced by its ID from its invoker.
 * Provides the correct keyboard and focus behavior across sub-menulists, menubars, and child menu
   items.
 
@@ -178,7 +184,13 @@ This element:
 * `<menuitem>`
 * `<hr>`
 * `<fieldset>`
-* **Interactive content**: When interactive content appears in a menu, it will be a sibling of
+* This initial version does not allow other content.  While there is some desire to allow
+  some types of **interactive content** inside of menu lists,
+  we would need to answer a number of questions around the desired keyboard navigation behavior
+  and ARIA roles, since many types of interactive content would not fit with the navigation
+  by arrow keys that is expected of elements with `menu*` ARIA roles.
+  However, in the future we might want to figure out how to support
+  interactive content as a sibling of
   `<menuitem>`s, not nested inside them, as nested interactive content is generally inaccessible.
   See [Issue #1323](https://github.com/openui/open-ui/issues/1323) for more discussion on how we
   might support other interactive content in menus, such as `<input type=search>`.
@@ -251,19 +263,18 @@ This element:
     * Has a `defaultchecked` **content** attribute reflected by a `defaultChecked` boolean **IDL**
       attribute to cover checked initial-ness. See
       [Issue #1205](https://github.com/openui/open-ui/issues/1205).
-    * Supports the :checked CSS pseudo-class and ::checkmark CSS pseudo-element.
+    * Supports the `:checked` CSS pseudo-class and `::checkmark` CSS pseudo-element.
     * Provides the right implicit ARIA role, either
-      [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) or
-      [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio), depending on the checkability
-      enabled.
+      [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) for `checkable=multiple` or
+      [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) for `checkable-single`.
 
 **Content model**:
 
-Similarly to customizable select, we expect most content in a menu to be wrapped inside
-`<menuitem>`. This includes non-interactive elements and design items such as logos, images, text.
+We expect the content in a menu to be in `<menuitem>` elements.
+This includes non-interactive elements and design items such as logos, images, text.
 
 See [Issue #1323](https://github.com/openui/open-ui/issues/1323) for more discussion on how we might
-support other interactive content in menus alongside the `<menuitem>` element, such as `<input type=search>`.
+support other interactive content in menus alongside the `<menuitem>` element in a later version of this feature, such as `<input type=search>`.
 
 <img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems" />
 
@@ -341,7 +352,7 @@ against doing this.
  - [`aria-expanded`](https://w3c.github.io/aria/#aria-expanded)
     - The `<menuitem>` element's `aria-expanded` attribute reflects whether or not a popover invoked
       by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements (invokeable via
-      the `show-menu`, `toggle-menu`, and `hide-menu` commands), or other popovers unrelated to our
+      the `toggle-menu` command), or other popovers unrelated to our
       proposal
  - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
     - For checkable `<menuitem>` element, the `aria-checked` attribute reflects whether their
@@ -354,6 +365,7 @@ against doing this.
 A `<menuitem disabled>` element will be marked as `aria-disabled=true`, however the element will
 still be keyboard reachable and focusable, just not activatable. See [Issue
 #1274](https://github.com/openui/open-ui/issues/1274) for more discussion.
+**Or maybe it won't be; this requires further discussion.**
 
 ### Keyboard behavior
 
@@ -376,16 +388,17 @@ We propose the keyboard behavior as described in the table of the ARIA Authoring
 which is demonstrative of the keyboard expectations for how menus and menubars work in operating
 systems.
 
-* A menubar has a single tab stop.
+* A menubar and the menulists it invokes have a single tab stop.
+  * Pressing tab when a `menuitem` has focus leaves the set of menus and closes the menulists.
+  * There may be exceptions to this rule when the content model is not followed.
 * A menulist is invoked when its popovertarget (a menuitem or a button). Focus would automatically move to its first focusable child.
 * Tab focus will not trigger the menuitem to get selected/checked, but only when an explicit Enter/choice happens.
-* An explicit Enter/Space on a menuitem without popvertarget and inside a menulist will close that menulist.
-* An explicit Enter/Space does not close the menulist if the menuitem selected has a popovertarget that gets triggered.
+* An explicit Enter/Space does not close the menulist if the menuitem selected has a `toggle-menu` command that opens another menulist (a submenu).
+* An explicit Enter/Space on any other menuitem inside a menulist will close that menulist.
 * An explicit ESC will close the current popover menulist that has focus and return focus to its invoking element (which may be a menuitem inside a menulist or a menubar; or is a button element).
-* Arrow keyboard events will allow navigating between menuitems.
+* Arrow keyboard events will allow navigating between menuitems, in some cases opening and closing menus as appropriate.
 
 **Questions**
-* Is there any case where tab will close a menulist? For example, when we move from the last `<menuitem>` in a `<menulist>` and are moving to the next `<menuitem>` in the `<menubar>`.
 * Do we need special behavior for hot keys?
 
 ### Why not reuse the `<menu>` element?
@@ -503,22 +516,21 @@ with additional grouping semantics and keyboard behaviors beyond what a single '
 would represent - or reasonably be capable of creating parity with the various ARIA roles these new
 proposed elements would be natively introducing to HTML.
 
+### Invoker semantics for `<menuitem>`
+
+* We should allow [command invokers](https://open-ui.org/components/invokers.explainer/).
+* Useful for menu items that invoke custom commands.
+* Useful for interest invoker targets.
+* Useful to show modal dialog.
+* To decide: Do command invokers make sense for radio/checkbox menuitems? Do we have use cases of a menuitem that toggles its checked state and invoke a behavior at the same time?
+
 ### Popover semantics for `<menulist>`
 
-Given a `<menuitem>` inside a `<menubar>`, it can invoke a `<menulist>` by invoking a target.
+Given a `<menuitem>` inside a `<menubar>`, it can invoke a `<menulist>` by invoking a target:
+`<menuitem command="toggle-menu" commandfor=id>`.
+`toggle-menu` is similar to `toggle-popover` but also implies some additional menu-specific
+behavior and relationships, such as keyboard navigation and focus behavior.
 
-This can be accomplished by either:
-
-* **`<menuitem command="show-popover" commandfor=id>`**
-* **`<menuitem command="show-menu" commandfor=id>`**
-    * We should allow [command invokers](https://open-ui.org/components/invokers.explainer/).
-    * Useful for menu items that invoke custom commands.
-    * Useful for interest invoker targets.
-    * Useful to show modal dialog.
-    * To decide: Does this make sense for radio/checkbox menuitems? Do we have use cases of a menuitem that toggles its checked state and invoke a behavior at the same time?
-* Nest the menulist as a sibling of other menuitems, inside the parent menulist.
-
-**Questions**
 * Should `<menulist>` be a popover by default?
     * Yes, the popover attribute is not necessary. A menulist is by default a popover with value auto.
 * Since `<menulist>`s are popovers by default, what happens if we add a popover attribute on top of it?
@@ -705,15 +717,15 @@ this use case.
 
 ```html
 <menubar>
- <menuitem command="show-menu" commandfor="format">Format</menuitem>
- <menuitem command="show-menu" commandfor="tools">Tools</menuitem>
- <menuitem command="show-menu" commandfor="extensions">Extensions</menuitem>
+ <menuitem command="toggle-menu" commandfor="format">Format</menuitem>
+ <menuitem command="toggle-menu" commandfor="tools">Tools</menuitem>
+ <menuitem command="toggle-menu" commandfor="extensions">Extensions</menuitem>
 </menubar>
 
 <menulist id="format">
-  <menuitem command="show-menu" commandfor="text-format-menu">Text</menuitem>
-  <menuitem command="show-menu" commandfor="paragraph-format-menu">Paragraph styles</menuitem>
-  <menuitem command="show-menu" commandfor="align-format-menu">Align & indent</menuitem>
+  <menuitem command="toggle-menu" commandfor="text-format-menu">Text</menuitem>
+  <menuitem command="toggle-menu" commandfor="paragraph-format-menu">Paragraph styles</menuitem>
+  <menuitem command="toggle-menu" commandfor="align-format-menu">Align & indent</menuitem>
 </menulist>
 
 <menulist id="text-format-menu">
