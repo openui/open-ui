@@ -170,11 +170,7 @@ This element:
   button or menuitem that invoked it.
   (This means the positioning of the `<menulist>` happens through anchor positioning
   rather than through DOM tree relationships.)
-* Behaves as though it has `popover=auto` when no `popover` attribute is present, which means that it:
-  * Supports the `:popover-open` pseudo-class, as it is a native **popover**.
-  * Supports the
-    [`toggle` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event), as it
-    is a native **popover**.
+* Behaves as though it has `popover=auto` when no `popover` attribute is present, which gives it all native popover behaviors.
 * Can be invoked with the new `toggle-menu` command, and is referenced by its ID from its invoker.
 * Provides the correct keyboard and focus behavior across sub-menulists, menubars, and child menu
   items.
@@ -266,7 +262,7 @@ This element:
     * Supports the `:checked` CSS pseudo-class and `::checkmark` CSS pseudo-element.
     * Provides the right implicit ARIA role, either
       [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) for `checkable=multiple` or
-      [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) for `checkable-single`.
+      [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) for `checkable=single`.
 
 **Content model**:
 
