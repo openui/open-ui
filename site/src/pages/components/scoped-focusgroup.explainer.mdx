@@ -141,13 +141,13 @@ After (single declarative attribute):
 </script>
 ```
 What changed:
-- `focusgroup="toolbar wrap"` supplies the role (first token) + wrap behavior.
+- `focusgroup="toolbar wrap"` supplies the role (via the behavior token) + wrap behavior.
 - Roving tabindex + arrow key handling + memory are native (no JS for core movement).
 - Selection / pressed state (e.g., toggling Bold) and any advanced commands remain author logic.
 
 ## Focusgroup tokens
 
-Simple usage (space-separated tokens):
+Simple usage (space-separated tokens, in any order):
 
 ```html
 <div focusgroup="<behavior> [inline|block] [wrap|nowrap] [nomemory]">
@@ -194,14 +194,14 @@ Earlier drafts explored applying `focusgroup` to any container. Broad, role-agno
 
 - Limits activation to a concise, enumerated set of behavior tokens associated with recognized widget patterns.
 - Allows (when omitted) safe [child role inference](#open-questions) for common item types to reduce boilerplate and steer toward APG-aligned structures.
-- Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the first token.
+- Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the behavior token.
 
 Benefits of this scoped, behavior-first approach: it prevents accidental application to arbitrary layout groupings (guardrails), encodes both composite intent and navigation modifiers in one attribute (ergonomics), and leaves room for additional composite roles later based on demonstrated accessible patterns — narrowing later would be impractical.
 
 Open aspects still under discussion appear in the [Open questions](#open-questions) section (e.g., set of supported behaviors, child role inference).
 
 ### Supported behaviors
-The first token in a `focusgroup` attribute is a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author doesn't supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
+A `focusgroup` attribute contains a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author doesn't supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
 Minimum role application (container and children): User agents apply the minimum container role for a behavior only when (a) the author has not provided an explicit `role` AND (b) the element would otherwise expose a generic role (e.g., a plain `<div>`/`<span>`). If the host already has non-generic native semantics (e.g., `<ul>`, `<nav>`, `<table>`) or an explicit role, the mapping is skipped; navigation behavior still applies.
 
 Child role inference likewise only occurs when: (1) the container role was supplied via the behavior's minimum role mapping (not explicit/native), (2) the child lacks an explicit role, and (3) the child itself is otherwise generic or less specific than the inferred role. Most native interactive elements (links, inputs, etc.) or anything with an explicit/non-generic role are never overwritten.
@@ -382,7 +382,7 @@ What to notice:
 - In `#one`, the `<button>` elements without explicit roles (Bold, Underline) are inferred as `menuitem` — `<button>` is eligible for child role inference because it is the most common building block for composite widget items. The explicit `menuitemcheckbox` (Italics) is unchanged.
 - Inference skips ambiguity: it doesn't guess a variant (`menuitemradio` vs `menuitemcheckbox`).
 - In `#one`, the explicit `inline` overrides the `menu` behavior token's default `block` axis restriction, while `wrap` is still applied from `menu`'s [default modifiers](#default-modifiers).
-- In `#two`, the explicit container `role="toolbar"` overrides the first token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
+- In `#two`, the explicit container `role="toolbar"` overrides the behavior token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
 - Arrow key navigation, wrap, and memory behaviors apply in both `#one` and `#two` regardless of whether roles were inferred.
 - Authors can obtain behavior without pattern role inference by supplying an explicit conflicting container role when needed.
 
@@ -1491,7 +1491,7 @@ look for when building an index would need to be worked out, and may ultimately 
 too complicated).
 
 ## Authoring guidance
-1. Put the behavior token first: `focusgroup="tablist"`, `focusgroup="toolbar wrap"`.
+1. Place the behavior token first for readability: `focusgroup="tablist"`, `focusgroup="toolbar wrap"`. Order is not significant, but a consistent convention helps readers.
 2. Rely on [default modifiers](#default-modifiers) when possible — e.g., `focusgroup="tablist"` already implies `inline wrap`. Only add explicit modifiers to override defaults or add behaviors the token doesn't supply.
 3. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.). `<button>` elements receive child role inference automatically.
 4. For detailed precedence (mismatches, inference limits, overrides) see [Behavior → role mapping and precedence](#behavior--role-mapping-and-precedence).
@@ -1512,10 +1512,10 @@ approaches were considered.
 3. **CSS mappings:** This explainer doesn't currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
 4. **Attribute functionality and dependencies:** Feedback requested on adopted scoping (role token + optional child role inference):
   - Exact list and phased expansion of child role inference set (which roles, staged rollout?).
-  - Should mismatched explicit container `role` vs first token trigger a console warning or be silent?
+  - Should mismatched explicit container `role` vs behavior token trigger a console warning or be silent?
   - Policy for console warnings vs silent ignore on token / role mismatches.
 5. **Alternative approaches to scope focusgroup to specific scenarios:**
-  - (A) Current: first token = pattern + (optional) child role inference.
+  - (A) Current: behavior token = pattern + (optional) child role inference.
   - (B) Require explicit container `role`; tokens only modifiers (drops role token entirely).
   - (C) Split into two attrs: `pattern="tablist" focusgroup="wrap"` (clearer separation, extra verbosity and API surface).
   - (D) Native elements only (e.g., future `<tabs>`, `<toolbar>`, `<menubar>`); attribute becomes redundant — risk: slower coverage, custom element ecosystems still need declarative navigation.
@@ -1563,7 +1563,7 @@ See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui
 
 ## Index of focusgroup values
 
-Tokens are space-separated. Order: first token MUST be a supported behavior token (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
+Tokens are space-separated and may appear in any order. A `focusgroup` attribute MUST include one supported behavior token (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
 
 Behavior tokens: See the earlier Supported behaviors mapping table for the definitive list, minimum container roles, child inference notes, and [default modifiers](#default-modifiers). Explicit container and child roles always override any inference. Explicit modifiers always override default modifiers.
 
