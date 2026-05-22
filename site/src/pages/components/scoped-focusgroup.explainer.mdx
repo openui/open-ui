@@ -8,7 +8,8 @@ layout: ../../layouts/ComponentLayout.astro
  - Authors: [Jacques Newman](https://github.com/janewman)
  - Prior Authors from the earlier, broader [focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
  - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2026-4-29
+ - WHATWG PR: https://github.com/whatwg/html/pull/11723
+ - Last updated: 2026-5-22
 
 ## Table of contents
 <details>
@@ -837,9 +838,19 @@ To enable feature detection, the DOM will include a `focusgroup` property, whose
 elements is useful for feature detection.
 
 ```webidl
-partial interface HTMLElement {
-  [CEReactions] attribute DOMString focusgroup;
+partial interface mixin HTMLOrSVGElement {
+  [SameObject, PutForwards=value, Reflect] readonly attribute DOMTokenList focusGroup;
+  [CEReactions, Reflect] attribute boolean focusGroupStart;
 };
+```
+
+Because `focusGroup` is a `DOMTokenList`, authors can use its standard methods to read and update individual tokens without parsing or rebuilding the attribute value:
+
+```js
+element.focusGroup.add('wrap');
+element.focusGroup.toggle('nomemory');
+element.focusGroup.contains('toolbar'); // true if the 'toolbar' token is present
+element.focusGroup.remove('block');
 ```
 
 ### Additional features
