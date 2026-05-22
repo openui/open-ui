@@ -834,8 +834,9 @@ be an exception in order to properly support grid `focusgroup`s.
 
 ### Feature detection
 
-To enable feature detection, the DOM will include a `focusgroup` property, whose existence on
-elements is useful for feature detection.
+To enable feature detection, user agents expose the `focusGroup` and `focusGroupStart`
+DOM properties on elements; their content-attribute counterparts are `focusgroup` and
+`focusgroupstart` (lowercase).
 
 ```webidl
 partial interface mixin HTMLOrSVGElement {
@@ -843,6 +844,8 @@ partial interface mixin HTMLOrSVGElement {
   [CEReactions, Reflect] attribute boolean focusGroupStart;
 };
 ```
+
+Direct string assignment (`element.focusGroup = "toolbar wrap"`) still works and is equivalent to setting the `focusgroup` content attribute.
 
 Because `focusGroup` is a `DOMTokenList`, authors can use its standard methods to read and update individual tokens without parsing or rebuilding the attribute value:
 
