@@ -845,17 +845,6 @@ partial interface mixin HTMLOrSVGElement {
 };
 ```
 
-Authors can also assign a string directly to `element.focusGroup`; doing so is equivalent to setting the `focusgroup` content attribute.
-
-Because `focusGroup` is a `DOMTokenList`, authors can use its standard methods to read and update individual tokens without parsing or rebuilding the attribute value:
-
-```js
-element.focusGroup.add('wrap');
-element.focusGroup.toggle('nomemory');
-element.focusGroup.contains('toolbar'); // true if the 'toolbar' token is present
-element.focusGroup.remove('block');
-```
-
 ### Additional features
 
 Focusgroups have the following additional features:
