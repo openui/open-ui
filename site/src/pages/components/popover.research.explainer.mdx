@@ -4,63 +4,40 @@ name: Popover API (Explainer)
 path: /components/popover.research.explainer
 pathToResearch: /components/popup.research
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@mfreed7"
+    url: https://github.com/mfreed7
+  - name: "@scottaohara"
+    url: https://github.com/scottaohara
+  - name: "@BoCupp-Microsoft"
+    url: https://github.com/BoCupp-Microsoft
+  - name: "@domenic"
+    url: https://github.com/domenic
+  - name: "@gregwhitworth"
+    url: https://github.com/gregwhitworth
+  - name: "@chrishtr"
+    url: https://github.com/chrishtr
+  - name: "@dandclark"
+    url: https://github.com/dandclark
+  - name: "@una"
+    url: https://github.com/una
+  - name: "@smhigley"
+    url: https://github.com/smhigley
+  - name: "@aleventhal"
+    url: https://github.com/aleventhal
+  - name: "@jh3y"
+    url: https://github.com/jh3y
+whatwg_issue: https://github.com/whatwg/html/issues/7785
+specification: https://html.spec.whatwg.org/multipage/popover.html
+mdn: https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
 ---
-
-- [@mfreed7](https://github.com/mfreed7), [@scottaohara](https://github.com/scottaohara), [@BoCupp-Microsoft](https://github.com/BoCupp-Microsoft), [@domenic](https://github.com/domenic), [@gregwhitworth](https://github.com/gregwhitworth), [@chrishtr](https://github.com/chrishtr), [@dandclark](https://github.com/dandclark), [@una](https://github.com/una), [@smhigley](https://github.com/smhigley), [@aleventhal](https://github.com/aleventhal), [@jh3y](https://github.com/jh3y)
-- May 4, 2023
-- [Specification](https://html.spec.whatwg.org/multipage/popover.html)
 
 **NOTE:** This Popover API explainer was mostly useful during the development of the feature. While it is roughly still in line with the actual feature, it might be more informative to look at either of these two sources of documentation:
 
 1. [The MDN page documenting the Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API)
 2. [The HTML spec for the popover attribute](https://html.spec.whatwg.org/multipage/C#the-popover-attribute)
 
-{/* START doctoc generated TOC please keep comment here to allow auto update */}
-{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
 
-## Table of Contents
-
-- [Background](#background)
-  - [Goals](#goals)
-  - [See Also](#see-also)
-  - [Popover vs. Dialog](#popover-vs-dialog)
-- [API Shape](#api-shape)
-  - [HTML Content Attribute](#html-content-attribute)
-  - [Showing and Hiding a Popover](#showing-and-hiding-a-popover)
-    - [Declarative Triggers](#declarative-triggers)
-    - [JavaScript Trigger](#javascript-trigger)
-    - [CSS Pseudo Class](#css-pseudo-class)
-    - [Rendering](#rendering)
-    - [Shown vs Hidden Popovers](#shown-vs-hidden-popovers)
-    - [Animation of Popovers](#animation-of-popovers)
-  - [IDL Attribute and Feature Detection](#idl-attribute-and-feature-detection)
-  - [Events](#events)
-  - [Focus Management](#focus-management)
-  - [Anchoring](#anchoring)
-  - [Backdrop](#backdrop)
-- [Behaviors](#behaviors)
-  - [Automatic Dismiss Behavior](#automatic-dismiss-behavior)
-    - [Light Dismiss](#light-dismiss)
-    - [Nested Popovers](#nested-popovers)
-    - [The Popover Stack](#the-popover-stack)
-    - [Nearest Open Ancestral Popover](#nearest-open-ancestral-popover)
-    - [Close signal](#close-signal)
-  - [Classes of Top Layer UI](#classes-of-top-layer-ui)
-  - [Accessibility / Semantics](#accessibility--semantics)
-  - [Disallowed elements](#disallowed-elements)
-- [Example Use Cases](#example-use-cases)
-  - [Generic Popover (Date Picker)](#generic-popover-date-picker)
-  - [Generic Popover (`<selectmenu>` listbox example)](#generic-popover-selectmenu-listbox-example)
-  - [Manual](#manual)
-- [Additional Considerations](#additional-considerations)
-  - [Exceeding the Frame Bounds](#exceeding-the-frame-bounds)
-  - [Shadow DOM](#shadow-dom)
-  - [Eventual Single-Purpose Elements](#eventual-single-purpose-elements)
-- [The Choices Made in this API](#the-choices-made-in-this-api)
-  - [Alternatives Considered](#alternatives-considered)
-  - [Why a content attribute?](#why-a-content-attribute)
-  - [Design decisions (via OpenUI)](#design-decisions-via-openui)
-  - [Articles](#articles)
 
 # Background
 

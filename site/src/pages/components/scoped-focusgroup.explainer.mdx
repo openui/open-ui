@@ -3,80 +3,18 @@ menu: Active Proposals
 name: Focusgroup (Explainer)
 path: /components/scoped-focusgroup.explainer
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@janewman"
+    url: https://github.com/janewman
+  - name: "@travisleithead"
+    url: https://github.com/travisleithead
+  - name: "@dzearing"
+    url: https://github.com/dzearing
+  - name: "@chrisdholt"
+    url: https://github.com/chrisdholt
+whatwg_issue: https://github.com/whatwg/html/issues/11641
+whatwg_pr: https://github.com/whatwg/html/pull/11723
 ---
-
- - Authors: [Jacques Newman](https://github.com/janewman)
- - Prior Authors from the earlier, broader [focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
- - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - WHATWG PR: https://github.com/whatwg/html/pull/11723
- - Last updated: 2026-5-22
-
-## Table of contents
-<details>
-<summary><strong>Show / Hide Table of Contents</strong></summary>
-
-- [Introduction](#introduction)
-  - [Keyboard navigation modes](#keyboard-navigation-modes)
-    - [1. Sequential focus navigation](#1-sequential-focus-navigation)
-    - [2. Directional navigation](#2-directional-navigation)
-  - [Before / After at a glance](#before--after-at-a-glance)
-- [Focusgroup tokens](#focusgroup-tokens)
-- [Major differences from the original explainer](#major-differences-from-the-original-explainer)
-  - [CSS support is now a future consideration](#css-support-is-now-a-future-consideration)
-  - [Grid support is now a future consideration](#grid-support-is-now-a-future-consideration)
-  - [Focusgroup is now scoped to specific scenarios](#focusgroup-is-now-scoped-to-specific-scenarios)
-  - [Supported behaviors](#supported-behaviors)
-    - [Default modifiers](#default-modifiers)
-    - [Behavior → role mapping and precedence](#behavior--role-mapping-and-precedence)
-- [Why not just add new native elements to cover these patterns?](#why-not-just-add-new-native-elements-to-cover-these-patterns)
-- [Quickstart](#quickstart)
-- [Goal](#goal)
-  - [Non-goals](#non-goals)
-- [Principles](#principles)
-- [Use cases](#use-cases)
-- [Focusgroup concepts](#focusgroup-concepts)
-  - [Focusgroup segments](#focusgroup-segments)
-  - [Last-focused memory](#last-focused-memory)
-  - [Guaranteed tab stop](#guaranteed-tab-stop)
-  - [Shadow DOM boundaries](#shadow-dom-boundaries)
-  - [Key conflicts](#key-conflicts)
-  - [Interactive content inside focusgroups](#interactive-content-inside-focusgroups)
-  - [Key conflict elements](#key-conflict-elements)
-    - [Escape behavior for native key conflict elements](#escape-behavior-for-native-key-conflict-elements)
-  - [Scrolling interactions](#scrolling-interactions)
-    - [1. Focusgroup within a scrollable region](#1-focusgroup-within-a-scrollable-region)
-    - [2. Scrollable region within a focusgroup](#2-scrollable-region-within-a-focusgroup)
-  - [Interaction with related web platform features](#interaction-with-related-web-platform-features)
-    - [Reading flow](#reading-flow)
-    - [ARIA orientation](#aria-orientation)
-    - [Modifier keys](#modifier-keys)
-    - [CSS spatial navigation](#css-spatial-navigation)
-  - [Restricted elements](#restricted-elements)
-  - [Feature detection](#feature-detection)
-  - [Additional features](#additional-features)
-  - [The focusgroupstart attribute](#the-focusgroupstart-attribute)
-- [Enabling wrapping behaviors](#enabling-wrapping-behaviors)
-- [Limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality)
-- [Opting-out](#opting-out)
-  - [Impact on sequential focus navigation](#impact-on-sequential-focus-navigation)
-  - [Nested focusgroups](#nested-focusgroups)
-  - [Top layer elements](#top-layer-elements)
-- [Disabling focusgroup memory](#disabling-focusgroup-memory)
-- [Adjustments to sequential focus navigation](#adjustments-to-sequential-focus-navigation)
-  - [Guaranteed tab stop algorithm](#guaranteed-tab-stop-algorithm)
-- [(Future consideration) Grid focusgroups](#future-consideration-grid-focusgroups)
-- [(Future consideration) Additional keyboard support](#future-consideration-additional-keyboard-support)- [Authoring guidance](#authoring-guidance)
-- [Alternatives considered](#alternatives-considered)
-- [Open questions](#open-questions)
-- [Polyfilling](#polyfilling)
-- [Privacy and security considerations](#privacy-and-security-considerations)
-  - [Privacy](#privacy)
-  - [Security](#security)
-- [Design decisions](#design-decisions)
-- [Index of focusgroup values](#index-of-focusgroup-values)
-- [Acknowledgments](#acknowledgments)
-
-</details>
 
 ## Introduction
 
