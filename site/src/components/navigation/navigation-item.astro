@@ -13,11 +13,10 @@ const removeLeadingSlash = (str) => {
 const formattedPath = removeLeadingSlash(removeTrailingSlash(currentPath))
 const formattedUrl = removeLeadingSlash(removeTrailingSlash(item.url))
 const isCurrent = formattedPath === formattedUrl
-const relVal = shouldPrefetch ? 'prefetch' : ''
 ---
 
 <li>
-  <a href={item.url} aria-current={`${isCurrent ? 'page' : 'false'}`} rel={relVal}>
+  <a href={item.url} aria-current={`${isCurrent ? 'page' : 'false'}`} data-astro-prefetch={shouldPrefetch ? null : "false"}>
     {item.frontmatter.name}
   </a>
 </li>

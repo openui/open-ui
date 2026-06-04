@@ -1,4 +1,3 @@
-import React from 'react'
 import { getImagesForComponentConcept } from '../sources'
 import Image from './image.jsx'
 import { MissingImages } from './missing-images'
