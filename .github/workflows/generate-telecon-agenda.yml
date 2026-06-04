@@ -28,17 +28,18 @@ jobs:
           # the day we meet on, this should be changed!
           DAY="thursday"
           ISSUES=$(gh issue list --label "agenda+" --json title,number,url)
+          # Filter out any malformed entries (null number, empty title)
+          VALID_ISSUES=$(echo "$ISSUES" | jq '[.[] | select(.number != null and .number > 0 and .title != "")]')
           mkdir -p ./meetings/telecon/
           # Only commit a new agenda file if we have issues with the agenda+ label
-          if [ "$(echo "$ISSUES" | jq -r 'length // 0')" -gt 0 ]; then
+          if [ "$(echo "$VALID_ISSUES" | jq -r 'length // 0')" -gt 0 ]; then
             # Build the markdown document
-            echo "$ISSUES" | jq --arg date "$(date -d $DAY '+%B %d, %Y')" -r 'sort_by(.number) | "Open UI Telecon Agenda, " + $date + "\n===================================\n" + (map("* \(.title) [#\(.number)](\(.url))") | join("\n"))' > "./meetings/telecon/$(date -d $DAY '+%Y-%m-%d').md"
+            echo "$VALID_ISSUES" | jq --arg date "$(date -d $DAY '+%B %d, %Y')" -r 'sort_by(.number) | "Open UI Telecon Agenda, " + $date + "\n===================================\n" + (map("* \(.title) [#\(.number)](\(.url))") | join("\n"))' > "./meetings/telecon/$(date -d $DAY '+%Y-%m-%d').md"
             # Commit and push
             git add ./meetings/telecon/
             git commit --message "Create $(date -d $DAY '+%Y-%m-%d').md"
             git push --force --set-upstream origin telecon-agenda
             gh pr create --title "Telecon agenda for $(date -d $DAY '+%Y-%m-%d')" --body-file "./meetings/telecon/$(date -d $DAY '+%Y-%m-%d').md"
-            gh pr merge --auto --delete-branch --squash
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
