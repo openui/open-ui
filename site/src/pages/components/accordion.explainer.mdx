@@ -4,10 +4,14 @@ name: Exclusive Accordion (Explainer)
 path: /components/accordion.explainer
 pathToResearch: /components/accordion.research
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@dbaron"
+    url: https://github.com/dbaron
+whatwg_pr: https://github.com/whatwg/html/pull/9400
+specification: https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-details-name
+mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#multiple_named_disclosure_boxes
 ---
 
-- [@dbaron](https://github.com/dbaron)
-- Last updated: November 16, 2023
 - Github discussions:
   - [openui/open-ui#725](https://github.com/openui/open-ui/issues/725) (Proposal for Exclusive Accordions)
   - [openui/open-ui#778](https://github.com/openui/open-ui/issues/778) (how valuable is having working exclusivity in subtrees not connected to a document)
@@ -16,33 +20,7 @@ layout: ../../layouts/ComponentLayout.astro
   - [openui/open-ui#925](https://github.com/openui/open-ui/issues/925) (UA ability for user to over-ride exclusive accordions functionality)
   - [w3c/html-aam#509](https://github.com/w3c/html-aam/issues/509) (describe grouping (and naming of the group) for exclusive accordions `<details name>`)
   - PR [whatwg/html#9400](https://github.com/whatwg/html/pull/9400) (Add name attribute for grouping details elements into an exclusive accordion)
-- [Specification](https://html.spec.whatwg.org/multipage/interactive-elements.html#attr-details-name)
 - [MDN blog on Exclusive Accordions](https://developer.mozilla.org/en-US/blog/html-details-exclusive-accordions/)
-- [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#multiple_named_disclosure_boxes)
-
-{/* START doctoc generated TOC please keep comment here to allow auto update */}
-{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
-
-## Table of Contents
-
-- [Background](#background)
-- [Developer Demand for Exclusive Accordion](#developer-demand-for-exclusive-accordion)
-- [User Needs](#user-needs)
-- [Proposal](#proposal)
-  - [Open design questions](#open-design-questions)
-    - [Name](#name)
-    - [Interaction with `open` attribute](#interaction-with-open-attribute)
-    - [Printing](#printing)
-    - [Existing issues with `details`](#existing-issues-with-details)
-    - [Accordions with exactly one item open](#accordions-with-exactly-one-item-open)
-  - [Possibly-resolved design questions](#possibly-resolved-design-questions)
-    - [Changes to ARIA roles or keyboard behavior](#changes-to-aria-roles-or-keyboard-behavior)
-    - [Use case for non-exclusive accordion semantic?](#use-case-for-non-exclusive-accordion-semantic)
-    - [Scope](#scope)
-- [Alternatives considered](#alternatives-considered)
-  - [CSS Toggles](#css-toggles)
-  - [Toggle (expand/collapse) button or attribute](#toggle-expandcollapse-button-or-attribute)
-  - [Panelset](#panelset)
 
 # Background
 

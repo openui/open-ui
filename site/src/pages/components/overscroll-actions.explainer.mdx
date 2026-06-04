@@ -2,44 +2,14 @@
 menu: Active Proposals
 name: Declarative Overscroll Actions (Explainer)
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@vmpstr"
+    url: https://github.com/vmpstr
+  - name: "@flackr"
+    url: https://github.com/flackr
+  - name: "@mfreed7"
+    url: https://github.com/mfreed7
 ---
-
-- [Vladimir Levin](https://github.com/vmpstr), [Rob Flack](https://github.com/flackr), [Mason Freed](https://github.com/mfreed7)
-
-- Last updated: March 20, 2026
-
-## Table of Contents
-{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
-
-- [Table of Contents](#table-of-contents)
-- [Introduction](#introduction)
-- [Proposal](#proposal)
-  - [Goals](#goals)
-- [The API](#the-api)
-  - [Behavior](#behavior)
-  - [Terminology](#terminology)
-  - [Nesting and Structure](#nesting-and-structure)
-  - [Chaining and Ordering](#chaining-and-ordering)
-  - [Overlay Mode](#overlay-mode)
-- [Events](#events)
-- [Use case examples](#use-case-examples)
-  - [Drawer menu](#drawer-menu)
-  - [Swipe to reveal](#swipe-to-reveal)
-  - [Swipe to dismiss](#swipe-to-dismiss)
-  - [Pull to refresh](#pull-to-refresh)
-- [Implementation Model](#implementation-model)
-- [Light Dismiss](#light-dismiss)
-  - [Cancelling light dismissability](#cancelling-light-dismissability)
-  - [Blur as a light dismiss signal](#blur-as-a-light-dismiss-signal)
-- [Modalness](#modalness)
-  - [Backdrops](#backdrops)
-- [Accessibility Considerations](#accessibility-considerations)
-  - [Focus Management](#focus-management)
-- [Progressive Enhancement](#progressive-enhancement)
-- [Interaction with Browser Gestures](#interaction-with-browser-gestures)
-- [Alternatives Considered](#alternatives-considered)
-  - [CSS-only Properties](#css-only-properties)
-- [Open questions](#open-questions)
 
 ## Introduction
 
