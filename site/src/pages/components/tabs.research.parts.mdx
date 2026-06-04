@@ -85,6 +85,7 @@ The most fundamental aspect of a Tab Label is text, though some systems support 
 | Semantic UI          | Not explicitly supported ('menus' separate from the component they call 'tabs' which is more of a set of mutually exclusive selectable sections, but looks like these menus can contain embedded custom content)                             |
 | Shoelace             | (not specifically supported, but seems to support embedding custom content)                                                                                                                                                                  |
 | Vaadin               | (not specifically supported, but explicitly supports embedding custom content)                                                                                                                                                               |
+| KoliBri              | Supported via `_icons` property on each tab definition                                                                                                                                                                                      |
 
 <figure>
   <img src="https://lh4.googleusercontent.com/JMQRH-7jzLBgAnLtOr7zTNKL1Oe0ZKgV71wkwen1MRrXnHi1BNSDCAo_ZW0cGyWiVkus3eEkDGs2BQW05pBG5Ggp7rDLQzcSZFfhBx4xten5DsE-ZYJmIvF_6pFSkLVU-Mz34PB6"
@@ -164,6 +165,7 @@ All implementations support this view, somehow (in some cases only the Tab Bar i
 | Semantic-UI          | It seems the component that is called tabs here is actually a mutally exclusive selection of items for content - a tab list is wholly separate a concern here, an exercise left to authors as a menu - but it seems it could be said to loosely support this                      |
 | Shoelace             | ![Shoelace supports horizontal top grouping](https://lh3.googleusercontent.com/r_wnzafQTxPyTYTnwrfeQ1VK2m77zIUtz5CtWcW-1X2OF1q0kUuWs1PZ-iUhjHfjcp-hjSxF1GR0HlviYODjC6INwblpsPLhHLPxUytMclmCRaGBeCSKD4NLBqmCle7arnTRlaJc)                                                          |
 | Vaadin               | ![Vaadin supports horizontal top grouping](https://lh4.googleusercontent.com/ZnpJNFDtkVMiG414XfKAGOaTwlAsIWelu1t0tVoGLq_5mba2aYX4sn1xadBhovcBDgtmPdqmsUj5mNZQhDWPpB6A0ZxtCeTifjD9NceVUTHAFTyDG-zwBcz0eKGdt6pWNyaewNZ8)                                                            |
+| KoliBri              | Supported (`_align="top"`, default)                                                                                                                                                                                                                                               |
 
 #### Vertical Left (inline-start)
 
@@ -182,6 +184,7 @@ Many tabs implementations also support tabs grouped along the left edge of the c
 | semantic-ui          | It seems the Tab List is wholly separate a concern here, an exercise left to authors generally triggered by a menu, so.. unclear?                                                                                                                                                                                      |
 | Shoelace             | ![Shoelace supports vertical left tabs](https://lh4.googleusercontent.com/MxDcBFOjQBID4ESZ3Us5rLqaop4hAvcCDiFNln3KvrrOLF9mAuiDYpQEA6FIMP53jBhRsiPCeGmNhBMlaqilrtg-ImAQJGcc44g1BQde3jf13t7afEMt4pjqKvAnPtEtzBY6cUwY)                                                                                                    |
 | Vaadin               | <figure><img src="https://lh5.googleusercontent.com/3Nlk-Zvpt04HKiKXRt9D2s-egTo1GfONF_wXv0bvjmQjnklPPKbEzktI24s-LoDf2RT06PSippl_2qDHJ5pXR8jqQeEFUpcDEQIYQ4TIBkClPjsTj2jEUq_FwHQOm4IrTBhLqkH9" alt="Three section names stacked on onto each other. Each name is right aligned to other names. Vertical blue line on the left of selected tab." /><figcaption>(bar only - supports 'vertical', but at least by default this seems useful for left)</figcaption></figure> |
+| KoliBri              | Supported (`_align="left"`)                                                                                                                                                                                                                                                                                            |
 
 #### Vertical Right (inline-end)
 
@@ -200,6 +203,7 @@ Some tabs implementations support tabs grouped along the right edge of the conte
 | semantic-ui          | It seems the Tab List is wholly separate a concern here, an exercise left to authors generally triggered by a menu, so.. unclear?                                                                                                                                                                                                                                    |
 | Shoelace             | TODO: missing screenshot from https://shoelace.style/components/tab-group                                                                                                                                                                                                                                                                                            |
 | Vaadin               | <figure><img src="https://lh5.googleusercontent.com/3Nlk-Zvpt04HKiKXRt9D2s-egTo1GfONF_wXv0bvjmQjnklPPKbEzktI24s-LoDf2RT06PSippl_2qDHJ5pXR8jqQeEFUpcDEQIYQ4TIBkClPjsTj2jEUq_FwHQOm4IrTBhLqkH9" alt="Vertically positions section headers as text" /><figcaption>(bar only - supports 'vertical', but at least by in theory could be used for right, though internationalization could be an issue</figcaption></figure>  |
+| KoliBri              | Supported (`_align="right"`)                                                                                                                                                                                                                                                                                                                                         |
 
 #### Horizontal Bottom (block-end)
 
@@ -217,6 +221,7 @@ Some tabs implementations support tabs grouped along the right edge of the conte
 | semantic-ui          | It seems the Tab List is wholly separate a concern here, an exercise left to authors generally triggered by a menu, so.. unclear?                                                                                             |
 | Shoelace             | ![Shoelace supports horizontal bottom grouping](https://lh6.googleusercontent.com/agk_AwBNYPzat-MVjutIK38HkMr56dJqGfAni-PTJciaeo8auaLYzxU2t30C5fCNVfIDY-Rylr0qIpS4NNOln0-8AiMEqlEUCBX-UJ0_czbL8B_N7QdGFpmvrXq6ye9IAneGTYk8)   |
 | Vaadin               | (bar only, though technically perhaps partially supported by the fact that it is separated from content)                                                                                                                      |
+| KoliBri              | Supported (`_align="bottom"`)                                                                                                                                                                                                 |
 
 Note: Some can switch any (automatically or via attribute) to ungrouped/inline.
 

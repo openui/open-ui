@@ -1,34 +1,34 @@
 {
   "$schema": "../schemas/design-system.schema.json",
-  "lastUpdated": "2024-1-24",
+  "lastUpdated": "2026-3-20",
   "name": "KoliBri",
   "description": "KoliBri builds directly on the web standards of the W3C (framework-agnostic), is a generic reference implementation of the WCAG standard and the BITV for accessibility and implemented as a multi-theming capable presentation layer. There is no technical reference and no data transmission functionalities. This means that KoliBri can be reused for the realization of static websites as well as dynamic web applications with different corporate designs and style guides and is therefore very interesting for open source.",
   "url": "https://public-ui.github.io/en/",
-  "version": "2.0.3",
+  "version": "4.1.2",
   "by": "Informationstechnikzentrum Bund",
   "components": [
     {
       "name": "Abbr",
-      "definition": "Die **Abbr**-Komponente implementiert den HTML-Tag `abbr`, wobei hier jedoch der Tooltip barrierefrei ist.\nDer Tooltip für die Beschreibung wird bei Focus oder Hover der **Abbr**-Komponente angezeigt und vorgelesen.",
+      "definition": "The **Abbr** component implements the HTML tag `abbr` with an accessible tooltip.\nThe tooltip for the description is displayed and read aloud when the **Abbr** component is focused or hovered.",
       "url": "https://public-ui.github.io/en/docs/components/abbr",
       "anatomy": [],
       "concepts": [
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
-        },
-        {
-          "name": "tooltip-align",
-          "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         }
       ]
     },
     {
       "name": "Accordion",
-      "definition": "Die **Accordion**-Komponente ist ein Aufklapp-Menü. Klickt man auf den Kopfbereich, bestehend aus Icon und Überschrift, klappt der Inhalt mit zusätzlichen Informationen auf. Somit ist es ein interaktives Navigationselement, welches dazu dient, umfangreiche Inhalte platzsparend darzustellen.\n\nAccordions kommen immer dann zum Einsatz, wenn einem thematischen Oberbegriff zugeordnete Inhalte angezeigt oder verborgen werden sollen. Sie erlauben umfangreichere Detailinformationen zu einem Oberbegriff, als es aus Gründen der Übersichtlichkeit eigentlich sinnvoll wäre. Sie überlassen es den Besucher:innen selbst, ob sie sich diese Informationen anzeigen lassen möchten.",
+      "definition": "The **Accordion** component is a collapsible menu. Clicking the header area — consisting of an icon and a heading — expands the content to reveal additional information. It is an interactive navigation element designed to present extensive content in a space-saving manner.\n\nAccordions are used whenever content associated with a thematic heading needs to be shown or hidden. They allow more detailed information for a heading than would normally be practical, leaving it to the users to decide whether to view that information.",
       "url": "https://public-ui.github.io/en/docs/components/accordion",
       "anatomy": [],
       "concepts": [
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
+        },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
@@ -39,13 +39,13 @@
         },
         {
           "name": "open",
-          "description": "If set (to true) opens/expands the element, closes if not set (or set to false)."
+          "description": "Opens/expands the element when truthy, closes/collapses when falsy."
         }
       ]
     },
     {
       "name": "Alert",
-      "definition": "Die **Alert**-Komponente gibt ein optisches Feedback an die Nutzer:innen. Sie besteht aus einem farblich gestalteten Container, einer Überschrift, einem Inhaltstext sowie einem Icon. Das verwendete Icon und die farbliche Gestaltung sind abhängig vom Typ `_type` des Alert.",
+      "definition": "The **Alert** component provides visual feedback to users. It consists of a color-coded container, a heading, content text, and an icon. The icon used and the color scheme depend on the `_type` of the alert.",
       "url": "https://public-ui.github.io/en/docs/components/alert",
       "anatomy": [],
       "concepts": [
@@ -74,10 +74,11 @@
     },
     {
       "name": "Avatar",
-      "definition": "Die **Avatar**-Komponente zeigt entweder ein kleines Bild des Users oder dessen Initialen an, falls kein Bild vorhanden ist.",
+      "definition": "The **Avatar** component displays either a small image of the user or their initials if no image is available.",
       "url": "https://public-ui.github.io/en/docs/components/avatar",
       "anatomy": [],
       "concepts": [
+        { "name": "color", "description": "Defines the backgroundColor and foregroundColor." },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
@@ -87,8 +88,7 @@
     },
     {
       "name": "Badge",
-      "openUIName": "Tag",
-      "definition": "Mit **Badges** können Sie bestimmte Informationen auf Ihrer Webseite optisch hervorheben.\nKoliBri bietet neben der Angabe der Hintergrundfarbe und automatischer Berechnung der Textfarbe auch die Möglichkeit, einem Badge ein Icon und/oder einen anderen Schriftschnitt mitzugeben.",
+      "definition": "The **Badge** component allows you to visually highlight specific information.\nIn addition to specifying the background color and automatically calculating the text color, it also supports adding an icon and/or a different font style.",
       "url": "https://public-ui.github.io/en/docs/components/badge",
       "anatomy": [],
       "concepts": [
@@ -109,7 +109,7 @@
     },
     {
       "name": "Breadcrumb",
-      "definition": "Mit Hilfe der **Breadcrumb**-Komponente kann der Pfad zur aktuellen Position einer Webseite in einer hierarchischen Struktur dargestellt werden.",
+      "definition": "The **Breadcrumb** component can be used to display the path to the current position of a web page within a hierarchical structure.",
       "url": "https://public-ui.github.io/en/docs/components/breadcrumb",
       "anatomy": [],
       "concepts": [
@@ -125,14 +125,21 @@
     },
     {
       "name": "Button",
-      "definition": "**Buttons** dienen dazu, Benutzer:innen Auswahlmöglichkeiten für Aktionen anzuzeigen und diese in einer klaren Hierarchie anzuordnen. Sie helfen Nutzer:innen, die wichtigsten Aktionen einer Seite oder innerhalb eines Viewports zu finden und ermöglichen es ihnen, diese Aktionen auszuführen. Die Beschriftung des Buttons wird verwendet, um Nutzer:innen klar anzuzeigen, welche Aktion ausgelöst wird. Buttons ermöglichen es Nutzer:innen, eine Änderung zu bestätigen, Schritte in einer Aufgabe abzuschließen oder Entscheidungen zu treffen.",
+      "definition": "The **Button** component is used to present users with action options and arrange them in a clear hierarchy. It helps users find the most important actions on a page or within a viewport and allows them to execute those actions. The button label clearly indicates which action will be triggered. Buttons allow users to confirm a change, complete steps in a task, or make decisions.",
       "url": "https://public-ui.github.io/en/docs/components/button",
       "anatomy": [],
       "concepts": [
-        { "name": "access-key", "description": "Defines the elements access key." },
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
         {
           "name": "aria-controls",
           "description": "Defines which elements are controlled by this component. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
+        {
+          "name": "aria-description",
+          "description": "Defines the value for the aria-description attribute."
         },
         {
           "name": "aria-expanded",
@@ -159,8 +166,8 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
+          "name": "inline",
+          "description": "Defines whether the component is displayed as a standalone block or inline without enforcing a minimum size of 44px."
         },
         {
           "name": "label",
@@ -169,8 +176,8 @@
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "role", "description": "Defines the role of the components primary element." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
           "name": "tooltip-align",
@@ -180,7 +187,7 @@
           "name": "type",
           "description": "Defines either the type of the component or of the components interactive element."
         },
-        { "name": "value", "description": "Defines the value that the button emits on click." },
+        { "name": "value", "description": "Defines the value of the element." },
         {
           "name": "variant",
           "description": "Defines which variant should be used for presentation."
@@ -189,14 +196,21 @@
     },
     {
       "name": "ButtonLink",
-      "definition": "Der ButtonLink ist semantisch ein Button und hat das Design eines Links. Hierzu werden alle relevanten Properties der Button-Komponente übernommen und um die Design-bestimmenden Properties des Links erweitert.\n\nEinen Button kann man deaktivieren und daher gibt es bei einem ButtonLink das Property `_disabled`. Wie das optisch ausgestaltet wird, entscheidet die UX-Designer:in.\n\nStatt, wie bei einem Link, `_href` zu verwenden, wird bei einem ButtonLink das Property über den `Click-Callback` gesteuert. Hierzu wird das `_on`-Property verwendet.\n\nBei einem Link gibt es das Property `target`, welches ggf. den Link in einem neuen Fenster/Tab öffnet. Das Verhalten ist aktuell noch nicht umgesetzt.\n\nDa der Link, nicht wie der Button, in mehrere Varianten (`primary` oder `secondary` usw.) angeboten wird, stehen die Properties `_customClass` und `_variant` nicht zur Verfügung.",
+      "definition": "The **ButtonLink** component is semantically a button but has the appearance of a link. All relevant properties of the Button component are adopted and extended with the design-defining properties of a link.\n\nA button can be disabled, therefore the **ButtonLink** also has the `_disabled` property. How this is styled visually is determined by the UX designer.\n\nInstead of using `_href` as with a regular link, the **ButtonLink**'s behavior is controlled via a click callback using the `_on` property.\n\nA link has the `target` property which optionally opens the link in a new window/tab. This behavior is not yet implemented.\n\nSince a link, unlike a button, is not offered in multiple variants (`primary`, `secondary`, etc.), the `_customClass` and `_variant` properties are not available.",
       "url": "https://public-ui.github.io/en/docs/components/button-link",
       "anatomy": [],
       "concepts": [
-        { "name": "access-key", "description": "Defines the elements access key." },
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
         {
           "name": "aria-controls",
           "description": "Defines which elements are controlled by this component. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
+        {
+          "name": "aria-description",
+          "description": "Defines the value for the aria-description attribute."
         },
         {
           "name": "aria-expanded",
@@ -219,8 +233,8 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
+          "name": "inline",
+          "description": "Defines whether the component is displayed as a standalone block or inline without enforcing a minimum size of 44px."
         },
         {
           "name": "label",
@@ -229,8 +243,8 @@
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "role", "description": "Defines the role of the components primary element." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
           "name": "tooltip-align",
@@ -240,12 +254,16 @@
           "name": "type",
           "description": "Defines either the type of the component or of the components interactive element."
         },
-        { "name": "value", "description": "Defines the value that the button emits on click." }
+        { "name": "value", "description": "Defines the value of the element." },
+        {
+          "name": "variant",
+          "description": "Defines which variant should be used for presentation."
+        }
       ]
     },
     {
       "name": "Card",
-      "definition": "Um einzelne Bereiche Ihrer Webseite optisch hervorzuheben, bietet sich die **Card**-Komponente an. Mit ihrer Hilfe können Sie Ihre Inhalte sehr einfach strukturieren.\n\nDie **Card**-Komponente besteht aus einem **_Titel-Bereich_**, einem **_Inhalts-Bereich_**.\n\nDer **Titel-Bereich** wird in einer größeren Schrift dargestellt. Der **Inhalts-Bereich** ist optisch durch eine horizontale Trennlinie unterhalb des Titel-Bereichs abgetrennt und wird in der Standardschrift ausgegeben.",
+      "definition": "The **Card** component is ideal for visually highlighting individual sections of your website. It allows you to structure your content very easily.\n\nThe **Card** component consists of a **_title area_** and a **_content area_**.\n\nThe **title area** is displayed in a larger font. The **content area** is visually separated from the title area by a horizontal dividing line and is rendered in the default font.",
       "url": "https://public-ui.github.io/en/docs/components/card",
       "anatomy": [],
       "concepts": [
@@ -261,24 +279,119 @@
       ]
     },
     {
+      "name": "Combobox",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/combobox",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
+        },
+        { "name": "has-clear-button", "description": "Shows the clear button if enabled." },
+        {
+          "name": "hide-label",
+          "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+        },
+        { "name": "hint", "description": "Defines the hint text." },
+        {
+          "name": "icons",
+          "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
+        },
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
+        { "name": "name", "description": "Defines the technical name of an input field." },
+        {
+          "name": "placeholder",
+          "description": "Defines the placeholder for input field. To be shown when there's no value."
+        },
+        { "name": "required", "description": "Makes the input element required." },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
+        { "name": "suggestions", "description": "Suggestions to provide for the input." },
+        {
+          "name": "tooltip-align",
+          "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
+        },
+        { "name": "touched", "description": "Shows if the input was touched by a user." },
+        { "name": "value", "description": "Defines the value of the element." }
+      ]
+    },
+    {
       "name": "Details",
-      "definition": "Mit Hilfe der **Detail**-Komponente können weiterführende Informationen zunächst mit einem kurzen Einleitungstext angezeigt werden, die erst nach Klick\ndurch die Nutzer:innen auf ein Pfeil-Icon in voller Größe aufgeklappt werden.\n\nDie **Detail**-Komponente stellt sich standardmäßig als einzeiliges Layout-Element dar, das aus einem Pfeil-Icon und einem nachfolgenden,\nkurzen Einleitungstext gebildet wird. Der eigentliche Inhalt der Komponente wird erst nach Klick auf den Kopfbereich nach unten hin geöffnet. Das Pfeil-Icon ändert dabei\nseine Ausrichtung von **_rechts_** nach **_unten_**.\nAnalog lässt sich die Komponente auch wieder schließen und der Inhalt damit verbergen.",
+      "definition": "The **Details** component allows additional information to be initially shown with a short introductory text,\nwhich is only fully expanded after the user clicks on an arrow icon.\n\nBy default, the **Details** component is displayed as a single-line layout element consisting of an arrow icon\nfollowed by a short introductory text. The actual content is revealed below after clicking the header area. The arrow icon\nchanges its orientation from **_right_** to **_down_**.\nThe component can also be closed again to hide the content.",
       "url": "https://public-ui.github.io/en/docs/components/details",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
+        },
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
+        },
+        {
+          "name": "level",
+          "description": "Defines which H-level from 1-6 the heading has. 0 specifies no heading and is shown as bold text."
+        },
+        {
+          "name": "open",
+          "description": "Opens/expands the element when truthy, closes/collapses when falsy."
+        }
+      ]
+    },
+    {
+      "name": "Dialog",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/dialog",
       "anatomy": [],
       "concepts": [
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
+        { "name": "variant", "description": "Defines the variant of the modal." },
+        { "name": "width", "description": "Defines the width of the modal. (max-width: 100%)" }
+      ]
+    },
+    {
+      "name": "Drawer",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/drawer",
+      "anatomy": [],
+      "concepts": [
+        { "name": "align", "description": "Defines the visual orientation of the component." },
+        { "name": "has-closer", "description": "Defines whether the element can be closed." },
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
+        },
         {
           "name": "open",
-          "description": "If set (to true) opens/expands the element, closes if not set (or set to false)."
+          "description": "Opens/expands the element when truthy, closes/collapses when falsy."
         }
       ]
     },
     {
       "name": "Form",
-      "definition": "Die **Form**-Komponente dient dazu alle Eingabefelder zu umschließen, den Hinweistext für Pflichtfelder korrekt zu positionieren und die Events `submit` und `reset` weiterzuleiten.",
+      "definition": "The **Form** component is used to wrap all input fields, correctly position the required-fields hint text, and forward the `submit` and `reset` events.",
       "url": "https://public-ui.github.io/en/docs/components/form",
       "anatomy": [],
       "concepts": [
@@ -290,7 +403,7 @@
     },
     {
       "name": "Heading",
-      "definition": "Die **Heading**-Komponente kann überall dort verwendet werden, wo eine Überschrift angezeigt werden soll. Durch die Verwendung der unterschiedlichen Größen, lassen sich Inhalte klar strukturieren und Seiten wirkungsvoll und abwechslungsreich präsentieren. Sie trennt Styling von Semantik und ermöglicht Flexibilität.",
+      "definition": "The **Heading** component can be used wherever a heading needs to be displayed. By using the different sizes, content can be clearly structured and pages can be presented effectively and with variety. It separates styling from semantics and enables flexibility.",
       "url": "https://public-ui.github.io/en/docs/components/heading",
       "anatomy": [],
       "concepts": [
@@ -305,16 +418,12 @@
         {
           "name": "secondary-headline",
           "description": "Defines the text of the secondary headline."
-        },
-        {
-          "name": "variant",
-          "description": "Defines which variant should be used for presentation."
         }
       ]
     },
     {
       "name": "Icon",
-      "definition": "Mit Hilfe der **Icon**-Komponente können Icons aus eingebundenen Icon-Fonts an beliebigen Positionen dargestellt werden. Die Ausgabe des Icon kann über das Attribut **`_icon`** gesteuert werden und erfolgt durch das Attribut **`_label`** barrierefrei. Die Ausgabe erfolgt standardmäßig als _`inline`_-Element.\n\nAktuell werden die Icons von <kol-link _href=\"https://microsoft.github.io/vscode-codicons/dist/codicon.html\" _target=\"_blank\" _label=\"Codicons\"></kol-link> unterstützt.\n\n<kol-alert _heading=\"Hinweis\" _type=\"info\">Es ist wichtig, dass in der Rahmenseite (`index.html`) die CSS-Dateie(n) der Icon-Font(s) eingebunden ist/sind.</kol-alert>",
+      "definition": "The **Icon** component allows icons from included icon fonts to be displayed at any position.",
       "url": "https://public-ui.github.io/en/docs/components/icon",
       "anatomy": [],
       "concepts": [
@@ -330,43 +439,29 @@
     },
     {
       "name": "Image",
-      "definition": "> <kol-badge _label=\"untested\"></kol-badge> Diese neue Komponente wird als ungetestet markiert, da der vollständige Barrierefreiheitstest noch aussteht. Der vollständige Test kann bei neuen Komponenten und Funktionalitäten auch erst nach einem abgeschlossenen Release erfolgen.\n\nDie **Image**-Komponente dient dazu, Bilder darzustellen.",
+      "definition": "The **Image** component renders an image with support for responsive loading via `srcset` and `sizes`, lazy loading, and accessible alternative text.",
       "url": "https://public-ui.github.io/en/docs/components/image",
       "anatomy": [],
       "concepts": [
-        { "name": "alt", "description": "Setzt den alternativen Text." },
+        { "name": "alt", "description": "Sets the alternative text of the image." },
         { "name": "loading", "description": "Defines the loading mode for the image." },
         {
           "name": "sizes",
           "description": "Defines the image sizes for different screen resolutions, supporting _srcset."
         },
         { "name": "src", "description": "Sets the image `src` attribute to the given string." },
-        {
-          "name": "srcset",
-          "description": "Setzt eine Liste von Quell-URLs mit Breiten der Bilder."
-        }
+        { "name": "srcset", "description": "Sets a list of source URLs with widths of the images." }
       ]
     },
     {
-      "name": "IndentedText",
-      "definition": "Heben Sie einzelne Informationen auf Ihrer Webseite optisch mit der **IndentedText**-Komponente hervor. Die Komponente eignet sich nicht nur für besondere Abschnitte auf der Webseite, sondern auch beispielsweise für Zitate (für verlinkte Zitate kann auch die <kol-link _href=\"/docs/components/quote/\" _label=\"/docs/components/quote/\" _label=\"kol-quote-Komponente\"></kol-link> verwendet werden.).",
-      "url": "https://public-ui.github.io/en/docs/components/indented-text",
-      "anatomy": [],
-      "concepts": []
-    },
-    {
       "name": "InputCheckbox",
-      "definition": "Der Input-Typ **_Checkbox_** generiert eine rechteckige Box, die durch Anklicken aktiviert und wieder deaktiviert wird. In aktiviertem Zustand befindet sich ein farbiger Haken in der Box.",
+      "definition": "The **Checkbox** input type generates a rectangular box that can be activated and deactivated by clicking. When activated, a colored checkmark is shown inside the box.",
       "url": "https://public-ui.github.io/en/docs/components/input-checkbox",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "checked",
@@ -376,23 +471,18 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
           "name": "icons",
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
-        },
-        {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
         },
         {
           "name": "indeterminate",
@@ -402,18 +492,26 @@
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
+        {
+          "name": "label-align",
+          "description": "Defines which alignment should be used for presentation."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "required", "description": "Makes the input element required." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." },
+        { "name": "value", "description": "Defines the value of the element." },
         {
           "name": "variant",
           "description": "Defines which variant should be used for presentation."
@@ -422,17 +520,13 @@
     },
     {
       "name": "InputColor",
-      "definition": "Der Input-Typ **Color** erzeugt ein Auswahlfeld für die Definition einer beliebigen Farbe. Die Eingabe der Farbe kann in hexadezimaler Schreibweise, in RGB-Schreibweise oder in HSL-Schreibweise erfolgen. Möglich ist die Auswahl einer Farbe über einen Picker oder auch die exakte Eingabe von Farbwerten.",
+      "definition": "The **Color** input type creates a selection field for defining any color. The color can be entered in hexadecimal, RGB, or HSL notation. It is possible to select a color via a picker or by entering exact color values.",
       "url": "https://public-ui.github.io/en/docs/components/input-color",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -442,14 +536,13 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -457,44 +550,40 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
         {
           "name": "smart-button",
           "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
         },
         { "name": "suggestions", "description": "Suggestions to provide for the input." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
-        },
-        {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "InputDate",
-      "definition": "Der Input-Typ **Date** erzeugt ein Eingabefeld für Datumswerte. Diese können konkrete Daten sein, aber auch Wochen, Monate oder Zeitangaben.",
+      "definition": "The **Date** input type creates an input field for date values. These can be specific dates as well as weeks, months, or time values.",
       "url": "https://public-ui.github.io/en/docs/components/input-date",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -504,14 +593,13 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -519,28 +607,28 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
-        { "name": "max", "description": "Defines the largest possible input value." },
+        { "name": "max", "description": "Defines the maximum value of the element." },
         { "name": "min", "description": "Defines the smallest possible input value." },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "read-only", "description": "Makes the input element read only." },
         { "name": "required", "description": "Makes the input element required." },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
         {
           "name": "smart-button",
           "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
         },
         { "name": "step", "description": "Defines the step size for value changes." },
         { "name": "suggestions", "description": "Suggestions to provide for the input." },
-        {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
-        },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
@@ -550,22 +638,18 @@
           "name": "type",
           "description": "Defines either the type of the component or of the components interactive element."
         },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "InputEmail",
-      "definition": "Der Input-Typ **E-Mail** erzeugt ein Eingabefeld für E-Mails.",
+      "definition": "The **Email** input type creates an input field for email addresses. It supports built-in format validation, multiple addresses via the `_multiple` property, and auto-complete suggestions.",
       "url": "https://public-ui.github.io/en/docs/components/input-email",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -575,18 +659,17 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
         {
           "name": "has-counter",
-          "description": "Shows the character count on the lower border of the input."
-        },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+          "description": "Shows a character counter for the input element."
         },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -594,14 +677,18 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
         { "name": "max-length", "description": "Defines the maximum number of input characters." },
+        {
+          "name": "max-length-behavior",
+          "description": "Defines the behavior when maxLength is set. 'hard' sets the maxlength attribute, 'soft' shows a character counter without preventing input."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "multiple", "description": "Makes the input accept multiple inputs." },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "pattern", "description": "Defines a validation pattern for the input field." },
@@ -612,49 +699,44 @@
         { "name": "read-only", "description": "Makes the input element read only." },
         { "name": "required", "description": "Makes the input element required." },
         {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
+        {
           "name": "smart-button",
           "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
         },
         { "name": "suggestions", "description": "Suggestions to provide for the input." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
-        },
-        {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "InputFile",
-      "definition": "Der Input-Typ **File** erzeugt ein Eingabefeld für zum Beispiel Uploads. Es können eine oder auch mehrere Dateien ausgewählt werden.",
+      "definition": "The **File** input type creates an input field for file uploads. One or multiple files can be selected and submitted with a form.",
       "url": "https://public-ui.github.io/en/docs/components/input-file",
       "anatomy": [],
       "concepts": [
         { "name": "accept", "description": "Defines which file formats are accepted." },
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -662,58 +744,40 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
         },
         { "name": "multiple", "description": "Makes the input accept multiple inputs." },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "required", "description": "Makes the input element required." },
         {
-          "name": "smart-button",
-          "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "smart-button",
+          "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
         },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
-        { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "touched", "description": "Shows if the input was touched by a user." }
       ]
     },
     {
       "name": "InputNumber",
-      "definition": "Der Input-Typ **Number** erzeugt ein Eingabefeld für Zahlen.",
+      "definition": "The **Number** input type creates an input field for numeric values. Use the `_min`, `_max`, and `_step` properties to restrict the accepted value range.",
       "url": "https://public-ui.github.io/en/docs/components/input-number",
       "anatomy": [],
       "concepts": [
         {
-          "name": "basic",
-          "image": "kolibri-input-number-basic.png"
-        },
-        {
-          "name": "disabled",
-          "description": "Setzt das Feld in einen inaktiven Zustand, in dem es keine Interaktion erlaubt.",
-          "image": "kolibri-input-number-disabled.png"
-        },
-        {
-          "name": "hovered",
-          "image": "kolibri-input-number-hovered.png"
-        },
-        {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -723,14 +787,13 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -738,28 +801,25 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
-        { "name": "max", "description": "Defines the largest possible input value." },
+        { "name": "max", "description": "Defines the maximum value of the element." },
         { "name": "min", "description": "Defines the smallest possible input value." },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
         {
           "name": "placeholder",
           "description": "Defines the placeholder for input field. To be shown when there's no value."
         },
+        { "name": "read-only", "description": "Makes the input element read only." },
+        { "name": "required", "description": "Makes the input element required." },
         {
-          "name": "read-only",
-          "openUIName": "readonly",
-          "description": "Setzt das Eingabefeld in den schreibgeschützten Modus."
-        },
-        {
-          "name": "required",
-          "description": "Makes the input element required."
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
           "name": "smart-button",
@@ -768,30 +828,22 @@
         { "name": "step", "description": "Defines the step size for value changes." },
         { "name": "suggestions", "description": "Suggestions to provide for the input." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
-        },
-        {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "InputPassword",
-      "definition": "Der Input-Typ **Password** erzeugt ein Eingabefeld für Passwörter. Die Eingabe wird über Punktsymbole maskiert.",
+      "definition": "The **Password** input type creates an input field for passwords. The input is masked with dot symbols.",
       "url": "https://public-ui.github.io/en/docs/components/input-password",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -801,18 +853,17 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
         {
           "name": "has-counter",
-          "description": "Shows the character count on the lower border of the input."
-        },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+          "description": "Shows a character counter for the input element."
         },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -820,14 +871,18 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
         { "name": "max-length", "description": "Defines the maximum number of input characters." },
+        {
+          "name": "max-length-behavior",
+          "description": "Defines the behavior when maxLength is set. 'hard' sets the maxlength attribute, 'soft' shows a character counter without preventing input."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "pattern", "description": "Defines a validation pattern for the input field." },
         {
@@ -837,56 +892,51 @@
         { "name": "read-only", "description": "Makes the input element read only." },
         { "name": "required", "description": "Makes the input element required." },
         {
-          "name": "smart-button",
-          "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "smart-button",
+          "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
         },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." },
+        {
+          "name": "variant",
+          "description": "Defines which variant should be used for presentation."
+        }
       ]
     },
     {
       "name": "InputRadio",
-      "definition": "Die Komponente **InputRadio** besteht aus einer Sammlung von Radio-Elementen und stellt so eine Auswahlmöglichkeit zwischen verschiedenen Werten dar. Es kann immer nur ein einzelner Wert zur gleichen Zeit ausgewählt werden. Ausgewählte Radio-Elemente werden i.d.R. mit einem gefüllten und optisch hervorgehobenen Kreis dargestellt.\n\n<kol-alert _alert _heading=\"Hinweis\" _level=\"1\" _type=\"info\">\n  Das Input-Radio dient der Abbildung einer Auswahlmöglichkeit bei der mindestens und maximal eine Auswahl getroffen werden kann. Das bedeutet, dass ein Input-Radio nicht einzeln vorkommen kann. Aufgrund dessen haben wir die Komponente als Listen-Komponente umgesetzt.\n</kol-alert><br/>",
+      "definition": "The **InputRadio** input type consists of a collection of radio elements, providing a choice between different values. Only a single value can be selected at a time. Selected radio elements are typically represented by a filled, visually highlighted circle.",
       "url": "https://public-ui.github.io/en/docs/components/input-radio",
       "anatomy": [],
       "concepts": [
         {
-          "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
-        },
-        {
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
-        },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
         },
-        { "name": "hint", "description": "Defines the hint text." },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
+        { "name": "hint", "description": "Defines the hint text." },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
         },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "options", "description": "Options the user can choose from." },
@@ -896,30 +946,22 @@
         },
         { "name": "required", "description": "Makes the input element required." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
-        },
-        {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "InputRange",
-      "definition": "Der Input-Typ **Range** erzeugt ein interaktives Element, mit dem Werte durch Verschieben eines Reglers verändert werden können.",
+      "definition": "The **Range** input type creates a slider control for selecting a numeric value within a defined range. Use the `_min`, `_max`, and `_step` properties to configure the range and step size.",
       "url": "https://public-ui.github.io/en/docs/components/input-range",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -929,58 +971,53 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
           "name": "icons",
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
-        },
-        {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
         },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
-        { "name": "max", "description": "Defines the largest possible input value." },
+        { "name": "max", "description": "Defines the maximum value of the element." },
         { "name": "min", "description": "Defines the smallest possible input value." },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
         { "name": "step", "description": "Defines the step size for value changes." },
         { "name": "suggestions", "description": "Suggestions to provide for the input." },
-        {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
-        },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "InputText",
-      "definition": "Der Input-Typ **Text** erzeugt ein Eingabefeld für normalen Text, Suchbegriffe, URLs oder Telefonnummern.",
+      "definition": "The **Text** input type creates an input field for plain text, search terms, URLs, or phone numbers.",
       "url": "https://public-ui.github.io/en/docs/components/input-text",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "auto-complete",
@@ -990,33 +1027,36 @@
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
         {
           "name": "has-counter",
-          "description": "Shows the character count on the lower border of the input."
-        },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+          "description": "Shows a character counter for the input element."
         },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
         },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+        },
         { "name": "hint", "description": "Defines the hint text." },
         {
           "name": "icons",
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
-        },
-        {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
         },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
         { "name": "max-length", "description": "Defines the maximum number of input characters." },
+        {
+          "name": "max-length-behavior",
+          "description": "Defines the behavior when maxLength is set. 'hard' sets the maxlength attribute, 'soft' shows a character counter without preventing input."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "pattern", "description": "Defines a validation pattern for the input field." },
         {
@@ -1026,14 +1066,18 @@
         { "name": "read-only", "description": "Makes the input element read only." },
         { "name": "required", "description": "Makes the input element required." },
         {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
+        {
           "name": "smart-button",
           "description": "Allows to add a button with an arbitrary action within the element (_hide-label only)."
         },
-        { "name": "suggestions", "description": "Suggestions to provide for the input." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "spell-check",
+          "description": "Defines whether the browser should check the spelling and grammar."
         },
+        { "name": "suggestions", "description": "Suggestions to provide for the input." },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
@@ -1043,19 +1087,48 @@
           "name": "type",
           "description": "Defines either the type of the component or of the components interactive element."
         },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
+      ]
+    },
+    {
+      "name": "Kolibri",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/kolibri",
+      "anatomy": [],
+      "concepts": [
+        { "name": "color", "description": "Defines the color of the logo and label." },
+        { "name": "labeled", "description": "Defines whether the component has a label." }
       ]
     },
     {
       "name": "Link",
-      "definition": "Die **Link**-Komponente rendert einen auf Barrierefreiheit optimierten Link, der als Text, als Icon oder auch in Kombination ausgegeben werden kann.\n\nBeachten Sie, dass die Komponente automatisch ein Padding links und rechts zum umgebenden Text erzeugt. Sie kann daher im Fließtext ohne\nEingabe von Leerzeichen eingefügt werden. Zusätzliche Leerzeichen vergrößern den Abstand zum umgebenden Text.",
+      "definition": "",
       "url": "https://public-ui.github.io/en/docs/components/link",
       "anatomy": [],
       "concepts": [
-        { "name": "access-key", "description": "Defines the elements access key." },
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
+        {
+          "name": "aria-controls",
+          "description": "Defines which elements are controlled by this component. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
         {
           "name": "aria-current-value",
           "description": "Defines the value for the aria-current attribute."
+        },
+        {
+          "name": "aria-description",
+          "description": "Defines the value for the aria-description attribute."
+        },
+        {
+          "name": "aria-expanded",
+          "description": "Defines whether the interactive element of the component expanded something. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-expanded)"
+        },
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
         },
         {
           "name": "download",
@@ -1071,35 +1144,58 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
+          "name": "inline",
+          "description": "Defines whether the component is displayed as a standalone block or inline without enforcing a minimum size of 44px."
+        },
+        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
         { "name": "role", "description": "Defines the role of the components primary element." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         { "name": "target", "description": "Defines where to open the link." },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
+        },
+        {
+          "name": "variant",
+          "description": "Defines which variant should be used for presentation."
         }
       ]
     },
     {
       "name": "LinkButton",
-      "definition": "Der LinkButton ist semantisch ein Link und hat das Design eines Buttons. Hierzu werden alle relevanten Properties der Link-Komponente übernommen und um die Design-bestimmenden Properties des Buttons erweitert.\nWeitere Informationen zum Aussehen finden Sie auf der <kol-link _href=\"/docs/components/button\" _label=\"/docs/components/button\" _label=\"Seite des Buttons\"></kol-link>.",
+      "definition": "The **LinkButton** component is semantically a link but has the appearance of a button. All relevant properties of the Link component are adopted and extended with the design-defining properties of a button.",
       "url": "https://public-ui.github.io/en/docs/components/link-button",
       "anatomy": [],
       "concepts": [
-        { "name": "access-key", "description": "Defines the elements access key." },
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
+        {
+          "name": "aria-controls",
+          "description": "Defines which elements are controlled by this component. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
         {
           "name": "aria-current-value",
           "description": "Defines the value for the aria-current attribute."
         },
         {
+          "name": "aria-description",
+          "description": "Defines the value for the aria-description attribute."
+        },
+        {
           "name": "custom-class",
           "description": "Defines the custom class attribute if _variant=\"custom\" is set."
+        },
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
         },
         {
           "name": "download",
@@ -1120,8 +1216,8 @@
         },
         { "name": "role", "description": "Defines the role of the components primary element." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         { "name": "target", "description": "Defines where to open the link." },
         {
@@ -1136,7 +1232,7 @@
     },
     {
       "name": "Modal",
-      "definition": "Vielen Dank, dass Sie diese Komponente zur Umsetzung eines Modals verwenden wollen. Inzwischen ist das native `<dialog>` Element sehr gut unterstützt (<kol-link _href=\"https://caniuse.com/?search=dialog\" _target=\"_blank\" _label=\"caniuse\"></kol-link>), barrierefrei, einfach zu benutzen und performanter (da nativ), daher empfehlen wir dieses zu verwenden. Wenn Sie aufgrund von Abwärtskompatibilität, oder weil Sie die **Modal**-Komponente bereits eingebaut haben, die Dokumentation zu unserem KolModal suchen, finden Sie diese etwas weiter unten. Die **Modal**-Komponente wird in Version 2 noch zur Verfügung stehen.",
+      "definition": "The **Modal** component has been superseded by `kol-dialog`, which provides improved accessibility and conforms to the HTML dialog specification. It is still available in version 2 for backwards compatibility.",
       "url": "https://public-ui.github.io/en/docs/components/modal",
       "anatomy": [],
       "concepts": [
@@ -1144,12 +1240,13 @@
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
+        { "name": "variant", "description": "Defines the variant of the modal." },
         { "name": "width", "description": "Defines the width of the modal. (max-width: 100%)" }
       ]
     },
     {
       "name": "Nav",
-      "definition": "Eine **Navigationsleiste** ist eine Gruppe von verwandten Links oder Navigationselementen, die durch Anklicken eine Aktion ausführen oder Inhalte anzeigen. Sie navigiert Nutzer:innen direkt zu bestimmten Inhalten der aktuellen Seite oder zu externen Seiten. Außerdem dient sie Nutzer:innen (ähnlich wie Registerkarten) als Steuerelement, um Inhalte anzuzeigen, auszublenden und zwischen ihnen zu wechseln.\n\n**KoliBri** stellt eine umfangreich konfigurierbare, vertikale oder horizontale **Navigationsleiste** zur Verfügung, die mehrere Ebenen darstellen und in der Breite variiert werden kann.\nÜbergeordnete Menüpunkte die Untermenüpunkte enthalten, werden mit einem **Plus-Icon** am rechten Rand angezeigt. Wird der übergeordnete Menüpunkt mit dem Plus-Icon geöffnet, ändert sich das Plus-Icon automatisch zu einem **Minus-Icon**, mit dem der Menüpunkt wieder geschlossen werden kann.\n\nAktive Menüpunkte werden mit einer farbigen Markierung dargestellt.\n\nÜber eine optionale Schaltfläche unterhalb der Navigation kann die Breite der **Nav**-Komponente verändert werden. In der kleinsten Breite werden die Menütitel ausgeblendet und nur\nnoch die Icons ausgegeben.",
+      "definition": "The **Nav** component renders a group of related links or navigation elements that perform an action or display content when clicked.\nIt provides a highly configurable vertical or horizontal navigation bar that can represent multiple levels and vary in width.",
       "url": "https://public-ui.github.io/en/docs/components/nav",
       "anatomy": [],
       "concepts": [
@@ -1159,7 +1256,11 @@
         },
         {
           "name": "has-compact-button",
-          "description": "Gibt an, ob die Navigation eine zusätzliche Schaltfläche zum Aus- und Einklappen der Navigation anzeigen soll."
+          "description": "Creates a button below the navigation, that toggles _collapsible."
+        },
+        {
+          "name": "has-icons-when-expanded",
+          "description": "Shows icons next to the navigation item labels, even when the navigation is not collapsed."
         },
         {
           "name": "hide-label",
@@ -1169,19 +1270,12 @@
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
-        {
-          "name": "links",
-          "description": "Defines the list of links, buttons or texts to render."
-        },
-        {
-          "name": "orientation",
-          "description": "Defines whether the orientation of the component is horizontal or vertical."
-        }
+        { "name": "links", "description": "Defines the list of links, buttons or texts to render." }
       ]
     },
     {
       "name": "Pagination",
-      "definition": "Mit Hilfe der **Paginierung**-Komponente lassen sich umfangreiche, aufgeteilte Inhalte, wie zum Beispiel Suchergebnisse, der Reihe nach durchlaufen.",
+      "definition": "",
       "url": "https://public-ui.github.io/en/docs/components/pagination",
       "anatomy": [],
       "concepts": [
@@ -1201,7 +1295,7 @@
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
-        { "name": "max", "description": "Defines the maximum number of pages." },
+        { "name": "max", "description": "Defines the maximum value of the element." },
         { "name": "page", "description": "Defines the current page." },
         { "name": "page-size", "description": "Defines the amount of entries to show per page." },
         {
@@ -1219,8 +1313,74 @@
       ]
     },
     {
+      "name": "PopoverButton",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/popover-button",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
+        {
+          "name": "aria-description",
+          "description": "Defines the value for the aria-description attribute."
+        },
+        {
+          "name": "custom-class",
+          "description": "Defines the custom class attribute if _variant=\"custom\" is set."
+        },
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
+        },
+        {
+          "name": "hide-label",
+          "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "icons",
+          "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
+        },
+        {
+          "name": "inline",
+          "description": "Defines whether the component is displayed as a standalone block or inline without enforcing a minimum size of 44px."
+        },
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
+        },
+        { "name": "name", "description": "Defines the technical name of an input field." },
+        {
+          "name": "popover-align",
+          "description": "Defines where to show the Popover preferably: top, right, bottom or left."
+        },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
+        {
+          "name": "tab-index",
+          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+        },
+        {
+          "name": "tooltip-align",
+          "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
+        },
+        {
+          "name": "type",
+          "description": "Defines either the type of the component or of the components interactive element."
+        },
+        { "name": "value", "description": "Defines the value of the element." },
+        {
+          "name": "variant",
+          "description": "Defines which variant should be used for presentation."
+        }
+      ]
+    },
+    {
       "name": "Progress",
-      "definition": "Die **Progress**-Komponente erzeugt einen Fortschrittsbalken, über den eine optische Rückmeldung gegeben werden kann.",
+      "definition": "The **Progress** component visualizes the completion status of a task or process. It supports both determinate (percentage-based) and indeterminate variants.",
       "url": "https://public-ui.github.io/en/docs/components/progress",
       "anatomy": [],
       "concepts": [
@@ -1228,12 +1388,9 @@
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
-        {
-          "name": "max",
-          "description": "Defines at which value the progress display is completed."
-        },
+        { "name": "max", "description": "Defines the maximum value of the element." },
         { "name": "unit", "description": "Defines the unit of the step values (not shown)." },
-        { "name": "value", "description": "Defines the progress." },
+        { "name": "value", "description": "Defines the value of the element." },
         {
           "name": "variant",
           "description": "Defines which variant should be used for presentation."
@@ -1242,7 +1399,7 @@
     },
     {
       "name": "Quote",
-      "definition": "> <kol-badge _label=\"untested\"></kol-badge> Diese neue Komponente wird als ungetestet markiert, da der vollständige Barrierefreiheitstest noch aussteht. Der vollständige Test kann bei neuen Komponenten und Funktionalitäten auch erst nach einem abgeschlossenen Release erfolgen.\n\nDie **Quote**-Komponente verfügt über zwei Varianten, eine kurze Fließtext-(`inline`) und eine eingerückte(`block`) Variante. Beide Varianten enthalten einen Link auf die Quelle des Zitates.",
+      "definition": "The **Quote** component has two variants: a short inline (`inline`) and an indented block (`block`) variant. Both variants include a link to the source of the quote.",
       "url": "https://public-ui.github.io/en/docs/components/quote",
       "anatomy": [],
       "concepts": [
@@ -1260,30 +1417,25 @@
     },
     {
       "name": "Select",
-      "definition": "Die **Select**-Komponente erzeugt eine Auswahlliste, aus der eine oder mehrere vorgegebene Möglichkeiten ausgewählt werden können.",
+      "definition": "",
       "url": "https://public-ui.github.io/en/docs/components/select",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
-        },
-        {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
-        },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
         },
         { "name": "hint", "description": "Defines the hint text." },
         {
@@ -1291,23 +1443,21 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "multiple", "description": "Makes the input accept multiple inputs." },
         { "name": "name", "description": "Defines the technical name of an input field." },
-        {
-          "name": "options",
-          "description": "Options the user can choose from, also supporting Optgroup."
-        },
+        { "name": "options", "description": "Options the user can choose from." },
         { "name": "required", "description": "Makes the input element required." },
+        { "name": "rows", "description": "Maximum number of visible rows of the element." },
         {
-          "name": "rows",
-          "description": "Defines how many rows of options should be visible at the same time."
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
           "name": "tab-index",
@@ -1318,12 +1468,68 @@
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
+      ]
+    },
+    {
+      "name": "SingleSelect",
+      "definition": "The **SingleSelect** component creates a dropdown list from which exactly one predefined option can be selected.",
+      "url": "https://public-ui.github.io/en/docs/components/single-select",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
+        {
+          "name": "disabled",
+          "description": "Makes the element not focusable and ignore all events."
+        },
+        { "name": "has-clear-button", "description": "Shows the clear button if enabled." },
+        {
+          "name": "hide-label",
+          "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
+        },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+        },
+        { "name": "hint", "description": "Defines the hint text." },
+        {
+          "name": "icons",
+          "description": "Defines the icon classnames (e.g. `icons=\"fa-solid fa-user\"`)."
+        },
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
+        { "name": "name", "description": "Defines the technical name of an input field." },
+        { "name": "options", "description": "Options the user can choose from." },
+        {
+          "name": "placeholder",
+          "description": "Defines the placeholder for input field. To be shown when there's no value."
+        },
+        { "name": "required", "description": "Makes the input element required." },
+        { "name": "rows", "description": "Maximum number of visible rows of the element." },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
+        },
+        {
+          "name": "tooltip-align",
+          "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
+        },
+        { "name": "touched", "description": "Shows if the input was touched by a user." },
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
       "name": "SkipNav",
-      "definition": "Mit Hilfe der **SkipNav**-Komponente kann eine versteckte Navigation erzeugt werden. Sie dient dazu, Sehbehinderten das Überspringen von Seitenbereichen zu ermöglichen. Sie wird nur nach Anspringen durch die **Tab-Taste** sichtbar.",
+      "definition": "The **SkipNav** component renders a hidden navigation that allows keyboard and assistive technology users to skip repetitive navigation sections and jump directly to the main content. It only becomes visible when reached via the Tab key.",
       "url": "https://public-ui.github.io/en/docs/components/skip-nav",
       "anatomy": [],
       "concepts": [
@@ -1339,10 +1545,14 @@
     },
     {
       "name": "Spin",
-      "definition": "Ladeanzeigen, wie die **Spin**-Komponente, informieren die Nutzer:innen über Lade- oder Rechenvorgänge, die vom System ausgeführt werden. Der Fortschritt kann durch eine wiederholte Animation kommuniziert werden.",
+      "definition": "The **Spin** component informs users about loading or processing operations being performed by the system. Progress can be communicated through a repeated animation.",
       "url": "https://public-ui.github.io/en/docs/components/spin",
       "anatomy": [],
       "concepts": [
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
+        },
         { "name": "show", "description": "Makes the element show up." },
         {
           "name": "variant",
@@ -1352,13 +1562,21 @@
     },
     {
       "name": "SplitButton",
-      "definition": "> <kol-badge _label=\"untested\"></kol-badge> Diese neue Komponente wird als ungetestet markiert, da der vollständige Barrierefreiheitstest noch aussteht. Der vollständige Test kann bei neuen Komponenten und Funktionalitäten auch erst nach einem abgeschlossenen Release erfolgen.\n\nDie SplitButton-Komponente kann genutzt werden, um einen zweigeteilten Button darzustellen. Dabei wird der Primär-Button\nüblicherweise für eine Haupt-Aktion genutzt, während der sekundäre Button ein Kontext-Menü (\"Popover\") öffnet, hinter\ndem sich weitere Aktionen verbergen.\n\n- Der Sekundär-Button togglet grundsätzlich das Kontextmenü.\n- Für den Primär-Button kann ein individueller Event-Handler hinterlegt werden, wird dies nicht getan togglet er ebenfalls das Kontextmenü.",
+      "definition": "The **SplitButton** component can be used to display a two-part button. The primary button is typically used for\na main action, while the secondary button opens a context menu (`Popover`) that contains additional actions.",
       "url": "https://public-ui.github.io/en/docs/components/split-button",
       "anatomy": [],
       "concepts": [
         {
+          "name": "access-key",
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
+        },
+        {
           "name": "aria-controls",
           "description": "Defines which elements are controlled by this component. (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls)"
+        },
+        {
+          "name": "aria-description",
+          "description": "Defines the value for the aria-description attribute."
         },
         {
           "name": "aria-expanded",
@@ -1385,18 +1603,14 @@
           "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
-        },
-        {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
         { "name": "name", "description": "Defines the technical name of an input field." },
         { "name": "role", "description": "Defines the role of the components primary element." },
         {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
           "name": "tooltip-align",
@@ -1406,7 +1620,7 @@
           "name": "type",
           "description": "Defines either the type of the component or of the components interactive element."
         },
-        { "name": "value", "description": "Defines the value that the button emits on click." },
+        { "name": "value", "description": "Defines the value of the element." },
         {
           "name": "variant",
           "description": "Defines which variant should be used for presentation."
@@ -1414,49 +1628,75 @@
       ]
     },
     {
-      "name": "Symbol",
-      "definition": "Die **Symbol**-Komponente ermöglicht das Rendern beliebiger Symbole mit steuerbarer Ausgabe durch den Screenreader.",
-      "url": "https://public-ui.github.io/en/docs/components/symbol",
-      "anatomy": [],
-      "concepts": [
-        {
-          "name": "label",
-          "description": "Sets the visible or semantic label of the component (e.g. Aria label, Label, Headline, Caption, Summary, etc.)."
-        },
-        {
-          "name": "symbol",
-          "description": "Dieses Property gibt den String an der angezeigt werden soll."
-        }
-      ]
-    },
-    {
-      "name": "Table",
-      "definition": "Die **Table**-Komponente dient primär der übersichtlichen Darstellung von Datenmengen. Dabei ist sie so ausgelegt, dass sie alle von den Daten abhängige Werte automatisch ermittelt und die Tabelle entsprechend darstellt. Hierzu gehören beispielsweise die optionalen Funktionalitäten Spaltensortierung oder Pagination.\n\n<kol-indented-text _summary=\"Backend-seitige Pagination\">\n\tBei sehr großen Datenmengen ist auch eine manuelle Nutzung der Table-Komponente möglich. Das bedeutet, dass die Tabelle seitenweise \"manuell\" befüllt wird. Hierzu kann einfach anstatt der Table-Pagination eine \"eigene\" Pagination unter der Tabelle mittels der Pagination-Komponente verwendet werden.\n</kol-indented-text>",
-      "url": "https://public-ui.github.io/en/docs/components/table",
+      "name": "TableStateful",
+      "definition": "The **Table** component is primarily used for the clear presentation of data sets. It is designed to automatically determine all data-dependent values and render the table accordingly. This includes optional features such as column sorting and pagination.",
+      "url": "https://public-ui.github.io/en/docs/components/table-stateful",
       "anatomy": [],
       "concepts": [
         { "name": "allow-multi-sort", "description": "Defines whether to allow multi sort." },
         { "name": "data", "description": "Defines the primary table data." },
         { "name": "data-foot", "description": "Defines the data for the table footer." },
+        {
+          "name": "has-settings-menu",
+          "description": "Enables the settings menu if true (default: false)."
+        },
         { "name": "headers", "description": "Defines the horizontal and vertical table headers." },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
         },
-        { "name": "min-width", "description": "Defines the table min-width." },
         {
           "name": "pagination",
           "description": "Defines whether to show the data distributed over multiple pages."
+        },
+        {
+          "name": "pagination-position",
+          "description": "Controls the position of the pagination."
+        },
+        {
+          "name": "selection",
+          "description": "Defines how rows can be selected and the current selection."
+        }
+      ]
+    },
+    {
+      "name": "TableStateless",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/table-stateless",
+      "anatomy": [],
+      "concepts": [
+        { "name": "data", "description": "Defines the primary table data." },
+        { "name": "data-foot", "description": "Defines the data for the table footer." },
+        {
+          "name": "has-settings-menu",
+          "description": "Enables the settings menu if true (default: false)."
+        },
+        {
+          "name": "header-cells",
+          "description": "Defines the horizontal and vertical table headers."
+        },
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
+        },
+        {
+          "name": "selection",
+          "description": "Defines how rows can be selected and the current selection."
         }
       ]
     },
     {
       "name": "Tabs",
-      "definition": "Die **Tabs**-Komponente wird verwendet, um verwandte Inhalte auf derselben Seite zu organisieren und zwischen ihnen zu navigieren. Tabs sorgen dafür, dass große Inhaltsmengen für Nutzer:innen leichter organisiert werden können. Tabs sind in Registerkartenleisten angeordnet, die als Registerkartengruppen bezeichnet werden, wobei die Registerkartenbeschriftung den Nutzer:innen einen Hinweis darauf gibt, welcher Inhalt angezeigt wird, wenn die Registerkarte ausgewählt wird.",
+      "definition": "The **Tabs** component is used to organize related content on the same page and navigate between them. Tabs ensure that large amounts of content can be more easily organized for users.",
       "url": "https://public-ui.github.io/en/docs/components/tabs",
       "anatomy": [],
       "concepts": [
-        { "name": "align", "description": "Defines the position of the tab captions." },
+        { "name": "align", "description": "Defines the visual orientation of the component." },
+        { "name": "behavior", "description": "Defines which behavior is active." },
+        {
+          "name": "has-create-button",
+          "description": "Defines whether the element has a create button."
+        },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
@@ -1467,49 +1707,52 @@
     },
     {
       "name": "Textarea",
-      "definition": "Die Komponente **Textarea** stellt ein größeres Eingabefeld für Inhalte zur Verfügung. Im Gegensatz zum <kol-link _href=\"/docs/components/input-text\" _label=\"/docs/components/input-text\" _label=\"InputText\"></kol-link> können hier auch umfangreiche Inhalte eingegeben werden, die auch mit Zeilenumbrüchen versehen sein können.",
+      "definition": "The **Textarea** component provides a larger input field for content. Unlike InputText, it also allows extensive content to be entered, including line breaks.",
       "url": "https://public-ui.github.io/en/docs/components/textarea",
       "anatomy": [],
       "concepts": [
         {
           "name": "access-key",
-          "description": "Defines which key combination can be used to trigger or focus the interactive element of the component."
+          "description": "Defines the key combination that can be used to trigger or focus the component's interactive element."
         },
         {
           "name": "adjust-height",
           "description": "Adjusts the height of the element to its content."
         },
         {
-          "name": "alert",
-          "description": "Defines whether the screen-readers should read out the notification."
-        },
-        {
           "name": "disabled",
           "description": "Makes the element not focusable and ignore all events."
         },
-        { "name": "error", "description": "Defines the error message text." },
         {
           "name": "has-counter",
-          "description": "Shows the character count on the lower border of the input."
-        },
-        {
-          "name": "hide-error",
-          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+          "description": "Shows a character counter for the input element."
         },
         {
           "name": "hide-label",
           "description": "Hides the caption by default and displays the caption text with a tooltip when the\ninteractive element is focused or the mouse is over it."
         },
+        {
+          "name": "hide-msg",
+          "description": "Hides the error message but leaves it in the DOM for the input's aria-describedby."
+        },
         { "name": "hint", "description": "Defines the hint text." },
         {
-          "name": "id",
-          "description": "Defines the internal ID of the primary component element."
+          "name": "icons",
+          "description": "Defines the icon classnames (e.g. `_icons=\"fa-solid fa-user\"`)."
         },
         {
           "name": "label",
           "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.). Set to `false` to enable the expert slot."
         },
         { "name": "max-length", "description": "Defines the maximum number of input characters." },
+        {
+          "name": "max-length-behavior",
+          "description": "Defines the behavior when maxLength is set. 'hard' sets the maxlength attribute, 'soft' shows a character counter without preventing input."
+        },
+        {
+          "name": "msg",
+          "description": "Defines the properties for a message rendered as Alert component."
+        },
         { "name": "name", "description": "Defines the technical name of an input field." },
         {
           "name": "placeholder",
@@ -1519,30 +1762,52 @@
         { "name": "required", "description": "Makes the input element required." },
         {
           "name": "resize",
-          "description": "Defines whether and in which direction the size of the input can be changed by the user. (https://developer.mozilla.org/de/docs/Web/CSS/resize)"
+          "description": "Defines whether and in which direction the size of the input can be changed by the user. (https://developer.mozilla.org/de/docs/Web/CSS/resize)\nIn version 3 (v3), horizontal resizing is abolished. The corresponding property is then reduced to the properties `vertical` (default) and `none`."
+        },
+        { "name": "rows", "description": "Maximum number of visible rows of the element." },
+        {
+          "name": "short-key",
+          "description": "Adds a visual shortcut hint after the label and instructs the screen reader to read the shortcut aloud."
         },
         {
-          "name": "rows",
-          "description": "Defines how many rows of text should be visible at the same time."
-        },
-        {
-          "name": "tab-index",
-          "description": "Defines which tab-index the primary element of the component has. (https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex)"
+          "name": "spell-check",
+          "description": "Defines whether the browser should check the spelling and grammar."
         },
         {
           "name": "tooltip-align",
           "description": "Defines where to show the Tooltip preferably: top, right, bottom or left."
         },
         { "name": "touched", "description": "Shows if the input was touched by a user." },
-        { "name": "value", "description": "Defines the value of the input." }
+        { "name": "value", "description": "Defines the value of the element." }
       ]
     },
     {
-      "name": "ToastContainer",
-      "definition": "Mit dem **Toast**-Service geben Sie ein optisches Feedback an die Nutzer:innen. Sie wird am Kopf des Browserfenster\nangezeigt, bis sie geschlossen wird. Werden mehrere Toasts geöffnet, ohne das die bisherigen geschlossen wurden, so werden diese untereinander angezeigt.",
-      "url": "https://public-ui.github.io/en/docs/components/toast-container",
+      "name": "Toolbar",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/toolbar",
       "anatomy": [],
-      "concepts": []
+      "concepts": [
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
+        },
+        {
+          "name": "orientation",
+          "description": "Defines whether the orientation of the component is horizontal or vertical."
+        }
+      ]
+    },
+    {
+      "name": "Tree",
+      "definition": "",
+      "url": "https://public-ui.github.io/en/docs/components/tree",
+      "anatomy": [],
+      "concepts": [
+        {
+          "name": "label",
+          "description": "Defines the visible or semantic label of the component (e.g. aria-label, label, headline, caption, summary, etc.)."
+        }
+      ]
     }
   ]
 }
