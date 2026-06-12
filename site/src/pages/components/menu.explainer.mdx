@@ -409,6 +409,94 @@ simply change its semantics and processing model when it contains a new `<menuit
 child. See https://github.com/openui/open-ui/issues/1194 for more discussion.
 
 
+### Should the menu elements use id references or nesting for submenu relationships?
+
+**Discussion**: [Issue #1456](https://github.com/openui/open-ui/issues/1456)
+
+Should submenu relationships be expressed by ID references, as the current proposal does:
+
+```html
+<menubar>
+  <menuitem command=toggle-menu commandfor=file-menu>File</menuitem>
+  <menuitem command=toggle-menu commandfor=edit-menu>Edit</menuitem>
+</menubar>
+
+<menulist id=file-menu>
+  <menuitem>New</menuitem>
+  <menuitem>Open</menuitem>
+</menulist>
+
+<menulist id=edit-menu>
+  <menuitem>Cut</menuitem>
+  <menuitem>Copy</menuitem>
+  <menuitem>Paste</menuitem>
+</menulist>
+```
+
+... or should they be expressed through DOM tree nesting relationships,
+as in this example:
+
+```html
+<menubar>
+  <submenu>
+    <menulabel>File</menulabel>
+    <menulist>
+      <menuitem>New</menuitem>
+      <menuitem>Open</menuitem>
+    </menulist>
+  </submenu>
+  <submenu>
+    <menulabel>Edit</menulabel>
+    <menulist>
+      <menuitem>Cut</menuitem>
+      <menuitem>Copy</menuitem>
+      <menuitem>Paste</menuitem>
+    </menulist>
+  </submenu>
+</menubar>
+```
+
+... or should both variants be allowed?
+
+Some considerations for each of these options:
+
+**ID references**
+
+* **Precedents**:
+    * Most libraries that offer menu APIs.
+    * `<input>`/`<datalist>`
+    * `<dialog>`
+    * `popover`
+* **Advantages** (relative to both other options):
+    * Requires fewer elements total, since avoiding nested interactive elements comes naturally rather than needing an extra wrapper element.
+* **Disadvantages** (relative to both other options):
+    * Requires naming elements and referencing them by name.
+
+**DOM Nesting**
+
+* **Precedents**:
+    * `<ul>`/`<ol>`
+    * `<select>` and `<option>`
+* **Advantages** (relative to both other options):
+    * Easier to describe `click` events firing on activated menuitems (since events can be redirected like `<label>` does).
+    * More natural to take event handling approach of handling all the events in a handler on the root of a widget (though possible with either approach if the menus are all in a common container).
+* **Disadvantages** (relative to both other options):
+    * Requiring the entire menu structure in one place may make composing the menu more difficult when parts of the menus are managed by different teams.
+    * Requires extra nesting elements to avoid having nested interactive elements.
+    * If the tree traversed is the light DOM, then harder or impossible to use across shadow DOM boundaries.
+
+**Allow either ID references or nesting**
+
+* **Precedents**:
+    * `<label for=>`
+    * `form=` on form controls
+    * maybe `aria-labelledby` and similar attributes
+* **Advantages** (relative to both other options):
+    * Developers can write whichever way they prefer.
+* **Disadvantages** (relative to both other options):
+    * Has more complexity for anyone who needs to handle both cases (implementors, and in some cases also developers).
+
+
 ### What's the difference between this and the `<toolbar>` proposal?
 
 There is a lot of nuance between the various menu-adjacent patterns: menubar, navigation menu, and
