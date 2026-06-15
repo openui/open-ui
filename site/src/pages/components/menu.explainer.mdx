@@ -464,7 +464,6 @@ Some considerations for each of these options:
 **ID references**
 
 * **Precedents**:
-    * Most libraries that offer menu APIs.
     * `<input>`/`<datalist>`
     * `<dialog>`
     * `popover`
@@ -478,6 +477,9 @@ Some considerations for each of these options:
 * **Precedents**:
     * `<ul>`/`<ol>`
     * `<select>` and `<option>`
+    * [Material Web menu component](https://github.com/material-components/material-web/blob/main/docs/components/menu.md) (avoids nested interactives)
+    * [React Spectrum v3 Menu component](https://react-spectrum.adobe.com/v3/Menu.html) (avoids nested interactives)
+    * [Semantic UI Menu collection](https://semantic-ui.com/collections/menu.html) (has nested interactives)
 * **Advantages** (relative to both other options):
     * Easier to describe `click` events firing on activated menuitems (since events can be redirected like `<label>` does).
     * More natural to take event handling approach of handling all the events in a handler on the root of a widget (though possible with either approach if the menus are all in a common container).
