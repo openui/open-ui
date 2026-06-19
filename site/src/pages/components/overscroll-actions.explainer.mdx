@@ -21,7 +21,7 @@ Common UI patterns like **drawer-menus** (swiping past the edge to reveal a menu
 or **swipe-to-action** (swiping a list item to reveal delete buttons) currently
 rely on complex nested scrollers or JavaScript gesture polyfills. These
 workarounds are difficult to implement, computationally expensive, and often
-fail to provide accessible alternatives for non-touch users.
+fail to provide accessible alternatives.
 
 ## Proposal
 
@@ -31,13 +31,13 @@ We propose a set of HTML attributes that declaratively bind an element (the
 An element is designated as the overscroll content by applying the
 `overscrollarea` attribute. To ensure accessibility, this area can be associated
 with an activatable element (like a `<button>`) that toggles its visibility,
-providing a fallback interaction (click/Enter) for non-touch users.
+providing a fallback interaction (click/Enter).
 
 ### Goals
 
 * **No JavaScript:** Enable swipe-to-reveal and pull-to-refresh gesture-based
   interactions using only HTML and CSS.
-* **Accessibility:** Enable integration with semantic buttons to toggle the view,
+* **Accessibility:** Enable integration with buttons to toggle the view,
   ensuring keyboard and assistive technology support.
 * **Performance:** Offload gesture physics and animation to the browser's
   compositor thread (via scroll timelines).
