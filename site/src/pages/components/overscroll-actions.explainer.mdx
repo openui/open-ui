@@ -28,33 +28,33 @@ fail to provide accessible alternatives for non-touch users.
 We propose a set of HTML attributes that declaratively bind an element (the
 "overscroll content") to the scroll boundary of a container.
 
-Crucially, this binding is defined on an **activatable element** (like a
-`<button>`). This ensures that every gesture-based action has a guaranteed,
-accessible fallback interaction (click/Enter) without extra developer effort.
+An element is designated as the overscroll content by applying the
+`overscrollarea` attribute. To ensure accessibility, this area can be associated
+with an activatable element (like a `<button>`) that toggles its visibility,
+providing a fallback interaction (click/Enter) for non-touch users.
 
 ### Goals
 
 * **No JavaScript:** Enable swipe-to-reveal and pull-to-refresh gesture-based
   interactions using only HTML and CSS.
-* **Accessibility by Default:** Enforce the existence of a semantic button to
-  toggle the view, ensuring keyboard and assistive technology support.
+* **Accessibility:** Enable integration with semantic buttons to toggle the view,
+  ensuring keyboard and assistive technology support.
 * **Performance:** Offload gesture physics and animation to the browser's
   compositor thread (via scroll timelines).
 
 ## The API
 
-There are two parts to the API:
+The API consists of the following components:
 
-First, the container needs to be identified as supporting overscroll areas. This
-is done by specifying `overscrollcontainer` attribute on the container.
-
-Second, we introduce a new `command` value, `toggle-overscroll`, to bind a
-trigger button to both the container (the scroll port) and the content (the
-element hidden in the overscroll area).
+1.  **The Container:** Identified by specifying the `overscrollcontainer` attribute.
+2.  **The Overscroll Area:** The content element that is revealed during overscroll,
+    identified by specifying the `overscrollarea` attribute.
+3.  **The Invoker (Optional):** A button with `command="toggle-overscroll"` and
+    `commandfor` pointing to the overscroll area, used to toggle its visibility.
 
 ```html
 <div id="container" overscrollcontainer>
-    <menubar id="menu">
+    <menubar id="menu" overscrollarea>
         <menuitem>Home</menuitem>
         <menuitem>Settings</menuitem>
     </menubar>
@@ -84,9 +84,8 @@ In this explainer, we'll use the following terminology:
 
 - **"overscroll container":** the scrolling container with the `overscrollcontainer`
 attribute. `#container` in the above code snippet.
-- **"overscroll area":** the element (and its descendants) within the overscroll
-container that gets rendered as overscrolled content. `#menu` in the above
-code snippet.
+- **"overscroll area":** the element (and its descendants) with the `overscrollarea`
+attribute within the overscroll container. `#menu` in the above code snippet.
 - **"overscroll invoker":** the command invoker with `command=toggle-overscroll`
 pointing to the overscroll area. `#btn` in the above code snippet.
 
@@ -166,7 +165,7 @@ with a side menu that can be opened with a swipe" />
   ☰ Menu
 </button>
 <div id="app-layout" overscrollcontainer="overlay">
-  <dialog id="drawer-menu" closedby="any">
+  <dialog id="drawer-menu" closedby="any" overscrollarea>
     <nav>
       <li><a href="/">Home</a></li>
       <li><a href="/profile">Profile</a></li>
@@ -199,7 +198,7 @@ Example code:
   <div class="primary-content">
     Sender: Hello world!
   </div>
-  <menubar id="message-actions">
+  <menubar id="message-actions" overscrollarea>
     <menuitem>Archive</menuitem>
     <menuitem>Delete</menuitem>
   </menubar>
@@ -225,7 +224,7 @@ Example code:
 
 ```html
 <body overscrollcontainer="overlay">
-  <div role="status" class="toast-body">
+  <div role="status" class="toast-body" overscrollarea>
     File successfully uploaded. (Swipe me to dismiss)
   </div>
   <main> Rest of the page </main>
@@ -251,7 +250,7 @@ Example code:
 
 ```html
 <div id="news-feed" overscrollcontainer>
-  <div id="refresh-indicator">
+  <div id="refresh-indicator" overscrollarea>
     <span>↻ Pull to refresh...</span>
   </div>
   <div class="feed-content">
@@ -365,7 +364,7 @@ The easiest such solution would be
 ## Accessibility Considerations
 
 We think this proposal solves a major accessibility hurdle in gesture UIs. By
-attaching the behavior to a `<button>`:
+supporting association with a `<button>` invoker:
 
 * **Keyboard Users:** Can tab to the button and activate it to reveal the
   menu/action.
@@ -423,11 +422,10 @@ based overscroll actions.
 
 ### CSS-only Properties
 
-We considered defining this relationship purely in CSS. While powerful, CSS
-lacks the semantic enforcement of an interactive element. A CSS-only solution
-runs the risk of creating "invisible" gestures that are inaccessible to users
-who cannot perform swipe actions. By requiring an HTML activator, we enforce
-progressive enhancement.
+We considered defining this relationship purely in CSS. Defining the overscroll
+area in HTML via the `overscrollarea` attribute ensures that the structure is
+explicit in the DOM, making it easier to associate with interactive fallback
+elements (like buttons) for accessibility.
 
 ## Open questions
 * **ARIA Attributes:** Should the browser automatically handle `aria-expanded`
