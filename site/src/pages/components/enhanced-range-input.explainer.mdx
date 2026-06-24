@@ -78,12 +78,12 @@ There currently is a running draft solution for this found at: [https://www.w3.o
 
 - `::slider-track`: The main track along which the thumb(s) move.
 - `::slider-fill`: The filled portion of the track, typically between the minimum value and the thumb (or between thumbs for multi-handle ranges).
-- `::slider-thumb`: The draggable handle(s) used to select values.
+- `::slider-thumb(*)`: The draggable handle(s) used to select values.
 
 Taking this further, we would like to propose new pseudo elements following the same convention:
 
 - `::slider-segment`: Sections of the track between handles in multi-handle ranges.
-- `::slider-tick`: Optional tick marks along the track for value representation. (when datalist is paired.)
+- `::slider-tick(*)`: Optional tick marks along the track for value representation. (when datalist is paired.)
 - `::slider-tick-label`: Labels associated with tick marks. (when datalist is paired.)
 
 This would follow the idea of the `appearance: base` value from the CSS Forms specification:
@@ -381,8 +381,8 @@ To address the current fragmentation and provide a unified styling API, we propo
 
 - `::slider-track`: Represents the main track of the range group.
 - `::slider-segment`: Represents sections of the track between handles.
-- `::slider-thumb`: Represents the draggable handles within the group.
-- `::slider-tick`: Represents individual tick marks on the range group with attached datalist.
+- `::slider-thumb(*)`: Represents the draggable handles within the group.
+- `::slider-tick(*)`: Represents individual tick marks on the range group with attached datalist.
 - `::slider-tick-label`: Represents the label associated with each tick mark of a datalist option.
 
 Example usage:
@@ -402,7 +402,7 @@ input[type="range"]::slider-fill {
     background-color: #4caf50;
 }
 
-input[type="range"]::slider-thumb {
+input[type="range"]::slider-thumb(*) {
     width: 20px;
     height: 20px;
     background-color: #2196f3;
@@ -426,7 +426,7 @@ rangegroup::slider-segment(2) {
     background-color: #33ff57;
 }
 
-rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb(*) {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -502,7 +502,7 @@ rangegroup::slider-segment(2) {
 rangegroup::slider-segment(3) {
     background-color: #ddd;
 }
-rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb(*) {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -542,7 +542,7 @@ rangegroup::slider-track {
     background-color: #ddd;
 }
 
-rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb(*) {
     width: 20px;
     height: 20px;
     background-color: #2196f3;
