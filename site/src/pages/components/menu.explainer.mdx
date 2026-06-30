@@ -49,13 +49,10 @@ little markup and JavaScript. Consider the following examples:
 <menubar>
   <submenu>
     <menuitem>File</menuitem>
-    <!-- File Menu (Level 1) -->
     <menulist>
       <menuitem>New</menuitem>
-      <!-- This item triggers a nested submenu (Level 2) -->
       <submenu>
         <menuitem>Open Recent</menuitem>
-        <!-- Open Recent Menu (Level 2) -->
         <menulist>
           <menuitem>Document1.txt</menuitem>
           <menuitem>Report.docx</menuitem>
@@ -657,9 +654,8 @@ proposed elements would be natively introducing to HTML.
 
 A `<submenu>` element creates a relationship that allows its child `<menuitem>` to
 invoke its child `<menulist>`.
-`<menuitem command="toggle-menu" commandfor=id>`.
 This is similar to what the `toggle-popover` command does
-but it  also implies some additional menu-specific
+but it also implies some additional menu-specific
 behavior and relationships, such as keyboard navigation and focus behavior.
 
 * Should `<menulist>` be a popover by default?
