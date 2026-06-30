@@ -21,8 +21,9 @@ authors:
 An application menu is a common way to group actions together in the form of menu items, and provide
 users the ability to execute commands.
 
-This proposal introduces the `<menubar>`, `<menulist>`, and `<menuitem>` elements to support
-application menus on the web. These menus will:
+This proposal introduces the `<menubar>`, `<menulist>`, `<menuitem>`, and `<submenu>` elements
+to support application menus on the web.
+These menus will:
 
  - Represent commands as `<menuitem>`s, grouped together in a `<menulist>` popover or in-page
    `<menubar>`.
@@ -46,33 +47,44 @@ little markup and JavaScript. Consider the following examples:
 
 ```html
 <menubar>
-  <menuitem commandfor="file-menu" command="toggle-menu">File</menuitem>
-  <menuitem commandfor="edit-menu" command="toggle-menu">Edit</menuitem>
-  <menuitem commandfor="view-menu" command="toggle-menu">View</menuitem>
-  <menuitem commandfor="help-menu" command="toggle-menu">Help</menuitem>
+  <submenu>
+    <menuitem>File</menuitem>
+    <!-- File Menu (Level 1) -->
+    <menulist>
+      <menuitem>New</menuitem>
+      <!-- This item triggers a nested submenu (Level 2) -->
+      <submenu>
+        <menuitem>Open Recent</menuitem>
+        <!-- Open Recent Menu (Level 2) -->
+        <menulist>
+          <menuitem>Document1.txt</menuitem>
+          <menuitem>Report.docx</menuitem>
+          <menuitem>Spreadsheet.xlsx</menuitem>
+          <hr>
+          <menuitem>Clear List</menuitem>
+        </menulist>
+      </submenu>
+      <hr>
+      <menuitem>Save</menuitem>
+      <menuitem>Save As...</menuitem>
+      <menuitem disabled>Print</menuitem>
+      <hr>
+      <menuitem>Exit</menuitem>
+    </menulist>
+  </submenu>
+  <submenu>
+    <menuitem>Edit</menuitem>
+    <menulist></menulist>
+  </submenu>
+  <submenu>
+    <menuitem>View</menuitem>
+    <menulist></menulist>
+  </submenu>
+  <submenu>
+    <menuitem>Help</menuitem>
+    <menulist></menulist>
+  </submenu>
 </menubar>
-
-<!-- File Menu (Level 1) -->
-<menulist id="file-menu">
-  <menuitem>New</menuitem>
-  <!-- This item triggers a nested submenu (Level 2) -->
-  <menuitem commandfor="open-recent-menu" command="toggle-menu">Open Recent</menuitem>
-  <hr>
-  <menuitem>Save</menuitem>
-  <menuitem>Save As...</menuitem>
-  <menuitem disabled>Print</menuitem>
-  <hr>
-  <menuitem>Exit</menuitem>
-</menulist>
-
-<!-- Open Recent Menu (Level 2) -->
-<menulist id="open-recent-menu">
-  <menuitem>Document1.txt</menuitem>
-  <menuitem>Report.docx</menuitem>
-  <menuitem>Spreadsheet.xlsx</menuitem>
-  <hr>
-  <menuitem>Clear List</menuitem>
-</menulist>
 ```
 
 <br/>
@@ -82,38 +94,49 @@ little markup and JavaScript. Consider the following examples:
 
 ```html
 <menubar>
-  <menuitem commandfor="file-menu" command="toggle-menu">File</menuitem>
-  <menuitem commandfor="edit-menu" command="toggle-menu">Edit</menuitem>
-  <menuitem commandfor="view-menu" command="toggle-menu">View</menuitem>
-  <menuitem commandfor="help-menu" command="toggle-menu">Help</menuitem>
+  <submenu>
+    <menuitem>File</menuitem>
+    <menulist></menulist>
+  </submenu>
+  <submenu>
+    <menuitem>Edit</menuitem>
+    <menulist></menulist>
+  </submenu>
+  <submenu>
+    <menuitem>View</menuitem>
+    <!-- View Menu (Level 1) -->
+    <menulist>
+      <!-- This item triggers a nested submenu (Level 2) -->
+      <submenu>
+        <menuitem>Zoom</menuitem>
+        <!-- Zoom Menu (Level 2) -->
+        <menulist>
+          <fieldset checkable="single">
+            <menuitem>50%</menuitem>
+            <menuitem>75%</menuitem>
+            <menuitem defaultchecked>100%</menuitem>
+            <menuitem>150%</menuitem>
+            <menuitem>200%</menuitem>
+          </fieldset>
+        </menulist>
+      </submenu>
+      <menuitem>Full Screen</menuitem>
+      <hr>
+      <fieldset checkable="multiple">
+        <menuitem defaultchecked>Show Ruler</menuitem>
+        <menuitem>Show Outline</menuitem>
+        <menuitem defaultchecked>Show Comments</menuitem>
+      </fieldset>
+    </menulist>
+  </submenu>
+  <submenu>
+    <menuitem>Help</menuitem>
+    <menulist></menulist>
+  </submenu>
 </menubar>
-
-<!-- View Menu (Level 1) -->
-<menulist id="view-menu">
-  <!-- This item triggers a nested submenu (Level 2) -->
-  <menuitem commandfor="zoom-menu" command="toggle-menu">Zoom</menuitem>
-  <menuitem>Full Screen</menuitem>
-  <hr>
-  <fieldset checkable="multiple">
-    <menuitem defaultchecked>Show Ruler</menuitem>
-    <menuitem>Show Outline</menuitem>
-    <menuitem defaultchecked>Show Comments</menuitem>
-  </fieldset>
-</menulist>
-
-<!-- Zoom Menu (Level 2) -->
-<menulist id="zoom-menu">
-  <fieldset checkable="single">
-    <menuitem>50%</menuitem>
-    <menuitem>75%</menuitem>
-    <menuitem defaultchecked>100%</menuitem>
-    <menuitem>150%</menuitem>
-    <menuitem>200%</menuitem>
-  </fieldset>
-</menulist>
 ```
 
-*These images were captured using [our test site](https://jsbin.com/vawevuc/edit?html,output) to
+*These images were captured using [our test site](https://jsbin.com/vawevuc/edit?html,output) (old syntax) to
 test and demo these new elements.*
 
 Because new elements in the markup above build off of existing features such as the [Popover
@@ -128,9 +151,10 @@ as a keyboard interaction & focus model that users expect.
 
 ## The `<menubar>` element
 
-The `<menubar>` element represents an in-page group of `<menuitem>` elements that can either invoke
-commands or open submenus of commands. It defaults to a horizontal orientation, and its child
-`<menuitem>` elements are flex items displayed in a row.
+The `<menubar>` element represents an in-page group of `<menuitem>` elements that can invoke
+commands or `<submenu>` elements that can open submenus.
+It defaults to a horizontal orientation, and its child
+elements are flex items displayed in a row.
 
 This element:
 
@@ -140,6 +164,9 @@ This element:
 
 **Content model**: the `<menubar>` element allows the following elements as descendants:
 * `<menuitem>`
+* `<submenu>`
+* `<fieldset>` (containing `<div>` (with transparent content model) or `<menuitem>`)
+* `<div>` (with transparent content model)
 * Anchor `<a>` tags are disallowed in menu bars, due to accessibility concerns around exposing
   links in ARIA menus, and concerns around the navigation menubar pattern. We enforce this with the
   content model, and propose default `display: none` styles for anchors that are descendants of
@@ -169,7 +196,8 @@ This element:
 
 * `<menuitem>`
 * `<hr>`
-* `<fieldset>`
+* `<fieldset>` (containing `<div>` (with transparent content model) or `<menuitem>`)
+* `<div>` (with transparent content model)
 * This initial version does not allow other content.  While there is some desire to allow
   some types of **interactive content** inside of menu lists,
   we would need to answer a number of questions around the desired keyboard navigation behavior
@@ -270,9 +298,21 @@ support other interactive content in menus alongside the `<menuitem>` element in
 
 <img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems" />
 
+## The `<submenu>` element
+
+The `<submenu>` element groups a `<menuitem>` child that opens a submenu
+and a `<menulist>` child that is that submenu.
+
+This element has `display:contents` so that its child `<menuitem>` can participate
+in the layout of the parent.
+
+**Content model**:
+
+One `<menuitem>` child followed by one `<menulist>` child.
+
 ## Invoking a `<menulist>` from a `<button>`
 
-The `<menulist>` popover element can be used without a menubar invoking it through a menuitem. It
+The `<menulist>` popover element can be used without a `<menubar>` invoking it through a `<submenu>` and its `<menuitem>`. It
 can be invoked by any command invoker element, such as the `<button>` element. This is a pattern
 commonly seen on sites that provide one-off drop-down menus or filter overlays.
 
@@ -331,13 +371,6 @@ whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
 `<fieldset checkable=single>`, and the
 [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a
 `<fieldset checkable=multiple>`.
-
-### Parent/child relationship in the accessibility tree via `aria-owns`
-
-Menu lists and sub-menulists are not nested in the DOM, however we considered using `aria-owns`
-natively to establish a parent-child relationship for these menus in the accessibility tree. This
-was discussed in [Issue 1297](https://github.com/openui/open-ui/issues/1297), where we resolved
-against doing this.
 
 ### ARIA attributes
 
@@ -413,7 +446,8 @@ child. See https://github.com/openui/open-ui/issues/1194 for more discussion.
 
 **Discussion**: [Issue #1456](https://github.com/openui/open-ui/issues/1456)
 
-Should submenu relationships be expressed by ID references, as the current proposal does:
+Should submenu relationships be expressed by ID references,
+as the previous version of the proposal does:
 
 ```html
 <menubar>
@@ -434,20 +468,19 @@ Should submenu relationships be expressed by ID references, as the current propo
 ```
 
 ... or should they be expressed through DOM tree nesting relationships,
-as in this example
-(with names that require further discussion if we were to take this approach):
+as we do now:
 
 ```html
 <menubar>
   <submenu>
-    <menulabel>File</menulabel>
+    <menuitem>File</menuitem>
     <menulist>
       <menuitem>New</menuitem>
       <menuitem>Open</menuitem>
     </menulist>
   </submenu>
   <submenu>
-    <menulabel>Edit</menulabel>
+    <menuitem>Edit</menuitem>
     <menulist>
       <menuitem>Cut</menuitem>
       <menuitem>Copy</menuitem>
@@ -499,6 +532,11 @@ Some considerations for each of these options:
 * **Disadvantages** (relative to both other options):
     * Has more complexity for anyone who needs to handle both cases (implementors, and in some cases also developers).
 
+
+Another relevant discussion on this topic was the discussion (back when the current proposal did not use nesting) on whether to use use `aria-owns`
+natively to establish a parent-child relationship for these menus in the accessibility tree. This
+was discussed in [Issue 1297](https://github.com/openui/open-ui/issues/1297), where we resolved
+against doing this.
 
 ### What's the difference between this and the `<toolbar>` proposal?
 
@@ -568,6 +606,8 @@ might seem reasonable to use checkable `<menuitem>` elements to style content as
 "Underlined", the [`<toolbar>` proposal](https://open-ui.org/components/toolbar.explainer/) is more
 apt to satisfy this use case.
 
+**Note**: Currently the content model *does* allow this.  We should figure out
+why the content model disagrees with this part of the explainer and update one of them.
 
 ### What's the difference between `<select>` and these new menu elements?
 
@@ -609,9 +649,11 @@ proposed elements would be natively introducing to HTML.
 
 ### Popover semantics for `<menulist>`
 
-Given a `<menuitem>` inside a `<menubar>`, it can invoke a `<menulist>` by invoking a target:
+A `<submenu>` element creates a relationship that allows its child `<menuitem>` to
+invoke its child `<menulist>`.
 `<menuitem command="toggle-menu" commandfor=id>`.
-`toggle-menu` is similar to `toggle-popover` but also implies some additional menu-specific
+This is similar to what the `toggle-popover` command does
+but it  also implies some additional menu-specific
 behavior and relationships, such as keyboard navigation and focus behavior.
 
 * Should `<menulist>` be a popover by default?
@@ -800,24 +842,38 @@ this use case.
 
 ```html
 <menubar>
- <menuitem command="toggle-menu" commandfor="format">Format</menuitem>
- <menuitem command="toggle-menu" commandfor="tools">Tools</menuitem>
- <menuitem command="toggle-menu" commandfor="extensions">Extensions</menuitem>
+  <submenu>
+    <menuitem>Format</menuitem>
+    <menulist>
+      <submenu>
+        <menuitem>Text</menuitem>
+        <menulist>
+          <fieldset checkable="multiple">
+            <menuitem id="bold-menuitem">Bold</menuitem>
+            <menuitem>Italic</menuitem>
+            <menuitem>Underline</menuitem>
+          </fieldset>
+        </menulist>
+      </submenu>
+      <submenu>
+        <menuitem>Paragraph styles</menuitem>
+        <menulist></menulist>
+      </submenu>
+      <submenu>
+        <menuitem>Align & indent</menuitem>
+        <menulist></menulist>
+      </submenu>
+    </menulist>
+  </submenu>
+  <submenu>
+    <menuitem>Tools</menuitem>
+    <menulist></menulist>
+  </submenu>
+  <submenu>
+    <menuitem>Extensions</menuitem>
+    <menulist></menulist>
+  </submenu>
 </menubar>
-
-<menulist id="format">
-  <menuitem command="toggle-menu" commandfor="text-format-menu">Text</menuitem>
-  <menuitem command="toggle-menu" commandfor="paragraph-format-menu">Paragraph styles</menuitem>
-  <menuitem command="toggle-menu" commandfor="align-format-menu">Align & indent</menuitem>
-</menulist>
-
-<menulist id="text-format-menu">
-  <fieldset checkable="multiple">
-    <menuitem id="bold-menuitem">Bold</menuitem>
-    <menuitem>Italic</menuitem>
-    <menuitem>Underline</menuitem>
-  </fieldset>
-</menulist>
 
 <script>
 document.querySelector('#bold-menuitem').addEventListener("click", () => {
@@ -927,6 +983,7 @@ This section links to all of the relevant discussions and [issues](https://githu
 - [What should the tab key do in menu elements?](https://github.com/openui/open-ui/issues/1438)
 - [[menu] moving keyboard focus into submenus](https://github.com/openui/open-ui/issues/1439)
 - [Do we need command=show-menu and command=hide-menu?](https://github.com/openui/open-ui/issues/1442)
+- [Nested structure for menus?](https://github.com/openui/open-ui/issues/1456)
 
 ### WHATWG
 - [Introduce the new menu elements](https://github.com/whatwg/html/pull/12011)
