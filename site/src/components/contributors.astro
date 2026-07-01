@@ -1,22 +1,38 @@
 ---
-const CONTRIBUTORS_URL = `https://api.github.com/repos/openui/open-ui/contributors`;
-const CONTRIBUTORS = [];
+import staticContributors from '../data/contributors.json';
 
-// Function to fetch contributors from a specific page and add them to CONTRIBUTORS array
-const fetchContributors = async (page) => {
-  const response = await fetch(`${CONTRIBUTORS_URL}?page=${page}`);
-  const contributors = await response.json();
-  if (Array.isArray(contributors)) CONTRIBUTORS.push(...contributors);
-};
+const CONTRIBUTORS_URL = 'https://api.github.com/repos/openui/open-ui/contributors';
+const pages = [1, 2];
+const CONTRIBUTORS = [...staticContributors];
 
-// Fetch contributors from page 1
-await fetchContributors(1);
+const responses = await Promise.allSettled(
+  pages.map((page) =>
+    fetch(`${CONTRIBUTORS_URL}?page=${page}`, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+      },
+    }),
+  ),
+);
 
-// Fetch contributors from page 2
-await fetchContributors(2); // Add more fetchContributors calls for additional pages as needed
+for (const result of responses) {
+  if (result.status !== 'fulfilled' || !result.value.ok) {
+    continue;
+  }
 
-// Filter out 'dependabot' users
-const CONTRIBUTORS_SAFE = CONTRIBUTORS.filter(c => !c.login.includes('dependabot'));
+  const contributors = await result.value.json().catch(() => null);
+  if (Array.isArray(contributors)) {
+    CONTRIBUTORS.push(...contributors);
+  }
+}
+
+const contributorsByLogin = new Map(
+  CONTRIBUTORS
+    .filter((contributor) => contributor?.login && !contributor.login.includes('dependabot'))
+    .map((contributor) => [contributor.login, contributor]),
+);
+
+const CONTRIBUTORS_SAFE = [...contributorsByLogin.values()];
 ---
 
 <ul>
