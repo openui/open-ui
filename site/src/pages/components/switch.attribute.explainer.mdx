@@ -24,8 +24,6 @@ Despite being one of the most commonly implemented UI components on the web, the
 
 ![Default switch appearance](/images/switch-attribute/default-switch.png)
 
-This explainer documents the rationale for the attribute approach: it reuses existing checkbox infrastructure (form participation, label association, keyboard handling, ARIA mapping), stays backwards compatible with older browsers, and covers the vast majority of real-world switch use cases with no JavaScript required.
-
 ### Alternative proposal
 
 There is a [switch element proposal at Open UI](https://open-ui.org/components/switch.explainer/) that would introduce a standalone `<switch>` element. This explainer focuses on the attribute approach (`<input type="checkbox" switch>`). See [Alternatives Considered](#alternatives-considered) for a comparison.
@@ -198,8 +196,6 @@ Adding the `switch` attribute to a checkbox changes its appearance to a switch c
 
 ![Default switch appearance](/images/switch-attribute/default-switch.png)
 
-### Styling
-
 ```css
 /* Custom track */
 input[switch]::track {
@@ -289,11 +285,11 @@ Using container query units (`cqw`) and self-referencing percentages in transfor
 
 There are use cases that the attribute approach cannot handle. These require real DOM children inside the switch, which is not possible because `<input>` cannot have child elements.
 
-- **Loading spinner in the thumb** — showing a rotating animation while an async action completes
-- **Avatar or photo in the thumb** — e.g. a user profile picture that slides with the toggle
-- **Multi-line track content** — a title + subtitle inside the track
-- **Nested interactive elements** — e.g. a settings button or slider embedded in the thumb
-- **Tooltip anchored to the thumb** — e.g. a popover that follows the thumb position
+- **Loading spinner in the thumb**: showing a rotating animation while an async action completes
+- **Avatar or photo in the thumb**: e.g. a user profile picture that slides with the toggle
+- **Multi-line track content**: a title + subtitle inside the track
+- **Nested interactive elements**: e.g. a settings button or slider embedded in the thumb
+- **Tooltip anchored to the thumb**: e.g. a popover that follows the thumb position
 
 ![Element approach use cases](/images/switch-attribute/element_switches.gif)
 
@@ -349,7 +345,11 @@ Using positioned spans with `:has()`:
 .switch-label input[switch]:checked::track { background-color: #22c55e; }
 ```
 
+<div style="max-width: 400px; margin-inline: auto">
+
 ![Track text demo](/images/switch-attribute/Y_N_Switch.gif)
+
+</div>
 
 This same technique enables **localization**. Since the labels are regular DOM elements, any i18n system can update them:
 
@@ -386,7 +386,11 @@ document.getElementById('lang-picker').addEventListener('change', (e) => {
 
 Existing tooling (i18next, FormatJS, gettext) can find and translate these without special handling.
 
+<div style="max-width: 400px; margin-inline: auto">
+
 ![Localization demo](/images/switch-attribute/localization_switch.gif)
+
+</div>
 
 #### Thumb icons
 
@@ -404,7 +408,11 @@ input[switch]:checked::thumb {
 }
 ```
 
+<div style="max-width: 400px; margin-inline: auto">
+
 ![Thumb icons demo](/images/switch-attribute/X_CHECK_Switch.gif)
+
+</div>
 
 #### Thumb text
 
@@ -422,7 +430,11 @@ input[switch]:checked::thumb {
 }
 ```
 
+<div style="max-width: 400px; margin-inline: auto">
+
 ![Thumb text demo](/images/switch-attribute/0_1_switch.gif)
+
+</div>
 
 #### External labels
 
@@ -441,7 +453,11 @@ label:has(input:checked) .on-label { color: blue; }
 label:not(:has(input:checked)) .off-label { color: blue; }
 ```
 
+<div style="max-width: 400px; margin-inline: auto">
+
 ![External labels demo](/images/switch-attribute/labels_Switch.gif)
+
+</div>
 
 ---
 
@@ -556,12 +572,14 @@ Since a `<switch>` element can hold child elements, the use cases listed above a
 </switch>
 ```
 
+![Element approach use cases](/images/switch-attribute/element_switches.gif)
+
 #### Cons
 
 - Must reimplement all checkbox infrastructure (form participation, label association, ARIA, keyboard handling, `:checked` pseudo-class, disabled/readonly states, constraint validation)
 - Higher spec complexity and implementation cost
 - Not backwards compatible
-- The use cases requiring child content are rare (see data below)
+- The use cases that truly require child content (spinners, avatars, nested interactives) do not appear in any of the [44 design systems surveyed](https://open-ui.org/components/switch.explainer/#slots). The 30% that display inner content use track text or thumb icons, both achievable with CSS (shown above).
 
 #### Why we prioritize the attribute approach
 
@@ -618,6 +636,6 @@ The attribute approach (`<input type="checkbox" switch>`) provides the same bene
 
 Thanks to the following for prior art and discussion that informed this proposal:
 
+- [Ana Sollano Kim](https://github.com/anaskim) and [Jacques Newman](https://github.com/janewman) for their help drafting this explainer and throughout the switch attribute discussion
 - The Open UI community group for extensive switch component research
 - WebKit team for the initial implementation and blog post
-- Design system maintainers (Material UI, Radix, Ant Design, Element Plus) whose APIs informed the user research
