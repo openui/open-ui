@@ -28,7 +28,7 @@ Despite being one of the most commonly implemented UI components on the web, the
 
 There is a [switch element proposal at Open UI](https://open-ui.org/components/switch.explainer/) that would introduce a standalone `<switch>` element. This explainer focuses on the attribute approach (`<input type="checkbox" switch>`). See [Alternatives Considered](#alternatives-considered) for a comparison.
 
-An implementation of the attribute approach was already introduced by Safari Technology Preview and Safari Beta (https://github.com/whatwg/html/pull/9546#issuecomment-1865357407).
+An implementation of the attribute approach has shipped in stable Safari since version 17.4 (https://github.com/whatwg/html/pull/9546#issuecomment-1865357407).
 
 ### Use Cases
 
@@ -167,10 +167,12 @@ Developers must reimplement keyboard handling, state management, and ARIA attrib
 <input type="checkbox" switch>
 ```
 
-Adding the `switch` attribute to a checkbox changes its appearance to a switch control. The control exposes two pseudo-elements for styling:
+Adding the `switch` attribute to a checkbox changes its appearance to a switch control. The control exposes pseudo-elements for styling, aligned with the [CSS Forms spec](https://drafts.csswg.org/css-forms-1/):
 
-- **`::track`** — the background track of the switch
-- **`::thumb`** — the sliding knob/indicator
+- **`::slider-track`** — the background track of the switch
+- **`::slider-thumb`** — the sliding knob/indicator
+
+> **Note:** These names follow the `::slider-*` convention from [css-forms-1](https://drafts.csswg.org/css-forms-1/), which treats switches as slider-like controls. Naming is subject to change as the spec evolves.
 
 ### Basic Usage
 
@@ -198,7 +200,7 @@ Adding the `switch` attribute to a checkbox changes its appearance to a switch c
 
 ```css
 /* Custom track */
-input[switch]::track {
+input[switch]::slider-track {
   background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
@@ -209,7 +211,7 @@ input[switch] {
 }
 
 /* Custom thumb */
-input[switch]::thumb {
+input[switch]::slider-thumb {
   background: linear-gradient(135deg, #f6d365, #fda085);
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
@@ -236,15 +238,15 @@ The UA stylesheet provides smooth transitions out of the box:
 
 ```css
 /* UA default */
-input[switch]::track {
+input[switch]::slider-track {
   container-type: size;
   transition: background-color 0.3s ease;
 }
-input[switch]::thumb {
+input[switch]::slider-thumb {
   left: 2px;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
-input[switch]:checked::thumb {
+input[switch]:checked::slider-thumb {
   transform: translateX(calc(100cqw - 100% - 4px));
 }
 ```
@@ -278,8 +280,8 @@ Using container query units (`cqw`) and self-referencing percentages in transfor
 
 | Pseudo-element | Description |
 |---|---|
-| `::track` | The background container of the switch. Supports `container-type: size`. |
-| `::thumb` | The sliding indicator. Positioned absolutely within the track. |
+| `::slider-track` | The background container of the switch. Supports `container-type: size`. |
+| `::slider-thumb` | The sliding indicator. Positioned absolutely within the track. |
 
 ### What the Attribute Approach Cannot Do
 
@@ -341,8 +343,8 @@ Using positioned spans with `:has()`:
 .off-text { right: var(--m); opacity: 1; transform: translateX(0); }
 .switch-label:has(input:checked) .on-text { opacity: 1; transform: translateX(0); }
 .switch-label:has(input:checked) .off-text { opacity: 0; transform: translateX(-6px); }
-.switch-label input[switch]::track { background-color: #ef4444; }
-.switch-label input[switch]:checked::track { background-color: #22c55e; }
+.switch-label input[switch]::slider-track { background-color: #ef4444; }
+.switch-label input[switch]:checked::slider-track { background-color: #22c55e; }
 ```
 
 <div style="max-width: 400px; margin-inline: auto">
@@ -394,16 +396,16 @@ Existing tooling (i18next, FormatJS, gettext) can find and translate these witho
 
 #### Thumb icons
 
-Using `background-image` on `::thumb`:
+Using `background-image` on `::slider-thumb`:
 
 ```css
-input[switch]::thumb {
+input[switch]::slider-thumb {
   background-image: url("cross-icon.svg");
   background-size: 60%;
   background-position: center;
   background-repeat: no-repeat;
 }
-input[switch]:checked::thumb {
+input[switch]:checked::slider-thumb {
   background-image: url("check-icon.svg");
 }
 ```
@@ -419,13 +421,13 @@ input[switch]:checked::thumb {
 Using SVG text in `background-image`:
 
 ```css
-input[switch]::thumb {
+input[switch]::slider-thumb {
   background-image: url("data:image/svg+xml,...<text>0</text>...");
   background-size: 80%;
   background-position: center;
   background-repeat: no-repeat;
 }
-input[switch]:checked::thumb {
+input[switch]:checked::slider-thumb {
   background-image: url("data:image/svg+xml,...<text>1</text>...");
 }
 ```
@@ -615,7 +617,7 @@ The attribute approach (`<input type="checkbox" switch>`) provides the same bene
 
 | Vendor | Position | Notes |
 |---|---|---|
-| WebKit/Safari | **Positive** (shipped) | Available behind flag since Safari 17.4 |
+| WebKit/Safari | **Positive** (shipped) | Shipped unflagged since Safari 17.4. Pseudo-elements (`::slider-thumb`, `::slider-track`) are behind a flag. |
 | Mozilla/Firefox | **Under review** | [Standards position #990](https://github.com/mozilla/standards-positions/issues/990) |
 
 ---
