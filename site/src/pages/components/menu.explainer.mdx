@@ -557,8 +557,42 @@ contain a variety of controls, for example, buttons and
 
 ### How best to represent checkable `<menuitem>`s?
 
-As stated, our proposal introduces a single `<menuitem>` element to represent all menu items,
-including checkable state-bearing ones. Instead of representing both checkable & non-checkable menu
+GitHub: [Issue #1189](https://github.com/openui/open-ui/issues/1189)
+
+We want to be able to represent two types of checkable menuitems:
+
+ * exclusive checkable menuitems, where only one item in a group can be checked, typically represented with radio buttons
+ * multiply-checkable menuitems, where multiple items in a group can be checked (although there might be just one item), typically represented with checkboxes
+
+There are two high-level approaches for doing this:
+
+ * with an attribute on each menu item, plus a name to group the exclusive items
+ * with a grouping element that contains the items
+
+The advantage of a grouping element is that it pushes content authors
+to follow good practice for exclusive checkable menuitems,
+which is that all of the items in a group should be together
+with no other items between them (though separators are allowed).
+It also pushes authors to avoid mixing checkbox and radio items together.
+(Controlling whether an item is a radio or a checkbox with attributes
+on the item, rather than with attributes on the grouping element,
+makes it easier for authors to do mix items in ways that are bad practice.)
+
+We would also like that grouping element to be a `<fieldset>`
+because in some cases it makes sense to label a group of menuitems,
+and `<fieldset>` provides an existing mechanism to do that.
+In the typical case we would expect such a label to be visible and also be
+exposed to assistive technology when navigating through the menuitems.
+In some cases it may also be desirable for
+the label to be exposed only to assistive technology but not be visible.
+(This labeling may also apply to menuitems that are not checkable;
+thus `<fieldset>` should be usable around other menuitems as well.)
+
+Thus the current proposal introduces a single `<menuitem>` element
+to represent all menu items,
+including checkable state-bearing ones.
+
+Instead of representing both checkable & non-checkable menu
 items with a single element, we could:
 
 * Add a `type` attribute to `<menuitem>`, giving: `<menuitem type=checkbox>` and
@@ -572,11 +606,15 @@ items with a single element, we could:
       for radios and checkboxes respectively.
 * Introduce new `<menuitemcheckbox>` and `<menuitemradio>` elements
     * These represent ARIA roles, and could be exposed as elements, but it adds complexity to the
-    * proposal without giving us any accessibility wins.
+      proposal without giving us any accessibility wins.
 
-These alternatives are reasonable, but more complicated than our proposal of adding a
-`checkable=single|multiple` attribute to `<fieldset>`. By modifying the menu item itself to make it
-checkable, in order to support radio exclusivity you need a mechanism to group all menu items that
+These alternatives all have the disadvantages stated above that they make it easier
+for authors to do things that are bad practice.
+They don't appear to have any significant advantages,
+except for the case of an isolated checkbox menuitem
+which in our proposal requires the additional `<fieldset>` container.
+These proposals would also require the additional complexity of a mechanism
+to group all menu items that
 participate in the same exclusive group, which would probably be the `name` attribute. Then, in
 order to create a group of radio exclusive menu items, you either have to set two attributes instead
 of one, or remember to use a new element and a new attribute.
