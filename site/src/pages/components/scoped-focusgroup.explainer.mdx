@@ -235,32 +235,35 @@ What to notice:
    change would update `aria-selected` values, the `hidden` state of the controlled `role="tabpanel"`,
    and move the `focusgroupstart` attribute to the newly selected tab.
 
-In the following example, the author is creating a
-[navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/).
-Both `menuitem`s in the `menubar` ("About" and "Admissions") have popover `menu`s. The "Admissions"
-menu has an additional submenu under "Tuition".
+In the following example, the author is creating an
+[editor menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-editor/).
+Both `menuitem`s in the `menubar` ("Font" and "Size") have popover `menu`s.
 
 ```html
-<ul focusgroup="menubar" aria-label="Mythical University">
+<ul focusgroup="menubar" aria-label="Text Formatting">
   <li role="none">
-    <a role="menuitem" popovertarget="aboutpop" href="…">About</a>
-    <ul focusgroup="menu" autofocus id="aboutpop" aria-label="About" popover>
-      <li role="none"><a role="menuitem" href="…">Overview</a></li>
-      <li role="none"><a role="menuitem" href="…">Administration</a></li>
+    <button role="menuitem" popovertarget="fontmenu">Font</button>
+    <ul focusgroup="menu" autofocus id="fontmenu" aria-label="Font" popover>
+      <li role="none"><button role="menuitemradio" aria-checked="true">Sans-serif</button></li>
+      <li role="none"><button role="menuitemradio" aria-checked="false">Serif</button></li>
+      <li role="none"><button role="menuitemradio" aria-checked="false">Monospace</button></li>
+      <li role="none"><button role="menuitemradio" aria-checked="false">Fantasy</button></li>
     </ul>
   </li>
   <li role="none">
-    <a role="menuitem" popovertarget="admitpop" href="…">Admissions</a>
-    <ul focusgroup="menu" autofocus id="admitpop" aria-label="Admissions" popover>
-      <li role="none"><a role="menuitem" href="…">Apply</a></li>
+    <button role="menuitem" popovertarget="sizemenu">Size</button>
+    <ul focusgroup="menu" autofocus id="sizemenu" aria-label="Size" popover>
+      <li role="none"><button role="menuitem">Smaller</button></li>
+      <li role="none"><button role="menuitem">Larger</button></li>
       <li role="none">
-        <a role="menuitem" popovertarget="tuitpop" href="…">Tuition</a>
-        <ul focusgroup="menu" autofocus id="tuitpop" aria-label="Tuition" popover>
-          <li role="none"><a role="menuitem" href="…">Undergraduate</a></li>
-          <li role="none"><a role="menuitem" href="…">Graduate</a></li>
+        <ul role="group" aria-label="Font Sizes">
+          <li role="none"><button role="menuitemradio" aria-checked="false">X-Small</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">Small</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">Medium</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">Large</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">X-Large</button></li>
         </ul>
       </li>
-      <li role="none"><a role="menuitem" href="…">Visit</a></li>
     </ul>
   </li>
 </ul>
@@ -270,9 +273,9 @@ What to notice:
 - `focusgroup` declarations can be nested inside of other focusgroups. When a nested focusgroup
    is declared on an element, it creates a new focusgroup and [opts-out](#opting-out) of its
    ancestor focusgroup.
-- menuitems in `role="menubar"` are limited to inline-direction arrow keys (e.g., left and right)
+- menuitems in `focusgroup="menubar"` are limited to inline-direction arrow keys (e.g., left and right)
    because `menubar` carries `inline wrap` as [default modifiers](#default-modifiers),
-   while menuitems in `role="menu"` are limited to block-direction arrow keys (e.g., up and down)
+   while menuitems in `focusgroup="menu"` are limited to block-direction arrow keys (e.g., up and down)
    because `menu` carries `block wrap` as [default modifiers](#default-modifiers).
    The orthogonal arrow keys (e.g., up and down on the menubar, left and right on the
    menus) remain free for activation purposes (extra code that is not shown in the example). The author doesn't need to specify `inline wrap` or `block wrap` explicitly — these are supplied by the behavior token's defaults.
