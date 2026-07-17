@@ -132,15 +132,35 @@ Earlier drafts explored applying `focusgroup` to any container. Broad, role-agno
 
 - Limits activation to a concise, enumerated set of behavior tokens associated with recognized widget patterns.
 - Allows (when omitted) safe [child role inference](#open-questions) for common item types to reduce boilerplate and steer toward APG-aligned structures.
-- Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the behavior token.
+- Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; on a generic container an explicit `role` attribute remains optional unless the author needs a different role than the behavior token.
 
 Benefits of this scoped, behavior-first approach: it prevents accidental application to arbitrary layout groupings (guardrails), encodes both composite intent and navigation modifiers in one attribute (ergonomics), and leaves room for additional composite roles later based on demonstrated accessible patterns — narrowing later would be impractical.
 
 Open aspects still under discussion appear in the [Open questions](#open-questions) section (e.g., set of supported behaviors, child role inference).
 
 ### Supported behaviors
-A `focusgroup` attribute contains a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author doesn't supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
+A `focusgroup` attribute contains a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility only when the author neither supplies an explicit, compatible role nor uses a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
 Minimum role application (container and children): User agents apply the minimum container role for a behavior only when (a) the author has not provided an explicit `role` AND (b) the element would otherwise expose a generic role (e.g., a plain `<div>`/`<span>`). If the host already has non-generic native semantics (e.g., `<ul>`, `<nav>`, `<table>`) or an explicit role, the mapping is skipped; navigation behavior still applies.
+
+Choosing your markup (`focusgroup` never overrides native semantics): the mapping above is additive. `focusgroup` supplies a role only when a generic container lacks one; it doesn't replace the role of a native element or an explicit `role`. This keeps a behavior token from turning a `<ul>`, `<nav>`, or `<table>` into a `menubar`, `grid`, etc. So `<ul focusgroup="menubar">` doesn't expose a `menubar`; the `<ul>` keeps its `list` role and its `<li>` children keep their `listitem` role. Choose the markup that fits your content:
+
+- **Keep semantic HTML when it carries meaning:** a real list, in-page navigation links, or native form controls with semantics worth preserving. Author the composite ARIA roles yourself (e.g. `role="menubar"` on the container and `role="none"` on each `<li>` wrapper, plus item roles); `focusgroup` won't override them and adds only the keyboard navigation.
+- **Use a generic container for a widget with no meaningful native element:** an application menubar, toolbar, or listbox built from a `<div>` and `<button>`s. `focusgroup` supplies the composite role, avoiding hand-authored `role` and `role="none"` boilerplate.
+
+With either approach, `focusgroup`'s navigation and role mapping require no script; only the widget's actions and state (toggling `aria-selected`, showing a panel, running a command) need author code.
+
+For example, a set of action links can stay a real list of links and still gain arrow-key navigation within a single tab stop. The links keep working without script; author the toolbar role yourself.
+
+```html
+<!-- Real links that work without script; focusgroup adds arrow-key navigation. -->
+<ul role="toolbar" focusgroup="toolbar" aria-label="Article actions">
+  <li role="none"><a href="/edit">Edit</a></li>
+  <li role="none"><a href="/history">History</a></li>
+  <li role="none"><a href="/share">Share</a></li>
+</ul>
+```
+
+Because the `<ul>`, `<li>`, and `<a>` are non-generic, you should explicitly provide the `role="toolbar"` and `role="none"`. In this example, the links keep their meaningful native role and `focusgroup` is used just to provide the directional focus navigation.
 
 Child role inference likewise only occurs when: (1) the container role was supplied via the behavior's minimum role mapping (not explicit/native), (2) the child lacks an explicit role, and (3) the child itself is otherwise generic or less specific than the inferred role. Most native interactive elements (links, inputs, etc.) or anything with an explicit/non-generic role are never overwritten.
 
@@ -150,13 +170,13 @@ Current behavior tokens (APG alignment and minimum roles). All listed (except th
 
 | Behavior | APG Pattern | Minimum container role (when applied) | Minimum child role(s) (when applied) | Default modifiers | APG Pattern Link |
 |---|---|---|---|---|---|
-| `toolbar` | Toolbar | [`toolbar`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/toolbar_role) | (none) | `inline` | [APG Toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) |
-| `tablist` | Tabs | [`tablist`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tablist_role) | [`tab`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tab_role) | `inline` `wrap` | [APG Tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) |
-| `radiogroup` | Radio Group | [`radiogroup`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radiogroup_role) | [`radio`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/radio_role) | `wrap` | [APG Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) |
-| `listbox` | Listbox | [`listbox`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/listbox_role) | [`option`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/option_role) | `block` | [APG Listbox](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) |
-| `menu` | Menu | [`menu`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role) | [`menuitem`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menuitem_role) | `block` `wrap` | [APG Menu / Menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) |
-| `menubar` | Menubar | [`menubar`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menubar_role) | [`menuitem`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menuitem_role) | `inline` `wrap` | [APG Menu / Menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) |
-| `grid` (future) | Grid (2-D) | [`grid`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) | (TBD) | (TBD) | [APG Grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) |
+| `toolbar` | Toolbar | [`toolbar`](https://www.w3.org/TR/wai-aria-1.2/#toolbar) | (none) | `inline` | [APG Toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) |
+| `tablist` | Tabs | [`tablist`](https://www.w3.org/TR/wai-aria-1.2/#tablist) | [`tab`](https://www.w3.org/TR/wai-aria-1.2/#tab) | `inline` `wrap` | [APG Tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) |
+| `radiogroup` | Radio Group | [`radiogroup`](https://www.w3.org/TR/wai-aria-1.2/#radiogroup) | [`radio`](https://www.w3.org/TR/wai-aria-1.2/#radio) | `wrap` | [APG Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) |
+| `listbox` | Listbox | [`listbox`](https://www.w3.org/TR/wai-aria-1.2/#listbox) | [`option`](https://www.w3.org/TR/wai-aria-1.2/#option) | `block` | [APG Listbox](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) |
+| `menu` | Menu | [`menu`](https://www.w3.org/TR/wai-aria-1.2/#menu) | [`menuitem`](https://www.w3.org/TR/wai-aria-1.2/#menuitem) | `block` `wrap` | [APG Menu / Menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) |
+| `menubar` | Menubar | [`menubar`](https://www.w3.org/TR/wai-aria-1.2/#menubar) | [`menuitem`](https://www.w3.org/TR/wai-aria-1.2/#menuitem) | `inline` `wrap` | [APG Menu / Menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) |
+| `grid` (future) | Grid (2-D) | [`grid`](https://www.w3.org/TR/wai-aria-1.2/#grid) | (TBD) | (TBD) | [APG Grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) |
 
 #### Default modifiers
 
@@ -240,36 +260,32 @@ In the following example, the author is creating an
 Both `menuitem`s in the `menubar` ("Font" and "Size") have popover `menu`s.
 
 ```html
-<ul focusgroup="menubar" aria-label="Text Formatting">
-  <li role="none">
-    <button role="menuitem" popovertarget="fontmenu">Font</button>
-    <ul focusgroup="menu" autofocus id="fontmenu" aria-label="Font" popover>
-      <li role="none"><button role="menuitemradio" aria-checked="true">Sans-serif</button></li>
-      <li role="none"><button role="menuitemradio" aria-checked="false">Serif</button></li>
-      <li role="none"><button role="menuitemradio" aria-checked="false">Monospace</button></li>
-      <li role="none"><button role="menuitemradio" aria-checked="false">Fantasy</button></li>
-    </ul>
-  </li>
-  <li role="none">
-    <button role="menuitem" popovertarget="sizemenu">Size</button>
-    <ul focusgroup="menu" autofocus id="sizemenu" aria-label="Size" popover>
-      <li role="none"><button role="menuitem">Smaller</button></li>
-      <li role="none"><button role="menuitem">Larger</button></li>
-      <li role="none">
-        <ul role="group" aria-label="Font Sizes">
-          <li role="none"><button role="menuitemradio" aria-checked="false">X-Small</button></li>
-          <li role="none"><button role="menuitemradio" aria-checked="false">Small</button></li>
-          <li role="none"><button role="menuitemradio" aria-checked="false">Medium</button></li>
-          <li role="none"><button role="menuitemradio" aria-checked="false">Large</button></li>
-          <li role="none"><button role="menuitemradio" aria-checked="false">X-Large</button></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
+<div focusgroup="menubar" aria-label="Text Formatting">
+  <button popovertarget="fontmenu" aria-haspopup="menu">Font</button>
+  <div focusgroup="menu" id="fontmenu" aria-label="Font" popover>
+    <button role="menuitemradio" aria-checked="true" autofocus>Sans-serif</button>
+    <button role="menuitemradio" aria-checked="false">Serif</button>
+    <button role="menuitemradio" aria-checked="false">Monospace</button>
+    <button role="menuitemradio" aria-checked="false">Fantasy</button>
+  </div>
+
+  <button popovertarget="sizemenu" aria-haspopup="menu">Size</button>
+  <div focusgroup="menu" id="sizemenu" aria-label="Size" popover>
+    <button autofocus>Smaller</button>
+    <button>Larger</button>
+    <div role="group" aria-label="Font Sizes">
+      <button role="menuitemradio" aria-checked="false">X-Small</button>
+      <button role="menuitemradio" aria-checked="false">Small</button>
+      <button role="menuitemradio" aria-checked="false">Medium</button>
+      <button role="menuitemradio" aria-checked="false">Large</button>
+      <button role="menuitemradio" aria-checked="false">X-Large</button>
+    </div>
+  </div>
+</div>
 ```
 
 What to notice:
+- The container roles are supplied by the behavior tokens: the generic `<div focusgroup="menubar">` is exposed as a `menubar` and each `<div focusgroup="menu">` as a `menu` (no explicit `role` needed). The plain `<button>`s are inferred as `menuitem`s, while the `menuitemradio` items keep their explicit roles because [inference never upgrades role variants](#behavior--role-mapping-and-precedence). A generic container suits an application menubar with no meaningful native element; see [choosing your markup](#supported-behaviors) above for when to keep semantic HTML instead.
 - `focusgroup` declarations can be nested inside of other focusgroups. When a nested focusgroup
    is declared on an element, it creates a new focusgroup and [opts-out](#opting-out) of its
    ancestor focusgroup.
@@ -308,11 +324,11 @@ Empirical misuse in uncontrolled contexts clusters around the use of `focusgroup
 
 Interactions with explicit `role` vs behavior token mapping; also see [open question around child role inference](#open-questions):
 ```html
-<nav id="one" focusgroup="menu inline" aria-label="Formatting">
+<div id="one" focusgroup="menu inline" aria-label="Formatting">
   <button focusgroupstart>Bold</button>
   <button role="menuitemcheckbox" aria-checked="true">Italics</button>
   <button>Underline</button>
-</nav>
+</div>
 <div id="two" role="toolbar" focusgroup="radiogroup">
   <button type="button" focusgroupstart>Bold</button>
   <button type="button">Italic</button>
@@ -320,7 +336,7 @@ Interactions with explicit `role` vs behavior token mapping; also see [open ques
 </div>
 ```
 What to notice:
-- In `#one`, the `<button>` elements without explicit roles (Bold, Underline) are inferred as `menuitem` — `<button>` is eligible for child role inference because it is the most common building block for composite widget items. The explicit `menuitemcheckbox` (Italics) is unchanged.
+- In `#one`, the generic `<div>` has no explicit `role`, so the `menu` token supplies the container `menu` role via the [minimum role mapping](#supported-behaviors). Because that container role came from the mapping, the `<button>` elements without explicit roles (Bold, Underline) are inferred as `menuitem`; `<button>` is eligible for child role inference because it is the most common building block for composite widget items. The explicit `menuitemcheckbox` (Italics) is unchanged. (Had `#one` been a non-generic element such as `<nav>` or `<ul>`, the mapping would be skipped, and with it the child inference; see [choosing your markup](#supported-behaviors).)
 - Inference skips ambiguity: it doesn't guess a variant (`menuitemradio` vs `menuitemcheckbox`).
 - In `#one`, the explicit `inline` overrides the `menu` behavior token's default `block` axis restriction, while `wrap` is still applied from `menu`'s [default modifiers](#default-modifiers).
 - In `#two`, the explicit container `role="toolbar"` overrides the behavior token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
@@ -706,7 +722,7 @@ When a scrollable element is contained within a focusgroup, the behavior depends
 
 ### Interaction with related web platform features
 
-Focusgroup interacts with two web platform features related to navigation and orientation: the CSS [`reading-flow`](https://developer.mozilla.org/en-US/docs/Web/CSS/reading-flow) property and the ARIA [`aria-orientation`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-orientation) attribute.
+Focusgroup interacts with two web platform features related to navigation and orientation: the CSS [`reading-flow`](https://developer.mozilla.org/en-US/docs/Web/CSS/reading-flow) property and the ARIA [`aria-orientation`](https://www.w3.org/TR/wai-aria-1.2/#aria-orientation) attribute.
 
 #### Reading flow
 
@@ -1090,23 +1106,23 @@ When a `focusgroup` definition is applied to an element, it implicitly opts out 
 Example:
 
 ```html
-<ul focusgroup="menubar" aria-label="Site">
-  <li role="none">
-    <ul focusgroup="menu" aria-label="Products">
-      <li><button role="menuitem">Item A</button></li>
-      <li>
-        <ul focusgroup="menu" aria-label="More">
-          <li><button role="menuitem">Sub A1</button></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
+<div focusgroup="menubar" aria-label="Document">
+  <button popovertarget="insertmenu" aria-haspopup="menu">Insert</button>
+  <div focusgroup="menu" id="insertmenu" aria-label="Insert" popover>
+    <button>Image</button>
+    <button popovertarget="tablemenu" aria-haspopup="menu">Table</button>
+    <div focusgroup="menu" id="tablemenu" aria-label="Table" popover>
+      <button>Insert rows</button>
+      <button>Insert columns</button>
+    </div>
+  </div>
+</div>
 ```
 
-- The outer `ul[focusgroup="menubar"]` defines one `focusgroup` (its direct menuitems would participate when present).
-- The first nested `ul[focusgroup="menu"]` creates an independent `focusgroup` and isn't part of the menubar's arrow navigation.
-- The innermost `ul[focusgroup="menu"]` (submenu) defines yet another independent `focusgroup`, likewise not part of its ancestor menu's `focusgroup`; its `menuitem` participates only in that deepest scope.
+- The outer `div[focusgroup="menubar"]` defines one `focusgroup`; its `Insert` menuitem participates in the menubar's arrow navigation.
+- The `div[focusgroup="menu"]` for **Insert** creates an independent `focusgroup` that [opts out](#opting-out) of the menubar, so its `Image` and `Table` menuitems are navigated separately and aren't part of the menubar's arrow navigation.
+- The innermost `div[focusgroup="menu"]` (the **Table** submenu) defines yet another independent `focusgroup`, likewise not part of its ancestor menu's `focusgroup`; its menuitems participate only in that deepest scope.
+- Within each independent scope, `focusgroup` supplies the `menubar`/`menu` role on the generic `<div>` and infers `menuitem` on its `<button>` children.
 
 ### Top layer elements
 
