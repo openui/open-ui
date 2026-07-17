@@ -2,38 +2,26 @@
 menu: Graduated Proposals
 name: Customizable Select Element (Explainer)
 layout: ../../layouts/ComponentLayout.astro
+created: "2022-02-09"
+lastUpdated: "2026-01-22"
+whatwg_issue: https://github.com/whatwg/html/issues/9799
+specification: https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
+authors:
+  - name: "@josepharhar"
+    url: https://github.com/josepharhar
+  - name: "@gregwhitworth"
+    url: https://github.com/gregwhitworth
+  - name: "@scottaohara"
+    url: https://github.com/scottaohara
+  - name: "@mfreed7"
+    url: https://github.com/mfreed7
+  - name: "@lukewarlow"
+    url: https://github.com/lukewarlow
 ---
 
 import SelectAnatomy from '../../components/select-anatomy'
 import Image from '../../components/image.astro'
-
-
-## Table of Contents
-
-- [Background](#background)
-- [Opting in to the new behavior](#opting-in-to-the-new-behavior)
-- [Testing out the customizable select element](#testing-out-the-customizable-select-element)
-- [HTML parser changes](#html-parser-changes)
-- [Use cases](#use-cases)
-  - [Customizing basic styles](#customizing-basic-styles)
-  - [Rich content in `<option>`s](#rich-content-in-options)
-  - [Replacing the button](#replacing-the-button)
-  - [Rendering the `<option>` differently in the button](#rendering-the-option-differently-in-the-button)
-  - [Putting custom content in the listbox](#putting-custom-content-in-the-listbox)
-  - [Animations](#animations)
-  - [Split buttons](#split-buttons)
-- [Button behavior](#button-behavior)
-- [The selectedcontent element](#the-selectedcontent-element)
-- [Anatomy of the customizable select element](#anatomy-of-the-customizable-select-element)
-- [Styling](#styling)
-  - [`:open` and `:closed` pseudo-selectors](#open-and-closed-pseudo-selectors)
-  - [UA stylesheet](#ua-stylesheet)
-- [Additional examples](#additional-examples)
-  - [Extending the markup](#extending-the-markup)
-  - [Demo page](#demo-page)
-- [Keyboard Behavior](#keyboard-behavior)
-- [`multiple` and `size` attributes](#multiple-and-size-attributes)
-- [Design decisions](#design-decisions)
 
 ## Background
 

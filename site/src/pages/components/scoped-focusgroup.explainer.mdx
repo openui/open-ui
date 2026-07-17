@@ -3,79 +3,18 @@ menu: Active Proposals
 name: Focusgroup (Explainer)
 path: /components/scoped-focusgroup.explainer
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@janewman"
+    url: https://github.com/janewman
+  - name: "@travisleithead"
+    url: https://github.com/travisleithead
+  - name: "@dzearing"
+    url: https://github.com/dzearing
+  - name: "@chrisdholt"
+    url: https://github.com/chrisdholt
+whatwg_issue: https://github.com/whatwg/html/issues/11641
+whatwg_pr: https://github.com/whatwg/html/pull/11723
 ---
-
- - Authors: [Jacques Newman](https://github.com/janewman)
- - Prior Authors from the earlier, broader [focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx): [Travis Leithead](https://github.com/travisleithead), [David Zearing](https://github.com/dzearing), [Chris Holt](https://github.com/chrisdholt)
- - WHATWG issue: https://github.com/whatwg/html/issues/11641
- - Last updated: 2026-4-29
-
-## Table of contents
-<details>
-<summary><strong>Show / Hide Table of Contents</strong></summary>
-
-- [Introduction](#introduction)
-  - [Keyboard navigation modes](#keyboard-navigation-modes)
-    - [1. Sequential focus navigation](#1-sequential-focus-navigation)
-    - [2. Directional navigation](#2-directional-navigation)
-  - [Before / After at a glance](#before--after-at-a-glance)
-- [Focusgroup tokens](#focusgroup-tokens)
-- [Major differences from the original explainer](#major-differences-from-the-original-explainer)
-  - [CSS support is now a future consideration](#css-support-is-now-a-future-consideration)
-  - [Grid support is now a future consideration](#grid-support-is-now-a-future-consideration)
-  - [Focusgroup is now scoped to specific scenarios](#focusgroup-is-now-scoped-to-specific-scenarios)
-  - [Supported behaviors](#supported-behaviors)
-    - [Default modifiers](#default-modifiers)
-    - [Behavior → role mapping and precedence](#behavior--role-mapping-and-precedence)
-- [Why not just add new native elements to cover these patterns?](#why-not-just-add-new-native-elements-to-cover-these-patterns)
-- [Quickstart](#quickstart)
-- [Goal](#goal)
-  - [Non-goals](#non-goals)
-- [Principles](#principles)
-- [Use cases](#use-cases)
-- [Focusgroup concepts](#focusgroup-concepts)
-  - [Focusgroup segments](#focusgroup-segments)
-  - [Last-focused memory](#last-focused-memory)
-  - [Guaranteed tab stop](#guaranteed-tab-stop)
-  - [Shadow DOM boundaries](#shadow-dom-boundaries)
-  - [Key conflicts](#key-conflicts)
-  - [Interactive content inside focusgroups](#interactive-content-inside-focusgroups)
-  - [Key conflict elements](#key-conflict-elements)
-    - [Escape behavior for native key conflict elements](#escape-behavior-for-native-key-conflict-elements)
-  - [Scrolling interactions](#scrolling-interactions)
-    - [1. Focusgroup within a scrollable region](#1-focusgroup-within-a-scrollable-region)
-    - [2. Scrollable region within a focusgroup](#2-scrollable-region-within-a-focusgroup)
-  - [Interaction with related web platform features](#interaction-with-related-web-platform-features)
-    - [Reading flow](#reading-flow)
-    - [ARIA orientation](#aria-orientation)
-    - [Modifier keys](#modifier-keys)
-    - [CSS spatial navigation](#css-spatial-navigation)
-  - [Restricted elements](#restricted-elements)
-  - [Feature detection](#feature-detection)
-  - [Additional features](#additional-features)
-  - [The focusgroupstart attribute](#the-focusgroupstart-attribute)
-- [Enabling wrapping behaviors](#enabling-wrapping-behaviors)
-- [Limiting linear focusgroup directionality](#limiting-linear-focusgroup-directionality)
-- [Opting-out](#opting-out)
-  - [Impact on sequential focus navigation](#impact-on-sequential-focus-navigation)
-  - [Nested focusgroups](#nested-focusgroups)
-  - [Top layer elements](#top-layer-elements)
-- [Disabling focusgroup memory](#disabling-focusgroup-memory)
-- [Adjustments to sequential focus navigation](#adjustments-to-sequential-focus-navigation)
-  - [Guaranteed tab stop algorithm](#guaranteed-tab-stop-algorithm)
-- [(Future consideration) Grid focusgroups](#future-consideration-grid-focusgroups)
-- [(Future consideration) Additional keyboard support](#future-consideration-additional-keyboard-support)- [Authoring guidance](#authoring-guidance)
-- [Alternatives considered](#alternatives-considered)
-- [Open questions](#open-questions)
-- [Polyfilling](#polyfilling)
-- [Privacy and security considerations](#privacy-and-security-considerations)
-  - [Privacy](#privacy)
-  - [Security](#security)
-- [Design decisions](#design-decisions)
-- [Index of focusgroup values](#index-of-focusgroup-values)
-- [Acknowledgments](#acknowledgments)
-
-</details>
 
 ## Introduction
 
@@ -140,13 +79,13 @@ After (single declarative attribute):
 </script>
 ```
 What changed:
-- `focusgroup="toolbar wrap"` supplies the role (first token) + wrap behavior.
+- `focusgroup="toolbar wrap"` supplies the role (via the behavior token) + wrap behavior.
 - Roving tabindex + arrow key handling + memory are native (no JS for core movement).
 - Selection / pressed state (e.g., toggling Bold) and any advanced commands remain author logic.
 
 ## Focusgroup tokens
 
-Simple usage (space-separated tokens):
+Simple usage (the order shown is conventional; any order is valid):
 
 ```html
 <div focusgroup="<behavior> [inline|block] [wrap|nowrap] [nomemory]">
@@ -193,14 +132,14 @@ Earlier drafts explored applying `focusgroup` to any container. Broad, role-agno
 
 - Limits activation to a concise, enumerated set of behavior tokens associated with recognized widget patterns.
 - Allows (when omitted) safe [child role inference](#open-questions) for common item types to reduce boilerplate and steer toward APG-aligned structures.
-- Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the first token.
+- Keeps ARIA roles semantic-only: the `focusgroup` attribute supplies behavior intent; an explicit `role` attribute remains optional unless the author needs a different role than the behavior token.
 
 Benefits of this scoped, behavior-first approach: it prevents accidental application to arbitrary layout groupings (guardrails), encodes both composite intent and navigation modifiers in one attribute (ergonomics), and leaves room for additional composite roles later based on demonstrated accessible patterns — narrowing later would be impractical.
 
 Open aspects still under discussion appear in the [Open questions](#open-questions) section (e.g., set of supported behaviors, child role inference).
 
 ### Supported behaviors
-The first token in a `focusgroup` attribute is a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author doesn't supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
+A `focusgroup` attribute contains a behavior token. A behavior token declares an interaction pattern (e.g., toolbar behavior). User agents MUST expose a corresponding minimum ARIA role for accessibility if the author doesn't supply an explicit, compatible role or if the author doesn't use a native element with a recognized role. This separates interaction (behavior) from semantics (role mapping) while keeping authoring terse.
 Minimum role application (container and children): User agents apply the minimum container role for a behavior only when (a) the author has not provided an explicit `role` AND (b) the element would otherwise expose a generic role (e.g., a plain `<div>`/`<span>`). If the host already has non-generic native semantics (e.g., `<ul>`, `<nav>`, `<table>`) or an explicit role, the mapping is skipped; navigation behavior still applies.
 
 Child role inference likewise only occurs when: (1) the container role was supplied via the behavior's minimum role mapping (not explicit/native), (2) the child lacks an explicit role, and (3) the child itself is otherwise generic or less specific than the inferred role. Most native interactive elements (links, inputs, etc.) or anything with an explicit/non-generic role are never overwritten.
@@ -296,32 +235,35 @@ What to notice:
    change would update `aria-selected` values, the `hidden` state of the controlled `role="tabpanel"`,
    and move the `focusgroupstart` attribute to the newly selected tab.
 
-In the following example, the author is creating a
-[navigation menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-navigation/).
-Both `menuitem`s in the `menubar` ("About" and "Admissions") have popover `menu`s. The "Admissions"
-menu has an additional submenu under "Tuition".
+In the following example, the author is creating an
+[editor menubar](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/examples/menubar-editor/).
+Both `menuitem`s in the `menubar` ("Font" and "Size") have popover `menu`s.
 
 ```html
-<ul focusgroup="menubar" aria-label="Mythical University">
+<ul focusgroup="menubar" aria-label="Text Formatting">
   <li role="none">
-    <a role="menuitem" popovertarget="aboutpop" href="…">About</a>
-    <ul focusgroup="menu" autofocus id="aboutpop" aria-label="About" popover>
-      <li role="none"><a role="menuitem" href="…">Overview</a></li>
-      <li role="none"><a role="menuitem" href="…">Administration</a></li>
+    <button role="menuitem" popovertarget="fontmenu">Font</button>
+    <ul focusgroup="menu" autofocus id="fontmenu" aria-label="Font" popover>
+      <li role="none"><button role="menuitemradio" aria-checked="true">Sans-serif</button></li>
+      <li role="none"><button role="menuitemradio" aria-checked="false">Serif</button></li>
+      <li role="none"><button role="menuitemradio" aria-checked="false">Monospace</button></li>
+      <li role="none"><button role="menuitemradio" aria-checked="false">Fantasy</button></li>
     </ul>
   </li>
   <li role="none">
-    <a role="menuitem" popovertarget="admitpop" href="…">Admissions</a>
-    <ul focusgroup="menu" autofocus id="admitpop" aria-label="Admissions" popover>
-      <li role="none"><a role="menuitem" href="…">Apply</a></li>
+    <button role="menuitem" popovertarget="sizemenu">Size</button>
+    <ul focusgroup="menu" autofocus id="sizemenu" aria-label="Size" popover>
+      <li role="none"><button role="menuitem">Smaller</button></li>
+      <li role="none"><button role="menuitem">Larger</button></li>
       <li role="none">
-        <a role="menuitem" popovertarget="tuitpop" href="…">Tuition</a>
-        <ul focusgroup="menu" autofocus id="tuitpop" aria-label="Tuition" popover>
-          <li role="none"><a role="menuitem" href="…">Undergraduate</a></li>
-          <li role="none"><a role="menuitem" href="…">Graduate</a></li>
+        <ul role="group" aria-label="Font Sizes">
+          <li role="none"><button role="menuitemradio" aria-checked="false">X-Small</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">Small</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">Medium</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">Large</button></li>
+          <li role="none"><button role="menuitemradio" aria-checked="false">X-Large</button></li>
         </ul>
       </li>
-      <li role="none"><a role="menuitem" href="…">Visit</a></li>
     </ul>
   </li>
 </ul>
@@ -331,9 +273,9 @@ What to notice:
 - `focusgroup` declarations can be nested inside of other focusgroups. When a nested focusgroup
    is declared on an element, it creates a new focusgroup and [opts-out](#opting-out) of its
    ancestor focusgroup.
-- menuitems in `role="menubar"` are limited to inline-direction arrow keys (e.g., left and right)
+- menuitems in `focusgroup="menubar"` are limited to inline-direction arrow keys (e.g., left and right)
    because `menubar` carries `inline wrap` as [default modifiers](#default-modifiers),
-   while menuitems in `role="menu"` are limited to block-direction arrow keys (e.g., up and down)
+   while menuitems in `focusgroup="menu"` are limited to block-direction arrow keys (e.g., up and down)
    because `menu` carries `block wrap` as [default modifiers](#default-modifiers).
    The orthogonal arrow keys (e.g., up and down on the menubar, left and right on the
    menus) remain free for activation purposes (extra code that is not shown in the example). The author doesn't need to specify `inline wrap` or `block wrap` explicitly — these are supplied by the behavior token's defaults.
@@ -381,7 +323,7 @@ What to notice:
 - In `#one`, the `<button>` elements without explicit roles (Bold, Underline) are inferred as `menuitem` — `<button>` is eligible for child role inference because it is the most common building block for composite widget items. The explicit `menuitemcheckbox` (Italics) is unchanged.
 - Inference skips ambiguity: it doesn't guess a variant (`menuitemradio` vs `menuitemcheckbox`).
 - In `#one`, the explicit `inline` overrides the `menu` behavior token's default `block` axis restriction, while `wrap` is still applied from `menu`'s [default modifiers](#default-modifiers).
-- In `#two`, the explicit container `role="toolbar"` overrides the first token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
+- In `#two`, the explicit container `role="toolbar"` overrides the behavior token `radiogroup`; no radio inference occurs (tokens only supply navigation behavior).
 - Arrow key navigation, wrap, and memory behaviors apply in both `#one` and `#two` regardless of whether roles were inferred.
 - Authors can obtain behavior without pattern role inference by supplying an explicit conflicting container role when needed.
 
@@ -833,12 +775,14 @@ be an exception in order to properly support grid `focusgroup`s.
 
 ### Feature detection
 
-To enable feature detection, the DOM will include a `focusgroup` property, whose existence on
-elements is useful for feature detection.
+To enable feature detection, user agents expose the `focusGroup` and `focusGroupStart`
+DOM properties on elements; their content-attribute counterparts are `focusgroup` and
+`focusgroupstart` (lowercase).
 
 ```webidl
-partial interface HTMLElement {
-  [CEReactions] attribute DOMString focusgroup;
+partial interface mixin HTMLOrSVGElement {
+  [SameObject, PutForwards=value, Reflect] readonly attribute DOMTokenList focusGroup;
+  [CEReactions, Reflect] attribute boolean focusGroupStart;
 };
 ```
 
@@ -1488,7 +1432,7 @@ look for when building an index would need to be worked out, and may ultimately 
 too complicated).
 
 ## Authoring guidance
-1. Put the behavior token first: `focusgroup="tablist"`, `focusgroup="toolbar wrap"`.
+1. Place the behavior token first for readability: `focusgroup="tablist"`, `focusgroup="toolbar wrap"`. Order is not significant, but a consistent convention helps readers.
 2. Rely on [default modifiers](#default-modifiers) when possible — e.g., `focusgroup="tablist"` already implies `inline wrap`. Only add explicit modifiers to override defaults or add behaviors the token doesn't supply.
 3. Omit common child roles unless you need a variant (checkbox / radio menu items, mixed controls, etc.). `<button>` elements receive child role inference automatically.
 4. For detailed precedence (mismatches, inference limits, overrides) see [Behavior → role mapping and precedence](#behavior--role-mapping-and-precedence).
@@ -1509,10 +1453,10 @@ approaches were considered.
 3. **CSS mappings:** This explainer doesn't currently define specific CSS mappings for `focusgroup`, but this is an area that could be explored in the future, or if others feel this is integral to the feature, this could be considered to be added back in.
 4. **Attribute functionality and dependencies:** Feedback requested on adopted scoping (role token + optional child role inference):
   - Exact list and phased expansion of child role inference set (which roles, staged rollout?).
-  - Should mismatched explicit container `role` vs first token trigger a console warning or be silent?
+  - Should mismatched explicit container `role` vs behavior token trigger a console warning or be silent?
   - Policy for console warnings vs silent ignore on token / role mismatches.
 5. **Alternative approaches to scope focusgroup to specific scenarios:**
-  - (A) Current: first token = pattern + (optional) child role inference.
+  - (A) Current: behavior token = pattern + (optional) child role inference.
   - (B) Require explicit container `role`; tokens only modifiers (drops role token entirely).
   - (C) Split into two attrs: `pattern="tablist" focusgroup="wrap"` (clearer separation, extra verbosity and API surface).
   - (D) Native elements only (e.g., future `<tabs>`, `<toolbar>`, `<menubar>`); attribute becomes redundant — risk: slower coverage, custom element ecosystems still need declarative navigation.
@@ -1560,7 +1504,7 @@ See other [open `focusgroup` issues on GitHub](https://github.com/openui/open-ui
 
 ## Index of focusgroup values
 
-Tokens are space-separated. Order: first token MUST be a supported behavior token (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
+Tokens are space-separated and may appear in any order. A `focusgroup` attribute MUST include one supported behavior token (eligible list below). Remaining tokens are modifiers. Unknown tokens are ignored.
 
 Behavior tokens: See the earlier Supported behaviors mapping table for the definitive list, minimum container roles, child inference notes, and [default modifiers](#default-modifiers). Explicit container and child roles always override any inference. Explicit modifiers always override default modifiers.
 

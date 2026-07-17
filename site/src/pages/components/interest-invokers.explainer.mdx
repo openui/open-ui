@@ -2,63 +2,14 @@
 menu: Active Proposals
 name: Interest Invokers (Explainer)
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@mfreed7"
+    url: https://github.com/mfreed7
+  - name: "@keithamus"
+    url: https://github.com/keithamus
+whatwg_issue: https://github.com/whatwg/html/issues/10309
+whatwg_pr: https://github.com/whatwg/html/pull/11006
 ---
-
-- [Mason Freed](https://github.com/mfreed7), [Keith Cirkel](https://github.com/keithamus)
-- Last updated: January 8, 2026
-
-## Table of Contents
-{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
-
-- [Table of Contents](#table-of-contents)
-- [The Pitch](#the-pitch)
-- [The Pitch in Code](#the-pitch-in-code)
-- [Introduction](#introduction)
-- [Survey of Use Cases](#survey-of-use-cases)
-  - [Wikipedia example](#wikipedia-example)
-  - [Survey conclusions](#survey-conclusions)
-- [HIDs and Interest](#hids-and-interest)
-  - [Mouse](#mouse)
-  - [Keyboard](#keyboard)
-  - [Touchscreen and AR](#touchscreen-and-ar)
-    - [The `::interest-button` pseudo element](#the-interest-button-pseudo-element)
-  - [Other](#other)
-  - [Exceptions](#exceptions)
-- [Mouse and Keyboard delays](#mouse-and-keyboard-delays)
-- [Pseudo Classes](#pseudo-classes)
-- [Implementation Details](#implementation-details)
-- [Example Code](#example-code)
-  - [Popovers](#popovers)
-  - [Custom delays and multiple actions](#custom-delays-and-multiple-actions)
-  - [Custom behaviour](#custom-behaviour)
-  - [Feature detection](#feature-detection)
-  - [Polyfilling](#polyfilling)
-- [Accessibility](#accessibility)
-  - [Plain hints (aka tooltips)](#plain-hints-aka-tooltips)
-  - [Rich hints (aka hovercards or other)](#rich-hints-aka-hovercards-or-other)
-- [FAQ (Frequently Asked Questions)](#faq-frequently-asked-questions)
-  - [Why No `interestaction` Attribute?](#why-no-interestaction-attribute)
-  - [Why the name `interest`? Why not `hover` or `focus`?](#why-the-name-interest-why-not-hover-or-focus)
-  - [Why is `interestfor` supported on more elements than `commandfor`?](#why-is-interestfor-supported-on-more-elements-than-commandfor)
-  - [Why is `interestfor` not unlimited, like `title` is?](#why-is-interestfor-not-unlimited-like-title-is)
-  - [Interaction with Speculation Rules and Preloading Tech](#interaction-with-speculation-rules-and-preloading-tech)
-  - [Fingerprinting concerns](#fingerprinting-concerns)
-  - [Safe Area Triangle](#safe-area-triangle)
-  - [What if I (the developer) don't want the touchscreen context menu](#what-if-i-the-developer-dont-want-the-touchscreen-context-menu)
-- [Alternatives Considered](#alternatives-considered)
-  - [Touchscreen options](#touchscreen-options)
-    - [Option 1 - leave the details to UAs](#option-1---leave-the-details-to-uas)
-    - [Option 2 - show both at the same time](#option-2---show-both-at-the-same-time)
-    - [Option 3 - add an item to the context menu](#option-3---add-an-item-to-the-context-menu)
-    - [Option 4 - single tap interest](#option-4---single-tap-interest)
-    - [Option 5 - do not show the context menu](#option-5---do-not-show-the-context-menu)
-    - [Option 6 - invent a new gesture](#option-6---invent-a-new-gesture)
-    - [Selection of a final option](#selection-of-a-final-option)
-  - [Keyboard "partial interest"](#keyboard-partial-interest)
-    - [Details](#details)
-    - [Mixed keyboard/mouse usage](#mixed-keyboardmouse-usage)
-    - [interactivity: not-keyboard-focusable](#interactivity-not-keyboard-focusable)
-- [Issues / Discussions](#issues--discussions)
 
 ## The Pitch
 
