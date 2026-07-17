@@ -160,7 +160,7 @@ For example, a set of action links can stay a real list of links and still gain 
 </ul>
 ```
 
-Because the `<ul>`, `<li>`, and `<a>` are non-generic, you provide `role="toolbar"` and `role="none"` explicitly; the links keep their native role and `focusgroup` skips role mapping while still adding arrow-key navigation. Roles like `tablist`, `menubar`, `menu`, and `listbox` also bind the markup to a pattern's full keyboard and state contract that script must maintain, so don't role-up ordinary markup just to get arrow-key movement. Site navigation, for instance, is better served by plain links or a disclosure than by menu roles.
+Because the `<ul>`, `<li>`, and `<a>` are non-generic, you should explicitly provide the `role="toolbar"` and `role="none"`. In this example, the links keep their meaningful native role and `focusgroup` is used just to provide the directional focus navigation.
 
 Child role inference likewise only occurs when: (1) the container role was supplied via the behavior's minimum role mapping (not explicit/native), (2) the child lacks an explicit role, and (3) the child itself is otherwise generic or less specific than the inferred role. Most native interactive elements (links, inputs, etc.) or anything with an explicit/non-generic role are never overwritten.
 
