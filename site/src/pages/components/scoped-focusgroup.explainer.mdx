@@ -131,7 +131,7 @@ Specifying a specific item as the [start element](#the-focusgroupstart-attribute
 
 ## Focusgroup V1 and V2
 
-Focusgroup **V1** is the current linear design. It narrows the scope of the [original focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx). V1 names a design, not a shipping status: among the venues in [Implementation status](#implementation-status), Chromium is currently the only listed implementation that has shipped it. **V2** covers the active new work — grid, `itemcontrols`, and `feed`. This draft frames that work but doesn't define the `itemcontrols` or `feed` APIs.
+Focusgroup **V1** is the current linear design. It narrows the scope of the [original focusgroup explainer](https://github.com/openui/open-ui/blob/fdd348a/site/src/pages/components/focusgroup.explainer.mdx). **V2** covers the active new work — grid, `itemcontrols`, and `feed`. This draft frames that work but doesn't define the `itemcontrols` or `feed` APIs.
 
 ### CSS activation is no longer being considered
 Focusgroup V1 and V2 define behavior through the HTML `focusgroup` attribute. CSS activation and CSS mappings are no longer being considered.
@@ -781,18 +781,6 @@ The composition matters most for devices that rely on directional input (TVs and
 
 Authors should take care that the [`wrap`](#enabling-wrapping-behaviors) behavior does not impede spatial navigation out of a focusgroup. With `wrap`, arrow-key navigation cycles within the segment indefinitely and never reaches the segment's edge, which can prevent a spatial-navigation algorithm from receiving a "no further item in this direction" signal that would otherwise let it move focus to a neighboring control outside the focusgroup. Authors should consider using [`nowrap`](#enabling-wrapping-behaviors) or rely on a behavior token whose [default modifiers](#default-modifiers) do not include `wrap` when there is no target for spatial navigation in the cross-axis. The same authoring consideration applies today when implementing roving-tabindex composites in JavaScript.
 
-### Restricted elements
-
-Because `focusgroup` definitions are intended for grouping related controls, it doesn't make sense
-to provide `focusgroup` functionality on all elements. While the `focusgroup` attribute may be defined
-as a global attribute, it applies only to a subset of behaviors, requiring the author to
-specify the behavior their control follows when using focusgroup, see: [supported behaviors](#supported-behaviors)
-
-The current proposal is to limit `focusgroup` to only the elements whose name match the DOM's
-[valid shadow host names](https://dom.spec.whatwg.org/#valid-shadow-host-name) (which are the
-elements allowed to call `attachShadow()`). However, `<table>` and some table parts will need to
-be an exception in order to properly support grid `focusgroup`s.
-
 ### Feature detection
 
 To enable feature detection, user agents expose the `focusGroup` and `focusGroupStart`
@@ -1438,12 +1426,6 @@ top row only two, if the focus is on the 3rd cell, a request to move "up" to the
 row cannot be honored because there is no "3rd cell" in that row).
 
 </details>
-
-## Additional keyboard support
-
-V1 focusgroups already handle arrow keys along with Home and End. V2 could add other navigation keys, such as Page Up/Down for paginated movement (TBD on how this would be calculated and in what increments).
-
-Typeahead is another possible V2 addition, though the values to index would need to be worked out and might prove too complicated.
 
 ## Authoring guidance
 1. Place the behavior token first for readability: `focusgroup="tablist"`, `focusgroup="toolbar wrap"`. Order is not significant, but a consistent convention helps readers.
