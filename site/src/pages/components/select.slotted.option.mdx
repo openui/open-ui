@@ -1,6 +1,6 @@
 ---
 menu: Active Proposals
-name: Slotted Options in Customizable `<select>` (Explainer)
+name: Slotted Options in `<select>` (Explainer)
 layout: ../../layouts/ComponentLayout.astro
 authors:
   - name: Fernando Fiori
@@ -36,6 +36,7 @@ to keep the community up to date.
 - [Motivation](#motivation)
 - [Proposed Approach](#proposed-approach)
 - [Open questions](#open-questions)
+- [Relationship to other HTML elements](#relationship-to-other-html-elements)
 - [Alternatives Considered](#alternatives-considered)
 - [Accessibility, Internationalization, Privacy, and Security Considerations](#accessibility-internationalization-privacy-and-security-considerations)
 - [Stakeholder Feedback / Opposition](#stakeholder-feedback--opposition)
@@ -43,9 +44,10 @@ to keep the community up to date.
 
 ## Introduction
 
-The `<select>` element is one of the most common form controls on the web. With
-the new customizable `<select>` (`appearance: base-select`), developers can
-finally style and structure a real `<select>` to match their design.
+The `<select>` element is one of the most common form controls on the web.
+Developers building reusable components should be able to wrap the native
+control while letting consumers provide the same `<option>` markup they would
+write inside a standalone `<select>`.
 
 Today, you can't build a reusable `<select>`-based component that lets the
 people using your component supply the `<option>`s. If you wrap a `<select>`
@@ -56,11 +58,16 @@ and expose a
 options, the `<select>` ignores the slotted options and its dropdown comes up
 empty.
 
-This explainer proposes that a customizable `<select>` recognize `<option>`,
-`<optgroup>`, and its trigger `<button>` when they are slotted in from outside
-the component, so they behave as if they were written directly inside the
-`<select>`. This lets developers wrap the native `<select>` in a component
-instead of rebuilding it from scratch.
+The new customizable `<select>` (`appearance: base-select`) makes this
+composition problem especially relevant, because developers can now style and
+structure a real `<select>` to match their design.
+
+This explainer proposes that a `<select>` recognize `<option>`, `<optgroup>`,
+`<hr>`, and its trigger `<button>` when they reach it through the flat tree,
+including when they are slotted in from outside the component. They then behave
+as if they were written directly inside the `<select>`. This lets developers
+wrap the native `<select>` in a component instead of rebuilding it from
+scratch.
 
 ## User-Facing Problem
 
@@ -126,16 +133,15 @@ reimplemented and maintained by hand. Easier, correct authoring helps users too:
 developers reach for the accessible native control instead of a fragile
 substitute.
 
-> **Note on scope:** This initially targets `<select>` in customizable mode
-> (`appearance: base-select`). Whether to extend it to the default native
-> appearance is an open question.
+> **Note on appearance:** Ideally, this behavior would not depend on
+> `appearance`. Whether it can safely include existing default-appearance
+> selects is an open compatibility question discussed below.
 
 ### Goals
 
-- Treat `<option>` elements slotted into a customizable `<select>` as that
-  select's options.
-- Support the same for slotted `<optgroup>`s and for a slotted trigger
-  `<button>`.
+- Treat `<option>` elements slotted into a `<select>` as that select's options.
+- Support the same composition for slotted `<optgroup>`s, `<hr>` separators,
+  and a slotted trigger `<button>`.
 - Make all the usual `<select>` behaviors and JavaScript APIs work transparently
   with slotted options: selection, `value`, keyboard interaction, accessibility,
   and form submission.
@@ -151,9 +157,12 @@ substitute.
 - Extending this behavior to other elements in this proposal (for example
   `<datalist>`, `<table>`, `<fieldset>`, or `<form>`). Those may be worth doing
   later, but are out of scope here.
-- Letting arbitrary unrelated elements become a select's options. Only the
-  elements a `<select>` already accepts (`<option>`, `<optgroup>`, and the
-  trigger `<button>`) are in scope.
+- Letting arbitrary unrelated elements become a select's options. Only
+  `<option>` elements join the option list. Slotted `<optgroup>`, `<hr>`, and
+  the first `<button>` keep the roles they already have inside `<select>`;
+  other permitted content, such as `<div>`, `<noscript>`, and
+  script-supporting elements, remains ordinary content and does not join the
+  option list.
 
 ## Motivation
 
@@ -168,11 +177,20 @@ be provided through a slot, like any other child content.
 
 ## Proposed Approach
 
-A customizable `<select>` should find its `<option>`s (and `<optgroup>`s and
-trigger `<button>`) by looking at the content that is actually rendered inside
-it, including content placed there through `<slot>`s, instead of only its direct
-children. If an `<option>` is rendered inside the select because it was slotted
-in, the select treats it as one of its options.
+A `<select>` should find the descendants that participate in its behavior,
+including `<option>`, `<optgroup>`, `<hr>`, and its trigger `<button>`, by
+traversing its flat tree instead of its DOM tree.
+
+For the option list, this proposal preserves the existing
+[descendant traversal and subtree exclusions](https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-option-list),
+but performs that traversal in flat-tree order. This lets an `<option>` inside
+an allowed wrapper or a descendant's shadow tree join the option list, while
+preserving the boundaries where the existing algorithm stops traversing. The
+resulting option list is ordered in flat-tree order.
+
+The trigger button keeps a separate first-child rule. For a drop-down
+`<select>`, the first flat-tree child that is an element must be a `<button>`
+for that button to replace the select's in-page rendering.
 
 Everything else about `<select>` stays the same. From the page's point of view,
 a slotted `<option>` behaves as if it had been written directly inside the
@@ -229,10 +247,11 @@ design-system components is common.
 
 ### A slotted trigger button
 
-In customizable mode, the first child `<button>` of a `<select>` becomes the
-control's trigger (the thing you click to open the dropdown), replacing the
-default. A component may want consumers to provide both the trigger button and
-the options through the same slot:
+For a drop-down `<select>`, a `<button>` that is the first child which is an
+element replaces the control's in-page rendering. Customizable rendering lets
+authors style this trigger. Under this proposal, the first-child check uses
+flat-tree children, so a component can let consumers provide both the trigger
+button and the options through the same slot:
 
 ```html
 <my-custom-select>
@@ -277,6 +296,28 @@ just like directly authored groups: the label groups the options, and a
 </my-custom-select>
 ```
 
+### Slotted separators
+
+An `<hr>` can separate sets of options inside a `<select>`. A slotted `<hr>`
+behaves like a directly authored separator:
+
+```html
+<my-custom-select>
+  <template shadowrootmode="open">
+    <select>
+      <slot></slot>
+    </select>
+  </template>
+
+  <option>One</option>
+  <option>Two</option>
+  <hr>
+  <option>Three</option>
+</my-custom-select>
+```
+
+**Proposed result:** the `<hr>` separates the two sets of options.
+
 ### Options from a nested shadow tree
 
 The lookup is over the flat tree, so it is not limited to `<slot>`. Options
@@ -285,12 +326,14 @@ explicit `<slot>`:
 
 ```html
 <select>
-  <options-container>
-    <template shadowrootmode="open">
-      <option>One</option>
-      <option>Two</option>
-    </template>
-  </options-container>
+  <div>
+    <options-container>
+      <template shadowrootmode="open">
+        <option>One</option>
+        <option>Two</option>
+      </template>
+    </options-container>
+  </div>
 </select>
 ```
 
@@ -356,16 +399,50 @@ select.options.length;          // already reflects the new option
 
 ## Open questions
 
-- **Default vs customizable appearance.** This initially targets
-  `appearance: base-select`, but the same flat-tree lookup could apply to a
-  default-appearance `<select>` too. The main concern is web compatibility,
-  which we would want to measure (for example, with use counters) before
-  deciding.
+- **Compatibility for default appearance.** The preferred design would use the
+  same flat-tree lookup for every `<select>`, regardless of `appearance`.
+  Before changing existing default-appearance selects, browsers need to measure
+  whether pages depend on the current DOM-tree behavior, for example with use
+  counters, to assess web compatibility.
 - **Scope across other HTML elements.** Should this be solved specifically for
   `<select>`, or as part of a general mechanism that applies to elements such as
   `<datalist>`, `<table>`, `<fieldset>`, and `<form>`?
 - **Sequencing.** How should this work be prioritized relative to other
   in-progress work on customizable `<select>`?
+
+## Relationship to other HTML elements
+
+The broader design principle is not specific to `<select>`: when a native
+element derives behavior from descendants, authors expect valid content
+composed through a slot to participate like equivalent same-tree content. A
+shared definition for this relationship would help HTML avoid accumulating
+unrelated element-specific rules.
+
+That shared principle does not make the implementation work identical for
+every element:
+
+- **`<datalist>`** is the closest analogue because its `options` collection
+  already includes all descendant `<option>` elements. A flat-tree version may
+  be able to reuse much of the same traversal and update model, but still needs
+  its own compatibility analysis.
+- **`<fieldset>`** propagates disabledness to descendant form controls, with an
+  exception for its first `<legend>`. Supporting composed descendants therefore
+  affects propagation and ancestry rules, not just a collection.
+- **`<form>`** defines form ownership, the `.form` getter, submission, reset,
+  validation, and the `form.elements` collection. It also interacts with
+  form-associated custom elements, so changing its tree relationships has a
+  larger compatibility surface. This use case is being discussed in
+  [whatwg/html#10220](https://github.com/whatwg/html/issues/10220), and
+  [platform-provided behaviors](https://github.com/whatwg/html/issues/12150)
+  explore another way for custom elements to reuse native behavior.
+- **`<table>`** has specialized parser behavior, structural collections, and
+  layout rules for rows and cells. Flat-tree traversal alone would not answer
+  all of those questions.
+
+This proposal uses `<select>` as a concrete first case, not as a claim that
+`<select>` should remain a permanent exception. Follow-up proposals should
+reuse the same terminology and principles while evaluating each element's
+additional algorithms and compatibility risks.
 
 ## Alternatives Considered
 
@@ -430,16 +507,15 @@ Extend the native `<select>` with the customized built-in mechanism
 **Reason for rejection:** it doesn't provide the shadow DOM and slot composition
 that this problem needs.
 
-### Solve it generically for all elements at once
+### Wait for a generic solution for all elements
 
-Instead of fixing `<select>`, define a general mechanism so that any element can
-find slotted children, so `<table>`, `<form>`, `<fieldset>`, and others would
-all benefit.
+Define every part of a general mechanism for elements such as `<select>`,
+`<table>`, `<form>`, and `<fieldset>` before addressing the concrete
+`<select>` use case.
 
 **Pros**
 
-- A consistent story across the platform; avoids `<select>` becoming a special
-  case.
+- A consistent story across the platform.
 
 **Cons**
 
@@ -448,9 +524,12 @@ all benefit.
 - Blocks a concrete, high-demand need (`<select>`) behind a broad, open-ended
   effort.
 
-**Reason for rejection (for now):** `<select>` has clear, present demand and a
-tractable scope. Starting here does not rule out generalizing later, and it
-gives a concrete case to learn from before designing something broader.
+**Why this proposal does not wait:** a coherent general direction and
+select-specific progress are complementary. `<select>` has clear, present
+demand and provides a concrete case from which shared terminology and
+requirements can be developed. The relationship to other elements is described
+above so follow-up work can remain coordinated rather than becoming unrelated
+special cases.
 
 ## Accessibility, Internationalization, Privacy, and Security Considerations
 
@@ -480,6 +559,16 @@ already compose.
   example:
   [1](https://github.com/whatwg/html/issues/11535#issuecomment-3155754832),
   [2](https://github.com/whatwg/html/issues/11535#issuecomment-3520607548).
+- **Shopify Polaris:** Its production `<s-option>` component wraps a native
+  `<option>` in a custom element, matching the nested shadow tree use case in
+  this explainer. Polaris developers have
+  [confirmed the cost of the current workaround](https://github.com/openui/open-ui/pull/1481#discussion_r3622559445).
+- **Future expansion:** Design-system authors have expressed
+  [particular interest in form and table composition](https://github.com/openui/open-ui/pull/1481#discussion_r3622579982).
+- **Standards concerns:** Reviewers prefer that select semantics not depend on
+  computed CSS, while also noting that default-appearance behavior needs web
+  compatibility evidence and that HTML should pursue a coherent direction
+  across elements.
 
 Discussion is being tracked in
 [whatwg/html#11535](https://github.com/whatwg/html/issues/11535).
