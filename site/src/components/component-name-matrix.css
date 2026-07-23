@@ -18,8 +18,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    background: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    background: Canvas;
+    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
 }
 
 .component-name-matrix .cell {
@@ -30,16 +30,16 @@
     overflow: hidden;
     height: 2rem;
     line-height: 1.2;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
 }
 .component-name-matrix .cell.found {
     background: rgba(0, 255, 0, 0.1);
-    color: rgb(0, 64, 0);
+    color: light-dark(rgb(0, 64, 0), rgb(0, 191, 0));
 }
 .component-name-matrix .cell.not-found {
     background: rgba(255, 0, 0, 0.1);
-    color: rgb(64, 0, 0);
+    color: light-dark(rgb(64, 0, 0), rgb(191, 0, 0));
 
 }
 .component-name-matrix a.cell {
