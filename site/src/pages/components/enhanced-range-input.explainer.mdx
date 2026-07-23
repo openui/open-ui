@@ -7,6 +7,25 @@ authors:
     url: https://utilitybend.com
 ---
 
+- Author(s): [Brecht De Ruyte](https://utilitybend.com)
+- Last updated: 17 Jul 2026
+
+## Table of Contents
+
+- [Background](#background)
+- [Goals](#goals)
+- [Current State of Range Styling](#current-state-of-range-styling)
+- [Multi-Handle Support with `<rangegroup>`](#multi-handle-support-with-rangegroup)
+- [Accessibility Enhancements](#accessibility-enhancements)
+- [Disabled State](#disabled-state)
+- [Progressive Enhancement](#progressive-enhancement)
+- [Datalist Integration](#datalist-integration)
+- [Multi-Color Range Segments](#multi-color-slider-segments)
+- [Detailed Design](#detailed-design)
+- [Extra Examples](#extra-examples)
+- [Resolved Decisions](#resolved-decisions)
+- [Considerations and Open Questions](#considerations-and-open-questions)
+
 ## Background
 
 The `<input type="range">` element has long been a part of HTML forms, providing a slider control for selecting numeric values. However, its current implementation lacks flexibility in styling and functionality, leading developers to often resort to custom implementations. These custom solutions can result in reduced performance, reliability, and accessibility compared to native form controls.
@@ -78,12 +97,12 @@ There currently is a running draft solution for this found at: [https://www.w3.o
 
 - `::slider-track`: The main track along which the thumb(s) move.
 - `::slider-fill`: The filled portion of the track, typically between the minimum value and the thumb (or between thumbs for multi-handle ranges).
-- `::slider-thumb`: The draggable handle(s) used to select values.
+- `::slider-thumb(*)`: The draggable handle(s) used to select values.
 
 Taking this further, we would like to propose new pseudo elements following the same convention:
 
 - `::slider-segment`: Sections of the track between handles in multi-handle ranges.
-- `::slider-tick`: Optional tick marks along the track for value representation. (when datalist is paired.)
+- `::slider-tick(*)`: Optional tick marks along the track for value representation. (when datalist is paired.)
 - `::slider-tick-label`: Labels associated with tick marks. (when datalist is paired.)
 
 This would follow the idea of the `appearance: base` value from the CSS Forms specification:
@@ -375,14 +394,26 @@ Disabled thumbs are excluded from the closest-thumb calculation. If only one thu
 
 While this interaction is powerful, it's worth noting that on touch devices with coarse pointers, care must be taken to avoid accidental adjustments. However, we believe the benefit of adhering to a well-established browser-native pattern provides the most valuable and predictable user experience.
 
+#### Overlapping Thumbs
+
+Because overlap is permitted (see [Thumb collision handling](#considerations-and-open-questions)), the pointer model needs a deterministic way to pick which thumb a drag should move when two or more thumbs currently share the same value. We propose the following resolution algorithm as the current behavior for a first prototype:
+
+1. On pointer-down over a position where multiple thumbs overlap, do not commit to a thumb immediately.
+2. Track pointer movement without moving any thumb until the pointer has moved past a small horizontal threshold (implementation-defined, e.g. a few pixels) from the pointer-down position.
+3. Once the threshold is crossed, use the movement direction to disambiguate: a move toward lower values activates the **leftmost** (start-most, writing-mode aware) of the overlapping thumbs; a move toward higher values activates the **rightmost** (end-most) thumb.
+4. That thumb remains active for the rest of the drag, following the same clamping rules (`stepbetween`, per-thumb `min`/`max`) as a normal drag.
+5. If the pointer is released before crossing the threshold, no value changes and no `change` fires — this is treated as a discrete activation/focus event on the topmost thumb rather than a move.
+
+This keeps overlapping thumbs individually reachable by pointer without requiring authors to prevent overlap via `stepbetween`. The broader question of whether this is the right default (versus, for example, z-order stacking or a dedicated disambiguation UI) remains open — see [Thumb collision handling](#considerations-and-open-questions).
+
 ### CSS Properties and Pseudo-elements
 
 To address the current fragmentation and provide a unified styling API, we propose the following pseudo-elements, aligning with the [CSS Forms specification](https://drafts.csswg.org/css-forms-1/):
 
 - `::slider-track`: Represents the main track of the range group.
 - `::slider-segment`: Represents sections of the track between handles.
-- `::slider-thumb`: Represents the draggable handles within the group.
-- `::slider-tick`: Represents individual tick marks on the range group with attached datalist.
+- `::slider-thumb(*)`: Represents the draggable handles within the group.
+- `::slider-tick(*)`: Represents individual tick marks on the range group with attached datalist.
 - `::slider-tick-label`: Represents the label associated with each tick mark of a datalist option.
 
 Example usage:
@@ -402,7 +433,7 @@ input[type="range"]::slider-fill {
     background-color: #4caf50;
 }
 
-input[type="range"]::slider-thumb {
+input[type="range"]::slider-thumb(*) {
     width: 20px;
     height: 20px;
     background-color: #2196f3;
@@ -426,11 +457,24 @@ rangegroup::slider-segment(2) {
     background-color: #33ff57;
 }
 
-rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb(*) {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
     border-radius: 50%;
+}
+```
+
+#### Exposing Thumb and Segment Geometry to CSS
+
+To support layout customization beyond a straight horizontal track, we propose exposing each thumb's position along the track as a CSS custom property on the `::slider-thumb(*)` part (e.g. `--slider-thumb-position`, a percentage or `<number>` along the track), with segments similarly exposing their start and size. This is purely additional information for styling — it does not change hit-testing, keyboard behavior, or value computation, which remain based on the linear `min`/`max` model described above.
+
+Authors can combine this with ordinary CSS (such as `offset-path` and CSS anchor positioning) to lay thumbs out along a custom visual path — for example a curved or circular track — without any new HTML attributes or UA-required geometry. See the [wavy-track](https://brechtdr.github.io/enhanced-range-slider-poc/#wavy-track) and [circular-track](https://brechtdr.github.io/enhanced-range-slider-poc/#circular-track) examples in the proof-of-concept for an illustration of this pattern:
+
+```css
+rangegroup::(slider-thumb(*)) {
+    offset-path: path("M0,40 Q40,15 80,40 T160,40 T240,40 T320,40");
+    offset-distance: var(--slider-thumb-position);
 }
 ```
 
@@ -502,7 +546,7 @@ rangegroup::slider-segment(2) {
 rangegroup::slider-segment(3) {
     background-color: #ddd;
 }
-rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb(*) {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -542,7 +586,7 @@ rangegroup::slider-track {
     background-color: #ddd;
 }
 
-rangegroup input[type="range"]::slider-thumb {
+rangegroup input[type="range"]::slider-thumb(*) {
     width: 20px;
     height: 20px;
     background-color: #2196f3;
@@ -568,18 +612,29 @@ rangegroup::slider-segment(4) {
 
 ## Resolved Decisions
 
-The following questions have been discussed and resolved in Open UI telecons:
+The following reflect current Open UI telecon consensus and are the basis for a first browser prototype. Where a tracking issue remains open on GitHub for further refinement, that is noted explicitly — "resolved" here means "settled enough to prototype against," not "closed."
 
-- **Handle count limits** ([#1337](https://github.com/openui/open-ui/issues/1337)): No limit is imposed on the number of range inputs in a `<rangegroup>`. It is the author's responsibility to determine the appropriate number for their use case. Community feedback is being gathered on the prevalence of 3+ thumb use cases to determine whether a simpler two-thumb attribute API should coexist with the N-thumb `<rangegroup>` approach.
-- **Keyboard navigation** ([#1185](https://github.com/openui/open-ui/issues/1185)): Each thumb gets a tab stop. Arrow keys, Page Up/Down, Home, and End behave as they do on a standard `<input type="range">`. See the [Keyboard Interaction](#keyboard-interaction) section.
-- **Disabled attribute propagation** ([#1338](https://github.com/openui/open-ui/issues/1338)): `disabled` on `<rangegroup>` cascades to all thumbs. Individual thumbs can be disabled independently. When all thumbs are disabled, the group behaves as fully disabled. See the [Disabled State](#disabled-state) section.
-- **Screen reader announcements** ([#1339](https://github.com/openui/open-ui/issues/1339)): The group's min, max, and stepbetween should be announced when entering the group (first thumb). Each thumb then announces its own min, max, and current value. See the [Screen Reader Announcements](#screen-reader-announcements) section.
+- **Handle count limits** ([#1337](https://github.com/openui/open-ui/issues/1337), tracking issue remains open): No limit is imposed on the number of range inputs in a `<rangegroup>`. It is the author's responsibility to determine the appropriate number for their use case. Community feedback is being gathered on the prevalence of 3+ thumb use cases to determine whether a simpler two-thumb attribute API should coexist with the N-thumb `<rangegroup>` approach. See also [#1183](https://github.com/openui/open-ui/issues/1183) for the related discussion on whether any maximum should be imposed.
+- **Keyboard navigation** ([#1185](https://github.com/openui/open-ui/issues/1185), tracking issue remains open): Each thumb gets a tab stop. Arrow keys, Page Up/Down, Home, and End behave as they do on a standard `<input type="range">`. See the [Keyboard Interaction](#keyboard-interaction) section.
+- **Disabled attribute propagation** ([#1338](https://github.com/openui/open-ui/issues/1338), tracking issue remains open): `disabled` on `<rangegroup>` cascades to all thumbs. Individual thumbs can be disabled independently. When all thumbs are disabled, the group behaves as fully disabled. See the [Disabled State](#disabled-state) section.
+- **Screen reader announcements**: The group's min, max, and stepbetween should be announced when entering the group (first thumb). Each thumb then announces its own min, max, and current value. See the [Screen Reader Announcements](#screen-reader-announcements) section. Separately, how a screen reader should communicate a _blocked_ move (e.g. a thumb constrained by `stepbetween`) is still open — see [#1339](https://github.com/openui/open-ui/issues/1339) below.
 - **Naming convention** ([#1197](https://github.com/openui/open-ui/issues/1197)): All pseudo-elements use the `slider-` prefix (e.g., `::slider-track`, `::slider-thumb`), following the CSSWG decision in the [CSS Forms specification](https://drafts.csswg.org/css-forms/).
 
 ## Considerations and Open Questions
 
-- **Thumb collision handling** ([#1184](https://github.com/openui/open-ui/issues/1184)): How should overlapping thumbs behave? Current consensus leans toward allowing overlap for the initial version, with the option to refine behavior based on real-world usage. Authors can prevent overlap using `stepbetween` or per-thumb `min`/`max` constraints. The UX of selecting overlapping thumbs (e.g., disambiguating via drag direction) remains an area for further work.
+Filed under the [`Enhanced range slider`](https://github.com/openui/open-ui/issues?q=is%3Aissue+state%3Aopen+label%3A%22Enhanced+range+slider%22) label on the Open UI tracker. For a first native prototype, the items above under Resolved Decisions plus [Overlapping Thumbs](#overlapping-thumbs) and [Track Click Behavior](#track-click-behavior) are considered in scope; the items below are explicitly deferred pending further discussion.
+
+- **Thumb collision handling** ([#1184](https://github.com/openui/open-ui/issues/1184)): How should overlapping thumbs behave? Current consensus leans toward allowing overlap for the initial version, with the option to refine behavior based on real-world usage. Authors can prevent overlap using `stepbetween` or per-thumb `min`/`max` constraints. The [Overlapping Thumbs](#overlapping-thumbs) section describes the pointer-disambiguation algorithm proposed for a first prototype; whether this is the right long-term default remains under discussion.
 - **Track click behavior** ([#1278](https://github.com/openui/open-ui/issues/1278)): The current proposal moves the closest thumb to the click position. Alternative approaches (e.g., only moving thumbs when clicking outside the selected range, or no track-click on touch devices) have been suggested and remain under discussion.
+- **Handle count and maximum limitations** ([#1183](https://github.com/openui/open-ui/issues/1183)): Should there be any UA-imposed maximum on the number of thumbs in a `<rangegroup>`, and if so, what are the accessibility implications of many handles versus two? See also [#1337](https://github.com/openui/open-ui/issues/1337).
+- **What is the label?** ([#1244](https://github.com/openui/open-ui/issues/1244)): The [Labeling](#labeling) section proposes `<legend>` for the group and `<label>`/`aria-label`/`aria-labelledby` per thumb. Open questions remain around how assistive technology should identify individual handles when authors use patterns other than wrapping `<label>` elements, and whether additional guidance or constraints are needed.
+- **Standardizing feedback for constrained movement** ([#1339](https://github.com/openui/open-ui/issues/1339)): When a thumb's movement is blocked (e.g. by `stepbetween` or a neighboring thumb's `min`/`max`), should there be standardized visual and/or assistive-technology feedback, similar to how some platforms indicate a control has reached a limit?
+- **Linking input elements with a slider value** ([#1459](https://github.com/openui/open-ui/issues/1459)): Should there be a declarative way to bidirectionally link a `<rangegroup>` thumb to another control (e.g. an `<input type="number">`) so that editing one updates the other, without authors writing JavaScript?
+- **Segment dragging** ([#1460](https://github.com/openui/open-ui/issues/1460)): Should authors (or the platform by default) be able to drag an entire segment, moving both of its bounding thumbs together while preserving their distance (e.g. an iOS-style alarm/sleep-schedule range picker)? This would likely be an opt-in JavaScript-driven pattern rather than default behavior; accessibility implications are unexplored.
+- **Multiple simultaneous touch points** ([#1461](https://github.com/openui/open-ui/issues/1461)): On touch devices, should it be possible to drag two thumbs at once with two fingers? The proof-of-concept does not currently support this.
+- **Maximum distance between thumbs** ([#1462](https://github.com/openui/open-ui/issues/1462)): `stepbetween` defines a _minimum_ gap between adjacent thumbs. Should there also be a way to define a _maximum_ gap (e.g. a `maxstepbetween` attribute)?
+- **Per-pair `stepbetween`**: ([#1463](https://github.com/openui/open-ui/issues/1463)): With three or more thumbs, should the minimum distance be configurable independently for each adjacent pair, rather than a single group-wide `stepbetween` value?
+- **Non-linear value scales** ([#1464](https://github.com/openui/open-ui/issues/1464)): Should range inputs and `<rangegroup>` support non-linear (e.g. logarithmic or exponential) mapping between thumb position and value, for cases like price or frequency ranges spanning several orders of magnitude? This is a larger question about `<input type="range">` in general, not specific to multi-handle groups.
 - **Vertical orientation**: How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a slider-orientation property that could be adopted for this purpose.
 - **Automatic tick mark generation**: Should we provide options for generating tick marks without requiring a `<datalist>` (e.g., evenly spaced ticks based on a `step` attribute on the rangegroup)?
 - **Tick mark legibility**: How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks? Is this author responsibility?
