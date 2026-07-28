@@ -472,7 +472,7 @@ To support layout customization beyond a straight horizontal track, we propose e
 Authors can combine this with ordinary CSS (such as `offset-path` and CSS anchor positioning) to lay thumbs out along a custom visual path — for example a curved or circular track — without any new HTML attributes or UA-required geometry. See the [wavy-track](https://brechtdr.github.io/enhanced-range-slider-poc/#wavy-track) and [circular-track](https://brechtdr.github.io/enhanced-range-slider-poc/#circular-track) examples in the proof-of-concept for an illustration of this pattern:
 
 ```css
-rangegroup::(slider-thumb(*)) {
+rangegroup::slider-thumb(*) {
     offset-path: path("M0,40 Q40,15 80,40 T160,40 T240,40 T320,40");
     offset-distance: var(--slider-thumb-position);
 }
