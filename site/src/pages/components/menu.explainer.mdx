@@ -345,12 +345,6 @@ existing popover) commands.
 </menulist>
 ```
 
-A button that invokes a menulist in this way would have an implicit `aria-haspopup=menu` property,
-along with an impliict `aria-expanded` state, reflecting whether the menulist is rendered (expanded)
-or not (collapsed). It would not have an implicit `aria-details` property. This is because unlike
-other more generic popovers, keyboard focus should immediately move from the invoking button to the
-first focusable element, or element with the autofocus attribute, of the rendered `<menulist>`.
-
 ## Accessibility
 
 One goal of this proposal is to make the menu elements we propose accessible by default. To achieve
@@ -360,41 +354,24 @@ and best practices curated from accessibility experts as closely as possible; de
 discussed with accessibility experts and documented here to the best of our ability. This section
 describes the concrete implications on our proposal.
 
-### Native ARIA role mapping
+### Native ARIA mapping rules
 
- - The `<menubar>` element exposes the implicit ARIA
-   [`menubar`](https://w3c.github.io/aria/#menubar) role.
- - The `<menulist>` element exposes the implicit ARIA
-   [`menu`](https://w3c.github.io/aria/#menu) role.
- - The `<menuitem>` element exposes the implicit ARIA
-   [`menuitem`](https://w3c.github.io/aria/#menuitem) role by default.
+The elements and attributes are intended to provide native semantics that map to existing ARIA roles and states according to the following rules:
 
-While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
-whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
-[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role is exposed for items in a
-`<fieldset checkable=single>`, and the
-[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a
-`<fieldset checkable=multiple>`.
-
-### ARIA attributes
-
- - [`aria-expanded`](https://w3c.github.io/aria/#aria-expanded)
-    - The `<menuitem>` element's `aria-expanded` attribute reflects whether or not a popover invoked
-      by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements (invokeable via
-      the `toggle-menu` command), or other popovers unrelated to our
-      proposal
- - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
-    - For checkable `<menuitem>` element, the `aria-checked` attribute reflects whether their
-      current [state](https://w3c.github.io/aria/#dfn-state) is checked
- - [`aria-disabled`](https://w3c.github.io/aria/#aria-disabled)
-    - See [§ Soft disabling](#soft-disabling)
-
-### Soft disabling
-
-A `<menuitem disabled>` element will be marked as `aria-disabled=true`, however the element will
-still be keyboard reachable and focusable, just not activatable. See [Issue
-#1274](https://github.com/openui/open-ui/issues/1274) for more discussion.
-**Or maybe it won't be; this requires further discussion.**
+1. `<menubar>` elements have the [`menubar`](https://w3c.github.io/aria/#menubar) role.
+2. `<menulist>` elements have the [`menu`](https://w3c.github.io/aria/#menu) role.
+3. `<menuitem>` elements *usually* have the [`menuitem`](https://w3c.github.io/aria/#menuitem) role.
+4. `<menuitem>`s can have [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) or [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) roles depending on the `checkable` attribute of a parent `<fieldset>`.
+   - While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to whether the element is embedded in a `<fieldset checkable=single|multiple>`. The [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role is exposed for items in a `<fieldset checkable=single>`, and the [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a `<fieldset checkable=multiple>`.
+   - `menuitemradio` and `menuitemcheckbox` elements expose a boolean `checked` state.
+5. `menuitem`s and `button`s that are `menu` invokers:
+   - have `expanded=true` or `expanded=false` state.
+   - have `haspopup=menu`.
+   - will NOT have `details` pointing to the `menu` ([past discussion on `haspopup` instead of `details`](https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931)).
+6. `menubar` and `menu` have `setSize`.
+7. `menuitem` descendants of a `menubar` or `menu` have `setSize` and `posInSet`.
+8. `menuitem`, `menuitemcheckbox`, and `menuitemradio` are included in the accessibility tree even when they are disabled.
+9. An invoked `menulist` implicitly derives its accessible name from its invoker. The browser computes this in the accessibility tree exactly like `aria-labelledby` (*without* adding actual DOM attributes) unless an explicit `aria-labelledby` already exists.
 
 ### Keyboard behavior
 
