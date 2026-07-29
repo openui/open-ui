@@ -65,7 +65,7 @@ V2 adds the following tokens to the [V1 `focusgroup` token set](/components/scop
 | [`feed`](#feed-focusgroups) | Behavior | Block-axis linear navigation for ARIA-feed content streams; defaults to `itemcontrols`. |
 | [`grid`](#grid-focusgroups) | Behavior | Two-dimensional directional navigation over a native HTML table; defaults to `itemcontrols`. Pair with [`manual`](#manual-row-enrollment) for generic markup. |
 | [`manual`](#manual-row-enrollment) | Grid modifier | Used as `focusgroup="grid manual"`. Enrolls direct child rows with `focusgrouprow` instead of discovering rows from a native table. |
-| [`flow`, `row-wrap`, `col-wrap`, `row-flow`, `col-flow`](#grid-wrapping-and-flow) | Grid modifiers | Configure per-axis grid edges: wrap within a row or column, or flow into the adjacent row or column. |
+| [`flow`, `rowwrap`, `colwrap`, `rowflow`, `colflow`](#grid-wrapping-and-flow) | Grid modifiers | Configure per-axis grid edges: wrap within a row or column, or flow into the adjacent row or column. |
 
 The `feed` and `grid` behaviors carry `itemcontrols` as a [default modifier](/components/scoped-focusgroup.explainer#default-modifiers). A redundant explicit `itemcontrols` remains valid; `noitemcontrols` overrides the default.
 
@@ -342,32 +342,32 @@ What to notice:
 
 ### Grid wrapping and flow
 
-A `grid` focusgroup configures each edge independently. The inline-axis modifiers (`row-wrap`, `row-flow`) control what happens when inline movement passes a row's first or last cell. The block-axis modifiers (`col-wrap`, `col-flow`) control what happens when block movement passes a column's first or last row. The broad `wrap` and `flow` tokens set both axes at once, and `nowrap` forces hard edges.
+A `grid` focusgroup configures each edge independently. The inline-axis modifiers (`rowwrap`, `rowflow`) control what happens when inline movement passes a row's first or last cell. The block-axis modifiers (`colwrap`, `colflow`) control what happens when block movement passes a column's first or last row. The broad `wrap` and `flow` tokens set both axes at once, and `nowrap` forces hard edges.
 
 | HTML (attribute value) | Inline edges (within a row) | Block edges (within a column) |
 |---|---|---|
 | `focusgroup="grid"` (default) | Hard edge | Hard edge |
-| `focusgroup="grid wrap"` (= `row-wrap col-wrap`) | Wrap to the opposite end of the same row | Wrap to the opposite end of the same column |
-| `focusgroup="grid flow"` (= `row-flow col-flow`) | Cross a row edge into the next or previous row | Cross a column edge into the next or previous column |
-| `focusgroup="grid row-wrap"` | Wrap to the opposite end of the same row | Hard edge |
-| `focusgroup="grid col-wrap"` | Hard edge | Wrap to the opposite end of the same column |
-| `focusgroup="grid row-flow"` | Cross a row edge into the next or previous row | Hard edge |
-| `focusgroup="grid col-flow"` | Hard edge | Cross a column edge into the next or previous column |
-| `focusgroup="grid row-wrap col-flow"` | Wrap to the opposite end of the same row | Cross a column edge into the next or previous column |
-| `focusgroup="grid row-flow col-wrap"` | Cross a row edge into the next or previous row | Wrap to the opposite end of the same column |
+| `focusgroup="grid wrap"` (= `rowwrap colwrap`) | Wrap to the opposite end of the same row | Wrap to the opposite end of the same column |
+| `focusgroup="grid flow"` (= `rowflow colflow`) | Cross a row edge into the next or previous row | Cross a column edge into the next or previous column |
+| `focusgroup="grid rowwrap"` | Wrap to the opposite end of the same row | Hard edge |
+| `focusgroup="grid colwrap"` | Hard edge | Wrap to the opposite end of the same column |
+| `focusgroup="grid rowflow"` | Cross a row edge into the next or previous row | Hard edge |
+| `focusgroup="grid colflow"` | Hard edge | Cross a column edge into the next or previous column |
+| `focusgroup="grid rowwrap colflow"` | Wrap to the opposite end of the same row | Cross a column edge into the next or previous column |
+| `focusgroup="grid rowflow colwrap"` | Cross a row edge into the next or previous row | Wrap to the opposite end of the same column |
 | `focusgroup="grid nowrap"` | Hard edge (explicit) | Hard edge (explicit) |
 
 At the outermost edge, flow continues from the final cell or column to the first, and in reverse from the first to the final.
 
 If wrapping or flow resolves to the starting target, focus does not move and the operation is not consumed.
 
-The parser expands `wrap` to `row-wrap col-wrap` and `flow` to `row-flow col-flow`, then resolves each axis:
+The parser expands `wrap` to `rowwrap colwrap` and `flow` to `rowflow colflow`, then resolves each axis:
 
 1. If `nowrap` appears with any wrap or flow modifier, the combination is an author error and both axes use hard edges.
 2. If one axis has both wrap and flow, that axis uses a hard edge; the other axis is resolved independently.
 3. Otherwise, the axis uses its specified wrap or flow behavior, or a hard edge when neither is present.
 
-A conflict does not invalidate the grid. Thus `wrap flow` produces two hard axes, `wrap row-flow` produces a hard inline axis and a wrapping block axis, and `nowrap flow` produces two hard axes.
+A conflict does not invalidate the grid. Thus `wrap flow` produces two hard axes, `wrap rowflow` produces a hard inline axis and a wrapping block axis, and `nowrap flow` produces two hard axes.
 
 ```html
 <div focusgroup="grid manual flow" aria-label="Example grid">
@@ -494,6 +494,8 @@ When feed items change, the focusgroup updates its item set before the next dire
 
 <p class="question">Does one `itemcontrols` mode cover the required behavior, or are separate limited, unlimited, and trapping modes needed?</p>
 
+<p class="question">What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).</p>
+
 <p class="question">Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation?</p>
 
 <p class="question">How should a future grid extension represent ragged rows, row and column spans, hidden cells, virtualized content, and indexed topology while preserving a stable current coordinate?</p>
@@ -557,12 +559,12 @@ Focusgroup V2 adds the values below. Shared parsing and linear behavior remain d
 |---|---|
 | Both axes derived from semantic row and column topology | (no direction modifier) |
 | Hard edges on both axes (default) | (no wrapping modifier) |
-| Wrap within the same row and column | `wrap` (= `row-wrap col-wrap`) |
-| Flow into the adjacent row and column | `flow` (= `row-flow col-flow`) |
-| Wrap within the same row | `row-wrap` |
-| Wrap within the same column | `col-wrap` |
-| Cross a row edge into an adjacent row | `row-flow` |
-| Cross a column edge into an adjacent column | `col-flow` |
+| Wrap within the same row and column | `wrap` (= `rowwrap colwrap`) |
+| Flow into the adjacent row and column | `flow` (= `rowflow colflow`) |
+| Wrap within the same row | `rowwrap` |
+| Wrap within the same column | `colwrap` |
+| Cross a row edge into an adjacent row | `rowflow` |
+| Cross a column edge into an adjacent column | `colflow` |
 | Hard edges (explicit, overrides `wrap`/`flow`) | `nowrap` |
 
 ## Acknowledgments
