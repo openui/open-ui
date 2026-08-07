@@ -141,7 +141,7 @@ Activity follows current focus, not stored selection, optional last-focused memo
 
 ### Owner-relative memory
 
-Memory follows the owner-relative active focusgroup item. When current focus causes an owner with effective `itemcontrols` to derive an active item, that owner stores the active item as its remembered item if `nomemory` is absent. This applies when focus is on the item boundary, an opted-out control contained by the item, a negative-`tabindex` control classified as nested content and reached by pointer or script, or content in an independent nested focusgroup contained by the item.
+Memory follows the owner-relative active focusgroup item. Whenever current focus resolves to an active item for an owner with effective `itemcontrols`, that owner stores the active item as its remembered item if `nomemory` is absent. This state-derived update applies after either a focus change or a containment change. It also applies when focus is on the item boundary, an opted-out control contained by the item, a negative-`tabindex` control classified as nested content and reached by pointer or script, or content in an independent nested focusgroup contained by the item.
 
 Each enclosing owner with effective `itemcontrols` applies this rule independently. The focused nested control is not itself stored in an enclosing owner's memory. If current focus does not resolve to an active item for an owner, that owner's prior memory is unchanged. `nomemory` disables the update only for the owner on which it is effective.
 
@@ -238,7 +238,7 @@ Pointer or script focus inside a nested focusgroup within an inactive item makes
 
 ### Active-item invalidation
 
-Nesting changes do not move focus solely to repair state; normal HTML focus disposition still applies. Before the next relevant focusgroup operation, the user agent reevaluates flat-tree containment, derives the active item from current focus, clears invalid memory, and removes nested content that no longer qualifies from sequential navigation.
+Nesting changes do not move focus solely to repair state; normal HTML focus disposition still applies. Before the next relevant focusgroup operation, the user agent reevaluates flat-tree containment and derives the active item from current focus. It clears remembered items that are no longer valid and, when current focus resolves to an active item, updates memory under the owner-relative rule above. It then removes nested content that no longer qualifies from sequential navigation.
 
 ## Grid focusgroups
 
@@ -476,7 +476,7 @@ Each parsed grid owner has one conceptual grid state. Before any observable oper
 
 A focusable owner, a `focusgrouprow` marker misplaced within a manual grid's owned scope, a malformed row or cell relationship, a cell with zero or multiple eligible target candidates, a focusable non-target descendant, or an unsupported shape makes the state invalid. Directional navigation, memory, sequential-entry collapse, segment behavior, and inferred roles all consume the same state; none run when it is invalid.
 
-A relevant DOM, attribute, style, slot-assignment, or `reading-flow` change marks the snapshot stale. A change that might make the remembered target ineligible conservatively clears that memory without requiring an immediate topology or layout update; restoring eligibility later does not restore it. The user agent rebuilds the snapshot before the next observable focusgroup operation. State repair alone does not move focus; normal HTML focus disposition still applies.
+A relevant DOM, attribute, style, slot-assignment, or `reading-flow` change marks the snapshot stale. A change that might make the remembered target ineligible conservatively clears that memory without requiring an immediate topology or layout update. Merely restoring eligibility later does not restore the cleared memory. The user agent rebuilds the snapshot before the next observable focusgroup operation; after a valid rebuild, an owner with effective `itemcontrols` updates memory from current focus under the owner-relative rule. State repair alone does not move focus; normal HTML focus disposition still applies.
 
 Ignoring grid focusgroup behavior never makes content inert. Normal DOM focus, sequential focus navigation, element interaction, authored roles, native semantics, and custom-element default semantics remain in effect. User agents should provide diagnostics for invalid grid markup; the diagnostic surface remains an [open question](#open-questions).
 
