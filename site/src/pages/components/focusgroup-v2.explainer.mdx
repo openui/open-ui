@@ -137,7 +137,13 @@ While focus is inside a focusgroup with effective `itemcontrols`, the **active f
 2. The nearest item owned by that focusgroup that contains the currently focused area directly as an opted-out control or indirectly through a contained nested focusgroup under the static containment rules above; otherwise
 3. No item.
 
-Activity follows current focus, not stored selection, optional last-focused memory, or sequential eligibility. The focused area need not itself be sequentially focusable; pointer or script focus on a nested negative-`tabindex` control still identifies its containing item. Activity is owner-relative: focus inside a nested focusgroup can identify an active item for both the nested owner and each enclosing effective-`itemcontrols` owner without combining their scopes.
+Activity follows current focus, not stored selection, optional last-focused memory, or sequential eligibility. The focused area need not itself be sequentially focusable; pointer or script focus on a negative-`tabindex` control classified as nested content still identifies its containing item. Activity is owner-relative: focus inside a nested focusgroup can identify an active item for both the nested owner and each enclosing effective-`itemcontrols` owner without combining their scopes.
+
+### Owner-relative memory
+
+Memory follows the owner-relative active focusgroup item. When current focus causes an owner with effective `itemcontrols` to derive an active item, that owner stores the active item as its remembered item if `nomemory` is absent. This applies when focus is on the item boundary, an opted-out control contained by the item, a negative-`tabindex` control classified as nested content and reached by pointer or script, or content in an independent nested focusgroup contained by the item.
+
+Each enclosing owner with effective `itemcontrols` applies this rule independently. The focused nested control is not itself stored in an enclosing owner's memory. If current focus does not resolve to an active item for an owner, that owner's prior memory is unchanged. `nomemory` disables the update only for the owner on which it is effective.
 
 ### Sequential eligibility
 
@@ -152,7 +158,7 @@ When `itemcontrols` is effective, the following steps extend the shared focusgro
 1. Identify the focusgroup segment adjacent to the entry point, then apply the ordinary priority rules to eligible focusgroup items in that segment. A remembered item and `focusgroupstart` therefore select a focusgroup item, not its nested content.
 2. For both forward and reverse entry, focus the selected focusgroup-item boundary and end the entry operation. Entry does not descend into that item's nested content.
 3. After focus moves, derive the active item from current focus. The active item's eligible controls and participating nested focusgroup boundaries then participate in ordinary sequential focus navigation order. Eligible nested content of inactive items is omitted.
-4. If `nomemory` is absent, store memory against the selected focusgroup item.
+4. The resulting focus move updates memory under the owner-relative rule above. Entry therefore remembers the selected item when memory is enabled.
 
 The item boundary is therefore the entry point in both directions. Shift+Tab from after an `itemcontrols` focusgroup focuses the selected item, not one of its opted-out controls or a nested focusgroup. Nested content becomes eligible for a subsequent navigation operation after the item boundary receives focus. Recursively nested `itemcontrols` owners expose one item boundary at a time.
 
@@ -221,7 +227,7 @@ Scope ownership and exclusion are determined before the `itemcontrols` filter:
 
 1. A focusable `focusgroup="none"` descendant, or a focusable descendant of an opted-out subtree, remains excluded from directional navigation. If its nearest containing focusgroup item in the CSS flat tree belongs to an `itemcontrols` owner, it is nested content of that item and is sequentially eligible while that item is active.
 2. Sequentially focusable controls and participating nested focusgroup boundaries within the active item participate according to sequential focus navigation order. Eligible nested content of inactive items is omitted and does not create sequential entry points.
-3. A nested control with a negative `tabindex` remains outside sequential focus navigation, following the V1 rule for negative-`tabindex` elements. Pointer or script focus on that control still makes its containing focusgroup item active, but `itemcontrols` does not promote the control into the Tab sequence.
+3. A negative-`tabindex` control classified as nested content remains outside sequential focus navigation, following the V1 rule for negative-`tabindex` elements. Pointer or script focus on that control still makes its containing focusgroup item active, but `itemcontrols` does not promote the control into the Tab sequence.
 4. A `focusgroup="none"` element that is not nested within a focusgroup item retains the existing segment behavior described in [Opting-out](/components/scoped-focusgroup.explainer#opting-out).
 5. An independent nested focusgroup retains its own scope. If its owner is or is nested within an item of this owner, its boundary participates only while that item is active. Entering it selects the adjacent nested segment and applies that segment's guaranteed tab stop algorithm. A nested focusgroup outside the owner's items retains its existing sequential behavior.
 6. A top-layer subtree retains its existing exclusion, scope, and sequential navigation behavior and does not become nested content managed by `itemcontrols` solely through DOM or flat-tree containment.
@@ -332,13 +338,13 @@ Every cell occupies one coordinate and must supply exactly one **grid directiona
 
 A target candidate must be sequentially focusable, [being rendered](https://html.spec.whatwg.org/multipage/rendering.html#being-rendered), enabled under HTML, not inert, and within the cell's owned flat-tree subtree. It cannot cross `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. An ancestor's `tabindex` does not affect eligibility, but rendering or inertness on an ancestor does. Authored ARIA states and properties do not affect target eligibility.
 
-A negative-`tabindex` cell or descendant is ignored as a destination. Its programmatic focusability does not itself invalidate the grid, but its cell must still have another eligible target. When such an element currently has focus, the user agent resolves its source coordinate from its nearest owned cell, provided the path does not cross `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. The focused element may then initiate navigation away from that cell, but it is not a directional destination, sequential entry target, or memory target. Sequential navigation from this source follows the V1 segment-exit rule clarified in [Open UI issue #1434](https://github.com/openui/open-ui/issues/1434) and implemented in [Chromium CL 7789656](https://chromium-review.googlesource.com/c/chromium/src/+/7789656).
+A negative-`tabindex` cell or descendant is ignored as a destination. Its programmatic focusability does not itself invalidate the grid, but its cell must still have another eligible target. When such an element currently has focus, the user agent resolves its source coordinate from its nearest owned cell, provided the path does not cross `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. With effective `itemcontrols`, the eligible provider target for that coordinate becomes the active grid item and is stored under the owner-relative memory rule. The focused source may initiate navigation away from the cell, but it is not a directional destination or sequential entry target and is never itself stored in grid memory. Sequential navigation from this source follows the V1 segment-exit rule clarified in [Open UI issue #1434](https://github.com/openui/open-ui/issues/1434) and implemented in [Chromium CL 7789656](https://chromium-review.googlesource.com/c/chromium/src/+/7789656).
 
 Every focusable descendant owned by a valid grid must be either the selected target for its cell, a managed source-only element under the negative-`tabindex` rule above, or excluded by `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. A focusable row, wrapper, or unexcluded extra descendant makes the grid invalid. If a focusable cell is the selected target, any nested focusable controls must therefore use one of those explicit boundaries.
 
 #### Multi-control cells and itemcontrols
 
-By default, `grid` implies [`itemcontrols`](#itemcontrols), and each selected cell target is a focusgroup item — either a focusable cell boundary or a selected descendant. A cell is active when current focus is on its target or within nested content contained by it. Only the active cell's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its grid target, and its inner controls use `focusgroup="none"` so they do not become grid targets.
+By default, `grid` implies [`itemcontrols`](#itemcontrols), and each selected cell target is a focusgroup item — either a focusable cell boundary or a selected descendant. With effective `itemcontrols`, a cell is active when current focus is on its target, within nested content contained by it, or on a managed negative-`tabindex` source whose coordinate selects that target. Only the active cell's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its grid target, and its inner controls use `focusgroup="none"` so they do not become grid targets.
 
 `noitemcontrols` leaves grid topology, targets, and directional navigation unchanged. Opted-out controls and independent nested focusgroups instead follow V1 segment and sequential-navigation rules, without active-cell filtering.
 
@@ -455,7 +461,7 @@ A grid owner has one focusgroup memory; rows and `focusgrouprow` markers do not 
 3. Otherwise, an eligible target with `focusgroupstart` has priority.
 4. Otherwise, the first eligible grid target in sequential focus navigation order becomes the entry target.
 
-The selected target is the grid segment's single sequential entry target. `nomemory` disables restoration under the existing rules. Grid memory updates only when an eligible provider target receives focus. Focus within nested content maps back to its containing grid focusgroup item; focusing content outside every grid item does not replace the prior grid memory.
+The selected target is the grid segment's single sequential entry target. `nomemory` disables restoration under the existing rules. For a valid grid, the remembered item is represented by its eligible provider target. Focus on that target stores the provider target. With effective `itemcontrols`, focus within nested content contained by its grid item also stores the provider target, never the nested focused area itself. Focus outside every grid item does not replace the prior grid memory.
 
 `focusgroupstart` on a row, wrapper, negative-`tabindex` element, or otherwise ineligible descendant does not make that element a grid target. Sequential entry, directional navigation, and memory use the same row-first, then cell-within-row coordinate order.
 
@@ -554,7 +560,7 @@ When feed items change, the focusgroup updates its item set before the next dire
 
 <p class="question">Does `itemcontrols` need grid-specific entry, memory, or escape behavior beyond the focusable-cell-boundary model?</p>
 
-<p class="question">Should `itemcontrols` remember the last control in addition to the active focusgroup item, and if so, when should that nested memory be restored?</p>
+<p class="question">The current model remembers only the owner-relative active focusgroup item. Should `itemcontrols` additionally remember the last nested control, and if so, when should that nested memory be restored?</p>
 
 <p class="question">How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional key?</p>
 
