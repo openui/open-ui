@@ -117,7 +117,7 @@ An owner has **effective `itemcontrols`** when the modifier is explicit or suppl
 
 ### Nested-content containment
 
-The selected behavior first determines its focusgroup items: linear behaviors, including `feed`, use V1 item discovery; `grid` uses its selected cell targets. `itemcontrols` then recognizes two kinds of nested content through separate containment rules: controls excluded from directional navigation by `focusgroup="none"`, and independent nested focusgroups contained by an outer item.
+The selected behavior first determines its focusgroup items: linear behaviors, including `feed`, use V1 item discovery; a valid `grid` uses one provider target per cell coordinate. `itemcontrols` then recognizes two kinds of nested content through separate containment rules: controls excluded from directional navigation by `focusgroup="none"`, and independent nested focusgroups contained by an outer item.
 
 For a control in a `focusgroup="none"` subtree:
 
@@ -137,6 +137,15 @@ For an independent nested focusgroup and an enclosing owner with effective `item
 6. Do not copy, flatten, or reparent the nested focusgroup. Its owner, items, memory, entry algorithm, and directional behavior remain independent.
 
 The inclusive first step allows a focusable nested focusgroup owner to be an item of the outer owner while owning its inner scope. It does not give the element two item ownerships: under V1, the owner is not a candidate or item of its own focusgroup. Containment is static for a given focusgroup tree and does not depend on which item is active. Sequential traversal encounters each nested focusgroup once, as a boundary in its immediate containing scope.
+
+For linear behaviors, the containing-item lookup returns the nearest owned item reached by the ancestor walks above. A valid grid with effective `itemcontrols` specializes both lookups:
+
+1. Starting from the opted-out control or independent nested focusgroup owner, find its owned grid cell. Include the cell itself in this lookup.
+2. For an opted-out control, ignore only the `focusgroup="none"` markers relevant to that lookup and stop if the walk reaches an independent nested focusgroup owner. For an independent nested focusgroup, begin at its owner; intervening independent nested focusgroups do not stop this owner-relative lookup, but a `focusgroup="none"` ancestor that opts the starting owner out of the grid does.
+3. For either kind of content, stop without a result if the lookup crosses a top-layer boundary or leaves the owned cell.
+4. Return that cell's provider target as the containing grid focusgroup item. The provider target need not be a CSS flat-tree ancestor of the nested content.
+
+This coordinate-relative specialization never creates another directional target. It applies only after Grid has produced a valid state with exactly one provider target for the cell. An invalid grid does not apply Grid `itemcontrols` behavior, and `noitemcontrols` restores the ordinary V1 rules.
 
 ### Active focusgroup item
 
@@ -164,7 +173,7 @@ The active item gates its nested content after containment and activity have bee
 
 This filtering does not flatten nested scopes. Sequential traversal encounters a participating nested focusgroup boundary in its ordinary position, selects the adjacent nested focusgroup segment, and applies that segment's V1 guaranteed tab stop algorithm. The same boundary is not inserted separately into each enclosing owner.
 
-Encountering and leaving a contained independent nested focusgroup does not terminate the containing active item's later nested content. After traversal leaves the nested focusgroup, later eligible nested content of the still-active containing item continues to participate in sequential focus navigation order. A top-layer or otherwise excluded scope does not participate as nested content of the item, but the excluded scope does not by itself suppress eligible sibling content that follows it. Independent nested focusgroups outside the owner's items and top-layer subtrees otherwise follow the shared V1 rules.
+Encountering and leaving a contained independent nested focusgroup does not terminate the containing active item's remaining nested content. After traversal leaves the nested focusgroup, eligible nested content of the still-active containing item continues to participate in the current traversal direction. A top-layer or otherwise excluded scope does not participate as nested content of the item, but the excluded scope does not by itself suppress eligible sibling content encountered later in that traversal direction. Independent nested focusgroups outside the owner's items and top-layer subtrees otherwise follow the shared V1 rules.
 
 ```html
 <div focusgroup="toolbar itemcontrols">
@@ -179,7 +188,12 @@ Encountering and leaving a contained independent nested focusgroup does not term
 <button type="button">After</button>
 ```
 
-In this example, after **Formatting** becomes active, forward sequential navigation proceeds through **Formatting**, **A**, the nested radiogroup's guaranteed tab stop **R**, **B**, and **After**. Leaving the radiogroup does not suppress **B**.
+In this example, after **Formatting** becomes active:
+
+- Forward sequential navigation proceeds through **Formatting**, **A**, the nested radiogroup's guaranteed tab stop **R**, **B**, and **After**.
+- Reverse sequential navigation from **B** proceeds through **B**, **R**, **A**, and **Formatting**.
+
+Leaving the radiogroup does not suppress the outer item's remaining eligible content in either direction.
 
 ### Sequential-entry extension
 
@@ -257,10 +271,10 @@ In this example:
 
 Scope ownership and exclusion are determined before the `itemcontrols` filter:
 
-1. A focusable `focusgroup="none"` descendant, or a focusable descendant of an opted-out subtree, remains excluded from directional navigation. If its nearest containing focusgroup item in the CSS flat tree belongs to an `itemcontrols` owner, it is nested content of that item and is sequentially eligible while that item is active.
+1. A focusable `focusgroup="none"` descendant, or a focusable descendant of an opted-out subtree, remains excluded from directional navigation. For a linear owner, it is nested content when its nearest containing focusgroup item in the CSS flat tree belongs to that `itemcontrols` owner. For a valid grid with effective `itemcontrols`, the coordinate-relative lookup may instead map it to its owned cell's provider target. In either case, it is sequentially eligible while that item is active.
 2. Sequentially focusable controls and participating nested focusgroup boundaries within the active item participate according to sequential focus navigation order. Eligible nested content of inactive items is omitted and does not create sequential entry points.
 3. A negative-`tabindex` control classified as nested content remains outside sequential focus navigation, following the V1 rule for negative-`tabindex` elements. Pointer or script focus on that control still makes its containing focusgroup item active, but `itemcontrols` does not promote the control into the Tab sequence.
-4. A `focusgroup="none"` element that is not nested within a focusgroup item retains the existing segment behavior described in [Opting-out](/components/scoped-focusgroup.explainer#opting-out).
+4. A `focusgroup="none"` element that neither the linear nor Grid containment lookup maps to a focusgroup item retains the existing segment behavior described in [Opting-out](/components/scoped-focusgroup.explainer#opting-out).
 5. An independent nested focusgroup retains its own scope. If its owner is or is nested within an item of this owner, its boundary participates only while that item is active. Entering it selects the adjacent nested segment and applies that segment's guaranteed tab stop algorithm. A nested focusgroup outside the owner's items retains its existing sequential behavior.
 6. A top-layer subtree retains its existing exclusion, scope, and sequential navigation behavior and does not become nested content managed by `itemcontrols` solely through DOM or flat-tree containment.
 7. A native key-conflict control nested within the active item retains its native behavior. Tab and Shift+Tab move through the active item's eligible nested content without exposing nested content of inactive items.
@@ -378,9 +392,13 @@ Every focusable descendant owned by a valid grid must be either the selected tar
 
 #### Multi-control cells and itemcontrols
 
-By default, `grid` implies [`itemcontrols`](#itemcontrols), and each coordinate's provider target is a grid focusgroup item — either a focusable cell boundary or a selected descendant. With effective `itemcontrols`, the **active grid item** is the provider target whose coordinate contains current focus: focus is on the target, within nested content contained by its cell, or on a managed negative-`tabindex` source whose coordinate selects it. Only the active grid item's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its provider target, and its inner controls use `focusgroup="none"` so they do not become additional grid targets.
+By default, `grid` implies [`itemcontrols`](#itemcontrols), and each coordinate's provider target is a grid focusgroup item — either a focusable cell boundary or a selected descendant. With effective `itemcontrols`, nested-content containment is coordinate-relative: nested content within an owned cell maps to that cell's provider target even when the target is a sibling rather than an ancestor. The provider target remains the cell's sole directional target.
+
+The **active grid item** is the provider target whose coordinate contains current focus: focus is on the target, within nested content contained by its cell, or on a managed negative-`tabindex` source whose coordinate selects it. Only the active grid item's eligible nested content joins sequential focus navigation; nested content of other cells is skipped.
 
 `noitemcontrols` leaves grid topology, targets, and directional navigation unchanged. Opted-out controls and independent nested focusgroups instead follow V1 segment and sequential-navigation rules, without active-cell filtering.
+
+For a complex cell with multiple controls, authors should prefer a focusable cell boundary as the provider target and mark its controls as nested content. This gives the coordinate a stable labeled boundary without privileging one control over its siblings.
 
 The following native data grid uses table structure for automatic topology:
 
@@ -421,6 +439,27 @@ What to notice:
 - Each focusable cell is the single directional target for its coordinate; in a multi-control cell, the focusable cell serves as the boundary around its nested controls. The links and buttons use `focusgroup="none"` so they do not become additional grid targets.
 - Directional navigation moves between cell boundaries. With the default `itemcontrols`, Tab from an active Actions cell enters its first nested control, while controls in inactive cells are skipped.
 - Shift+Tab from the first nested control returns to the active cell boundary. The model does not require an Enter or Escape drill-in mode.
+
+A nonfocusable cell may instead use one eligible descendant as its provider target while explicitly excluding sibling controls from directional navigation:
+
+```html
+<div role="grid" focusgroup="grid manual" aria-label="Actions">
+  <div role="row" focusgrouprow>
+    <div role="gridcell">
+      <button type="button">Open</button>
+      <button type="button" focusgroup="none">More</button>
+    </div>
+  </div>
+</div>
+```
+
+What to notice:
+
+- **Open** is the coordinate's sole provider target. **More** is nested content of the same cell and maps to **Open** for Grid activity and memory even though the buttons are siblings.
+- Directional navigation reaches only **Open**. While **Open** is active, Tab can reach **More**.
+- Authors using a descendant provider with sibling nested content should verify labeling, focus order, native key handling, and assistive-technology output.
+
+Many existing grids use Enter or F2 to enter a multi-control cell and Escape to restore grid navigation. `itemcontrols` intentionally provides a non-modal alternative: directional navigation continues to operate on the cell's single provider target, while sequential navigation exposes only nested content of the active cell. Controls that consume directional input retain their native behavior under the shared key-conflict rules.
 
 ### Grid wrapping and flow
 
@@ -571,8 +610,9 @@ When feed items change, the focusgroup updates its item set before the next dire
 2. Add `noitemcontrols` to suppress explicit or default `itemcontrols` behavior while retaining the selected behavior's directional navigation.
 3. Use `focusgroup="feed"` for block-axis article navigation. Include the labeling and set-position metadata recommended by the [APG feed pattern](https://www.w3.org/WAI/ARIA/apg/patterns/feed/).
 4. Use `grid` only when row and column relationships are semantic. Native tables use `role="grid" focusgroup="grid"`; generic markup uses `focusgroup="grid manual"` with `focusgrouprow` on each participating direct-child row.
-5. Keep grids rectangular, spanless, and fully rendered, with exactly one directional target per cell. When a cell has multiple controls or no control eligible as its target, make the cell itself focusable and mark its controls with `focusgroup="none"`.
-6. Grid edges are hard by default. Use `wrap` to wrap within rows and columns, `flow` to cross them, axis-specific tokens for one axis, or `nowrap` for explicit hard edges.
+5. Keep grids rectangular, spanless, and fully rendered, with exactly one provider target per cell. For a cell with multiple controls, prefer a focusable cell boundary as the provider target and mark its controls as nested content.
+6. A nonfocusable cell may use one eligible descendant as its provider target while explicitly excluding sibling controls from directional candidacy. Grid maps those controls to the same coordinate, but authors should verify labeling, focus order, native key handling, and assistive-technology output.
+7. Grid edges are hard by default. Use `wrap` to wrap within rows and columns, `flow` to cross them, axis-specific tokens for one axis, or `nowrap` for explicit hard edges.
 
 ## Open questions
 
