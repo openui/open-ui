@@ -109,17 +109,13 @@ const hasFocusgroupRow = 'focusGroupRow' in HTMLElement.prototype
 
 Chat messages, cards, and file-list items often contain several interactive descendants. A linear focusgroup treats every eligible focusable descendant as a focusgroup item unless a subtree opts out or establishes an independent nested focusgroup. Neither option lets the containing item remain one directional-navigation target while limiting sequential navigation to eligible content nested within the item that currently holds focus.
 
-Authors mark individual controls inside a focusgroup item with `focusgroup="none"`, excluding them from directional navigation. Compound controls can instead establish an independent nested focusgroup. `itemcontrols` makes both kinds of sequential content reachable only while their nearest containing focusgroup item is active. A nested focusgroup retains its own items, directional navigation, entry algorithm, memory, and role inference. `itemcontrols` can modify any behavior and does not imply focus trapping or ARIA virtual focus.
+Authors mark individual controls inside a focusgroup item with `focusgroup="none"`, excluding them from directional navigation. Compound controls can instead establish an independent nested focusgroup. `itemcontrols` first determines which item contains each kind of nested content, without consulting active state, and then makes that content reachable only while the containing item is active. A nested focusgroup retains its own items, directional navigation, entry algorithm, memory, and role inference. `itemcontrols` can modify any behavior and does not imply focus trapping or ARIA virtual focus.
 
 `noitemcontrols` explicitly disables this behavior, including the default supplied by `feed` and `grid`. Opted-out controls and independent nested focusgroups then follow V1 segment and sequential-navigation rules; the behavior's items, directional navigation, topology, and role inference do not change. Specifying both `itemcontrols` and `noitemcontrols` is an author error; `noitemcontrols` takes precedence.
 
 An owner has **effective `itemcontrols`** when the modifier is explicit or supplied by default and `noitemcontrols` is absent.
 
-### Active focusgroup item
-
-While focus is inside a focusgroup with effective `itemcontrols`, the **active focusgroup item** is the focused item or the nearest containing item owned by that focusgroup when focus is inside eligible nested content. Activity follows current focus, not stored selection or optional last-focused memory. Containment is owner-relative: focus inside a nested focusgroup can identify an active item for both the nested owner and each enclosing effective-`itemcontrols` owner without combining their scopes. If no containing item applies, no item is active.
-
-### Nested-content discovery
+### Nested-content containment
 
 The selected behavior first determines its focusgroup items: linear behaviors, including `feed`, use V1 item discovery; `grid` uses its selected cell targets. The following nested-content rules then apply to every behavior:
 
@@ -129,18 +125,35 @@ The selected behavior first determines its focusgroup items: linear behaviors, i
 
 A control is nested content of at most one item for a given owner. Flat-tree ancestry makes slotted controls participate according to their rendered position.
 
-For each independent nested focusgroup, the user agent determines whether its owner is a flat-tree descendant of an item belonging to each enclosing owner with effective `itemcontrols`. The nearest containing item owned by an enclosing owner contains the nested focusgroup for that owner's `itemcontrols` filtering. The lookup stops at the enclosing owner, a top-layer boundary, or a boundary that places the nested owner outside that item's sequential content. Containment may apply independently at multiple enclosing levels. It does not change ownership of the nested focusgroup's items or segments.
+For each independent nested focusgroup, the user agent determines whether its owner is or is a CSS flat-tree descendant of an item belonging to each enclosing owner with effective `itemcontrols`. The nearest such item owned by an enclosing owner contains the nested focusgroup for that owner's `itemcontrols` filtering. This inclusive check allows a focusable nested focusgroup owner to be an item of the outer owner while owning its inner scope. It does not give the element two item ownerships: under V1, the owner is not a candidate or item of its own focusgroup. The lookup stops at the enclosing owner, a top-layer boundary, or a boundary that places the nested owner outside that item's sequential content.
 
-The user agent computes **base segments** before filtering nested content. When testing a subtree as a boundary for an `itemcontrols` owner, it ignores eligible controls and nested focusgroup segment stops contained by an item of that owner. The subtree remains a boundary if any other content meets the V1 segment condition. Independent nested focusgroups that are not within one of the owner's items, and top-layer subtrees, follow the shared rules. This exception is owner-local and does not change boundary construction for an outer or unrelated focusgroup.
+Containment is static for a given focusgroup tree and does not depend on which item is active. It may apply independently for multiple enclosing owners, but it does not copy or reparent a nested scope. Sequential traversal encounters each nested focusgroup once, as a boundary in its immediate containing scope, and invokes that nested owner's V1 entry algorithm when entering it.
+
+### Active focusgroup item
+
+While focus is inside a focusgroup with effective `itemcontrols`, the **active focusgroup item** is:
+
+1. The focused item owned by that focusgroup; otherwise
+2. The nearest item owned by that focusgroup that contains the currently focused area directly as an opted-out control or indirectly through a contained nested focusgroup under the static containment rules above; otherwise
+3. No item.
+
+Activity follows current focus, not stored selection, optional last-focused memory, or sequential eligibility. The focused area need not itself be sequentially focusable; pointer or script focus on a nested negative-`tabindex` control still identifies its containing item. Activity is owner-relative: focus inside a nested focusgroup can identify an active item for both the nested owner and each enclosing effective-`itemcontrols` owner without combining their scopes.
+
+### Sequential eligibility
+
+The active item gates its nested content after containment and activity have been determined. A sequentially focusable opted-out control participates only when its containing item is active or is the provisional entry item described below. A nested focusgroup boundary participates only when its containing item is active or provisional and every enclosing effective-`itemcontrols` gate on the path to that boundary is open. A gate is open under the same active-or-provisional condition.
+
+This filtering does not flatten nested scopes. Sequential traversal encounters a participating nested focusgroup boundary in its ordinary position, selects the adjacent nested focusgroup segment, and applies that segment's V1 guaranteed tab stop algorithm. The same boundary is not inserted separately into each enclosing owner. Independent nested focusgroups outside the owner's items and top-layer subtrees follow the shared V1 rules.
 
 ### Sequential-entry extension
 
 When `itemcontrols` is effective, the following steps extend the shared focusgroup entry algorithm:
 
-1. Identify the base segment adjacent to the entry point, then apply the ordinary priority rules to eligible focusgroup items in that segment. A remembered item and `focusgroupstart` therefore select a focusgroup item, not its nested content.
-2. Selecting the item makes it active before the user agent exposes its eligible nested content. For forward entry, focus the focusgroup-item boundary. For reverse entry, find the last eligible nested sequential stop in flat-tree order. If it is a nested focusgroup segment, apply that nested owner's reverse-entry rule; if it is a control, focus it; if there is no nested stop, focus the item boundary.
-3. The active item's eligible controls and nested focusgroup segment stops follow the boundary in flat-tree sequential order. Entry into a nested segment follows that nested owner's own rules. Eligible nested content of inactive items is omitted.
-4. If `nomemory` is absent, store memory against the selected focusgroup item even when reverse entry focuses its nested content.
+1. Identify the focusgroup segment adjacent to the entry point, then apply the ordinary priority rules to eligible focusgroup items in that segment. A remembered item and `focusgroupstart` therefore select a focusgroup item, not its nested content.
+2. Treat the selected item as the **provisional entry item** for this entry operation. This opens its gate without changing the active item before focus moves.
+3. For forward entry, focus the focusgroup-item boundary. For reverse entry, make one pass through content contained by the provisional entry item in reverse sequential focus navigation order. Stop at the first eligible opted-out control or participating nested focusgroup boundary. Focus the control directly; for a nested boundary, select its adjacent segment and apply that segment's V1 guaranteed tab stop algorithm. If traversal finds neither, focus the item boundary.
+4. After focus moves, derive the active item from current focus. The active item's eligible controls and participating nested focusgroup boundaries occur in ordinary sequential focus navigation order. Eligible nested content of inactive items is omitted.
+5. If `nomemory` is absent, store memory against the selected focusgroup item even when reverse entry focuses its nested content.
 
 ```html
 <div role="toolbar" focusgroup="toolbar block itemcontrols" aria-label="Layers">
@@ -168,12 +181,12 @@ The minimum `itemcontrols` model is:
 
 | Current focus | Directional navigation | Tab | Shift+Tab |
 |---|---|---|---|
-| Active item boundary | Moves to another item and makes it active | Enters the first eligible nested control or focusgroup segment stop, if present; otherwise continues to the next boundary or after the focusgroup | Moves to the preceding boundary, or before the focusgroup if none intervenes |
-| Eligible nested content of the active item | Preserves the focused control's or nested focusgroup's own behavior | Moves through the remaining nested content, then to the next segment boundary or after the focusgroup | Moves through preceding nested content; from the first stop, returns to the active item boundary |
+| Active item boundary | Moves to another item and makes it active | Continues in sequential focus navigation order; eligible nested content of the active item participates and nested content of inactive items is skipped | Continues in reverse sequential focus navigation order under the same filter |
+| Eligible nested content of the active item | Preserves the focused control's or nested focusgroup's own behavior | Continues through eligible content in sequential focus navigation order, then to the next sequential entry point outside the active item's content | Continues in reverse sequential focus navigation order; when the item boundary is next, returns to it |
 | Eligible nested control of an inactive focusgroup item | Not a directional-navigation target | Skipped | Skipped |
-| Nested focusgroup within an inactive item | Follows its own scope when focused by pointer or script | Its sequential segment stops are skipped | Its sequential segment stops are skipped |
-| Opted-out control not nested within an item | Excluded from this owner's directional navigation | Follows its V1 segment and document order | Follows its V1 segment and document order |
-| Independent scope outside the owner's items, or top-layer descendant | Follows its existing scope | Follows its own segment and document order | Follows its own segment and document order |
+| Nested focusgroup within an inactive item | Follows its own scope when focused by pointer or script | Its boundary is skipped for this owner | Its boundary is skipped for this owner |
+| Opted-out control not nested within an item | Excluded from this owner's directional navigation | Follows V1 segment behavior and sequential focus navigation order | Follows V1 segment behavior and reverse sequential focus navigation order |
+| Independent scope outside the owner's items, or top-layer descendant | Follows its existing scope | Follows its own segment and sequential focus navigation order | Follows its own segment and reverse sequential focus navigation order |
 | Active focusgroup item that is a native key-conflict element | Preserves the element's native key behavior | Makes the next focusgroup item eligible, then follows normal sequential and segment order | Makes the previous focusgroup item eligible, then follows normal sequential and segment order |
 
 An opted-out control that is not nested within an item remains a V1 segment boundary. For example, a Help button between two items remains reachable after the active item's last nested control; `itemcontrols` does not skip unrelated authored content merely because it is inside the owner. This case is discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
@@ -204,12 +217,12 @@ In this example:
 
 Scope ownership and exclusion are determined before the `itemcontrols` filter:
 
-1. A focusable `focusgroup="none"` descendant, or a focusable descendant of an opted-out subtree, remains excluded from directional navigation. If its nearest containing focusgroup item in the CSS flat tree belongs to an `itemcontrols` owner, it is eligible nested content of that item.
-2. Sequentially focusable controls and nested focusgroup segment stops within the active item participate in sequential focus navigation after the item boundary. Eligible nested content of inactive items is omitted and does not create sequential entry points.
+1. A focusable `focusgroup="none"` descendant, or a focusable descendant of an opted-out subtree, remains excluded from directional navigation. If its nearest containing focusgroup item in the CSS flat tree belongs to an `itemcontrols` owner, it is nested content of that item and is sequentially eligible while that item is active.
+2. Sequentially focusable controls and participating nested focusgroup boundaries within the active item participate according to sequential focus navigation order. Eligible nested content of inactive items is omitted and does not create sequential entry points.
 3. A nested control with a negative `tabindex` remains outside sequential focus navigation, following the V1 rule for negative-`tabindex` elements. Pointer or script focus on that control still makes its containing focusgroup item active, but `itemcontrols` does not promote the control into the Tab sequence or select it for reverse entry.
 4. A `focusgroup="none"` element that is not nested within a focusgroup item retains the existing segment behavior described in [Opting-out](/components/scoped-focusgroup.explainer#opting-out).
-5. An independent nested focusgroup retains its own scope. If it is nested within an item of this owner, its sequential segment stops participate only while that item is active. A nested focusgroup outside the owner's items retains its existing sequential behavior.
-6. A top-layer subtree retains its existing exclusion, scope, and sequential navigation behavior and does not become eligible nested content solely through DOM or flat-tree containment.
+5. An independent nested focusgroup retains its own scope. If its owner is or is nested within an item of this owner, its boundary participates only while that item is active. Entering it selects the adjacent nested segment and applies that segment's guaranteed tab stop algorithm. A nested focusgroup outside the owner's items retains its existing sequential behavior.
+6. A top-layer subtree retains its existing exclusion, scope, and sequential navigation behavior and does not become nested content managed by `itemcontrols` solely through DOM or flat-tree containment.
 7. A native key-conflict control nested within the active item retains its native behavior. Tab and Shift+Tab move through the active item's eligible nested content without exposing nested content of inactive items.
 8. If the active focusgroup item is itself a native key-conflict element, the existing escape behavior takes priority over inactive-item filtering. Tab or Shift+Tab makes the adjacent focusgroup item eligible, then follows normal sequential and segment order. Landing on that item makes it active before exposing its nested content. Independent scopes outside the owner's items and top-layer content between the two focusgroup items retain precedence.
 
@@ -323,7 +336,7 @@ Every focusable descendant owned by a valid grid must be either the selected tar
 
 #### Multi-control cells and itemcontrols
 
-By default, `grid` implies [`itemcontrols`](#itemcontrols), and each selected cell target is a focusgroup item — either a focusable cell boundary or a selected descendant. A cell is active when current focus is on its target or within its eligible nested content. Only the active cell's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its grid target, and its inner controls use `focusgroup="none"` so they do not become grid targets.
+By default, `grid` implies [`itemcontrols`](#itemcontrols), and each selected cell target is a focusgroup item — either a focusable cell boundary or a selected descendant. A cell is active when current focus is on its target or within nested content contained by it. Only the active cell's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its grid target, and its inner controls use `focusgroup="none"` so they do not become grid targets.
 
 `noitemcontrols` leaves grid topology, targets, and directional navigation unchanged. Opted-out controls and independent nested focusgroups instead follow V1 segment and sequential-navigation rules, without active-cell filtering.
 
@@ -440,7 +453,7 @@ A grid owner has one focusgroup memory; rows and `focusgrouprow` markers do not 
 3. Otherwise, an eligible target with `focusgroupstart` has priority.
 4. Otherwise, the first eligible grid target in sequential focus navigation order becomes the entry target.
 
-The selected target is the grid segment's single sequential entry target. `nomemory` disables restoration under the existing rules. Grid memory updates only when an eligible provider target receives focus. Focus within eligible nested content maps back to its containing grid focusgroup item; focusing content outside every grid item does not replace the prior grid memory.
+The selected target is the grid segment's single sequential entry target. `nomemory` disables restoration under the existing rules. Grid memory updates only when an eligible provider target receives focus. Focus within nested content maps back to its containing grid focusgroup item; focusing content outside every grid item does not replace the prior grid memory.
 
 `focusgroupstart` on a row, wrapper, negative-`tabindex` element, or otherwise ineligible descendant does not make that element a grid target. Sequential entry, directional navigation, and memory use the same row-first, then cell-within-row coordinate order.
 
@@ -543,7 +556,7 @@ When feed items change, the focusgroup updates its item set before the next dire
 
 <p class="question">How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional key?</p>
 
-<p class="question">**Resolved in part:** An independent nested focusgroup retains its own scope and directional behavior. When nested within an item of an enclosing effective-`itemcontrols` owner, its sequential segment stops participate only while that item is active, and focus within the nested scope keeps the containing item active for that owner. Directional escape and resuming outer movement remain open above.</p>
+<p class="question">**Resolved in part:** An independent nested focusgroup retains its own scope and directional behavior. When its owner is or is nested within an item of an enclosing effective-`itemcontrols` owner, its boundary participates only while that item is active. Entering the boundary selects the adjacent nested segment and applies its guaranteed tab stop algorithm. Focus within the nested scope keeps the containing item active for that owner. Directional escape and resuming outer movement remain open above.</p>
 
 ## Privacy and security considerations
 
@@ -557,7 +570,7 @@ HTML structure and platform focusability, not authored ARIA, define grid topolog
 
 ### Nested scopes follow active-item eligibility
 
-An independent nested focusgroup retains its own ownership and directional-navigation behavior. Its sequential segment stops participate for each enclosing effective-`itemcontrols` owner only while the focusgroup is nested within that owner's active item. This resolves the nested-scope composition case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
+An independent nested focusgroup retains its own ownership and directional-navigation behavior. Sequential traversal encounters its boundary once in its immediate containing scope. That boundary participates only when every enclosing `itemcontrols` gate on its path is open; entering it selects the adjacent nested segment and applies that segment's guaranteed tab stop algorithm. This resolves the nested-scope composition case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
 
 ## V2 index of focusgroup values
 
@@ -575,7 +588,7 @@ Focusgroup V2 adds the values below. Shared parsing and linear behavior remain d
 | Description | HTML syntax |
 |---|---|
 | Block-axis linear ARIA-feed behavior; implies `itemcontrols` unless `noitemcontrols` is present | `feed` |
-| Active item's eligible nested controls and focusgroup segment stops in sequential navigation | `itemcontrols` |
+| Active item's eligible nested controls and participating nested focusgroup boundaries in sequential navigation | `itemcontrols` |
 | Disable explicit or default `itemcontrols` behavior | `noitemcontrols` |
 
 ***Companion attribute (not a `focusgroup` token):***
