@@ -117,7 +117,9 @@ An owner has **effective `itemcontrols`** when the modifier is explicit or suppl
 
 ### Nested-content containment
 
-The selected behavior first determines its focusgroup items: linear behaviors, including `feed`, use V1 item discovery; `grid` uses its selected cell targets. The following nested-content rules then apply to every behavior:
+The selected behavior first determines its focusgroup items: linear behaviors, including `feed`, use V1 item discovery; `grid` uses its selected cell targets. `itemcontrols` then recognizes two kinds of nested content through separate containment rules: controls excluded from directional navigation by `focusgroup="none"`, and independent nested focusgroups contained by an outer item.
+
+For a control in a `focusgroup="none"` subtree:
 
 1. Starting from a focusable control in a `focusgroup="none"` subtree, determine its enclosing focusgroup owner in the CSS flat tree under V1 ownership rules, ignoring only the containing `focusgroup="none"` markers for this lookup. Nested focusgroup owners and top-layer subtrees remain boundaries.
 2. If that owner does not have effective `itemcontrols`, it does not manage the control as nested content.
@@ -125,9 +127,16 @@ The selected behavior first determines its focusgroup items: linear behaviors, i
 
 A control is nested content of at most one item for a given owner. Flat-tree ancestry makes slotted controls participate according to their rendered position.
 
-For each independent nested focusgroup, the user agent determines whether its owner is or is a CSS flat-tree descendant of an item belonging to each enclosing owner with effective `itemcontrols`. The nearest such item owned by an enclosing owner contains the nested focusgroup for that owner's `itemcontrols` filtering. This inclusive check allows a focusable nested focusgroup owner to be an item of the outer owner while owning its inner scope. It does not give the element two item ownerships: under V1, the owner is not a candidate or item of its own focusgroup. The lookup stops at the enclosing owner, a top-layer boundary, or a boundary that places the nested owner outside that item's sequential content.
+For an independent nested focusgroup and an enclosing owner with effective `itemcontrols`:
 
-Containment is static for a given focusgroup tree and does not depend on which item is active. It may apply independently for multiple enclosing owners, but it does not copy or reparent a nested scope. Sequential traversal encounters each nested focusgroup once, as a boundary in its immediate containing scope, and invokes that nested owner's V1 entry algorithm when entering it.
+1. Start at the nested focusgroup owner. Include that element when testing whether it is an item of the enclosing owner.
+2. Walk its CSS flat-tree ancestors toward the enclosing owner. Intervening independent nested focusgroups do not stop this owner-relative lookup.
+3. Stop without a result if the walk crosses a top-layer boundary, reaches a `focusgroup="none"` ancestor that opts the nested owner out of the enclosing owner's scope, or reaches the enclosing owner before finding one of its items.
+4. The first focusgroup item owned by the enclosing owner contains the nested focusgroup for that owner's `itemcontrols` filtering.
+5. Repeat this operation independently for each further enclosing owner with effective `itemcontrols`.
+6. Do not copy, flatten, or reparent the nested focusgroup. Its owner, items, memory, entry algorithm, and directional behavior remain independent.
+
+The inclusive first step allows a focusable nested focusgroup owner to be an item of the outer owner while owning its inner scope. It does not give the element two item ownerships: under V1, the owner is not a candidate or item of its own focusgroup. Containment is static for a given focusgroup tree and does not depend on which item is active. Sequential traversal encounters each nested focusgroup once, as a boundary in its immediate containing scope.
 
 ### Active focusgroup item
 
@@ -141,15 +150,36 @@ Activity follows current focus, not stored selection, optional last-focused memo
 
 ### Owner-relative memory
 
-Memory follows the owner-relative active focusgroup item. Whenever current focus resolves to an active item for an owner with effective `itemcontrols`, that owner stores the active item as its remembered item if `nomemory` is absent. This state-derived update applies after either a focus change or a containment change. It also applies when focus is on the item boundary, an opted-out control contained by the item, a negative-`tabindex` control classified as nested content and reached by pointer or script, or content in an independent nested focusgroup contained by the item.
+Memory follows the owner-relative active focusgroup item. Whenever current focus resolves to an active item for an owner with effective `itemcontrols`, that owner stores the active item as its remembered item if `nomemory` is absent. This state-derived update applies after a focus change and whenever relevant focusgroup state is reevaluated, including after changes to ownership, containment, item eligibility, or scope. It also applies when focus is on the item boundary, an opted-out control contained by the item, a negative-`tabindex` control classified as nested content and reached by pointer or script, or content in an independent nested focusgroup contained by the item.
 
 Each enclosing owner with effective `itemcontrols` applies this rule independently. The focused nested control is not itself stored in an enclosing owner's memory. If current focus does not resolve to an active item for an owner, that owner's prior memory is unchanged. `nomemory` disables the update only for the owner on which it is effective.
+
+A remembered item remains valid only while it remains in the relevant shadow-inclusive tree, is owned by the same focusgroup, remains an item of the selected behavior, and remains focusable, rendered, enabled, and non-inert under the shared V1 rules. Loss of any storage-validity condition clears it. Clearing invalid memory takes precedence over preserving memory when current focus resolves to no active item.
+
+Storage validity is separate from restoration eligibility. A valid remembered item is restored only when it belongs to the focusgroup segment being entered and meets that behavior's entry requirements. Otherwise, the entry algorithm proceeds to `focusgroupstart` and its remaining priorities without clearing otherwise valid memory.
 
 ### Sequential eligibility
 
 The active item gates its nested content after containment and activity have been determined. A sequentially focusable opted-out control participates only while its containing item is active. A nested focusgroup boundary participates only while its containing item is active and every enclosing effective-`itemcontrols` gate on the path to that boundary is open. A gate is open when its containing item is active.
 
-This filtering does not flatten nested scopes. Sequential traversal encounters a participating nested focusgroup boundary in its ordinary position, selects the adjacent nested focusgroup segment, and applies that segment's V1 guaranteed tab stop algorithm. The same boundary is not inserted separately into each enclosing owner. Independent nested focusgroups outside the owner's items and top-layer subtrees follow the shared V1 rules.
+This filtering does not flatten nested scopes. Sequential traversal encounters a participating nested focusgroup boundary in its ordinary position, selects the adjacent nested focusgroup segment, and applies that segment's V1 guaranteed tab stop algorithm. The same boundary is not inserted separately into each enclosing owner.
+
+Encountering and leaving a contained independent nested focusgroup does not terminate the containing active item's later nested content. After traversal leaves the nested focusgroup, later eligible nested content of the still-active containing item continues to participate in sequential focus navigation order. A top-layer or otherwise excluded scope does not participate as nested content of the item, but the excluded scope does not by itself suppress eligible sibling content that follows it. Independent nested focusgroups outside the owner's items and top-layer subtrees otherwise follow the shared V1 rules.
+
+```html
+<div focusgroup="toolbar itemcontrols">
+  <div tabindex="0" aria-label="Formatting">
+    <button type="button" focusgroup="none">A</button>
+    <div focusgroup="radiogroup" aria-label="Choice">
+      <button type="button" role="radio" aria-checked="true">R</button>
+    </div>
+    <button type="button" focusgroup="none">B</button>
+  </div>
+</div>
+<button type="button">After</button>
+```
+
+In this example, after **Formatting** becomes active, forward sequential navigation proceeds through **Formatting**, **A**, the nested radiogroup's guaranteed tab stop **R**, **B**, and **After**. Leaving the radiogroup does not suppress **B**.
 
 ### Sequential-entry extension
 
@@ -160,7 +190,9 @@ When `itemcontrols` is effective, the following steps extend the shared focusgro
 3. After focus moves, derive the active item from current focus. The active item's eligible controls and participating nested focusgroup boundaries then participate in ordinary sequential focus navigation order. Eligible nested content of inactive items is omitted.
 4. The resulting focus move updates memory under the owner-relative rule above. Entry therefore remembers the selected item when memory is enabled.
 
-The item boundary is therefore the entry point in both directions. Shift+Tab from after an `itemcontrols` focusgroup focuses the selected item, not one of its opted-out controls or a nested focusgroup. Nested content becomes eligible for a subsequent navigation operation after the item boundary receives focus. Recursively nested `itemcontrols` owners expose one item boundary at a time.
+The item boundary is therefore the entry point in both directions. Shift+Tab from after an `itemcontrols` focusgroup focuses the selected item, not one of its opted-out controls or a nested focusgroup. Nested content becomes eligible for a subsequent navigation operation after the item boundary receives focus.
+
+When `itemcontrols` owners are recursively nested, entry from outside the outermost owner focuses that owner's selected item boundary and ends the operation. Inner focusgroup boundaries and their selected items become reachable only through subsequent navigation operations. Recursively nested owners therefore expose one item boundary at a time.
 
 ```html
 <div role="toolbar" focusgroup="toolbar block itemcontrols" aria-label="Layers">
@@ -236,9 +268,11 @@ Scope ownership and exclusion are determined before the `itemcontrols` filter:
 
 Pointer or script focus inside a nested focusgroup within an inactive item makes that item active without moving focus or changing the nested scope. Focus inside an independent nested focusgroup outside the owner's items, or inside a top-layer segment, leaves the enclosing `itemcontrols` owner with no active focusgroup item.
 
-### Active-item invalidation
+### State invalidation
 
-Nesting changes do not move focus solely to repair state; normal HTML focus disposition still applies. Before the next relevant focusgroup operation, the user agent reevaluates flat-tree containment and derives the active item from current focus. It clears remembered items that are no longer valid and, when current focus resolves to an active item, updates memory under the owner-relative rule above. It then removes nested content that no longer qualifies from sequential navigation.
+A relevant change to ownership, containment, item eligibility, or scope does not move focus solely to repair focusgroup state; normal HTML focus disposition still applies. Relevant changes include focusability, `focusgroup` tokens, disabled, inert, rendered, slot-assignment, top-layer, `reading-flow`, and selected-behavior state. The user agent may mark affected state stale and recompute it lazily.
+
+Before the next relevant focusgroup operation, the user agent reevaluates the affected state and derives the active item from current focus. It first clears remembered items that are no longer storage-valid. If current focus then resolves to an active item, it updates memory under the owner-relative rule above; if no active item resolves, any remaining valid memory is unchanged. Nested content that no longer qualifies stops participating in sequential focus navigation.
 
 ## Grid focusgroups
 
@@ -344,7 +378,7 @@ Every focusable descendant owned by a valid grid must be either the selected tar
 
 #### Multi-control cells and itemcontrols
 
-By default, `grid` implies [`itemcontrols`](#itemcontrols), and each selected cell target is a focusgroup item — either a focusable cell boundary or a selected descendant. With effective `itemcontrols`, a cell is active when current focus is on its target, within nested content contained by it, or on a managed negative-`tabindex` source whose coordinate selects that target. Only the active cell's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its grid target, and its inner controls use `focusgroup="none"` so they do not become grid targets.
+By default, `grid` implies [`itemcontrols`](#itemcontrols), and each coordinate's provider target is a grid focusgroup item — either a focusable cell boundary or a selected descendant. With effective `itemcontrols`, the **active grid item** is the provider target whose coordinate contains current focus: focus is on the target, within nested content contained by its cell, or on a managed negative-`tabindex` source whose coordinate selects it. Only the active grid item's eligible nested content joins sequential focus navigation; nested content of other cells is skipped. A cell with multiple individual controls uses a focusable cell boundary as its provider target, and its inner controls use `focusgroup="none"` so they do not become additional grid targets.
 
 `noitemcontrols` leaves grid topology, targets, and directional navigation unchanged. Opted-out controls and independent nested focusgroups instead follow V1 segment and sequential-navigation rules, without active-cell filtering.
 
@@ -461,7 +495,7 @@ A grid owner has one focusgroup memory; rows and `focusgrouprow` markers do not 
 3. Otherwise, an eligible target with `focusgroupstart` has priority.
 4. Otherwise, the first eligible grid target in sequential focus navigation order becomes the entry target.
 
-The selected target is the grid segment's single sequential entry target. `nomemory` disables restoration under the existing rules. For a valid grid, the remembered item is represented by its eligible provider target. Focus on that target stores the provider target. With effective `itemcontrols`, focus within nested content contained by its grid item also stores the provider target, never the nested focused area itself. Focus outside every grid item does not replace the prior grid memory.
+The selected provider target is the grid segment's single sequential entry target. `nomemory` disables restoration under the existing rules. **Grid memory** stores the eligible provider target representing the owner-relative active grid item. Focus on that target stores it directly. With effective `itemcontrols`, focus within nested content contained by its cell also stores the provider target, never the nested focused area itself. Focus outside every grid item does not replace valid prior grid memory.
 
 `focusgroupstart` on a row, wrapper, negative-`tabindex` element, or otherwise ineligible descendant does not make that element a grid target. Sequential entry, directional navigation, and memory use the same row-first, then cell-within-row coordinate order.
 
@@ -476,7 +510,9 @@ Each parsed grid owner has one conceptual grid state. Before any observable oper
 
 A focusable owner, a `focusgrouprow` marker misplaced within a manual grid's owned scope, a malformed row or cell relationship, a cell with zero or multiple eligible target candidates, a focusable non-target descendant, or an unsupported shape makes the state invalid. Directional navigation, memory, sequential-entry collapse, segment behavior, and inferred roles all consume the same state; none run when it is invalid.
 
-A relevant DOM, attribute, style, slot-assignment, or `reading-flow` change marks the snapshot stale. A change that might make the remembered target ineligible conservatively clears that memory without requiring an immediate topology or layout update. Merely restoring eligibility later does not restore the cleared memory. The user agent rebuilds the snapshot before the next observable focusgroup operation; after a valid rebuild, an owner with effective `itemcontrols` updates memory from current focus under the owner-relative rule. State repair alone does not move focus; normal HTML focus disposition still applies.
+A relevant DOM, attribute, style, slot-assignment, or `reading-flow` change marks the snapshot stale. A change that might make the remembered target ineligible conservatively clears that memory without requiring an immediate topology or layout update. Merely restoring eligibility later does not restore the cleared memory. The user agent rebuilds the snapshot before the next observable focusgroup operation. State repair alone does not move focus; normal HTML focus disposition still applies.
+
+After a valid rebuild, an owner with effective `itemcontrols` updates grid memory from current focus under the owner-relative rule.
 
 Ignoring grid focusgroup behavior never makes content inert. Normal DOM focus, sequential focus navigation, element interaction, authored roles, native semantics, and custom-element default semantics remain in effect. User agents should provide diagnostics for invalid grid markup; the diagnostic surface remains an [open question](#open-questions).
 
@@ -552,13 +588,13 @@ When feed items change, the focusgroup updates its item set before the next dire
 
 <p class="question">Should a future manual-grid extension allow `focusgrouprow` elements to participate as arbitrary flat-tree descendants of the owner, and if so, what HTML-only row-grouping signal can define a mechanically detectable row level without using authored ARIA roles as behavior topology?</p>
 
-<p class="question">Which diagnostics should user agents expose for misplaced `focusgrouprow`, unsupported shapes, and malformed row, cell, or target structure?</p>
+<p class="question">Which diagnostics should user agents expose for malformed topology, misplaced `focusgrouprow` markers, invalid target counts, unsupported structures, and focusable non-target descendants?</p>
 
 <p class="question">Should a future target-selection mode support multiple eligible descendants in a nonfocusable cell, and if so, how can it avoid ambiguous or unstable target choice?</p>
 
 <p class="question">How should `treegrid` extend grid topology, expansion state, and directional key handling without conflicting with the initial rectangular grid model?</p>
 
-<p class="question">Does `itemcontrols` need grid-specific entry, memory, or escape behavior beyond the focusable-cell-boundary model?</p>
+<p class="question">Does `itemcontrols` need grid-specific escape behavior beyond the focusable-cell-boundary model?</p>
 
 <p class="question">The current model remembers only the owner-relative active focusgroup item. Should `itemcontrols` additionally remember the last nested control, and if so, when should that nested memory be restored?</p>
 
