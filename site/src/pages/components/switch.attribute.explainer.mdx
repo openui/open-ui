@@ -13,7 +13,7 @@ authors:
 
 Switch controls (also called toggles) are binary on/off controls that take immediate effect, as opposed to checkboxes which typically require form submission. They are common across native platforms (iOS, Android, Windows, macOS) and web applications (settings pages, feature toggles, consent dialogs, dark mode switches).
 
-Despite being one of the most commonly implemented UI components on the web, there is no native HTML element or attribute for switches. The [Open UI component research](https://open-ui.org/components/switch.explainer/) identified switches as a high-priority gap in the platform. The [WHATWG HTML PR #9546](https://github.com/whatwg/html/pull/9546) proposes filling this gap by adding a `switch` attribute to `<input type="checkbox">`.
+Despite being one of the most commonly implemented UI components on the web, HTML does not yet standardize a native switch control. The [Open UI component research](https://open-ui.org/components/switch.explainer/) identified switches as a high-priority gap in the platform. The [WHATWG HTML PR #9546](https://github.com/whatwg/html/pull/9546) proposes filling this gap by adding a `switch` attribute to `<input type="checkbox">`.
 
 ```html
 <label>
@@ -43,6 +43,7 @@ A switch can be used anywhere a user toggles a binary state with immediate effec
 
 - Replacing component library switches for applications that need highly custom behavior
 - Providing an API that covers every possible switch variant (loading states, multi-position switches, etc.)
+- Defining a switch customization API before the broader `appearance: base` model reaches consensus
 - Breaking backward compatibility with existing checkbox behavior
 
 ---
@@ -129,11 +130,11 @@ The input is visually hidden; the "switch" is a sibling `<span>` styled to look 
 ### 3. `role="switch"` on generic elements
 
 ```html
-<div role="switch" tabindex="0" aria-checked="false" id="theme-switch">
+<div role="switch" tabindex="0" aria-checked="false" aria-labelledby="theme-label" id="theme-switch">
   <span class="track">
     <span class="thumb"></span>
   </span>
-  <label id="theme-label">Dark mode</label>
+  <span id="theme-label">Dark mode</span>
 </div>
 ```
 
@@ -155,7 +156,7 @@ Developers must reimplement keyboard handling, state management, and ARIA attrib
 
 ---
 
-**All three approaches** lead to inconsistency, accessibility gaps, and unnecessary JavaScript payload for end-users.
+**Together, these approaches** lead to inconsistency and accessibility gaps, and some require unnecessary JavaScript for a basic control.
 
 ---
 
@@ -167,12 +168,7 @@ Developers must reimplement keyboard handling, state management, and ARIA attrib
 <input type="checkbox" switch>
 ```
 
-Adding the `switch` attribute to a checkbox changes its appearance to a switch control. The control exposes pseudo-elements for styling, aligned with the [CSS Forms spec](https://drafts.csswg.org/css-forms-1/):
-
-- **`::slider-track`** — the background track of the switch
-- **`::slider-thumb`** — the sliding knob/indicator
-
-> **Note:** These names follow the `::slider-*` convention from [css-forms-1](https://drafts.csswg.org/css-forms-1/), which treats switches as slider-like controls. Naming is subject to change as the spec evolves. Whether these pseudo-elements are always exposed or only when `appearance: base` is set is still under discussion.
+Adding the `switch` attribute to a checkbox changes its native appearance and accessibility role to a switch control.
 
 ### Basic Usage
 
@@ -198,26 +194,13 @@ Adding the `switch` attribute to a checkbox changes its appearance to a switch c
 
 ![Switch appearance (Chromium)](/images/switch-attribute/default-switch.png)
 
-```css
-/* Custom track */
-input[switch]::slider-track {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-}
+### Appearance and Customization
 
-/* Custom size */
-input[switch] {
-  width: 56px;
-  height: 28px;
-}
+In the initial scope of this proposal, switches use `appearance: auto`. This allows the user agent to provide a native switch appearance appropriate for the platform.
 
-/* Custom thumb */
-input[switch]::slider-thumb {
-  background: linear-gradient(135deg, #f6d365, #fda085);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-```
+This proposal does not define a switch-specific customization API. Styling of the switch’s internal parts will instead be considered as part of the broader cross-control work on `appearance: base` and form-control pseudo-elements.
 
-![Styled switch with gradient](/images/switch-attribute/styled-switch-gradient.png)
+Related CSSWG discussions include the [incremental rollout of `appearance: base`](https://github.com/w3c/csswg-drafts/issues/10804) and [when form-control pseudo-elements should be exposed](https://github.com/w3c/csswg-drafts/issues/12365).
 
 ### Form Participation
 
@@ -234,24 +217,7 @@ When checked, submits `darkmode=on`. When unchecked, omits the field (standard c
 
 ### Animation
 
-The UA stylesheet provides smooth transitions out of the box:
-
-```css
-/* UA default */
-input[switch]::slider-track {
-  container-type: size;
-  transition: background-color 0.3s ease;
-}
-input[switch]::slider-thumb {
-  left: 2px;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-input[switch]:checked::slider-thumb {
-  transform: translateX(calc(100cqw - 100% - 4px));
-}
-```
-
-Using container query units (`cqw`) and self-referencing percentages in transforms allows the thumb's checked position to be calculated dynamically for any switch and thumb size, enabling smooth animation without JavaScript.
+With `appearance: auto`, the exact rendering and animation are defined by the user agent. A user agent can animate the track and thumb when the checked state changes without requiring author JavaScript.
 
 ![Switch animation example](/images/switch-attribute/BlinkOnSwitch.gif)
 
@@ -273,15 +239,8 @@ Using container query units (`cqw`) and self-referencing percentages in transfor
 
 | Event Name | Bubbles | Composed | Cancellable | Description |
 |---|---|---|---|---|
-| `change` | `true` | `true` | `false` | Fired when the checked state changes. |
+| `change` | `true` | `false` | `false` | Fired when the checked state changes. |
 | `input` | `true` | `true` | `false` | Fired when the user commits a value change. |
-
-#### Pseudo-elements
-
-| Pseudo-element | Description |
-|---|---|
-| `::slider-track` | The background container of the switch. Supports `container-type: size`. |
-| `::slider-thumb` | The sliding indicator. Positioned absolutely within the track. |
 
 ### What the Attribute Approach Cannot Do
 
@@ -296,170 +255,6 @@ There are use cases that the attribute approach cannot handle. These require rea
 ![Element approach use cases](/images/switch-attribute/element_switches.gif)
 
 These are real limitations. However, none of these patterns appear in the popular component libraries surveyed, suggesting they are edge cases rather than common needs. The alternatives section below describes approaches that could handle these cases in the future.
-
-### What the Attribute Approach Can Do (with CSS)
-
-There are other use cases which would be easier to implement with child elements, but are still achievable with the attribute approach:
-
-#### Track text
-
-Using positioned spans with `:has()`:
-
-```html
-<label class="switch-label">
-  <input type="checkbox" switch>
-  <span class="on-text">Y</span>
-  <span class="off-text">N</span>
-</label>
-```
-
-```css
-.switch-label {
-  position: relative;
-  display: inline-block;
-  --w: 56px;
-  --h: 28px;
-  --m: 3px;
-}
-.switch-label input[switch] {
-  width: var(--w);
-  height: var(--h);
-}
-.on-text, .off-text {
-  position: absolute;
-  top: var(--m);
-  width: calc(var(--w) - var(--h) * 0.75);
-  height: var(--h);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: white;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.on-text { left: var(--m); opacity: 0; transform: translateX(6px); }
-.off-text { right: var(--m); opacity: 1; transform: translateX(0); }
-.switch-label:has(input:checked) .on-text { opacity: 1; transform: translateX(0); }
-.switch-label:has(input:checked) .off-text { opacity: 0; transform: translateX(-6px); }
-.switch-label input[switch]::slider-track { background-color: #ef4444; }
-.switch-label input[switch]:checked::slider-track { background-color: #22c55e; }
-```
-
-<div style="max-width: 400px; margin-inline: auto">
-
-![Track text demo](/images/switch-attribute/Y_N_Switch.gif)
-
-</div>
-
-This same technique enables **localization**. Since the labels are regular DOM elements, any i18n system can update them:
-
-```html
-<label class="switch-label" style="--w: 72px; --h: 32px;">
-  <input type="checkbox" switch>
-  <span class="on-text" data-i18n="on">On</span>
-  <span class="off-text" data-i18n="off">Off</span>
-</label>
-<select id="lang-picker">
-  <option value="en">English</option>
-  <option value="es">Español</option>
-  <option value="zh">中文</option>
-  <option value="ar">العربية</option>
-  <option value="ja">日本語</option>
-</select>
-```
-
-```js
-const translations = {
-  en: { on: 'On', off: 'Off' },
-  es: { on: 'Sí', off: 'No' },
-  zh: { on: '开', off: '关' },
-  ar: { on: 'نعم', off: 'لا' },
-  ja: { on: 'オン', off: 'オフ' }
-};
-document.getElementById('lang-picker').addEventListener('change', (e) => {
-  const lang = e.target.value;
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    el.textContent = translations[lang][el.dataset.i18n];
-  });
-});
-```
-
-Existing tooling (i18next, FormatJS, gettext) can find and translate these without special handling.
-
-<div style="max-width: 400px; margin-inline: auto">
-
-![Localization demo](/images/switch-attribute/localization_switch.gif)
-
-</div>
-
-#### Thumb icons
-
-Using `background-image` on `::slider-thumb`:
-
-```css
-input[switch]::slider-thumb {
-  background-image: url("cross-icon.svg");
-  background-size: 60%;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-input[switch]:checked::slider-thumb {
-  background-image: url("check-icon.svg");
-}
-```
-
-<div style="max-width: 400px; margin-inline: auto">
-
-![Thumb icons demo](/images/switch-attribute/X_CHECK_Switch.gif)
-
-</div>
-
-#### Thumb text
-
-Using SVG text in `background-image`:
-
-```css
-input[switch]::slider-thumb {
-  background-image: url("data:image/svg+xml,...<text>0</text>...");
-  background-size: 80%;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-input[switch]:checked::slider-thumb {
-  background-image: url("data:image/svg+xml,...<text>1</text>...");
-}
-```
-
-<div style="max-width: 400px; margin-inline: auto">
-
-![Thumb text demo](/images/switch-attribute/0_1_switch.gif)
-
-</div>
-
-#### External labels
-
-Using sibling spans with `:has()`:
-
-```html
-<label>
-  <span class="off-label">Off</span>
-  <input type="checkbox" switch>
-  <span class="on-label">On</span>
-</label>
-```
-
-```css
-label:has(input:checked) .on-label { color: blue; }
-label:not(:has(input:checked)) .off-label { color: blue; }
-```
-
-<div style="max-width: 400px; margin-inline: auto">
-
-![External labels demo](/images/switch-attribute/labels_Switch.gif)
-
-</div>
 
 ---
 
@@ -481,11 +276,11 @@ label:not(:has(input:checked)) .off-label { color: blue; }
 
 ### Accessibility
 
-The `switch` attribute maps to `role="switch"` in the accessibility tree, as specified in [ARIA in HTML](https://www.w3.org/TR/wai-aria-1.2/#switch).
+The `switch` attribute maps to the [`switch` role](https://www.w3.org/TR/wai-aria-1.2/#switch) in the accessibility tree.
 
 - **Screen readers**: Announce the control as a "switch" rather than a "checkbox"
 - **Keyboard**: Space key toggles (same as checkbox)
-- **States**: `aria-checked` is automatically mapped from the `checked` property
+- **States**: The accessibility checked state is automatically mapped from the `checked` property
 - **Labels**: Standard `<label>` association works unchanged
 
 #### Keyboard Navigation
@@ -514,11 +309,11 @@ This proposal introduces no new privacy concerns. The switch attribute:
 
 ### Security
 
-No new security concerns. The switch attribute:
+The switch attribute introduces no new security capabilities:
 
 - Does not require new permissions or capabilities
 - Does not execute scripts
-- Is purely a visual change with an accessibility role update
+- Reuses the existing checkbox state, interaction, and form-submission model
 
 ---
 
@@ -581,7 +376,7 @@ Since a `<switch>` element can hold child elements, the use cases listed above a
 - Must reimplement all checkbox infrastructure (form participation, label association, ARIA, keyboard handling, `:checked` pseudo-class, disabled/readonly states, constraint validation)
 - Higher spec complexity and implementation cost
 - Not backwards compatible
-- The use cases that truly require child content (spinners, avatars, nested interactives) do not appear in any of the [44 design systems surveyed](https://open-ui.org/components/switch.explainer/#slots). The 30% that display inner content use track text or thumb icons, both achievable with CSS (shown above).
+- The use cases that truly require child content (spinners, avatars, nested interactives) do not appear in any of the [44 design systems surveyed](https://open-ui.org/components/switch.explainer/#slots). Most inner content found in the survey is presentational, so adding a new element solely for those cases would introduce significant complexity before the broader form-control customization model is settled.
 
 #### Why we prioritize the attribute approach
 
@@ -589,7 +384,7 @@ The attribute approach gets a native switch into developers' hands faster and wi
 
 - **No new infrastructure needed.** The attribute reuses checkbox form participation, label association, keyboard handling, `:checked`, disabled/readonly states, and constraint validation. A new element must reimplement all of these from scratch.
 - **Backwards compatible.** In older browsers, `<input type="checkbox" switch>` renders as a working checkbox. A `<switch>` element would render as nothing (or need a polyfill).
-- **The child content gap is small.** The cases that truly require DOM children (spinners, avatars, nested interactives) do not appear in any of the popular component libraries surveyed. The common cases (track text, icons, labels) are achievable with CSS as shown above.
+- **The child content gap is small.** The cases that truly require DOM children (spinners, avatars, nested interactives) do not appear in any of the popular component libraries surveyed. This proposal prioritizes native semantics and behavior while deeper visual customization follows the broader form-control customization model.
 - **Not mutually exclusive.** Shipping the attribute now does not prevent a future `<switch>` element for advanced use cases.
 
 For more on the element approach, see the [Open UI Switch Element Explainer](https://open-ui.org/components/switch.explainer/).
@@ -617,7 +412,7 @@ The attribute approach (`<input type="checkbox" switch>`) provides the same bene
 
 | Vendor | Position | Notes |
 |---|---|---|
-| WebKit/Safari | **Positive** (shipped) | Shipped unflagged since Safari 17.4. Pseudo-elements (`::slider-thumb`, `::slider-track`) are behind a flag. |
+| WebKit/Safari | **Positive** (shipped) | Shipped unflagged since Safari 17.4. WebKit's experimental pseudo-elements (`::slider-thumb`, `::slider-track`) remain behind a flag and are not part of this proposal's initial scope. |
 | Mozilla/Firefox | **Under review** | [Standards position #990](https://github.com/mozilla/standards-positions/issues/990) |
 
 ---
@@ -627,9 +422,10 @@ The attribute approach (`<input type="checkbox" switch>`) provides the same bene
 - [WHATWG HTML PR #9546 - Add switch attribute](https://github.com/whatwg/html/pull/9546)
 - [Open UI Switch Explainer (element approach)](https://open-ui.org/components/switch.explainer/)
 - [WebKit Blog: An HTML Switch Control](https://webkit.org/blog/15054/an-html-switch-control/)
+- [CSSWG issue #10804 - Incremental rollout plan for form controls](https://github.com/w3c/csswg-drafts/issues/10804)
+- [CSSWG issue #12365 - Should new pseudo-elements be restricted to base appearance mode?](https://github.com/w3c/csswg-drafts/issues/12365)
 - [HTML Spec: The input element](https://html.spec.whatwg.org/multipage/input.html)
 - [ARIA in HTML: switch role](https://www.w3.org/TR/html-aria/)
-- [CSS Pseudo-Elements Module Level 4](https://drafts.csswg.org/css-pseudo-4/)
 - [ARIA Authoring Practices: Switch Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/)
 
 ---
