@@ -23,7 +23,7 @@ Like [V1](/components/scoped-focusgroup.explainer), Focusgroup V2 aims to give u
 
 [V1](/components/scoped-focusgroup.explainer) defines focusgroup ownership, items, segments, directional and sequential navigation, entry, memory, nested scopes, opt-out boundaries, key conflicts, and role inference. V2 reuses those rules and adds:
 
-1. `itemcontrols`, which retains the active item's controls in sequential focus navigation and removes inactive items' controls from it.
+1. [`itemcontrols`](#itemcontrols-naming), which retains the active item's controls in sequential focus navigation and removes inactive items' controls from it.
 2. `feed`, a block-axis linear behavior for streams of articles with nested controls.
 3. `grid`, a two-dimensional behavior for semantically tabular content.
 
@@ -467,7 +467,7 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 
 <p class="question">Should `itemcontrols` continue to leave the active item's [eligible nested content](#eligible-nested-content) in sequential focus navigation, or should users explicitly enter and leave that content? Any alternative must define modality-independent operations that map across keyboards, D-pads, game controllers, and assistive technologies.</p>
 
-<p class="question">What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).</p>
+<p class="question" id="itemcontrols-naming">What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).</p>
 
 <p class="question">Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation?</p>
 
