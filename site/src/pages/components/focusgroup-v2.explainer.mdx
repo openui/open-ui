@@ -110,18 +110,18 @@ An independent nested focusgroup follows the same rule as opted-out controls: it
 
 An owner has **effective `itemcontrols`** when `itemcontrols` is explicit or supplied by default and `noitemcontrols` is absent.
 
-For that owner, **eligible nested content** is either a focusable area in a `focusgroup="none"` subtree or the sequential boundary of an independent nested focusgroup that:
+Association and sequential eligibility are separate. **Associated nested content** maps focus to a containing item for activity and memory, whether or not that content participates in sequential focus navigation. The user agent uses two association paths:
 
-1. Maps to one of the owner's items through the lookup below.
-2. Would already participate in sequential focus navigation under HTML and V1.
+1. **Opted-out control.** Start at a focusable area inside `focusgroup="none"` and stop at its nearest parsed focusgroup owner, or at a top-layer boundary. If that owner has effective `itemcontrols`, associate the area with the first owned item reached for a linear owner, or with the cell target reached without leaving the owned cell for a valid grid. The nearest owner remains a boundary when no association is found; do not repeat this path for further enclosing owners.
+2. **Independent nested focusgroup.** For focus on its owner or anywhere within its scope, start at the nested focusgroup owner and repeat the lookup independently for each enclosing owner with effective `itemcontrols`. Intervening `focusgroup="none"` and nested-focusgroup ancestors are transparent for this lookup; a top-layer boundary always stops it. For a linear owner, use the first owned item reached. For a valid grid, use the cell target reached without leaving the owned cell.
 
-Disabled, inert, non-rendered, and negative-`tabindex` content is already absent and therefore does not qualify. `itemcontrols` never makes content focusable.
+**Eligible nested content** is associated nested content that would already participate in sequential focus navigation under HTML and V1. For an opted-out control, it is the focusable area. For an independent nested focusgroup, it is the boundary through which sequential navigation enters the nested segment; the nested owner need not itself be sequentially focusable.
 
-To find the containing item, the user agent tests the opted-out focusable area or nested focusgroup owner, then walks CSS flat-tree ancestors toward each enclosing owner with effective `itemcontrols`. Relevant opt-out and nested-scope boundaries are transparent for this lookup, but top-layer boundaries and opt-out ancestors that exclude the starting content stop it. A linear owner returns its first owned item. A valid grid returns the cell target without leaving the owned cell; the target need not be an ancestor.
+Disabled, inert, non-rendered, and negative-`tabindex` content is not [eligible nested content](#eligible-nested-content) because it is already absent from sequential focus navigation. `itemcontrols` never makes content focusable.
 
-The **active focusgroup item** is the currently focused owned item, or the item found for the currently focused nested content. Activity follows focus and is owner-relative. Pointer or script focus on associated negative-`tabindex` content can therefore make an item active without adding that content to sequential focus navigation.
+The **active focusgroup item** is the currently focused owned item, or the item associated with the currently focused nested content. Activity follows focus and is owner-relative. Pointer or script focus on associated negative-`tabindex` content can therefore make an item active and update memory without adding that content to sequential focus navigation.
 
-Each effective owner removes this content from its inactive items. Content remains only when every enclosing effective owner associates it with an active item. Unassociated opted-out content remains an ordinary V1 segment boundary, and top-layer content remains excluded. This preserves the standalone-content case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
+Each effective owner removes its [eligible nested content](#eligible-nested-content) from inactive items. Nested content associated through more than one independent nested-focusgroup lookup remains available only when every association is active. Unassociated opted-out content remains an ordinary V1 segment boundary, and top-layer content remains excluded. This preserves the standalone-content case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
 
 The filter never flattens a nested scope or changes sequential order. When a nested focusgroup remains available, traversal encounters its boundary once and applies its own V1 entry algorithm. After leaving it, traversal continues to later content in HTML order.
 
@@ -129,7 +129,9 @@ The filter never flattens a nested scope or changes sequential order. When a nes
 
 Forward and reverse entry first use the V1 priorities to select an item in the adjacent segment, then focus that item boundary and end the operation. Entry never descends directly into nested controls. Recursively nested owners are entered one boundary per navigation operation.
 
-When memory is enabled, each effective owner stores its owner-relative active item, never the focused nested control. Memory updates after focus changes and relevant state reevaluation; no active item leaves valid prior memory unchanged. A remembered item is cleared if it leaves the relevant tree or ceases to be an eligible item of the same owner; restoration still requires it to belong to the segment being entered. `nomemory` applies only to its owner.
+When memory is enabled, each effective owner stores its owner-relative active item, never the focused nested control. Memory updates after focus changes and relevant state reevaluation; no active item leaves valid prior memory unchanged. `nomemory` applies only to its owner.
+
+A remembered item remains storage-valid only while it remains in the relevant shadow-inclusive tree, is owned by the same focusgroup, remains an item of the selected behavior, and remains [focusable](https://html.spec.whatwg.org/multipage/interaction.html#focusable), [being rendered](https://html.spec.whatwg.org/multipage/rendering.html#being-rendered), enabled, and non-inert. Focusability here includes programmatic focusability and does not require sequential focusability. Losing any condition clears the item. Restoration additionally requires a storage-valid item to belong to the segment being entered and satisfy that behavior's entry requirements.
 
 Changes to focusability, ownership, scope, rendering, inertness, slot assignment, `reading-flow`, or behavior state do not move focus merely to repair state. Before the next relevant operation, the user agent clears invalid memory, derives activity from current focus, and reapplies the filter. Native key-conflict elements retain their V1 behavior throughout.
 
@@ -236,7 +238,7 @@ A focusable cell target does not implicitly opt out its descendants. Each unexcl
 
 #### Multi-control cells and itemcontrols
 
-By default, `grid` implies [`itemcontrols`](#itemcontrols), and each cell target is a grid focusgroup item — either a focusable cell boundary or one selected descendant. The containing-item lookup is coordinate-relative: nested controls map to their cell target even when it is a sibling rather than an ancestor. The cell target remains the coordinate's sole directional target.
+By default, `grid` implies [`itemcontrols`](#itemcontrols), and each cell target is a grid focusgroup item — either a focusable cell boundary or one selected descendant. Grid association is coordinate-relative: nested controls map to their cell target even when it is a sibling rather than an ancestor. The cell target remains the coordinate's sole directional target.
 
 The **active grid item** is the cell target whose coordinate contains current focus. `itemcontrols` removes nested controls from every inactive cell and leaves them available in the active cell.
 
@@ -371,7 +373,7 @@ After a valid rebuild, an owner with effective `itemcontrols` updates grid memor
 
 Ignoring `grid` focusgroup behavior never makes content inert. Normal DOM focus, sequential focus navigation, element interaction, authored roles, native semantics, and custom-element default semantics remain in effect.
 
-When a user agent evaluates an invalid grid state, it should report a developer diagnostic that identifies the grid owner, the invalid-state category, and any offending row, cell, marker, or target it can identify. Categories include invalid target counts, unsupported shapes, malformed row or cell relationships, misplaced or ignored `focusgrouprow` markers, and focusable non-target descendants. Diagnostics are emitted when the user agent evaluates the state, not synchronously for every mutation. The console or developer-tools surface remains implementation-defined.
+When a user agent evaluates an invalid grid state, it should report a developer diagnostic that identifies the grid owner and invalid-state category and provides category-specific remediation. When practical, it may also identify an offending row, cell, marker, or target. User agents may deduplicate a diagnostic while the same state version remains invalid. Diagnostics are emitted when state is evaluated, not synchronously for every mutation; the console or developer-tools surface remains implementation-defined.
 
 An invalid parsed focusgroup owner remains an ownership and dispatch boundary. Descendants do not leak into an ancestor focusgroup, and dispatch does not search past the invalid owner. The boundary disappears only when the attribute no longer parses as a focusgroup owner.
 
@@ -491,7 +493,7 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 
 <p class="question">Should a future manual-grid extension allow `focusgrouprow` elements to participate as arbitrary flat-tree descendants of the owner, and if so, what HTML-only row-grouping signal can define a mechanically detectable row level without using authored ARIA roles as behavior topology?</p>
 
-<p class="question">Beyond the minimum invalid-state category and offending-structure information above, which console or developer-tools surfaces should user agents provide for `grid` diagnostics?</p>
+<p class="question">Beyond the category and remediation guidance above, which console or developer-tools surfaces and deduplication policies should user agents provide for `grid` diagnostics?</p>
 
 <p class="question">Should a future target-selection mode support multiple eligible descendants in a nonfocusable cell, and if so, how can it avoid ambiguous or unstable target choice?</p>
 
@@ -520,7 +522,7 @@ The V2 additions introduce no new privacy or security concerns beyond V1. See th
 ## Design decisions
 
 * HTML structure and platform focusability define grid topology and targets. Inferred roles describe accessibility semantics one-way; authored ARIA never configures focus behavior. Implicit topology selection and deeper manual rows remain [open questions](#open-questions).
-* An independent nested focusgroup retains its own scope. Its sequential boundary uses the same active-item filter as opted-out controls, resolving the composition case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
+* An independent nested focusgroup retains its own scope. Its sequential boundary uses the same active-item filter as opted-out controls, while its separate association path can map it to multiple enclosing owners. This resolves the composition case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
 
 ## Acknowledgments
 
