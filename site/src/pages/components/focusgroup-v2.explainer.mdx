@@ -121,7 +121,7 @@ Disabled, inert, non-rendered, and negative-`tabindex` content is not [eligible 
 
 The **active focusgroup item** is the currently focused owned item, or the item associated with the currently focused nested content. Activity follows focus and is owner-relative. Pointer or script focus on associated negative-`tabindex` content can therefore make an item active and update memory without adding that content to sequential focus navigation.
 
-Each effective owner removes its [eligible nested content](#eligible-nested-content) from inactive items. Nested content associated through more than one independent nested-focusgroup lookup remains available only when every association is active. Unassociated opted-out content remains an ordinary V1 segment boundary, and top-layer content remains excluded. This preserves the standalone-content case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
+Each effective owner removes [eligible nested content](#eligible-nested-content) associated with inactive items. Content associated through multiple nested-focusgroup lookups remains available only when every association is active. Unassociated opted-out content remains an ordinary V1 segment boundary, and top-layer content remains excluded. This preserves the standalone-content case discussed in [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
 
 The filter never flattens a nested scope or changes sequential order. When a nested focusgroup remains available, traversal encounters its boundary once and applies its own V1 entry algorithm. After leaving it, traversal continues to later content in HTML order.
 
@@ -131,7 +131,7 @@ Forward and reverse entry first use the V1 priorities to select an item in the a
 
 When memory is enabled, each effective owner stores its owner-relative active item, never the focused nested control. Memory updates after focus changes and relevant state reevaluation; no active item leaves valid prior memory unchanged. `nomemory` applies only to its owner.
 
-A remembered item remains storage-valid only while it remains in the relevant shadow-inclusive tree, is owned by the same focusgroup, remains an item of the selected behavior, and remains [focusable](https://html.spec.whatwg.org/multipage/interaction.html#focusable), [being rendered](https://html.spec.whatwg.org/multipage/rendering.html#being-rendered), enabled, and non-inert. Focusability here includes programmatic focusability and does not require sequential focusability. Losing any condition clears the item. Restoration additionally requires a storage-valid item to belong to the segment being entered and satisfy that behavior's entry requirements.
+A remembered item must remain in the relevant shadow-inclusive tree, owned by the same focusgroup, and an item of the selected behavior. It must also remain [focusable](https://html.spec.whatwg.org/multipage/interaction.html#focusable), [being rendered](https://html.spec.whatwg.org/multipage/rendering.html#being-rendered), enabled, and non-inert. Focusability here includes programmatic focusability and does not require sequential focusability. Losing any condition clears the item. Restoration additionally requires the item to belong to the segment being entered and satisfy that behavior's entry requirements.
 
 Changes to focusability, ownership, scope, rendering, inertness, slot assignment, `reading-flow`, or behavior state do not move focus merely to repair state. Before the next relevant operation, the user agent clears invalid memory, derives activity from current focus, and reapplies the filter. Native key-conflict elements retain their V1 behavior throughout.
 
@@ -170,7 +170,7 @@ Grid edges are hard by default. The [APG grid pattern](https://www.w3.org/WAI/AR
 
 #### Ownership and order
 
-The user agent determines all grid ownership, ancestry, direct-child relationships, and paths in the CSS flat tree. Open and closed shadow roots follow the same user-agent traversal rules; assigned nodes and fallback content follow flat-tree ownership, and unassigned light-DOM children are absent. The nearest parsed focusgroup owner owns a candidate structure. An independent nested focusgroup, a nested grid owner, a `focusgroup="none"` subtree, and a top-layer subtree delimit the outer grid's scope. Top-layer exclusion is applied after flat-tree ownership.
+All grid relationships and paths use the CSS flat tree. User-agent traversal treats open and closed shadow roots alike. Assigned nodes and fallback content participate; unassigned light-DOM children do not. The nearest parsed focusgroup owner owns a candidate structure. Independent nested focusgroups, nested grids, `focusgroup="none"` subtrees, and top-layer subtrees delimit its scope. Top-layer exclusion applies after flat-tree ownership.
 
 Rows form one sequence and are ordered first by [order-modified document order adjusted by `reading-flow`](/components/scoped-focusgroup.explainer#reading-flow); native row groups do not add a coordinate level. Cells are then ordered independently within each row by the same rule. Ordering never changes ownership or moves a cell to another row. Coordinates are assigned after ordering, while rectangularity depends only on each row's cell count.
 
@@ -182,11 +182,9 @@ A row or cell cannot belong to more than one grid. A row cannot contain another 
 
 #### Automatic table topology
 
-`focusgroup="grid"` discovers every row and cell from native HTML table structure. Native table sections (`<thead>`, `<tbody>`, `<tfoot>`) group rows, `<tr>` elements are rows, and `<td>`/`<th>` elements are cells. CSS-generated table layout on generic elements, such as `display: table`, `table-row`, or `table-cell`, does not qualify; use `manual` for non-native structure.
+`focusgroup="grid"` uses native HTML table structure: `<thead>`, `<tbody>`, and `<tfoot>` group rows; `<tr>` elements are rows; and `<td>` and `<th>` elements are cells. Each row must be a direct flat-tree child of the owner or a direct native row group, and each cell must be a direct child of its row. CSS table layout and arbitrary wrappers do not qualify; non-native structure uses [`manual`](#manual-row-enrollment).
 
-Automatic ownership is intentionally strict. A row must be a direct flat-tree child of the grid owner or of a direct native row group. A cell must be a direct flat-tree child of its row. Automatic mode does not search through arbitrary wrappers; generic or custom markup uses [`manual`](#manual-row-enrollment) mode.
-
-An automatic grid owner that does not provide native table structure is invalid.
+An automatic grid owner without native table structure is invalid.
 
 The automatic behavior does not use structural row enrollment. A `focusgrouprow` attribute under an automatic grid is ignored for enrollment and role inference and should produce an author diagnostic when grid state is evaluated; it does not change topology or invalidate an otherwise valid grid.
 
@@ -232,7 +230,7 @@ Every participating cell must retain exactly one eligible cell target. If its on
 
 A negative-`tabindex` cell or descendant is ignored as a destination. Its programmatic focusability does not itself invalidate the grid, but its cell must still have another eligible target. When such an element has focus, the user agent resolves its source coordinate from the nearest owned cell without crossing an opt-out, nested-focusgroup, or top-layer boundary. That source can initiate navigation but is never a destination or remembered item. Sequential navigation follows the V1 segment-exit rule clarified in [Open UI issue #1434](https://github.com/openui/open-ui/issues/1434) and implemented in [Chromium CL 7789656](https://chromium-review.googlesource.com/c/chromium/src/+/7789656).
 
-Every focusable descendant owned by a valid grid must be either the selected target for its cell, a managed source-only element under the negative-`tabindex` rule above, or excluded by `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. A focusable row, wrapper, or unexcluded extra descendant makes the grid invalid.
+Every focusable descendant owned by a valid grid must be a cell target, a managed negative-`tabindex` source, or behind an opt-out, nested-focusgroup, or top-layer boundary. A focusable row, wrapper, or other unexcluded descendant makes the grid invalid.
 
 A focusable cell target does not implicitly opt out its descendants. Each unexcluded sequentially focusable descendant remains another target candidate, so the cell supplies multiple candidates and the grid is invalid. Authors currently must use `focusgroup="none"` for individual nested controls or an independent nested focusgroup for a compound control.
 
@@ -304,8 +302,6 @@ For a grid, `wrap` applies independently within the current row and current colu
 | `focusgroup="grid colwrap"` | Hard edge | Wrap to the opposite end of the same column |
 | `focusgroup="grid rowflow"` | Cross a row edge into the next or previous row | Hard edge |
 | `focusgroup="grid colflow"` | Hard edge | Cross a column edge into the next or previous column |
-| `focusgroup="grid rowwrap colflow"` | Wrap to the opposite end of the same row | Cross a column edge into the next or previous column |
-| `focusgroup="grid rowflow colwrap"` | Cross a row edge into the next or previous row | Wrap to the opposite end of the same column |
 | `focusgroup="grid nowrap"` | Hard edge (explicit) | Hard edge (explicit) |
 
 At the outermost edge, flow continues from the final cell or column to the first, and in reverse from the first to the final.
@@ -318,7 +314,7 @@ The parser expands `wrap` to `rowwrap colwrap` and `flow` to `rowflow colflow`, 
 2. If one axis has both wrap and flow, that axis uses a hard edge; the other axis is resolved independently.
 3. Otherwise, the axis uses its specified wrap or flow behavior, or a hard edge when neither is present.
 
-A conflict does not invalidate the grid. Thus `wrap flow` produces two hard axes, `wrap rowflow` produces a hard inline axis and a wrapping block axis, and `nowrap flow` produces two hard axes.
+A conflict does not invalidate the grid. For example, `wrap flow` and `nowrap flow` produce two hard axes.
 
 ### grid directional navigation
 
@@ -331,7 +327,7 @@ A conflict does not invalidate the grid. Thus `wrap flow` produces two hard axes
 | Row start or row end | Moves to the target in the first or last cell of the current row. |
 | Grid start or grid end | Moves to the target in the first or last cell in row-major order. |
 
-User agents MAY map keyboard commands to these operations — for example, Arrow keys to inline and block movement, Home and End to the row start and end, and Ctrl+Home and Ctrl+End to the grid start and end. These key bindings are optional user-agent mappings; the abstract directional operations are the normative core, and other input devices (D-pads, game controllers, assistive technologies) map their own controls. The `grid` focusgroup behavior does not define a Page Up or Page Down operation.
+User agents MAY map keyboard commands to these operations: for example, Arrow keys for inline and block movement, Home and End for row boundaries, and Ctrl+Home and Ctrl+End for grid boundaries. These bindings are optional; the abstract operations are the normative core, and other input devices map their own controls. `grid` does not define Page Up or Page Down.
 
 `grid` navigation moves focus only; like the linear behaviors it does not change selection, activation, expansion, or content loading.
 
@@ -365,7 +361,7 @@ Each parsed grid owner has one conceptual grid state. Before any observable oper
 3. Validate the owner, row and cell relationships, rectangular spanless shape, manual row markers, target candidates, and other owned focusable descendants.
 4. If every check succeeds, record a valid state with its coordinates and targets. Otherwise, record an invalid state.
 
-A focusable owner, a `focusgrouprow` marker misplaced within a manual grid's owned scope, a malformed row or cell relationship, a cell with zero or multiple eligible target candidates, a focusable non-target descendant, or an unsupported shape makes the state invalid. Directional navigation, memory, sequential-entry collapse, segment behavior, and inferred roles all consume the same state; none run when it is invalid.
+The state is invalid if the owner is focusable; a manual-row marker, row, or cell is misplaced; the shape is unsupported; a cell has zero or multiple target candidates; or a non-target descendant is focusable. Directional navigation, memory, sequential-entry collapse, segment behavior, and inferred roles all use this state and do not run while it is invalid.
 
 A relevant DOM, attribute, style, slot-assignment, or `reading-flow` change marks the snapshot stale. A change that might make the remembered target ineligible conservatively clears that memory without requiring an immediate topology or layout update. Merely restoring eligibility later does not restore the cleared memory. The user agent rebuilds the snapshot before the next observable focusgroup operation. State repair alone does not move focus; normal HTML focus disposition still applies.
 
@@ -414,7 +410,7 @@ What to notice:
 
 ### Relationship to ARIA feeds
 
-The [APG feed pattern](https://www.w3.org/WAI/ARIA/apg/patterns/feed/) establishes an interoperability contract: assistive technologies keep users in reading mode and focus the article containing the reading cursor; the page manages scrolling and content loading.
+The [APG feed pattern](https://www.w3.org/WAI/ARIA/apg/patterns/feed/) establishes an interoperability contract. Assistive technologies keep users in reading mode and focus the article containing the reading cursor; the page manages scrolling and content loading.
 
 The APG recommends Page Down and Page Up as one interface for scripted feed navigation. `focusgroup="feed"` uses the V1 linear model instead. Authors who need a different keyboard model can omit `focusgroup` while retaining `role="feed"`.
 
@@ -455,7 +451,7 @@ Authors can continue implementing roving focus, active-item filtering, and grid 
 
 ### Require an explicit cell-interaction mode
 
-Many existing grids, including the interaction model described by the [APG grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/), focus the cell boundary and use Enter or F2 to enter its controls, then Escape to return. That modal pattern remains available to scripted grids. V2 instead proposes `itemcontrols` as a non-modal option: it removes [eligible nested content](#eligible-nested-content) of inactive coordinates without adding mode-switch commands.
+Many existing grids use a modal cell-interaction model. The [APG grid pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) describes using Enter or F2 to enter a cell's controls and Escape to return. That pattern remains available to scripted grids. V2 instead uses `itemcontrols` to remove [eligible nested content](#eligible-nested-content) from inactive coordinates without adding mode-switch commands.
 
 ### Require a focusable boundary for every grid cell
 
