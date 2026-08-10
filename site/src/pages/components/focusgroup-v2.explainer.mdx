@@ -69,7 +69,7 @@ The `feed` and `grid` behaviors extend the [V1 supported-behaviors mapping](/com
 | `feed` | [Feed](https://www.w3.org/WAI/ARIA/apg/patterns/feed/) | [`feed`](https://www.w3.org/TR/wai-aria-1.2/#feed) | [`article`](https://www.w3.org/TR/wai-aria-1.2/#article) | `block` `itemcontrols` |
 | `grid` | [Grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) | [`grid`](https://www.w3.org/TR/wai-aria-1.2/#grid) | [`row`](https://www.w3.org/TR/wai-aria-1.2/#row), [`gridcell`](https://www.w3.org/TR/wai-aria-1.2/#gridcell) | `itemcontrols` |
 
-Role inference follows the same per-element constraints as V1. Because [ARIA in HTML](https://www.w3.org/TR/html-aria/#el-button) does not yet permit `gridcell` on `<button>`, a native control uses a generic cell wrapper. The wrapper receives the inferred role while the control can represent that cell during directional navigation.
+Role inference follows the same per-element constraints as V1 and the applicable [ARIA in HTML rules](https://www.w3.org/TR/html-aria/). It never assigns a role that those rules disallow for an element. A generic cell wrapper can receive the inferred `gridcell` role while a native control inside serves as the cell target.
 
 ## itemcontrols
 
