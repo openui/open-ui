@@ -465,47 +465,25 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 
 ### itemcontrols
 
-<div style="counter-reset: questions">
-
-<p class="question">Should `itemcontrols` continue to leave the active item's [eligible nested content](#eligible-nested-content) in sequential focus navigation, or should users explicitly enter and leave that content? Any alternative must define modality-independent operations that map across keyboards, D-pads, game controllers, and assistive technologies.</p>
-
-<p class="question" id="itemcontrols-naming">What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).</p>
-
-<p class="question">Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation?</p>
-
-<p class="question">Should `itemcontrols` remember the last nested control as well as the owner-relative active item, and if so, when should it restore that control?</p>
-
-<p class="question">How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional input?</p>
-
-<p class="question">**Resolved in part:** An independent nested focusgroup retains its own scope, while its sequential boundary uses the same active-item filter as opted-out controls. Directional escape and resuming outer movement remain open.</p>
-
-<p class="question">**Resolved in part:** Native key-conflict cell targets use HTML sequential focus navigation for Tab escape; `grid` coordinates do not redefine that order. Does focus inside nested controls require additional grid-specific escape behavior?</p>
-
-</div>
+1. Should `itemcontrols` continue to leave the active item's [eligible nested content](#eligible-nested-content) in sequential focus navigation, or should users explicitly enter and leave that content? Any alternative must define modality-independent operations that map across keyboards, D-pads, game controllers, and assistive technologies.
+2. <span id="itemcontrols-naming"></span>What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).
+3. Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation?
+4. Should `itemcontrols` remember the last nested control as well as the owner-relative active item, and if so, when should it restore that control?
+5. How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional input?
+6. **Resolved in part:** An independent nested focusgroup retains its own scope, while its sequential boundary uses the same active-item filter as opted-out controls. Directional escape and resuming outer movement remain open.
+7. **Resolved in part:** Native key-conflict cell targets use HTML sequential focus navigation for Tab escape; `grid` coordinates do not redefine that order. Does focus inside nested controls require additional grid-specific escape behavior?
 
 ### grid
 
-<div style="counter-reset: questions">
-
-<p class="question">How should a future grid extension represent ragged rows, row and column spans, and indexed topology? Should a future mode skip zero-target coordinates, and if so, how should it preserve rectangularity, block-axis columns, boundary operations, and memory?</p>
-
-<p class="question">How should a virtualized grid preserve a stable current coordinate across recycled nodes, realize an offscreen destination before focus moves, and expose logical row and column counts? What HTML-only signal can associate separately rendered headers, bodies, sticky regions, or frozen-column panes with one grid owner? Authored `aria-rowindex`, `aria-colindex`, `aria-rowcount`, and `aria-colcount` provide accessibility metadata but cannot silently configure focus topology.</p>
-
-<p class="question">Can user agents infer whether a `grid` uses automatic native-table topology or manual generic-markup topology without an explicit `manual` modifier, while keeping focus behavior derived from HTML and independent of authored ARIA roles?</p>
-
-<p class="question">Should a future manual-grid extension allow `focusgrouprow` elements to participate as arbitrary flat-tree descendants of the owner, and if so, what HTML-only row-grouping signal can define a mechanically detectable row level without using authored ARIA roles as behavior topology?</p>
-
-<p class="question">Beyond the category and remediation guidance above, which console or developer-tools surfaces and deduplication policies should user agents provide for `grid` diagnostics?</p>
-
-<p class="question">Should a future target-selection mode support multiple eligible descendants in a nonfocusable cell, and if so, how can it avoid ambiguous or unstable target choice?</p>
-
-<p class="question">Should `grid` treat sequentially focusable descendants of a cell that is itself the cell target as though `focusgroup="none"` were implied, allowing the cell to remain valid without marking each nested control? If so, should that implied opt-out apply only to the owning grid or have the same scope and segment effects as authored `focusgroup="none"`, and how should it interact with independent nested focusgroups and `noitemcontrols`?</p>
-
-<p class="question">How should `treegrid` extend grid topology, expansion state, and directional key handling without conflicting with the initial rectangular grid model?</p>
-
-<p class="question">Should a future `grid` mode make rows the block-axis navigation targets and their cells a nested inline scope?</p>
-
-</div>
+1. How should a future grid extension represent ragged rows, row and column spans, and indexed topology? Should a future mode skip zero-target coordinates, and if so, how should it preserve rectangularity, block-axis columns, boundary operations, and memory?
+2. How should a virtualized grid preserve a stable current coordinate across recycled nodes, realize an offscreen destination before focus moves, and expose logical row and column counts? What HTML-only signal can associate separately rendered headers, bodies, sticky regions, or frozen-column panes with one grid owner? Authored `aria-rowindex`, `aria-colindex`, `aria-rowcount`, and `aria-colcount` provide accessibility metadata but cannot silently configure focus topology.
+3. Can user agents infer whether a `grid` uses automatic native-table topology or manual generic-markup topology without an explicit `manual` modifier, while keeping focus behavior derived from HTML and independent of authored ARIA roles?
+4. Should a future manual-grid extension allow `focusgrouprow` elements to participate as arbitrary flat-tree descendants of the owner, and if so, what HTML-only row-grouping signal can define a mechanically detectable row level without using authored ARIA roles as behavior topology?
+5. Beyond the category and remediation guidance above, which console or developer-tools surfaces and deduplication policies should user agents provide for `grid` diagnostics?
+6. Should a future target-selection mode support multiple eligible descendants in a nonfocusable cell, and if so, how can it avoid ambiguous or unstable target choice?
+7. Should `grid` treat sequentially focusable descendants of a cell that is itself the cell target as though `focusgroup="none"` were implied, allowing the cell to remain valid without marking each nested control? If so, should that implied opt-out apply only to the owning grid or have the same scope and segment effects as authored `focusgroup="none"`, and how should it interact with independent nested focusgroups and `noitemcontrols`?
+8. How should `treegrid` extend grid topology, expansion state, and directional key handling without conflicting with the initial rectangular grid model?
+9. Should a future `grid` mode make rows the block-axis navigation targets and their cells a nested inline scope?
 
 ## Accessibility and internationalization considerations
 
