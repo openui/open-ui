@@ -220,11 +220,11 @@ What to notice:
 
 Every cell occupies one coordinate and must supply exactly one cell target. The user agent forms the candidates as follows:
 
-1. The cell itself is a candidate if it is destination-eligible and sequentially focusable.
-2. Each destination-eligible, sequentially focusable descendant is a candidate.
+1. The cell itself is a candidate if it is [sequentially focusable](https://html.spec.whatwg.org/multipage/interaction.html#sequentially-focusable).
+2. Each sequentially focusable descendant is a candidate unless it crosses one of the boundaries below.
 3. If there is exactly one candidate, it is the target. If there are none or more than one, the structure is malformed; the user agent does not infer a target or silently choose the first candidate.
 
-A target candidate must be sequentially focusable, [being rendered](https://html.spec.whatwg.org/multipage/rendering.html#being-rendered), enabled under HTML, not inert, and within the cell's owned flat-tree subtree. It cannot cross `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. An ancestor's `tabindex` does not affect eligibility, but rendering or inertness on an ancestor does. Authored ARIA states and properties do not affect target eligibility.
+A candidate must be within the cell's owned flat-tree subtree. It cannot cross `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. HTML sequential focusability already accounts for disabled, inert, and rendering state; authored ARIA states and properties do not affect target eligibility.
 
 Every participating cell must retain exactly one eligible cell target. If its only target becomes disabled, non-rendered, inert, or otherwise ineligible, the grid becomes invalid until every cell again supplies one target. When actions can become unavailable, use a stable focusable cell boundary and mark the actions with `focusgroup="none"`; disabling an action then leaves the coordinate valid.
 
