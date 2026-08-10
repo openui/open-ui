@@ -23,7 +23,7 @@ Like [V1](/components/scoped-focusgroup.explainer), Focusgroup V2 aims to give u
 
 [V1](/components/scoped-focusgroup.explainer) defines focusgroup ownership, items, segments, directional and sequential navigation, entry, memory, nested scopes, opt-out boundaries, key conflicts, and role inference. V2 reuses those rules and adds:
 
-1. `itemcontrols`, which keeps controls inside the active item in sequential focus navigation and removes controls inside inactive items.
+1. `itemcontrols`, which retains the active item's controls in sequential focus navigation and removes inactive items' controls from it.
 2. `feed`, a block-axis linear behavior for streams of articles with nested controls.
 3. `grid`, a two-dimensional behavior for semantically tabular content.
 
@@ -228,7 +228,7 @@ A candidate must be within the cell's owned flat-tree subtree. It cannot cross `
 
 Every participating cell must retain exactly one eligible cell target. If its only target becomes disabled, non-rendered, inert, or otherwise ineligible, the grid becomes invalid until every cell again supplies one target. When actions can become unavailable, use a stable focusable cell boundary and mark the actions with `focusgroup="none"`; disabling an action then leaves the coordinate valid.
 
-A negative-`tabindex` cell or descendant is ignored as a destination. Its programmatic focusability does not itself invalidate the grid, but its cell must still have another eligible target. When such an element has focus, the user agent resolves its source coordinate from the nearest owned cell without crossing an opt-out, nested-focusgroup, or top-layer boundary. That source can initiate navigation but is never a destination or remembered item. Sequential navigation follows the V1 segment-exit rule clarified in [Open UI issue #1434](https://github.com/openui/open-ui/issues/1434) and implemented in [Chromium CL 7789656](https://chromium-review.googlesource.com/c/chromium/src/+/7789656).
+A negative-`tabindex` cell or descendant is ignored as a destination. Its programmatic focusability does not itself invalidate the grid, but its cell must still have another eligible target. When such an element has focus, the user agent resolves its source coordinate from the nearest owned cell without crossing an opt-out, nested-focusgroup, or top-layer boundary. That source can initiate navigation but is never a destination or remembered item. Sequential navigation follows the V1 segment-exit rule clarified in [Open UI issue #1434](https://github.com/openui/open-ui/issues/1434).
 
 Every focusable descendant owned by a valid grid must be a cell target, a managed negative-`tabindex` source, or behind an opt-out, nested-focusgroup, or top-layer boundary. A focusable row, wrapper, or other unexcluded descendant makes the grid invalid.
 
