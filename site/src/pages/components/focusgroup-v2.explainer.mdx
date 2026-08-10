@@ -230,7 +230,9 @@ Every participating cell must retain exactly one eligible cell target. If its on
 
 A negative-`tabindex` cell or descendant is ignored as a destination. Its programmatic focusability does not itself invalidate the grid, but its cell must still have another eligible target. When such an element has focus, the user agent resolves its source coordinate from the nearest owned cell without crossing an opt-out, nested-focusgroup, or top-layer boundary. That source can initiate navigation but is never a destination or remembered item. Sequential navigation follows the V1 segment-exit rule clarified in [Open UI issue #1434](https://github.com/openui/open-ui/issues/1434) and implemented in [Chromium CL 7789656](https://chromium-review.googlesource.com/c/chromium/src/+/7789656).
 
-Every focusable descendant owned by a valid grid must be either the selected target for its cell, a managed source-only element under the negative-`tabindex` rule above, or excluded by `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. A focusable row, wrapper, or unexcluded extra descendant makes the grid invalid. If a focusable cell is the selected target, any nested focusable controls must therefore use one of those explicit boundaries.
+Every focusable descendant owned by a valid grid must be either the selected target for its cell, a managed source-only element under the negative-`tabindex` rule above, or excluded by `focusgroup="none"`, an independent nested focusgroup, or a top-layer boundary. A focusable row, wrapper, or unexcluded extra descendant makes the grid invalid.
+
+A focusable cell target does not implicitly opt out its descendants. Each unexcluded sequentially focusable descendant remains another target candidate, so the cell supplies multiple candidates and the grid is invalid. Authors currently must use `focusgroup="none"` for individual nested controls or an independent nested focusgroup for a compound control.
 
 #### Multi-control cells and itemcontrols
 
@@ -492,6 +494,8 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 <p class="question">Beyond the minimum invalid-state category and offending-structure information above, which console or developer-tools surfaces should user agents provide for `grid` diagnostics?</p>
 
 <p class="question">Should a future target-selection mode support multiple eligible descendants in a nonfocusable cell, and if so, how can it avoid ambiguous or unstable target choice?</p>
+
+<p class="question">Should `grid` treat sequentially focusable descendants of a cell that is itself the cell target as though `focusgroup="none"` were implied, allowing the cell to remain valid without marking each nested control? If so, should that implied opt-out apply only to the owning grid or have the same scope and segment effects as authored `focusgroup="none"`, and how should it interact with independent nested focusgroups and `noitemcontrols`?</p>
 
 <p class="question">How should `treegrid` extend grid topology, expansion state, and directional key handling without conflicting with the initial rectangular grid model?</p>
 
