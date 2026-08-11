@@ -6,7 +6,7 @@ layout: ../../layouts/ComponentLayout.astro
 authors:
   - name: "@janewman"
     url: https://github.com/janewman
-lastUpdated: "2026-8-10"
+lastUpdated: "2026-8-11"
 ---
 
 This explainer builds on the [Focusgroup explainer](/components/scoped-focusgroup.explainer), referred to here as **V1**, and defines only the V2 additions.
@@ -289,7 +289,7 @@ Many existing grids use Enter or F2 to enter a multi-control cell and Escape to 
 
 ### grid wrapping and flow
 
-A `grid` focusgroup configures each edge independently. The inline-axis modifiers (`rowwrap`, `rowflow`) control what happens when inline movement passes a row's first or last cell. The block-axis modifiers (`colwrap`, `colflow`) control what happens when block movement passes a column's first or last row. The broad `wrap` and `flow` tokens set both axes at once, and `nowrap` forces hard edges.
+A **grid edge** is the boundary reached when a directional operation would move before the first or after the last coordinate in the current row or column. A `grid` focusgroup configures each edge independently. The inline-axis modifiers (`rowwrap`, `rowflow`) control what happens when inline movement passes a row's first or last cell. The block-axis modifiers (`colwrap`, `colflow`) control what happens when block movement passes a column's first or last row. The broad `wrap` and `flow` tokens set both axes at once, and `nowrap` forces hard edges.
 
 For a grid, `wrap` applies independently within the current row and current column. It does not continue through the row-major coordinate sequence as linear focusgroup wrapping does. `flow` supplies continuation into the next row or column, including outer-edge continuation under the selected flow rules.
 
@@ -469,19 +469,19 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 
 <p class="question" id="itemcontrols-naming">What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).</p>
 
-<p class="question">Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation?</p>
+<p class="question">Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation? See [Open UI issue #1435](https://github.com/openui/open-ui/issues/1435).</p>
 
 <p class="question">Should `itemcontrols` remember the last nested control as well as the owner-relative active item, and if so, when should it restore that control?</p>
 
-<p class="question">How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional input?</p>
+<p class="question">How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional input? See Open UI issues [#1396](https://github.com/openui/open-ui/issues/1396) and [#1404](https://github.com/openui/open-ui/issues/1404).</p>
 
-<p class="question">**Resolved in part:** An independent nested focusgroup retains its own scope, while its sequential boundary uses the same active-item filter as opted-out controls. Directional escape and resuming outer movement remain open.</p>
+<p class="question">**Resolved in part:** An independent nested focusgroup retains its own scope, while its sequential boundary uses the same active-item filter as opted-out controls. Directional escape and resuming outer movement remain open; see Open UI issues [#1396](https://github.com/openui/open-ui/issues/1396) and [#1404](https://github.com/openui/open-ui/issues/1404).</p>
 
-<p class="question">**Resolved in part:** Native key-conflict cell targets use HTML sequential focus navigation for Tab escape; `grid` coordinates do not redefine that order. Does focus inside nested controls require additional grid-specific escape behavior?</p>
+<p class="question">**Resolved in part:** Native key-conflict cell targets use HTML sequential focus navigation for Tab escape; `grid` coordinates do not redefine that order. Does focus inside nested controls require additional grid-specific escape behavior? See Open UI issues [#1396](https://github.com/openui/open-ui/issues/1396) and [#1404](https://github.com/openui/open-ui/issues/1404).</p>
 
 ### grid
 
-<p class="question">How should a future grid extension represent ragged rows, row and column spans, and indexed topology? Should a future mode skip zero-target coordinates, and if so, how should it preserve rectangularity, block-axis columns, boundary operations, and memory?</p>
+<p class="question">How should a future grid extension represent ragged rows, row and column spans, and indexed topology? Should a future mode represent gaps as implicit empty coordinates or skip them, and how should it preserve rectangularity, block-axis columns, boundary operations, and memory?</p>
 
 <p class="question">How should a virtualized grid preserve a stable current coordinate across recycled nodes, realize an offscreen destination before focus moves, and expose logical row and column counts? What HTML-only signal can associate separately rendered headers, bodies, sticky regions, or frozen-column panes with one grid owner? Authored `aria-rowindex`, `aria-colindex`, `aria-rowcount`, and `aria-colcount` provide accessibility metadata but cannot silently configure focus topology.</p>
 
