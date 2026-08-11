@@ -465,13 +465,9 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 
 ### itemcontrols
 
-<p class="question">Should `itemcontrols` continue to leave the active item's [eligible nested content](#eligible-nested-content) in sequential focus navigation, or should users explicitly enter and leave that content? Any alternative must define modality-independent operations that map across keyboards, D-pads, game controllers, and assistive technologies.</p>
-
 <p class="question" id="itemcontrols-naming">What should the `itemcontrols` and `noitemcontrols` modifiers be called so their active-item sequential-navigation behavior is clear from their names? See [Open UI issue #1489](https://github.com/openui/open-ui/issues/1489).</p>
 
 <p class="question">Should a linear focusgroup support a mode in which peer items remain reachable by both sequential and directional navigation? See [Open UI issue #1435](https://github.com/openui/open-ui/issues/1435).</p>
-
-<p class="question">Should `itemcontrols` remember the last nested control as well as the owner-relative active item, and if so, when should it restore that control?</p>
 
 <p class="question">How does outer directional navigation resume while focus is inside a nested control, especially when that control consumes the same directional input? See Open UI issues [#1396](https://github.com/openui/open-ui/issues/1396) and [#1404](https://github.com/openui/open-ui/issues/1404).</p>
 
@@ -485,9 +481,7 @@ Authored `grid`, `row`, `gridcell`, and index properties could describe topology
 
 <p class="question">How should a virtualized grid preserve a stable current coordinate across recycled nodes, realize an offscreen destination before focus moves, and expose logical row and column counts? What HTML-only signal can associate separately rendered headers, bodies, sticky regions, or frozen-column panes with one grid owner? Authored `aria-rowindex`, `aria-colindex`, `aria-rowcount`, and `aria-colcount` provide accessibility metadata but cannot silently configure focus topology.</p>
 
-<p class="question">Can user agents infer whether a `grid` uses automatic native-table topology or manual generic-markup topology without an explicit `manual` modifier, while keeping focus behavior derived from HTML and independent of authored ARIA roles?</p>
-
-<p class="question">Should a future manual-grid extension allow `focusgrouprow` elements to participate as arbitrary flat-tree descendants of the owner, and if so, what HTML-only row-grouping signal can define a mechanically detectable row level without using authored ARIA roles as behavior topology?</p>
+<p class="question">How much grid topology can user agents infer safely from HTML structure, and where should authors provide explicit signals? Inference should reduce authoring overhead without making topology ambiguous or fragile when markup includes generic elements, wrappers, row groups, mixed structures, or dynamic changes, and without using authored ARIA roles as behavior configuration.</p>
 
 <p class="question">Beyond the category and remediation guidance above, which console or developer-tools surfaces and deduplication policies should user agents provide for `grid` diagnostics?</p>
 
