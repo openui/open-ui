@@ -62,7 +62,9 @@ that the web retains a high degree of accessibility into the future.
 
 ## Range Information
 
-https://github.com/whatwg/html/issues/10614, https://github.com/w3c/csswg-drafts/issues/10346
+https://github.com/whatwg/html/issues/11478,
+https://github.com/whatwg/html/issues/10614,
+https://github.com/w3c/csswg-drafts/issues/10346
 
 Today it is possible to get `Range` information from nodes. The `Range`
 interface specifies a region of text within a node, and can be used to drive
@@ -154,36 +156,75 @@ the above described technique of copying the textarea in order to extract
 
 ### How we'd like to solve this in the future
 
-Here are two possible paths to solving this:
+This part of the proposal has been broken out and proposed by Microsoft,
+described in detail in the
+[OpaqueRange explainer](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/OpaqueRange/explainer.md).
+(Prior versions of this explainer called this `InputRange`).
 
-#### Expanding `Range`
+An `OpaqueRange` is a *live* range, pointing to nodes internal to the element;
+those nodes don't get exposed to script. OpaqueRanges are given out via an API
+on `textarea` and `input` elements. They cannot be made to span content both
+inside and outside the field.
 
-Expanding the `Range()` interface's `.setStart()` and `.setEnd()` to
-select the live value of an `<input>` or `<textarea>` element.
+Progress of `OpaqueRange` standardisation can be followed in
+([whatwg/dom#1404](https://github.com/whatwg/dom/pull/1404), and
+[whatwg/html#11741](https://github.com/whatwg/html/pull/11741)).
 
-This would transparently ensure that, when given a `<textarea>` or
-`<input>`, `setStart()` would use the live value instead of the child
-nodes (where applicable). This comes with compatibility risks, where
-existing callsites that pass these values in may result in new selections
-in surprising ways. Additionally, this opens a potential for composed
-Ranges which select content adjacent to, as well as inside, the field -
-which is potentially undesirable and not currently possible today.
+The API shape is roughly:
 
-#### Adding a new `Range` type
+```webidl
+[Exposed=Window]
+interface OpaqueRange : AbstractRange {
+  DOMRectList getClientRects();
+  DOMRect getBoundingClientRect();
+  undefined disconnect();
+};
 
-Adding a new `InputRange()` sub-class of `Range()`, the exclusive purpose
-of which is to create ranges on `<input>` and `<textarea>` elements. The
-`.setStart()` and `.setEnd()` methods would *only* allow `<textarea>` or
-`<input>` as a Node, and would otherwise throw an Error.
+partial interface HTMLInputElement {
+  OpaqueRange createValueRange(unsigned long start, unsigned long end);
+};
 
-This would increase the API surface area of the web platform, but on the
-other hand it side-steps the issues around transparently extending Range.
-The `InputRange()` interface offers a natural boundary layer between other
-`Range` elements and avoids selection compositio issues for APIs where
-`Range` can span multiple nodes. The CSS highlight API, for example, can
-special case `InputRange`. Additionally, a separate interface can side-step
-potential security issues, for example serialising with `.toString()` could
-throw, the `.surroundContents()` function can be elided, and so on.
+partial interface HTMLTextAreaElement {
+  OpaqueRange createValueRange(unsigned long start, unsigned long end);
+};
+```
+
+```js
+const range = field.createValueRange(field.selectionStart, field.selectionEnd)
+popover.style.top = `${range.getBoundingClientRect().bottom}px`
+```
+
+#### Open questions
+
+- How the endpoints are exposed. `startOffset`/`endOffset` are inherited from
+  `AbstractRange` but mean something different here; alternatives are plain
+  `start`/`end` integers on `OpaqueRange`, or the `textStart`/`textEnd`
+  attributes proposed in
+  [whatwg/html#12475](https://github.com/whatwg/html/issues/12475). A
+  `valueFromRange()` on the element has also been floated, so the element
+  rather than the range answers "what text is this?".
+- Whether `disconnect()` is needed at all, given `Range.detach()` was
+  no-opped, and where it belongs if it is.
+- How custom elements vend their own opaque ranges. The current direction is a
+  controller object (`OpaqueRangeController`), either exposed like
+  `AbortController` or through a revealing constructor.
+
+#### Status
+
+- Spec PRs: [whatwg/dom#1404](https://github.com/whatwg/dom/pull/1404),
+  [whatwg/dom#1470](https://github.com/whatwg/dom/pull/1470),
+  [whatwg/html#11741](https://github.com/whatwg/html/pull/11741),
+  [w3c/csswg-drafts#12904](https://github.com/w3c/csswg-drafts/pull/12904),
+  [w3c/csswg-drafts#13929](https://github.com/w3c/csswg-drafts/pull/13929).
+  None are merged yet.
+- [Tests](https://github.com/web-platform-tests/wpt/tree/master/dom/ranges/tentative)
+  exist in web-platform-tests, still tentative.
+- Positions:
+  [Mozilla positive](https://github.com/mozilla/standards-positions/issues/1289),
+  [WebKit support](https://github.com/WebKit/standards-positions/issues/541).
+- Chromium is shipping `OpaqueRange` by default since 152
+  ([crbug.com/421421332](https://issues.chromium.org/issues/421421332),
+  [Chrome Platform Status](https://chromestatus.com/feature/6297362687066112)).
 
 ---
 
@@ -244,12 +285,24 @@ mitigated:
 
 ### How we'd like to solve this in the future
 
-Extending the `CSS.highlights` API to accepting ranges from input elements (see
-above proposal on `InputRange`) would solve this simply and effectively.
+`OpaqueRange` (see above) extends `AbstractRange`, which is what the CSS
+Custom Highlight API already accepts. CSS Highlights "come for free" with this
+new object:
+
+```js
+const range = field.createValueRange(0, 5)
+CSS.highlights.set('token', new Highlight(range))
+```
+
+The integration is specified in
+[w3c/csswg-drafts#13929](https://github.com/w3c/csswg-drafts/pull/13929) for
+`Highlight` and `highlightsFromPoint()`, with the geometry methods in
+[w3c/csswg-drafts#12904](https://github.com/w3c/csswg-drafts/pull/12904).
 
 It would also be useful (though not necessary) to extend the CSS highlights API
 to allow for styling the `cursor`, `caret-color` & `outline` properties in the
-way that both `::spelling-error` and `::grammar-error` allow today.
+way that both `::spelling-error` and `::grammar-error` allow today
+([w3c/csswg-drafts#14312](https://github.com/w3c/csswg-drafts/issues/14312)).
 
 ---
 
