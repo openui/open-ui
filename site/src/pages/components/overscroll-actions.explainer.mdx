@@ -158,8 +158,8 @@ logic or haptics), we expose the following events on the host container:
 ### Backdrop
 
 When the overscroll area is visible, the overscroll area has an
-`:overscroll-backdrop` pseudo element that is styled by default with a
-semi-transparent cover, similar to a dialog `:backdrop`. This includes a
+`::overscroll-backdrop` pseudo element that is styled by default with a
+semi-transparent cover, similar to a dialog `::backdrop`. This includes a
 default button handler to dismiss, or close, the corresponding overscroll area.
 
 This backdrop is always present but has a `display: none` style when the
@@ -216,15 +216,32 @@ hit-testing and painting order:
 
 ![Overscroll Animation](/images/overscroll_polyfill_demo.gif)
 
-### Inertness and light dismiss
+### Modalness, Inertness and Light Dismiss
 
-For the common side menu cases, when closed, the menu is not focusable or
+Note that the side menus, as supported by this feature, are modal to the
+container in which they reside. Specifically, it means that when the menu is
+open, the content underneath is not meant to be interacted with.
+
+ISSUE: In the future, we may add other `overscroll-container-type` values that
+support cooperative, non-modal side menus as well. For now, if the behavior
+needs to change on, for example, wide screens, it can be accomplished with
+media queries and disabling the overscroll feature. This would make the side
+menu a regular element in the page.
+
+Being modal implies that, when closed, the menu is not focusable or
 interactable. For this reason, the overscroll area element that is closed is
 inert. Conversely, when the overscroll area is open, the regular content that
 it pushes out of the way or overlays is inerted.
 
 Note that the backdrop acts as a light dismiss signal for this container. It
 has a default click handler that dismisses the overscroll area.
+
+Note that focus navigation also behaves as if the menu is modal: when
+traversing the menu, the main content is not visible. This is a consequence of
+content being inert but worth calling out explicitly.
+
+ISSUE: Whether or not the menu automatically dismisses when focus leaves the
+menu remains an open question.
 
 ## Accessibility Considerations
 
