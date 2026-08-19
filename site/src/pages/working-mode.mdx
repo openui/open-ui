@@ -7,17 +7,25 @@ layout: ../layouts/Layout.astro
 
 # Open UI Working Mode
 
-Welcome to the Open UI working mode and process guide to paving inclusive and accessible best practices into web browsers based on web frameworks and web developer norms.
+Our goal is to specify web components, features, and controls. We standardize
+names, anatomies and behaviors based on common patterns in design systems and
+component libraries.
 
-Open UI is a Web Incubator Community Group (WICG) project. Our goal is to specify web components and controls. We standardize names, anatomies and behaviors based on common patterns in design systems and component libraries.
+Open UI specifications can result in two types of outcomes: Components and
+Features, through Graduated Proposals. We make standard web components which
+you can use in a web application for all finished open UI components, or
+features which progress through standards bodies like WHATWG, and the W3C to
+become specifications to HTML, ARIA, and CSS. We work with browser engine teams
+to add features to browser engines like WebKit, Chromium and Gecko.
 
-Open UI specifications can result in two types of outcomes: Web Components and Graduated Specifications. We make standard web components which you can use in a web application for all finished open UI components. Additionally, and depending on the component, we work with standards bodies like WHATWG, and the W3C to add those specifications to HTML, ARIA, and CSS, and work with browser engine teams to add those features to browser engines like WebKit, Chromium and Gecko.
-
-This document covers how Open UI works, including guidance on how to work on standards with open UI, and norms about how Open UI works with WHATWG/HTML, CSS WG, ARIA WG, WPT, and other groups.
+This document covers how Open UI works, including guidance on how to work on
+standards with open UI, and norms about how Open UI works with WHATWG/HTML,
+CSS WG, ARIA WG, WPT, and other groups.
 
 ## Stages
 
-We follow a five stage process outlined in the Open UI Stages proposal March 2021. These stages are:
+We follow a five stage process outlined in the Open UI Stages proposal March
+2021. These stages are:
 
 | #   | Stage Name      | Purpose                                                   | Entrance Criteria                                                                                   | Entrance Signifies                                                    | Exit Criteria                                                                                                                                                                                                                       |
 | --- | --------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -29,28 +37,136 @@ We follow a five stage process outlined in the Open UI Stages proposal March 202
 
 Read more about how to follow this process in the [Getting Involved Guide](/get-involved).
 
+# Explainer lifecycle
+
+Most day to day work in Open UI happens in _explainers_: documents under
+`site/src/pages/components/` that describe a problem, a proposed solution, and
+the open questions around it. The stages above describe how far a design has
+travelled. The section of the site a document appears in describes something
+different, and just as important to a reader: whether the group is still working
+on it.
+
+There are four sections, listed here in the order they appear in the site
+navigation:
+
+| Section              | What it means                                                                                                                     | Typical stage |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| Graduated Proposals  | The design has moved to another standards body. The specification there is normative; the explainer is kept as the design history. | 3 to 4        |
+| Active Proposals     | Open UI is working on this now. A champion is engaged and the document is being maintained.                                        | 1 to 3        |
+| Non-active Proposals | Nobody is working on this. Kept for discovery, superseded designs, and prior art.                                                  | any           |
+| Research             | Cross design system research and analysis. Research is not a proposal and does not imply Open UI intends to work on the topic.     | 0             |
+
+A section is not a stage. A proposal can sit in Active Proposals across stages
+1 to 3, and a proposal can become non-active from any stage.
+
+## Moving a document between sections
+
+The section comes from the `menu` key in the document front matter. The value
+must be one of `Graduated Proposals`, `Active Proposals`,
+`Non-active Proposals`, or `Research`; any other value drops the document out
+of the site navigation.
+
+A move is a pull request like any other change, so the
+[process for making changes](#process-for-making-changes-to-open-ui) applies.
+Because a move changes how much weight a reader gives the document, the pull
+request should also:
+
+- explain in its description why the document is moving, and link the issue that
+  prompted it;
+- update the document's status section, so the reason is recorded in the
+  document itself and not only in the commit history;
+- carry the `agenda+` label, so the group can confirm the move, or object to it,
+  on a telecon.
+
+You do not need to record dates by hand. The site derives `created`,
+`Last Updated`, and the link to the document's commit history from git.
+
+## Graduating a proposal
+
+A proposal graduates when it becomes living code, or champions work with
+standards bodies (such as WHATWG or CSS) to land specifications in their
+respective standards such as WHATWG HTML or DOM, a CSSWG draft, or ARIA.
+Graduation is a statement about where the work now lives, not a statement that
+the feature has shipped everywhere.
+
+To graduate a proposal:
+
+1. Finish the stage 3 work: specification pull requests, web platform tests, and
+   MDN documentation.
+2. Add the front matter that points readers at the standard. The site build
+   **requires** all of `whatwg_issue` or `whatwg_pr`, `specification`, and `mdn`
+   on a graduated explainer, and fails if any are missing. They render in the
+   metadata block at the top of the document.
+3. Set `menu: Graduated Proposals`.
+4. Note at the top of the document that the specification, not the explainer,
+   is now normative. The [Invoker Commands explainer] is a good example of this
+   note.
+5. Split out what did not graduate. If parts of the proposal were deliberately
+   deferred, move them into their own explainer that stays in Active Proposals,
+   rather than leaving them in the graduated document where readers cannot tell
+   which parts are real. `popover=hint` and future invoker commands were both
+   split this way.
+
+Do not delete a graduated explainer. It is the record of why the design is the
+way it is, and it is often the only place the alternatives that were considered
+are written down.
+
+## Marking a proposal non-active
+
+Proposals stop being worked on for ordinary reasons: the champion moved on, the
+design was superseded by another proposal or by a feature that arrived
+elsewhere, or the group decided not to pursue it. Leaving such a document in
+Active Proposals is misleading, because readers reasonably treat an active
+proposal as the direction Open UI intends to take.
+
+To mark a proposal non-active, set `menu: Non-active Proposals` and record in
+the status section why it is non-active, with a link to the superseding work if
+there is one. Where the research still has value even though the proposal does
+not, consider turning the document into guidance on what authors can do today,
+as the group resolved in [#801](https://github.com/openui/open-ui/issues/801).
+
+Non-active is neither deletion nor a permanent state. If a champion picks the
+work up again, move the document back to Active Proposals by the same process.
+
+## Status of this document
+
+Every explainer should carry a status section near the top, so that a reader who
+arrives from a search engine can tell what they are looking at without knowing
+how our navigation works. Record the status, the venue the work is expected to
+go to, and where the current and previous versions of the document live. The
+[explainer template] has the wording to copy, and the
+[Slotted Options explainer] shows it in use.
+
+Keep this section current as implementation and specification work proceeds:
+link the specification pull requests, the tests, the browser positions, and what
+has shipped. The status section tells a reader whether a proposal is moving.
+
 # Process for making changes to Open UI
 
-In order to ensure transparency and that we have consensus from the community each change to Open UI should come through a pull request to the main repository: https://github.com/openui/open-ui.
+In order to ensure transparency and that we have consensus from the community
+each change to Open UI should come through a pull request to the main
+repository: https://github.com/openui/open-ui.
 
-**Note: Consensus on individual PRs and issues does not equate to the specification's current stage**
+**Note: Consensus on individual PRs and issues does not equate to the
+specification's current stage**
 
 # Process for resolving disagreement on PRs
 
-If there is a disagreement on the requirements for merging a PR, then the following should happen:
+If there is a disagreement on the requirements for merging a PR, then the
+following should happen:
 
 - Add the label `agenda+` and be prepared to speak to it on the upcoming
   telecon where your agenda item is discussed.
 - Note: even if it was successfully merged, it will still be raised on the call
-  to draw attention to it in order to ensure if people disagree they can raise their
-  concerns.
-- If there is a disagreement, a resolution will be sought on the telecon. In order
-  to gain consensus it is the majority opinion of those on the call.
+  to draw attention to it in order to ensure if people disagree they can raise
+  their concerns.
+- If there is a disagreement, a resolution will be sought on the telecon. In
+  order to gain consensus it is the majority opinion of those on the call.
 
   > Note: Resolutions can be over-turned upon new information becoming available.
-  > Note: It is helpful for efficiency to have denoted in the PR or issue the proposed
-  > options so that you can quickly cover the options and the group can discuss it and
-  > vote on it.
+  > Note: It is helpful for efficiency to have denoted in the PR or issue the
+  > proposed options so that you can quickly cover the options and the group can
+  > discuss it and vote on it.
 
 # Process for Selection of Community Group Chairs
 
@@ -60,3 +176,7 @@ Upon the need or desire for adding/changing co-chairs the process will be as suc
 - Set label to `agenda+`
 - The nominee should already be an editor
 - On the telecon there will be a formal vote for consensus
+
+[Invoker Commands explainer]: /components/invokers.explainer
+[explainer template]: /explainer-template#status-of-this-document
+[Slotted Options explainer]: /components/select.slotted.option#status-of-this-document
