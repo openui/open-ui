@@ -58,19 +58,19 @@ This is done by specificying `overscrollarea` attribute on the container.
 Finally, we introduce a three new `command` values, to bind a
 trigger button to the overscroll area using `commandfor` attribute:
 
-* `open-overscroll` - this invoker opens the referenced overscroll area
-* `close-overscroll` - this invoker closes the referenced overscroll area
+* `show-overscroll` - this invoker opens the referenced overscroll area
+* `hide-overscroll` - this invoker closes the referenced overscroll area
 * `toggle-overscroll` - this invoker toggles the state of the overscroll area.
   If the area is open, then this will close it. Conversely, if the area is
   closed, then this will open it.
 
-Note that either the `open-overscroll` invoker (a.k.a. open invoker) or the
+Note that either the `show-overscroll` invoker (a.k.a. show invoker) or the
 `toggle-overscroll` invoker (a.k.a. toggle invoker) must be present in order
 for this structure to be recognized as an overscroll structure. The
-`overscrollicontainer` and `overscrollarea` attributes on their own are not
-sufficient. Also note that the `close-overscroll` invoker (a.k.a. close
-invoker) is neither sufficient not required for this structure. The rationale
-is that since the `::overscroll-backdrop` already acts as a close invoker, we
+`overscrollcontainer` and `overscrollarea` attributes on their own are not
+sufficient. Also note that the `hide-overscroll` invoker (a.k.a. hide
+invoker) is neither sufficient nor required for this structure. The rationale
+is that since the `::overscroll-backdrop` already acts as a hide invoker, we
 don't require a developer specified one. The developer is, of course, free to
 provide one as a way to express specific user experience.
 
@@ -259,21 +259,19 @@ traversing the menu, the main content is not visible. This is a consequence of
 content being inert but worth calling out explicitly.
 
 It is worth mentioning that the invokers for a given overscroll area get special treatment:
-* `open-overscroll`: this type of invoker is inert when the overscroll area is
-  open, and not inert when it is closed. The idea is that it can always be used
-  to open an area, but it will not be present in the interactive set to close
-  the area.
-* `close-overscroll`: mirroring the `open-overscroll`, this invoker is inert
-  when the overscroll area is closed, and not inert when it is open. This
-  allows the developer to put the close invoker within the menu contents
-  without accidentally putting the invoker into an interactive set.
-* `toggle-overscroll`: lastly, this invoker is never inerted by the behavior of
+* `toggle-overscroll`: this invoker is never inerted by the behavior of
   the related overscroll area. This allows the developer to, for example,
   positon it in the overscroll area but peaking into the content area as a
   toggle button, which will always remain in the interactive set.
+* `show-overscroll` / `hide-overscroll`: these invokers are not treated any
+  differently from the regular content or overscroll area and are subject to
+  the same rules as outlined above. This means that if, for example, a show
+  invoker is placed in a closed overscroll area and is peeking, it would be
+  inert. This is considered a developer error: they should use the toggle
+  invoker for this case.
 
 Note that special consideration needs to be taken for multiple overscroll areas
-on the same container. This should follow the stacked order: overscorll areas
+on the same container. This should follow the stacked order: overscroll areas
 that are on top of other overscroll areas will inert everything underneath them
 *including* the invokers for the areas underneath them. The above description
 of invoker treatment only applies to the overscroll area referenced in the
