@@ -17,44 +17,50 @@ The web platform allows for sophisticated scrolling experiences, but it
 currently lacks a semantic way to utilize "overscroll" space (the area beyond
 the scroll boundary).
 
-Common UI patterns like **drawer-menus** (swiping past the edge to reveal a menu)
-or **swipe-to-action** (swiping a list item to reveal delete buttons) currently
-rely on complex nested scrollers or JavaScript gesture polyfills. These
-workarounds are difficult to implement, computationally expensive, and often
-fail to provide accessible alternatives for non-touch users.
+Common UI patterns like **drawer-menus** (swiping past the edge to reveal a
+menu) currently rely on complex nested scrollers or JavaScript gesture
+polyfills. These workarounds are difficult to implement, computationally
+expensive, and often fail to provide accessible alternatives for non-touch
+users.
 
 ## Proposal
 
-We propose a set of HTML attributes that declaratively bind an element (the
-"overscroll content") to the scroll boundary of a container.
+We propose a set of HTML attributes and CSS properties that declaratively bind
+an element (the "overscroll content") to the scroll boundary of a container.
 
-Crucially, this binding is defined on an **activatable element** (like a
-`<button>`). This ensures that every gesture-based action has a guaranteed,
-accessible fallback interaction (click/Enter) without extra developer effort.
+Crucially, this binding is defined both semantically on the participating
+elements (overscroll container and overscroll area) as well as on an
+**activatable element** (like a `<button>`). This ensures that the menu set up
+is both semantically represented in DOM and that every gesture-based action has
+a guaranteed accessible fallback interaction (click/Enter) on the activatable
+element without extra developer effort.
 
 ### Goals
 
-* **No JavaScript:** Enable swipe-to-reveal and pull-to-refresh gesture-based
-  interactions using only HTML and CSS.
+* **No JavaScript:** Enable swipe-to-reveal gesture based menu interactions
+  using only HTML and CSS.
 * **Accessibility by Default:** Enforce the existence of a semantic button to
   toggle the view, ensuring keyboard and assistive technology support.
-* **Performance:** Offload gesture physics and animation to the browser's
-  compositor thread (via scroll timelines).
+* **Performance:** Offload gesture physics and animation to browser's
+  control, ensuring possibility of composited gestures.
 
 ## The API
 
-There are two parts to the API:
+There are several parts to the API:
 
 First, the container needs to be identified as supporting overscroll areas. This
 is done by specifying `overscrollcontainer` attribute on the container.
 
-Second, we introduce a new `command` value, `toggle-overscroll`, to bind a
-trigger button to both the container (the scroll port) and the content (the
-element hidden in the overscroll area).
+Second, the overscroll area (e.g. the side menu element), which must be a
+direct child of an overscroll container, is identified as the overscroll area.
+This is done by specificying `overscrollarea` attribute on the container.
+
+Finally, we introduce a new `command` value, `toggle-overscroll`, to bind a
+trigger button to the overscroll area using `commandfor` attribute.
 
 ```html
 <div id="container" overscrollcontainer>
-    <menubar id="menu">
+    <menubar id="menu" overscrollarea>
         <menuitem>Home</menuitem>
         <menuitem>Settings</menuitem>
     </menubar>
@@ -70,8 +76,9 @@ element hidden in the overscroll area).
 
 1.  **Positioning:** the `#menu` is effectively absolutely positioned within
     the "overscroll" area of the overscroll container.
-2.  **Chaining:** When a user scrolls `#container` to its limit, the scroll
-    chains to the `#menu`, pulling it into view.
+2.  **Chaining:** If a user scrolls `#container` to its limit, the scroll
+    chains to the `#menu`, pulling it into view. Note that the `#container`
+    does not have to be a scroller for this effect.
 3.  **Activation:** As an alternative to scroll gestures, activating the
     `<button>` will perform a `scrollIntoView`-like action on the `#menu`.
     Activating it again scrolls `#menu` back out of view.
@@ -82,55 +89,59 @@ element hidden in the overscroll area).
 
 In this explainer, we'll use the following terminology:
 
-- **"overscroll container":** the scrolling container with the `overscrollcontainer`
-attribute. `#container` in the above code snippet.
-- **"overscroll area":** the element (and its descendants) within the overscroll
-container that gets rendered as overscrolled content. `#menu` in the above
-code snippet.
-- **"overscroll invoker":** the command invoker with `command=toggle-overscroll`
-pointing to the overscroll area. `#btn` in the above code snippet.
+* **overscroll container:** the scrolling container with the
+  `overscrollcontainer` attribute. `#container` in the above code snippet.
+* **overscroll area:** the element within the overscroll container that gets
+  rendered as overscrolled content. `#menu` in the above code snippet.
+* **"overscroll invoker":** the command invoker with
+  `command=toggle-overscroll` pointing to the overscroll area. `#btn` in the
+  above code snippet.
 
 ### Nesting and Structure
 
-*   **Overscroll invoker:** The `<button>` does not need to be a descendant of
-    the container. It can live anywhere in the tree scope, subject to the normal
-    rules for command invoker relationships.
-*   **Overscroll area:** The overscroll area element (`#menu`) must be a descendant
-    of the overscroll container, but it does not have to be a direct child.
-    It can also have other "normal" scrollable content before or after it.
-    Crucially, the overscroll area behaves as if it is a layout child of the
-    scroller, allowing it to escape containing blocks and clips of intermediate
-    ancestors. This behaves in a very similar fashion to how popovers escape
-    ancestors.
+* **Overscroll invoker:** There is no special requirements for the position
+  of the overscroll invoker relative to the overscroll container or area. It
+  can live anywhere in the tree scope, subject to the normal rules for command
+  invoker relationships.
+* **Overscroll area:** The overscroll area element must be a direct child
+  of the overscroll container. It can also have other content before or after it.
+  Note that the overscroll area element will typically be taken out of flow, as
+  if it is `position: absolute` and contained by the overscroll container.
 
 ### Chaining and Ordering
 
-A scroller can have multiple overscroll areas (e.g., one on each side). The
-`::overscroll-area-parent` manages these as siblings.
+An overscroll container can have multiple overscroll areas (e.g., one on each
+side). The `::overscroll-area-parent` manages these as siblings.
 
-*   **LIFO Order:** Chaining follows a "last-in, first-out" order. The last
-    overscroll area in DOM order within the overscroll container is chained,
-    and scrolls, first.
-*   **Chaining Path:** When the innermost scroller reaches its limit, it chains
-    to the next overscroll area, and so on.
+* **LIFO Order:** Chaining follows a "last-in, first-out" order. The last
+  overscroll area in DOM order within the overscroll container is chained,
+  and scrolls, first.
+* **Chaining Path:** When the innermost scroller reaches its limit, it chains
+  to the next overscroll area, and so on.
 
-### Overlay Mode
+### Configuring the style of overscroll area.
 
-By default, overscroll pushes the container's content. The
-`overscrollcontainer="overlay"` mode changes this so that the overscroll
-content slides *over* the container, similar to `position: sticky`.
+By default, overscroll area pushes the container's content. This is controlled
+by a new css property `overscroll-container-type`:
 
-```html
-<div id="container" overscrollcontainer="overlay">
-  ...
-</div>
-```
+`overscroll-container-type: auto | push | overlay | none`
 
-Note that this is a value of the `overscrollcontainer` attribute on the overall
-scroller, for simplicity of API design. It therefore affects all overscroll
-areas within that container. If use cases arise that require different
-overflowing elements to have different overlay modes, we can revisit this. But
-that does not seem to be a common use case today on the web.
+* **auto**: The default behavior, currently same as `push` but this is subject
+  to discussion.
+* **push**: The overscroll areas of this overscroll container will push other
+  content out of the way.
+* **overlay**: The overscroll areas of this overscroll container will overlay
+  on top of other content.
+* **none**: This precludes the overscroll container from acting as an
+  overscroll container. Note that this is a CSS "opt-out" of the behavior,
+  which is useful for use in media queries to toggle overscroll container
+  feature without needing to modify the semantic delcarations in HTML.
+
+Note that this is a property of the overscroll container, not overscroll area,
+for simplicity of API design. It therefore affects all overscroll areas within
+that container. If use cases arise that require different overflowing elements
+to have different overlay modes, we can revisit this. But that does not seem to
+be a common use case today on the web.
 
 ## Events
 
@@ -144,6 +155,16 @@ logic or haptics), we expose the following events on the host container:
 | `overscrollend` | Fired when the gesture completes and the state has changed. |
 | `overscrollcancel` | Fired when the gesture ends but snaps back to the original state. |
 
+### Backdrop
+
+When the overscroll area is visible, the overscroll area has an
+`::overscroll-backdrop` pseudo element that is styled by default with a
+semi-transparent cover, similar to a dialog `::backdrop`. This includes a
+default button handler to dismiss, or close, the corresponding overscroll area.
+
+This backdrop is always present but has a `display: none` style when the
+overscroll area is closed. The timing of when the `display` value changes
+aligns with the `overscrollchanging` event.
 
 ## Use case examples
 
@@ -176,96 +197,6 @@ with a side menu that can be opened with a swipe" />
 </div>
 ```
 
-### Swipe to reveal
-
-An interaction pattern where a user swipes horizontally on a specific list item
-or card to expose hidden secondary actions, like delete, archive, or edit. It is
-frequently used in touch-based and mobile interfaces to efficiently manage
-screen real estate while keeping quick actions accessible.
-
-Behaviors:
-- Light dismissable: yes
-- Modal: no
-
-<img src="/images/overscroll-swipe-to-reveal.jpg" width="400" alt="A
-swipe-to-reveal mockup, with a list of email items that have additional archive
-and delete buttons that can be revealed via a swipe" />
-
-Example code:
-
-```html
-<!-- A single list item acting as its own overscroll container -->
-<div id="message-item" overscrollcontainer>
-  <div class="primary-content">
-    Sender: Hello world!
-  </div>
-  <menubar id="message-actions">
-    <menuitem>Archive</menuitem>
-    <menuitem>Delete</menuitem>
-  </menubar>
-</div>
-```
-
-### Swipe to dismiss
-
-A gesture-based interaction where a user slides an element—such as a
-notification, toast message, or temporary card—horizontally or vertically off
-the screen to remove or close it. This pattern provides an intuitive, fluid way
-to clear transient information or dismiss temporary views without requiring a
-click/tap on a close button.
-
-Behaviors:
-- Light dismissable: yes
-- Modal: no
-
-<img src="/images/overscroll-swipe-to-dismiss.jpg" width="600" alt="A
-swipe-to-dismiss mockup, with a file notification toast that can be dismissed" />
-
-Example code:
-
-```html
-<body overscrollcontainer="overlay">
-  <div role="status" class="toast-body">
-    File successfully uploaded. (Swipe me to dismiss)
-  </div>
-  <main> Rest of the page </main>
-</body>
-```
-
-### Pull to refresh
-
-A gesture-based interaction where the user drags the top of a scrollable area
-downward to manually trigger a data update. As the screen is pulled down, a
-loading spinner or animation briefly appears to signal that the application is
-actively fetching the latest content.
-
-Behaviors:
-- Light dismissable: no
-- Modal: no
-
-<img src="/images/overscroll-pull-to-refresh.jpg" width="400" alt="A
-pull-to-refresh mockup, with a list of news items that can be refreshed by
-pulling down" />
-
-Example code:
-
-```html
-<div id="news-feed" overscrollcontainer>
-  <div id="refresh-indicator">
-    <span>↻ Pull to refresh...</span>
-  </div>
-  <div class="feed-content">
-    <article>News item 1</article>
-    <article>News item 2</article>
-    <article>News item 3</article>
-  </div>
-</div>
-```
-
-To prevent light dismiss from happening for use cases like this, the
-`overscrollstart` event should be [canceled](#cancelling-light-dismissability)
-for the open-to-closed transition.
-
 ## Implementation Model
 
 *Note: This section details the conceptual rendering tree structure.*
@@ -285,82 +216,32 @@ hit-testing and painting order:
 
 ![Overscroll Animation](/images/overscroll_polyfill_demo.gif)
 
-## Light Dismiss
+### Modalness, Inertness and Light Dismiss
 
-As seen in the [use case examples](#use-case-examples) section, all of the common
-use cases (save one) require a "light dismiss" type behavior, wherein clicking
-outside the overscroll area, or hitting ESC, scrolls the overscroll area back
-out. In limited cases, this behavior is not desired, however. For example, in the
-[pull to refresh](#pull-to-refresh) use case example, the “refreshing” widget
-usually stays open until the refresh process is complete, and then closes on its
-own, via JavaScript.
+Note that the side menus, as supported by this feature, are modal to the
+container in which they reside. Specifically, it means that when the menu is
+open, the content underneath is not meant to be interacted with.
 
-Because most common use cases require light dismiss, that will be the default
-behavior. This is important, since the majority of use cases need this, and it is
-bad for users if expected patterns like light dismiss aren't supported by default.
+ISSUE: In the future, we may add other `overscroll-container-type` values that
+support cooperative, non-modal side menus as well. For now, if the behavior
+needs to change on, for example, wide screens, it can be accomplished with
+media queries and disabling the overscroll feature. This would make the side
+menu a regular element in the page.
 
+Being modal implies that, when closed, the menu is not focusable or
+interactable. For this reason, the overscroll area element that is closed is
+inert. Conversely, when the overscroll area is open, the regular content that
+it pushes out of the way or overlays is inerted.
 
-### Cancelling light dismissability
-Cancelling light dismiss is an exception to the rule. Commonly, for use cases that
-do not support light dismiss, JavaScript (timers, network fetches, etc.) are used
-do decide when to close the overscroll area. The only such example in this explainer
-is the "pull to refresh" pattern.
+Note that the backdrop acts as a light dismiss signal for this container. It
+has a default click handler that dismisses the overscroll area.
 
-In this specific case, the proposal is to make the `overscrollstart` event
-cancelable, which will stop the overscroll transition and prevent the area from
-being dismissed. Furthermore, the `overscrollstart` event will include `newState`
-and `oldState` fields, with values `"open"` or `"closed"`, similar to
-`ToggleEvent`, so that developers can determine the direction of the overscroll
-before cancelling.
+Note that focus navigation also behaves as if the menu is modal: when
+traversing the menu, the main content is not visible. This is a consequence of
+content being inert but worth calling out explicitly.
 
-### Blur as a light dismiss signal
-
-In contrast to popovers, where `blur` (focus leaving the popover) [is not a
-light dismiss signal](https://github.com/openui/open-ui/issues/415#issuecomment-1285995113),
-overscroll areas will light dismiss when focus leaves the area and moves on to
-another part of the page.
-
-For the popover case, the container is more generic, and the end boundaries
-are unclear. Closing them the moment focus shifts outside the popover
-would cause frustrating, accidental dismissals for keyboard users just trying
-to tab through their contents. For overscroll areas, however, the role is usually
-better defined, and the end boundaries more clear. When
-a user intentionally moves their focus out of these areas and back to the
-main page, it is a clear signal they are done, making `blur` a safe and helpful
-trigger to automatically close them.
-
-## Modalness
-
-As seen in the [use case examples](#use-case-examples) section, a few use cases might
-need some form of "modality". E.g. when a menu is expanded, and obscures the
-rest of the page (or pushes it off screen), it might be desirable to make that
-menu fully modal, causing the rest of the page to be `inert`. The proposed
-mechanism for this is:
-
-1. The developer should use a `<dialog>` element for the overscroll area
-element.
-
-2. A new value for the `command` attribute would be added, e.g.
-`toggle-overscroll-modal`, which would cause the dialog to be opened as a modal
-dialog. Without this (i.e. with a `<dialog>` overscroll area element, but with
-`command=toggle-overscroll`), the dialog will be opened as a non-modal dialog.
-
-### Backdrops
-
-If a darkened or obscured `::backdrop` is needed behind the overscroll area
-content, then it should *always* be accomplished with a *modal* `<dialog>`.
-Obscuring the content behind the element, while leaving it non-inert (so it
-can still be focused or interacted with), is an accessibility anti-pattern.
-In this case, a true modal `<dialog>` is neeeded.
-
-Important note: in this use case, very much [akin to the guidance for a
-“regular” modal
-`<dialog>`](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#:~:text=It%20is%20strongly%20recommended%20that%20the%20tab%20sequence%20of%20all%20dialogs%20include),
-the developer must provide a button within the overscroll area that closes it.
-The easiest such solution would be
-`<button commandfor=area command=toggle-overscroll>Close</button>`.
-
-
+ISSUE: Whether or not the menu automatically dismisses when focus leaves the
+menu remains an open question.
 
 ## Accessibility Considerations
 
@@ -398,10 +279,9 @@ The best solution might be to make this case not work. I.e. if the button is
 contained within the area, then there must *also* be another `command=toggle-overscroll`
 button outside the area. Otherwise, the overscroll area will not be enabled.
 
-
 ## Progressive Enhancement
 
-For browsers that do not support `overscrollcontainer`, the content simply
+For browsers that do not support this feature, the content simply
 becomes an inline part of the ordinary scroller. This likely presents as a
 broken experience.
 
@@ -428,6 +308,14 @@ lacks the semantic enforcement of an interactive element. A CSS-only solution
 runs the risk of creating "invisible" gestures that are inaccessible to users
 who cannot perform swipe actions. By requiring an HTML activator, we enforce
 progressive enhancement.
+
+### HTML-only Attributes
+
+We considered having all of the features specified in HTML. Expressing semantic
+relationships makes sense in HTML, but whether the content is pushed or
+overlays or displays as a non-overscroll menu seems like a presentational
+decision that is commonly gated by a media query. For this reason, the
+configuration of the type of overscroll behavior is controlled from CSS.
 
 ## Open questions
 * **ARIA Attributes:** Should the browser automatically handle `aria-expanded`
