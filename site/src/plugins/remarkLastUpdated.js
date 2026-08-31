@@ -29,30 +29,31 @@ export function remarkLastUpdated() {
     const filePath = file.history[0]
     if (!filePath) return
 
-    const fm = (file.data.astro ??= {}).frontmatter ??= {}
+    const fm = ((file.data.astro ??= {}).frontmatter ??= {})
     const isExplainer = filePath.includes('.explainer.')
 
     if (isExplainer) {
       const authors = fm.authors
-      const hasAuthors =
-        Array.isArray(authors)
-          ? authors.length > 0
-          : typeof authors === 'string' && authors.trim().length > 0
+      const hasAuthors = Array.isArray(authors)
+        ? authors.length > 0
+        : typeof authors === 'string' && authors.trim().length > 0
       if (!hasAuthors) {
-        throw new Error(
-          `[open-ui] Missing required frontmatter field "authors" in ${filePath}`,
-        )
+        throw new Error(`[open-ui] Missing required frontmatter field "authors" in ${filePath}`)
       }
 
       if (fm.menu === 'Graduated Proposals') {
-        const missing = []
-        if (!fm.whatwg_issue && !fm.whatwg_pr) missing.push('whatwg_issue/whatwg_pr')
-        if (!fm.specification) missing.push('specification')
-        if (!fm.mdn) missing.push('mdn')
-        if (missing.length) {
+        if (!fm.specification && !fm.whatwg_issue && !fm.whatwg_pr && !fm.csswg_issue) {
           throw new Error(
-            `[open-ui] Graduated proposal missing required fields: ${missing.join(', ')} in ${filePath}`,
+            `[open-ui] Graduated proposal missing frontmatter field "whatwg_pr", or "specification" in ${filePath}`,
           )
+        }
+        if (fm.specification && (fm.whatwg_issue || fm.whatwg_pr || fm.csswg_issue)) {
+          throw new Error(
+            `[open-ui] Graduated proposals with "specification" frontmatter must remove "whatwg_pr", "whatwg_issue", or "csswg_issue" frontmatter, in ${filePath}`,
+          )
+        }
+        if (!fm.mdn) {
+          throw new Error(`[open-ui] Missing required frontmatter field "mdn" in ${filePath}`)
         }
       }
     }
