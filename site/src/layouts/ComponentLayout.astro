@@ -1,8 +1,16 @@
 ---
 import Layout from "./Layout.astro";
+import TableOfContents from "../components/table-of-contents.astro";
 
-const { frontmatter = {} } = Astro.props
-const { name, pathToProposal, pathToResearch } = frontmatter
+const { frontmatter = {}, headings = [] } = Astro.props
+const { name, pathToProposal, pathToResearch, authors = [], feedback, lastUpdated, created, historyUrl, whatwg_issue, whatwg_pr, specification, mdn } = frontmatter
+
+// authors can be either a plain string or an array of {name, url} objects
+const authorList = Array.isArray(authors)
+  ? authors
+  : typeof authors === 'string'
+    ? [{ name: authors }]
+    : []
 ---
 
 <style>
@@ -14,6 +22,29 @@ const { name, pathToProposal, pathToResearch } = frontmatter
   .links > .link  {
     margin-left: 0.5rem;
   }
+
+  .explainer-prelude {
+    margin-block-end: 1.5rem;
+    border-block-end: 1px solid currentColor;
+    padding-block-end: 1rem;
+  }
+
+  .explainer-prelude dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    margin: 0;
+  }
+
+  .explainer-prelude dt {
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .explainer-prelude dd {
+    margin: 0;
+  }
+
   :global(.code-image-container) {
       display: flex;
   }
@@ -55,5 +86,78 @@ const { name, pathToProposal, pathToResearch } = frontmatter
     )}
   </div>
   <h1>{name}</h1>
+
+  {(authorList.length > 0 || lastUpdated || feedback || whatwg_issue || whatwg_pr || specification || mdn) && (
+    <section class="explainer-prelude" aria-label="Document metadata">
+      <dl>
+        {authorList.length > 0 && (
+          <>
+            <dt>Authors</dt>
+            <dd>
+              {authorList.map((author, i) => (
+                <>
+                  {typeof author === 'string'
+                    ? author
+                    : author.url
+                      ? <a href={author.url}>{author.name}</a>
+                      : author.name}
+                  {i < authorList.length - 1 ? ', ' : ''}
+                </>
+              ))}
+            </dd>
+          </>
+        )}
+        {created && (
+          <>
+            <dt>Created</dt>
+            <dd><time datetime={created}>{created}</time></dd>
+          </>
+        )}
+        {lastUpdated && (
+          <>
+            <dt>Last Updated</dt>
+            <dd>
+              {historyUrl
+                ? <a href={historyUrl}><time datetime={lastUpdated}>{lastUpdated}</time></a>
+                : <time datetime={lastUpdated}>{lastUpdated}</time>}
+            </dd>
+          </>
+        )}
+        {feedback && (
+          <>
+            <dt>Feedback</dt>
+            <dd><a href={feedback}>{feedback}</a></dd>
+          </>
+        )}
+        {whatwg_issue && (
+          <>
+            <dt>WHATWG Issue</dt>
+            <dd><a href={whatwg_issue}>{whatwg_issue}</a></dd>
+          </>
+        )}
+        {whatwg_pr && (
+          <>
+            <dt>WHATWG PR</dt>
+            <dd><a href={whatwg_pr}>{whatwg_pr}</a></dd>
+          </>
+        )}
+        {specification && (
+          <>
+            <dt>Specification</dt>
+            <dd><a href={specification}>{specification}</a></dd>
+          </>
+        )}
+        {mdn && (
+          <>
+            <dt>MDN</dt>
+            <dd><a href={mdn}>{mdn}</a></dd>
+          </>
+        )}
+      </dl>
+    </section>
+  )}
+
+  <TableOfContents headings={headings} />
+
   <slot />
-</Layout
+</Layout>

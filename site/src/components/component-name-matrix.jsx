@@ -81,6 +81,7 @@ const ComponentNameMatrix = (props) => {
 
               return foundComponent ? (
                 <a
+                  key={matchName}
                   title={foundComponent.name}
                   target="_blank"
                   rel="noopener noreferrer"

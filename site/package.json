@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "astro dev --port 3000",
     "start": "astro dev --port 3000",
-    "build": "astro build",
+    "build": "astro build && node scripts/generate-sitemap.mjs",
     "preview": "astro preview",
     "sync-contributors": "node src/data/sync.js"
   },
@@ -32,23 +32,22 @@
     ]
   },
   "devDependencies": {
-    "@astrojs/mdx": "^1.1.1",
-    "@astrojs/prefetch": "^0.4.1",
-    "@astrojs/react": "^3.0.3",
-    "@astrojs/sitemap": "^3.0.1",
-    "astro": "^3.2.4",
-    "astro-compress": "^2.0.15",
-    "eslint": "^8.18.0",
-    "eslint-plugin-react": "^7.30.0",
-    "hast-util-to-string": "^2.0.0",
-    "hastscript": "^7.2.0",
-    "husky": "^4.2.3",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.0.4",
-    "prettier-plugin-astro": "^0.5.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rehype-autolink-headings": "^6.1.1"
+    "@astrojs/mdx": "^3.1.0",
+    "@astrojs/react": "^3.1.0",
+    "@astrojs/sitemap": "^3.0.0",
+    "astro": "^4.15.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react": "^7.34.0",
+    "hast-util-to-string": "^3.0.0",
+    "hastscript": "^9.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.3.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "sharp": "^0.33.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -59,3 +58,4 @@
     "nanostores": "^0.7.1"
   }
 }
+
