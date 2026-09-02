@@ -370,7 +370,7 @@ The elements and attributes are intended to provide native semantics that map to
    - will NOT have `details` pointing to the `menu` ([past discussion on `haspopup` instead of `details`](https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931)).
 6. `menubar` and `menu` have `setSize`.
 7. `menuitem` descendants of a `menubar` or `menu` have `setSize` and `posInSet`.
-8. `menuitem`, `menuitemcheckbox`, and `menuitemradio` are included in the accessibility tree even when they are disabled.
+8. `menuitem`, `menuitemcheckbox`, and `menuitemradio` have an implicit `aria-disabled=true` state when they are disabled.
 9. An invoked `menulist` implicitly derives its accessible name from its invoker. The browser computes this in the accessibility tree exactly like `aria-labelledby` (*without* adding actual DOM attributes) unless an explicit `aria-labelledby` already exists.
 
 ### Keyboard behavior
