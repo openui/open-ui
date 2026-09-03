@@ -2,28 +2,10 @@
 menu: Active Proposals
 name: Enhanced Range Input (Explainer)
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@utilitybend"
+    url: https://utilitybend.com
 ---
-
-- Author(s): [Brecht De Ruyte](https://utilitybend.com)
-- Last updated: 28 Aug 2026
-
-## Table of Contents
-
-- [Background](#background)
-- [Goals](#goals)
-- [Current State of Range Styling](#current-state-of-range-styling)
-- [Multi-Handle Support with `<rangegroup>`](#multi-handle-support-with-rangegroup)
-- [Form Association and Naming](#form-association-and-naming)
-- [Accessibility Enhancements](#accessibility-enhancements)
-- [Disabled State](#disabled-state)
-- [Progressive Enhancement](#progressive-enhancement)
-- [Datalist Integration](#datalist-integration)
-- [Multi-Color Range Segments](#multi-color-range-segments)
-- [Custom Track Shapes](#custom-track-shapes)
-- [Detailed Design](#detailed-design)
-- [Extra Examples](#extra-examples)
-- [Resolved Decisions](#resolved-decisions)
-- [Considerations and Open Questions](#considerations-and-open-questions)
 
 ## Background
 
@@ -76,7 +58,6 @@ Currently, the state of styling `<input type="range">` across browsers is incons
 ### IE/EdgeHTML (historical):
 
 These pseudo-elements were only ever implemented by Internet Explorer and pre-Chromium (EdgeHTML) Edge. Current Edge is Chromium-based and uses the WebKit/Blink pseudo-elements above. They are listed here because they are the origin of the "upper/lower fill" split that later became [`::slider-fill-over` / `::slider-fill-under`](https://github.com/w3c/csswg-drafts/issues/12419).
-
 
 ```css
 ::-ms-thumb {
@@ -478,7 +459,7 @@ Custom track shapes are purely presentational. Thumbs still move monotonically f
 - `min`: Specifies the minimum value for the entire range group, defining the lower bound of the track.
 - `max`: Specifies the maximum value for the entire range group, defining the upper bound of the track.
 - `name`: The name of the range group, used in the `form.elements` API. It is not submitted, matching `name` on `<fieldset>`. See [Form Association and Naming](#form-association-and-naming).
-- `form`: Associates the range group with a form element explicitly, matching `form` on `<fieldset>`.
+- `form`: Associates the range group with a form element explicitly, matching `form` on `<fieldset>`. Like `<fieldset>`, it does not propagate to descendant controls; a detached group's child ranges still need their own `form` attributes to submit to that form.
 - `list`: Links the range group to a `<datalist>` element, providing tick marks or predefined values. This extends `list`, which today is only valid on `<input>`.
 - `stepbetween`: Defines the minimum distance between **adjacent** handles. It is a single value on the group, not a per-gap list. It has no effect when the group contains fewer than two handles. A maximum distance between handles is intentionally not in v1 (see [Resolved Decisions](#resolved-decisions)).
 - `interaction`: **Working name — needs bikeshed** ([#1460](https://github.com/openui/open-ui/issues/1460)). Not a committed HTML attribute; do not use `draggable`. Keywords: `endpoints` (default) and `range`. See [Track Click Behavior](#track-click-behavior). Other names that have been floated: `selects`, `pointermode`, `rangemode`, `adjust`. Watch collisions with `inputmode` and with the CSS [`interactivity`](https://drafts.csswg.org/css-ui-4/#interactivity-property) property, which controls inertness and is a near-miss for this name.
@@ -539,7 +520,7 @@ To address the current fragmentation and provide a unified styling API, we propo
 - `::slider-track`: Represents the main track of the range group.
 - `::slider-fill`: Represents the filled portion of a single-thumb control. With two or more thumbs, use `::slider-segment`.
 - `::slider-segment`: Represents sections of the track between handles.
-- `::slider-thumb`: Represents the draggable handles within the group.
+- `::slider-thumb`: Represents the draggable handles within the group. On `<rangegroup>`, the group owns the shared visual anatomy, so `rangegroup::slider-thumb` styles all thumbs; the child inputs remain the semantic and form controls.
 - `::slider-tick`: Represents individual tick marks on the range group with attached datalist.
 - `::slider-tick-label`: Represents the label associated with each tick mark of a datalist option.
 
@@ -584,7 +565,7 @@ rangegroup::slider-segment(2) {
     background-color: #33ff57;
 }
 
-rangegroup input[type="range"]::slider-thumb {
+rangegroup::slider-thumb {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -602,6 +583,9 @@ For groups specifically we'd like to introduce a few new ones:
 - `inputs`: A property that returns a collection of the contained range input elements. A shorthand for `querySelectorAll`
 - `getRangeInput(index)`: Returns the range input at the specified index.
 - `setRangeValue(index, value)`: Sets the value for a specific handle.
+
+Potential future additions (deferred from v1):
+
 - `addThumb(value, options?)`: Adds a new handle to the group at the given `value` and returns the created `<input type="range">`. Because handles are backed by real `<input type="range">` elements, this is a convenience over manually creating and appending an input. The optional `options` object accepts `min`, `max`, `name`, and `label`. Use cases such as a gradient editor that lets users add and remove color stops on demand are a primary motivation for this method.
 - `removeThumb(index)`: Removes the handle (and its backing `<input>`) at the specified index.
 
@@ -620,17 +604,9 @@ console.log(inputs.length); // 2
 // Setting a specific handle's value
 rangeGroup.setRangeValue(0, 150);
 console.log(rangeGroup.values); // [150, 750]
-
-// Adding a handle programmatically (e.g. a new gradient color stop)
-rangeGroup.addThumb(500, { label: "Stop 3" });
-console.log(rangeGroup.values); // [150, 500, 750]
-
-// Removing the handle we just added
-rangeGroup.removeThumb(1);
-console.log(rangeGroup.values); // [150, 750]
 ```
 
-Because each handle is a real `<input type="range">` in the light DOM, authors can equivalently add or remove handles by appending or removing inputs directly. `addThumb`/`removeThumb` exist as an ergonomic shorthand that keeps value normalization and event dispatch consistent.
+Because each handle is a real `<input type="range">` in the light DOM, authors can add or remove handles by appending or removing inputs directly. `addThumb`/`removeThumb` are proposed as a future ergonomic shorthand that would keep value normalization and event dispatch consistent.
 
 ## Extra Examples
 
@@ -672,7 +648,7 @@ rangegroup::slider-segment(2) {
 rangegroup::slider-segment(3) {
     background-color: #ddd;
 }
-rangegroup input[type="range"]::slider-thumb {
+rangegroup::slider-thumb {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -712,7 +688,7 @@ rangegroup::slider-track {
     background-color: #ddd;
 }
 
-rangegroup input[type="range"]::slider-thumb {
+rangegroup::slider-thumb {
     width: 20px;
     height: 20px;
     background-color: #2196f3;
