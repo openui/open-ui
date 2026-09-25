@@ -25,13 +25,14 @@ limitations and impossibilities.
 
 Namely, one method called `document.advanceFocus()` and one event called `beforefocus`.
 
-> **Status:** I have a full-featured implementation for Chromium, it is reasonably simple and
-> straightforward, because everything needed is already present in the browser internally. I work on
-> submitting it to Chromium Gerrit as a prototype behind the `FocusNavigation` feature flag.
+> **Status:** Experimental implementations are being developed for Chromium and Firefox, with
+> a shared Web Platform Test suite. They are prototypes, not shipped browser APIs.
+> Chromium uses the `FocusNavigation` feature flag; Firefox uses the
+> `dom.focus_navigation.enabled` preference. Both are disabled by default.
 
 ## Opting In
 
-Both `document.advanceFocus()` and the `beforefocus` event require explicit opt-in via a meta tag. 
+Both `document.advanceFocus()` and browser-generated `beforefocus` events require explicit opt-in via a meta tag.
 This design choice ensures explicit developer intent and prevents the Universe from overheating
 by unnecessarily dispatching new events on every page:
 
@@ -52,11 +53,28 @@ You can enable one or both features independently:
 <meta name="focus-navigation" content="advanceFocus beforefocus">
 ```
 
-The meta tag values are case-insensitive, so `"AdvanceFocus BeforeFocus"` works the same way.
+The `content` value is a set of ASCII-whitespace-separated, ASCII-case-insensitive tokens,
+so `"AdvanceFocus BeforeFocus"` works the same way. Unknown tokens are ignored:
+`"not-advancefocus"` does not enable `advanceFocus()`.
 
-Without the meta tag:
-- `document.advanceFocus()` exists but returns `false` and has no effect
-- The `beforefocus` event does not fire
+### Opt-In Lifetime
+
+Opt-in is sampled when a meta element is connected to the document tree, outside shadow trees
+and template contents. For dynamic insertion, set `name` and `content` before inserting the
+element. Changing these attributes while it remains connected does not enable or disable
+features. Removing and reinserting the element samples its current tokens again.
+
+Enabled features accumulate for the lifetime of the `Document`. Removing, changing, or adopting
+a meta element does not revoke features already enabled in its old document. Adoption into
+another document processes its current tokens for that document independently. Replacing
+contents with `document.open()` retains the same `Document` and its opt-in; a new `Document`
+starts with neither feature enabled.
+
+In a document that has not opted in:
+- `document.advanceFocus()` exists but returns a promise resolving to `"not-allowed"` and has no effect
+- The browser does not generate `beforefocus` events
+
+Opt-in does not restrict author-generated events or their listeners.
 
 ## document.advanceFocus()
 
@@ -66,6 +84,14 @@ Without the meta tag:
 ### Signature
 
 ```webidl
+enum AdvanceFocusResult {
+  "success",
+  "no-target",
+  "canceled",
+  "superseded",
+  "not-allowed"
+};
+
 dictionary AdvanceFocusOptions {
   Element? startElement;
   Element? stayWithinElement;
@@ -75,17 +101,106 @@ dictionary AdvanceFocusOptions {
 };
 
 partial interface Document {
-  boolean advanceFocus(optional AdvanceFocusOptions options = {});
+  Promise<AdvanceFocusResult> advanceFocus(optional AdvanceFocusOptions options = {});
 };
 ```
 
 ### Return Value
 
-- Returns `true` if focus was successfully moved to an element
-- Returns `false` if:
-  - No focusable element was found
-  - The `beforefocus` event was cancelled
-  - The feature is not enabled via meta tag
+The method returns a promise that resolves to the outcome of this request, including navigation
+across iframe or browser-UI boundaries:
+
+| Result | Meaning |
+|--------|---------|
+| `"success"` | The focus operation completed, including an explicitly requested no-op when `includeStartElement` selects the already-focused element. |
+| `"no-target"` | No eligible destination was found within the requested bounds, the selected destination became ineligible, or required native browser activation was refused. |
+| `"canceled"` | A `beforefocus` listener prevented the operation, or the browser stopped a focus-redirection loop. |
+| `"superseded"` | A newer focus request replaced this request before it completed. |
+| `"not-allowed"` | The calling document did not meet the opt-in, fully-active-document, focus, or user-activation requirements at invocation. |
+
+These are expected outcomes, not exceptions. Invalid arguments reject according to Web IDL.
+An element supplied for `startElement` or `stayWithinElement` must be connected to the calling
+document. Unlike a Web IDL conversion failure, a detached or foreign-document element resolves
+to `"no-target"` after successful admission, without moving focus in either document.
+
+A still-pending operation that cannot finish because a participating browsing context is
+destroyed or an internal asynchronous operation fails rejects with `AbortError`; it must not
+leave an observable promise pending indefinitely.
+
+`"success"` describes a completed operation, not a guarantee that focus will still be there when
+an awaiting continuation runs. Later script or user interaction may already have moved focus.
+The result does not expose the destination element or document in another frame.
+
+### Request Lifetime
+
+1. At invocation, check opt-in, document eligibility, and user activation. A synchronous
+   navigational `beforefocus` handler may initiate a redirect without additional activation.
+   Capture that permission, the options, and the redirection budget now, not after an `await`
+   or a cross-process response.
+2. Start a new request and supersede any older, unfinished request it replaces. Rejected
+   invocation-time permission checks do not supersede an existing request.
+3. Find the destination using the browser's sequential focus navigation order and the requested
+   bounds. Recursively search iframe documents and skip those with no eligible sequentially
+   focusable elements. Searching does not temporarily focus a frame or dispatch `beforefocus`.
+   If no eligible destination exists, resolve with `"no-target"`.
+4. Dispatch the applicable `beforefocus` events, including ancestor-frame notifications.
+   Notify only the selected target and its applicable iframe ancestors, never skipped frames.
+   After handlers and asynchronous handoffs, recheck that the request is current and that
+   the destination is still eligible and within its bounds.
+5. If a newer request has replaced this one, resolve with `"superseded"`. Otherwise, cancellation
+   resolves with `"canceled"`, and an invalidated destination resolves with `"no-target"`.
+6. Complete the focus operation, including any remote or browser-UI handoff, before resolving
+   with `"success"`. Settle each request only once.
+
+The handler permission exception belongs to the document receiving the synchronous navigational
+`beforefocus` event with reason `"forward"` or `"backward"`. A `"page"` event, including
+autofocus in a child document, does not grant this exception. Ordinary `blur` and `focus` callbacks do not receive this exception merely
+because Tab dispatched them. A nested script-reason `beforefocus` event uses its own,
+non-navigational permission scope.
+
+Ordinary callbacks invoked by DOM APIs, such as custom-element reactions, constructors,
+definition-time property access and conversion, and `NodeFilter` callbacks, do not
+inherit an enclosing listener's permission. Synchronous property access during DOM
+Promise resolution is also masked. Direct JavaScript helper calls remain part of
+that listener's synchronous handling. Returning
+from a nested callback restores the outer listener's permission; a new eligible
+`beforefocus` listener entered inside the callback can establish its own permission.
+
+**Design choice:** Web IDL argument conversion is a DOM-to-JavaScript callback
+boundary, even though it precedes the DOM algorithm. Getters, coercions, and
+iterators used to prepare method, constructor, or setter arguments do not inherit
+the listener exception. JavaScript call and construction setup before that
+boundary, including `new.target.prototype` lookup, retains the caller's current
+scope. This deliberate limit keeps the implementation in DOM bindings rather
+than adding JavaScript-engine hooks. The native `advanceFocus()` invocation can still use its
+caller's listener exception after converting its options, without granting it to
+author callbacks during conversion or DOM algorithms. This distinguishes browser-invoked author
+code from direct JavaScript handling: `String()`, `Array.from()`, and
+`Promise.resolve()` retain their caller's scope. A helper invoked from an
+already-masked callback does not regain the exception.
+This also preserves intrinsic aliases: `NodeList.prototype.forEach` is the
+Array `forEach` intrinsic, not a separate DOM callback wrapper. Pair-iterable
+methods such as `URLSearchParams.prototype.forEach` do invoke DOM callbacks
+and therefore do not pass on the listener exception.
+
+The first settled outcome is final. Focus cleanup performed during browsing-context teardown
+counts as a newer focus request and can settle pending navigation with `"superseded"` before
+the destruction-related abort is handled. Later context destruction or asynchronous failure
+does not replace an already-settled outcome.
+
+A redirect is a separate request. If a handler both calls `preventDefault()` and starts a newer
+focus request, the original request resolves with `"superseded"`, not the redirect's result.
+This also applies when a newer request starts in a `blur` or `focus` handler before the original
+operation finishes. A request may therefore be superseded after an intermediate focus state
+was observable.
+
+Returning a promise does not require delaying local focus work: it may happen before the method
+returns. Conversely, sending work to another process is not completion.
+
+The operation is not transactional. An inactive document's selected element can change before
+native browser activation is requested. If activation is refused, the promise resolves with
+`"no-target"` and actual focus remains in browser chrome, but the updated `activeElement` is
+not rolled back. Selecting an element in an inactive document is not enough for `"success"`.
 
 ### Options Explained
 
@@ -98,7 +213,27 @@ The starting point from which the browser should start looking for the next elem
 document.advanceFocus({ startElement: myButton });
 ```
 
-If not specified, defaults to `document.activeElement`.
+If not specified, the browser uses the current focused area and its native sequential
+navigation starting point, normally the focused element.
+After blur, a surviving retained element remains the default start, including when its
+children are replaced. With `includeStartElement: false`, searching skips that element
+itself, not its descendants. This identity is stable across engines rather than following
+native live-range changes caused by mutations to the element's children.
+If the retained element is removed, searching instead resumes from its retained position.
+Inclusion does not apply to a neighboring element used internally as a positional cursor.
+A call in the focused receiving iframe starts from that iframe's own retained
+position; entering a child frame instead starts at its first or last eligible control.
+
+An iframe encountered during sequential searching is a scope to search, not a viewport to
+focus. Search its document recursively, using the first eligible sequentially focusable element
+for forward navigation or the last for backward navigation. If the document and its nested
+frames have no such element, skip the frame and continue in the containing scope. Neither the
+skipped iframe nor its contents receive `beforefocus` events or temporary focus.
+
+This also applies when an iframe is the explicit starting element, whether
+`includeStartElement` is true or false. A plain wrapper is only a starting position, not an implicit boundary: if it contains
+nested iframes followed by a button, navigation enters the nested frames when they contain an
+eligible target, and otherwise reaches that following button, subject to any explicit bounds.
 
 #### `backward`
 
@@ -117,7 +252,17 @@ document.advanceFocus({ backward: true });
 #### `stayWithinElement`
 
 Constrains the focus navigation to stay within a specified container element. Focus will not
-move outside of this element.
+move outside of this element. Containment uses the flattened tree, including assigned slot
+content and descendant browsing contexts. The container itself may be a candidate when focusable.
+Handlers cannot move a candidate outside the constraint and still have this request focus it;
+the constraint is checked again before commitment, including after remote ancestor handlers.
+The resolved starting element must also be inside the constraint. An outside explicit or
+default starting element resolves to `"no-target"` without moving focus, even with `wrap: true`.
+A retained deletion or caret position follows the same origin rule: its actual location
+must be inside the container. An inside position can search and wrap within the bound;
+an outside position cannot use wrapping to enter it. For example, after removing the last
+control inside a container, backward navigation can reach the preceding control, while
+forward navigation stops or wraps according to `wrap`.
 
 ```js
 // Only navigate within a specific container
@@ -134,20 +279,23 @@ Controls whether focus wraps around when reaching the boundaries.
 
 When `stayWithinElement` is specified:
 - `wrap: true`: Focus wraps from last element back to first (or vice versa for backward)
-- `wrap: false` (default): Focus stops at the boundary and `advanceFocus()` returns `false`
+- `wrap: false` (default): Focus stops at the boundary and the promise resolves with `"no-target"`
 
 When `stayWithinElement` is not specified:
 - `wrap: true`: Focus wraps from the end of the page to the beginning
 - `wrap: false` (default): Focus can move to the browser's address bar (normal Tab behavior)
 
+Wrapping searches at most one cycle of the eligible scope. Empty iframe chains do not restart
+the search indefinitely; if there is no eligible target, the result is `"no-target"`.
+
 ```js
 // Stop at boundaries instead of wrapping
-const result = document.advanceFocus({
+const result = await document.advanceFocus({
   stayWithinElement: container,
   wrap: false
 });
 
-if (!result) {
+if (result === 'no-target') {
   // Reached the boundary - handle accordingly
 }
 ```
@@ -155,7 +303,7 @@ if (!result) {
 #### `includeStartElement`
 
 When `true`, the `startElement` itself is considered as a candidate for focus if it is focusable.
-This is useful when you want to to skip some part of the application and continue from a specific
+This is useful when you want to skip some part of the application and continue from a specific
 place. For example, you have a tree and want to skip the subtree and move to the next tree item on
 the same level when the down arrow is pressed.
 
@@ -167,20 +315,38 @@ document.advanceFocus({
 });
 ```
 
+An iframe remains a sequential search scope, not a document-area focus target.
+Including it selects the first eligible control inside it, or the last for backward navigation,
+recursing into nested frames and ignoring remembered focus. If that chain is empty, search
+continues outside it without events or temporary focus, subject to the bounds and wrapping options.
+
 ### Expected Behaviors
 
 - If an `<iframe>` comes after the starting element, `advanceFocus()` moves focus to the first
-  focusable element inside the iframe (if any), or past the iframe — the same behavior as `Tab`.
-- The same logic applies for backward navigation with `Shift+Tab`.
-- `advanceFocus()` only has effect when the document is focused. It also requires user
-activation (it doesn't have an effect when called in some setTimeout callback without an actual
-user interaction with the page). If focus is in the browser's address bar or another frame, it
-returns `false`.
+  sequentially focusable element inside the iframe (if any), or past the iframe.
+- Backward API navigation uses the last eligible control instead.
+- Ordinary `Tab`, `Shift+Tab`, and `iframe.focus()` retain their native behavior, including
+  document-area focus and remembered-focus restoration where applicable.
+- Outside a synchronous navigational `beforefocus` handler, `advanceFocus()` requires a
+  fully active, focused document and transient user activation. A timer does not itself provide
+  activation. If these invocation-time requirements fail, for example because focus is in the
+  address bar or another frame, the promise resolves with `"not-allowed"`.
+
+Focus must belong directly to the receiving document, not just a descendant frame.
+An ancestor's `document.hasFocus()` can therefore be `true` while its `advanceFocus()` call
+is not allowed. The listener exception belongs to synchronous handling of a trusted
+`"forward"` or `"backward"` event; nested ordinary focus/blur callbacks and later Promise
+continuations do not inherit it. A synchronous eligible listener still has the exception
+when the listener itself is invoked from a microtask.
 
 ## beforefocus Event
 
 The `beforefocus` event is dispatched *before* the browser wants to focus an element. Calling
 `preventDefault()` on the event prevents the element from receiving focus.
+
+Listeners are registered with `addEventListener("beforefocus", ...)`. There is no native
+`onbeforefocus` property or recognized inline `onbeforefocus` attribute, whether the feature
+is enabled or disabled. Assigning the property creates an ordinary expando, not a handler.
 
 ### Event Properties
 
@@ -193,13 +359,19 @@ enum FocusReason {
   "ui"
 };
 
+[Exposed=Window]
 interface BeforeFocusEvent : UIEvent {
-  readonly attribute Element target;
+  constructor(DOMString type, optional BeforeFocusEventInit eventInitDict = {});
   readonly attribute FocusReason reason;
+};
+
+dictionary BeforeFocusEventInit : UIEventInit {
+  FocusReason reason = "script";
 };
 ```
 
-The event has the following characteristics:
+`target` is inherited from `Event`, including its normal retargeting semantics.
+Browser-generated events have the following characteristics:
 - `bubbles: true`
 - `cancelable: true`
 - `composed: true` (crosses shadow DOM boundaries)
@@ -216,9 +388,13 @@ The `reason` property indicates why the element is about to receive focus:
 | `"backward"` | `Shift+Tab` or `advanceFocus({ backward: true })` |
 | `"ui"` | User interaction (mouse click, touch) on a focusable element |
 
-> **Note:** For screen reader focus movements, we most likely want to use `"forward"` or
-> `"backward"` value depending on the relative position of the new element compared to
-> the current one.
+The reason belongs to the individual request. An autofocus operation has `"page"` reason;
+an `element.focus()` call from its focus callback has `"script"` reason instead.
+
+> **Open question:** How assistive-technology-initiated focus is classified still needs
+> accessibility review. Sequential-entry customization must not replace an explicitly
+> chosen assistive-technology destination. Do not use `reason` alone to decide that a
+> focus request is unwanted.
 
 ```js
 element.addEventListener('beforefocus', (event) => {
@@ -251,6 +427,27 @@ The `beforefocus` event fires *before* the `blur` and `focus` events in the focu
 3. `focus` (on the new element)
 
 If `beforefocus` is cancelled, neither `blur` nor `focus` events fire, and focus remains unchanged.
+This applies to the canceled operation only; a handler can independently move focus.
+
+Event dispatch does not await listener promises. Call `preventDefault()` synchronously, before
+awaiting `advanceFocus()`, both in `beforefocus` and in keyboard handlers that replace a default
+action:
+
+```js
+list.addEventListener('keydown', async (event) => {
+  if (event.key !== 'ArrowDown') {
+    return;
+  }
+  event.preventDefault();
+  const result = await document.advanceFocus({ stayWithinElement: list, wrap: true });
+  if (result === 'no-target') {
+    console.log('No navigable item');
+  }
+});
+```
+
+Do not test the returned promise as a boolean: `if (document.advanceFocus())` tests the promise
+object, not the navigation result.
 
 ### Important Behaviors
 
@@ -312,151 +509,344 @@ Each frame must independently opt in via its own meta tag:
 
 - `advanceFocus()` naturally navigates into and out of iframes, following the same tab order
   as the `Tab` key
-- When called from a frame that doesn't have focus, it returns `false`
+- When called from a frame that does not meet the invocation-time focus requirements, its
+  promise resolves with `"not-allowed"`
 - Each frame's `advanceFocus()` operates within the context of that frame unless navigation
   naturally crosses frame boundaries
+- The promise settles after the final destination processes the request, not when an iframe
+  handoff is queued. A newer source-frame focus request supersedes an unfinished exit as well
+  as an unfinished entry, so a stale handoff cannot overwrite newer focus.
 
 ## Usage Examples
 
 ### Focus Trap for Modal Dialogs
 
-Implement a focus trap without sentinel elements:
+While a custom dialog is open, cancel focus moves to elements elsewhere in the
+document. Tab and Shift+Tab attempts to leave for another page element instead
+wrap within the dialog. Outside pointer or script attempts leave its current
+focus unchanged. Sequential entry from outside starts at the dialog's boundary;
+choosing the first or last control this way assumes ordinary DOM tab order,
+without positive `tabindex` values. The component's opening and closing logic
+maintains `dialogIsOpen`.
 
 ```js
 const dialog = document.getElementById('modal-dialog');
 
-dialog.addEventListener('beforefocus', (event) => {
-  // If focus is trying to leave the dialog, prevent it
-  if (!dialog.contains(event.target)) {
-    event.preventDefault();
+document.addEventListener('beforefocus', (event) => {
+  if (!dialogIsOpen || dialog.contains(event.target)) {
+    return;
   }
-});
 
-// Navigate within the dialog only
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Tab' && dialogIsOpen) {
-    e.preventDefault();
+  event.preventDefault();
+  const focusIsInside =
+    document.hasFocus() && dialog.contains(document.activeElement);
+  const isSequential = event.reason === 'forward' || event.reason === 'backward';
+  if (focusIsInside && !isSequential) {
+    return;
+  }
+
+  document.advanceFocus({
+    startElement: focusIsInside ? undefined : dialog,
+    stayWithinElement: dialog,
+    backward: event.reason === 'backward',
+    wrap: true
+  });
+}, { capture: true });
+```
+
+The listener belongs on `document`, because a destination outside the dialog does
+not send its event through the dialog. Capture is optional for this bubbling
+event, but runs the guard before descendant listeners can stop propagation.
+
+`document.hasFocus()` distinguishes actual focus from a remembered `activeElement`
+while the address bar has focus. When focus is inside, leaving `startElement`
+undefined preserves the current focus position and `wrap: true` cycles within the
+constraint. Otherwise, the explicit container start enters from the dialog's
+boundary rather than from a remembered or outside element. Forward/backward
+`beforefocus` handlers can use the navigation permission exception to enter from
+browser UI.
+An explicit container start is a position, not a reset to the lowest positive
+`tabindex`: if descendants use positive values, forward entry can select an
+earlier DOM descendant rather than the first control in their reordered tab order.
+
+No `keydown` handler is needed to replace a move to an outside page element with
+bounded, wrapping navigation. However, a move directly into browser chrome has
+no destination element in this document and cannot be intercepted by this
+listener. If that transition must also wrap, Tab must be handled explicitly.
+
+### Navigation List with a Current Item
+
+A navigation list can direct entry to the current page's link. These are ordinary links,
+not a listbox: every link remains reachable with Tab and Shift+Tab, and navigation out of
+the list is left alone.
+
+```html
+<nav id="section-links" aria-label="Project sections">
+  <ul>
+    <li><a href="/overview">Overview</a></li>
+    <li><a href="/activity" aria-current="page">Activity</a></li>
+    <li><a href="/settings">Settings</a></li>
+  </ul>
+</nav>
+```
+
+```js
+const list = document.getElementById('section-links');
+
+list.addEventListener('beforefocus', (event) => {
+  const currentLink = list.querySelector('a[aria-current="page"]');
+
+  if ((event.reason === 'forward' || event.reason === 'backward') &&
+      !list.contains(document.activeElement) &&
+      currentLink &&
+      event.target !== currentLink) {
+    event.preventDefault();
     document.advanceFocus({
-      stayWithinElement: dialog,
-      backward: e.shiftKey,
-      wrap: true
+      startElement: currentLink,
+      includeStartElement: true,
+      backward: event.reason === 'backward'
     });
   }
 });
 ```
 
-### List Navigation with Selected Item
+**Why entry boundaries matter:** The items to skip may be the first tab stops on
+the page, or the first ones after an iframe. A `keydown` listener in the receiving
+document cannot intercept the keystroke that brings focus in from browser UI or
+another document. With traditional focus-event handlers, preserving the existing
+Tab order often means adding a sentinel input that receives focus first and then
+redirects it. `beforefocus` lets the application choose the intended destination
+without a sentinel or an intermediate focus step.
 
-Common pattern: Tab into a list should focus the selected item, not the first item.
+### Preventing Unsolicited Autofocus
+
+An application can suppress autofocus from a known passive preview without blocking the
+user from entering it with Tab, Shift+Tab, or a pointer, or from deliberately moving focus
+with script:
 
 ```html
-<ul id="listbox" role="listbox">
-  <li tabindex="0">Item 1</li>
-  <li tabindex="0" aria-selected="true">Item 2 (selected)</li>
-  <li tabindex="0">Item 3</li>
-</ul>
+<iframe id="preview" src="preview.html" title="Document preview"></iframe>
 ```
 
 ```js
-const list = document.getElementById('listbox');
-
-list.addEventListener('beforefocus', (event) => {
-  const selectedItem = list.querySelector('[aria-selected="true"]');
-
-  // When tabbing into the list from outside
-  if ((event.reason === 'forward' || event.reason === 'backward') &&
-      !list.contains(document.activeElement) &&       // Coming from outside the list
-      selectedItem &&
-      !selectedItem.contains(event.target)) {         // Not already targeting selected item
-
+document.getElementById('preview').addEventListener('beforefocus', (event) => {
+  if (event.reason === 'page') {
     event.preventDefault();
-    selectedItem.focus();
   }
 });
 ```
 
-### Preventing Unwanted Focus Theft
+This is a narrowly scoped application policy, not a general focus trap. In particular,
+`"script"` alone cannot distinguish unwanted focus theft from a user-requested action
+or assistive-technology interaction. Do not cancel every destination outside an active panel.
 
-Prevent background content from stealing focus (e.g., lazy-loaded iframes):
+### Preventing Focus Theft from Nested Integrations
+
+A partner can embed another partner, which can in turn embed an old integration
+that repeatedly calls `focus()`. The application may not control any of those
+documents or be able to fix the offending script. It can still protect an input
+while the user is editing it.
+
+These are four separate documents on different origins, not HTML nested inside
+one `<iframe>` tag. Each `src` loads the next document in the chain.
+
+**Application document**
+
+```html
+<meta name="focus-navigation" content="beforefocus">
+<label for="message">Message</label>
+<input id="message" type="text">
+<!-- Partner integration -->
+<iframe id="partner" src="https://partner.example/integration.html"
+        title="Partner integration"></iframe>
+```
+
+**Document at `https://partner.example/integration.html`**
+
+```html
+<!-- Partner's partner integration -->
+<iframe src="https://second-partner.example/integration.html"
+        title="Partner's partner integration"></iframe>
+```
+
+**Document at `https://second-partner.example/integration.html`**
+
+```html
+<!-- Retired partner's partner's partner integration -->
+<iframe src="https://retired-partner.example/integration.html"
+        title="Retired integration"></iframe>
+```
+
+**Document at `https://retired-partner.example/integration.html`**
+
+```html
+<button id="button">I will be focused!</button>
+<script>
+  setInterval(() => document.getElementById("button").focus(), 1000);
+</script>
+```
+
+The application installs this listener in its own document:
 
 ```js
-const activePanel = document.querySelector('.active-panel');
+const input = document.getElementById('message');
+const partner = document.getElementById('partner');
 
 document.addEventListener('beforefocus', (event) => {
-  // Only allow focus within the active panel
-  if (!activePanel.contains(event.target)) {
+  if (event.target === partner &&
+      event.reason === 'script' &&
+      document.hasFocus() &&
+      document.activeElement === input) {
     event.preventDefault();
   }
-});
+}, { capture: true });
 ```
+
+The application receives the notification on its own `partner` iframe, even
+though the requested destination is three cross-origin frames away. It does not
+need access to the inner DOM, and the embedded documents do not need to opt in.
+Canceling each attempt keeps actual focus in the input without blurring it or
+briefly focusing the remote button.
+
+This policy is deliberately narrow: it protects this input against script-driven
+entry into this integration. It allows Tab, Shift+Tab, and pointer entry, and
+stops blocking when the input no longer has focus. It cannot distinguish that
+integration's unwanted `focus()` calls from legitimate ones made on a user's
+behalf; an application needing the latter must provide an explicit exception.
 
 ### Focus Redirection
 
-Redirect focus to a different element:
+When an application focuses a search component as a whole, the component can put focus
+directly into its input. For example, an "Open search" action can call `searchForm.focus()`
+without needing to know which child should receive focus.
 
-```js
-const deprecatedButton = document.getElementById('old-button');
-const newButton = document.getElementById('new-button');
-
-deprecatedButton.addEventListener('beforefocus', (event) => {
-  event.preventDefault();
-  newButton.focus();
-});
+```html
+<form id="search-form" action="/search" tabindex="-1">
+  <label for="search-input">Search this site</label>
+  <input id="search-input" name="q" type="search">
+  <button type="submit">Search</button>
+</form>
 ```
 
-### Skip Navigation Links
-
-Implement skip links that work with Tab navigation:
-
 ```js
-const skipLink = document.getElementById('skip-to-main');
-const mainContent = document.getElementById('main');
+const searchForm = document.getElementById('search-form');
+const searchInput = document.getElementById('search-input');
 
-skipLink.addEventListener('beforefocus', (event) => {
-  if (event.reason === 'forward') {
-    event.preventDefault();
-
-    document.advanceFocus({
-      startElement: mainContent,
-      includeStartElement: true
-    });
+searchForm.addEventListener('beforefocus', (event) => {
+  if (event.target !== searchForm) {
+    return;
   }
+
+  event.preventDefault();
+  searchInput.focus();
 });
 ```
+
+The form's `tabindex="-1"` lets it receive programmatic focus requests without adding
+an extra Tab stop. The target check leaves requests for the input and Search button
+alone, including the input's own bubbling `beforefocus` event. Tab and Shift+Tab still
+move through those controls normally. Unlike redirecting from a `focus` handler,
+the form itself never briefly receives focus.
 
 ### Custom Focusgroup-like Navigation
 
-Skip non-entry items in a focusgroup pattern:
+A toolbar can behave as one stop in sequential navigation without changing any
+`tabindex` values. All buttons keep their ordinary markup. Left/Right use bounded,
+wrapping navigation; Home/End find the first/last eligible button; Tab/Shift+Tab
+continue outside the toolbar from its last/first button.
+
+Forward entry naturally reaches the first eligible button. The `beforefocus`
+handler redirects backward entry to a forward search from the toolbar's boundary,
+so entry from either direction starts there. It leaves internal navigation and
+pointer focus alone.
+
+```html
+<div id="toolbar" role="toolbar" aria-label="Document actions">
+  <button type="button">New</button>
+  <button type="button">Open</button>
+  <button type="button">Save</button>
+</div>
+```
 
 ```js
 const toolbar = document.getElementById('toolbar');
-const items = toolbar.querySelectorAll('.toolbar-item');
-const entryItem = items[0]; // First item is the entry point
+
+toolbar.addEventListener('keydown', (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey) {
+    return;
+  }
+  let options = { stayWithinElement: toolbar, wrap: true };
+  switch (event.key) {
+    case 'Tab':
+      options = {
+        startElement: event.shiftKey
+          ? toolbar.firstElementChild
+          : toolbar.lastElementChild,
+        backward: event.shiftKey
+      };
+      break;
+    case 'ArrowRight':
+      break;
+    case 'ArrowLeft':
+      options.backward = true;
+      break;
+    case 'Home':
+      options.startElement = toolbar;
+      break;
+    case 'End':
+      options.startElement = toolbar;
+      options.backward = true;
+      break;
+    default:
+      return;
+  }
+  event.preventDefault();
+  document.advanceFocus(options);
+});
 
 toolbar.addEventListener('beforefocus', (event) => {
-  // If navigating to a toolbar item that isn't the entry point
-  if ((event.reason === 'forward' || event.reason === 'backward') &&
-      event.target.classList.contains('toolbar-item') &&
-      event.target !== entryItem) {
-
-    event.preventDefault();
-
-    // Focus the entry item instead
-    entryItem.focus();
+  if (event.reason !== 'backward' ||
+      (document.hasFocus() && toolbar.contains(document.activeElement))) {
+    return;
   }
+  event.preventDefault();
+  document.advanceFocus({
+    startElement: toolbar,
+    stayWithinElement: toolbar
+  });
 });
 ```
+
+The first and last children are buttons in this markup. For Tab, they serve only
+as search starting points: focus moves directly outside, without temporarily
+focusing either endpoint. For navigation within the toolbar, the browser finds
+eligible destinations, including skipping disabled buttons.
+
+The backward-entry redirect performs a forward search, so it does not trigger
+itself again. No `focusin` handler, per-button index tracking, or DOM mutations are
+needed.
+
+As with list entry, this also covers a toolbar at a page or iframe boundary, where
+the receiving document cannot handle the originating `keydown`. The `beforefocus`
+handler can skip the unwanted entry target without adding a sentinel input that
+must receive focus before redirecting it.
 
 ## Summary
 
 The combination of `document.advanceFocus()` and the `beforefocus` event provides low-level
 primitives for implementing various high-level keyboard navigation patterns. These primitives
 enable developers to implement:
-- Modal dialogs with focus traps
-- List navigations
-- Focus theft prevention
+- Modal dialogs with focus traps spanning multiple DOM containers, such as the
+  dialog itself and a custom popover mounted directly under `<body>` to avoid
+  clipping by the dialog container's `overflow: hidden`
+- List navigation that directs incoming focus to the current item rather than
+  the first, even when Tab enters from browser UI, without sentinel inputs or
+  intermediate focus
+- Focus theft prevention, even when unwanted focus requests originate in nested
+  cross-origin iframes whose code the application cannot control
 - Skip navigation
 - Custom focusgroup patterns
 - And much more...
 
-All without relying on DOM mutations, roving tabindex, or invisible sentinel elements.
+These primitives complement native HTML controls and established composite-widget keyboard
+patterns. They do not replace semantic markup, accessible names, or keyboard access.
