@@ -384,12 +384,12 @@ supportsPopoverType('invalid!') === false
 
 ## Events
 
-An event is fired synchronously when a popover is shown or hidden. This event can be used, for example, to populate content for the popover just in time before it is shown, or update server data when it closes. The event provides a `oldState` and `newState` for the popover. The value of these properties can either be "open" or "closed". The events looks like this:
+An event is fired synchronously when a popover is shown or hidden. This event can be used, for example, to populate content for the popover just in time before it is shown, or update server data when it closes. The event provides a `currentState` and `newState` for the popover. The value of these properties can either be "open" or "closed". The events looks like this:
 
 ```javascript
 const popover = Object.assign(document.createElement('div'), { popover: 'auto' })
-popover.addEventListener('beforetoggle', ({ oldState, newState }) => {
-  if (oldState === 'closed') console.info('Popover is closed')
+popover.addEventListener('beforetoggle', ({ currentState, newState }) => {
+  if (currentState === 'closed') console.info('Popover is closed')
   if (newState === 'open') console.info('Popover is being shown')
 })
 ```
