@@ -298,7 +298,7 @@ These rules govern when elements have interest:
 
 When the target is a popover, these additional rules apply:
 
-- When interest is shown, the popover is shown if it is not already open. The element with `interestfor` becomes the popover's invoker, and the popover's [implicit anchor element](https://drafts.csswg.org/css-anchor-position-1/#implicit-anchor-element).
+- When interest is shown, the popover is shown if it is not already open. The element with `interestfor` becomes the popover's invoker, and the popover's [implicit anchor element](https://drafts.csswg.org/css-anchor-position-1/#implicit-anchor-element). The exception is when interest is shown by activating the `::interest-button`, in which case the `::interest-button` is the implicit anchor element.
 - When interest is lost, the popover is hidden, but only if it was shown via interest. If the popover was opened by some other means, such as `commandfor` or `popovertarget`, then showing interest does not take over that popover, and losing interest does not close it.
 - If the target popover is closed by any other means (e.g. light dismiss, `hidePopover()`, a `hide-popover` command, or ESC), interest is lost, and a `"loseinterest"` event is fired.
 - As with `popovertarget` and `commandfor`, interest invokers participate in the popover nesting algorithm. A hovercard opened from an interest invoker that is inside another popover is treated as a child of that popover, so showing it does not close the outer popover. And clicking on an element with `interestfor` does not light dismiss its own target popover.
@@ -362,7 +362,7 @@ When `interestfor` and `commandfor` point to the same popover, and the command i
 
 ### Touchscreen affordance
 
-The `::interest-button` pseudo element adds a tappable button after a link, for touchscreen users. The popover is positioned relative to the link using CSS anchor positioning, since the link is the popover's implicit anchor element:
+The `::interest-button` pseudo element adds a tappable button after a link, for touchscreen users. The popover is positioned using CSS anchor positioning, relative to its implicit anchor element. When interest is shown by hovering or focusing the link, the link is the implicit anchor. When interest is shown by tapping the `::interest-button`, the `::interest-button` itself is the implicit anchor, so the popover is positioned next to the button that was tapped:
 
 ```html
 <a href="/users/mfreed7" interestfor=profile>@mfreed7</a>
@@ -691,14 +691,19 @@ This section links to all of the relevant discussions and issues related to `int
 - [OpenUI's keyboard behavior discussion](https://github.com/openui/open-ui/issues/1133)
 - [WHATWG's keyboard behavior discussion](https://github.com/whatwg/html/issues/11056)
 - [The WebKit standards position for popover=hint (has a lot of `interestfor` discussion)](https://github.com/WebKit/standards-positions/issues/305)
-- [The WebKit standards position on interestfor ("concerns: portability")](https://github.com/WebKit/standards-positions/issues/464)
-- [The Mozilla standards position on interestfor ("defer")](https://github.com/mozilla/standards-positions/issues/1181)
+- [The WebKit standards position on interestfor (still open)](https://github.com/WebKit/standards-positions/issues/464)
+- [The Mozilla standards position on interestfor ("position: neutral")](https://github.com/mozilla/standards-positions/issues/1181)
 - [CSSWG discussion of the delay control properties](https://github.com/w3c/csswg-drafts/issues/9236)
 - [CSSWG discussion of the pseudo classes](https://github.com/w3c/csswg-drafts/issues/12154)
 - [CSSWG discussion of the pseudo class naming](https://github.com/w3c/csswg-drafts/issues/12515)
 - [(OpenUI) Don't use interestfor for modal dialogs](https://github.com/openui/open-ui/issues/1093)
 - [(OpenUI) We don't need an interestaction attribute](https://github.com/openui/open-ui/issues/1064)
-- [The ::interest-button pseudo element](https://github.com/w3c/csswg-drafts/issues/12437)
+- [Add an ::interest-button pseudo element to interest invokers](https://github.com/w3c/csswg-drafts/issues/12437)
+- [Should ::interest-button be opt-in, opt-out, or enabled via media query?](https://github.com/w3c/csswg-drafts/issues/13980)
+- [Layout tree for ::interest-button](https://github.com/w3c/csswg-drafts/issues/13981) (positioning, list marker positioning, etc.)
+- [UA stylesheet rules for ::interest-button](https://github.com/w3c/csswg-drafts/issues/13982)
+- [What should the inline media condition be, for ::interest-button's display rule?](https://github.com/w3c/csswg-drafts/issues/14037)
+- [::interest-button or ::after/::before ?](https://github.com/w3c/csswg-drafts/issues/14433)
 - [(OpenUI) Possible expansion of the set of supported elements](https://github.com/openui/open-ui/issues/908)
 - [(OpenUI) Possible expansion or reduction of the set of supported elements](https://github.com/openui/open-ui/issues/1138)
 - [(OpenUI) Safe area / hit triangle](https://github.com/openui/open-ui/issues/963)
