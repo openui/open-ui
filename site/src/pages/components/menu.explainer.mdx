@@ -255,8 +255,8 @@ Activating a menu item element is how users invoke actions or change state in an
 As discussed, these can appear in `<menubar>` or `<menulist>` elements:
 
 * `<menuitem>` represents a command or action, or opens a submenu with more menu items.
-* `<menuitemcheckbox>` represents a checkable menu item that can be toggled on or off (checkbox behavior).
-* `<menuitemradio>` represents a checkable menu item within a group of mutually exclusive options (radio button behavior).
+* `<menuitemcheckbox>` represents a checkable menu item that can be toggled on or off (checkbox-like behavior).
+* `<menuitemradio>` represents a checkable menu item within a group of mutually exclusive options (radio button-like behavior).
 
 ### Shared characteristics
 
@@ -266,7 +266,6 @@ All three elements share the following behaviors:
   items.
 * Have a `disabled` **IDL** attribute and corresponding **content** attribute.
 * Support the `:enabled` and `:disabled` CSS pseudo-classes.
-* Soft disabling: disabled menu items are exposed with `aria-disabled="true"` while remaining keyboard-focusable.
 * Activation: A synthetic `click` event is fired upon activation, consistent with the
   [HTML Standard's prose on activation](https://html.spec.whatwg.org/C#activation), and
   is also synthetically fired to cover other cases where activation doesn't apply. See
