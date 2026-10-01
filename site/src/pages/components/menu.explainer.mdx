@@ -21,13 +21,13 @@ authors:
 An application menu is a common way to group actions together in the form of menu items, and provide
 users the ability to execute commands.
 
-This proposal introduces the `<menubar>`, `<menulist>`, `<menuitem>`, and `<submenu>` elements
-to support application menus on the web.
+This proposal introduces the `<menubar>`, `<menulist>`, `<menuitem>`, `<menuitemcheckbox>`,
+`<menuitemradio>`, and `<submenu>` elements to support application menus on the web.
 These menus will:
 
  - Represent commands as `<menuitem>`s, grouped together in a `<menulist>` popover or in-page
    `<menubar>`.
- - Represent state in checkable and radio-style menu items.
+ - Represent state in checkable (`<menuitemcheckbox>`) and radio-style (`<menuitemradio>`) menu items.
  - Provide the correct implicit ARIA roles and keyboard interaction model out of the box.
  - Give web developers default styles that create functional menus without having to re-invent
    common popover and anchor positioning patterns, or re-implement ARIA patterns.
@@ -114,22 +114,18 @@ little markup and JavaScript. Consider the following examples:
         <menuitem>Zoom</menuitem>
         <!-- Zoom Menu (Level 2) -->
         <menulist>
-          <fieldset checkable="single">
-            <menuitem>50%</menuitem>
-            <menuitem>75%</menuitem>
-            <menuitem defaultchecked>100%</menuitem>
-            <menuitem>150%</menuitem>
-            <menuitem>200%</menuitem>
-          </fieldset>
+          <menuitemradio>50%</menuitemradio>
+          <menuitemradio>75%</menuitemradio>
+          <menuitemradio defaultchecked>100%</menuitemradio>
+          <menuitemradio>150%</menuitemradio>
+          <menuitemradio>200%</menuitemradio>
         </menulist>
       </submenu>
       <menuitem>Full Screen</menuitem>
       <hr>
-      <fieldset checkable="multiple">
-        <menuitem defaultchecked>Show Ruler</menuitem>
-        <menuitem>Show Outline</menuitem>
-        <menuitem defaultchecked>Show Comments</menuitem>
-      </fieldset>
+      <menuitemcheckbox defaultchecked>Show Ruler</menuitemcheckbox>
+      <menuitemcheckbox>Show Outline</menuitemcheckbox>
+      <menuitemcheckbox defaultchecked>Show Comments</menuitemcheckbox>
     </menulist>
   </submenu>
   <submenu>
@@ -198,9 +194,11 @@ This element:
 **Content model**: the `<menulist>` element allows the following elements as descendants:
 
 * `<menuitem>`
+* `<menuitemcheckbox>`
+* `<menuitemradio>`
 * `<submenu>`
 * `<hr>`
-* `<fieldset>` (containing `<div>` (with transparent content model) or `<menuitem>`)
+* `<fieldset>` (containing `<div>` (with transparent content model), `<menuitem>`, `<menuitemcheckbox>`, or `<menuitemradio>`)
 * `<div>` (with transparent content model)
 * This initial version does not allow other content.  While there is some desire to allow
   some types of **interactive content** inside of menu lists,
@@ -209,7 +207,7 @@ This element:
   by arrow keys that is expected of elements with `menu*` ARIA roles.
   However, in the future we might want to figure out how to support
   interactive content as a sibling of
-  `<menuitem>`s, not nested inside them, as nested interactive content is generally inaccessible.
+  menu items, not nested inside them, as nested interactive content is generally inaccessible.
   See [Issue #1323](https://github.com/openui/open-ui/issues/1323) for more discussion on how we
   might support other interactive content in menus, such as `<input type=search>`.
 * Anchor `<a>` tags are disallowed in menu lists, due to accessibility concerns around exposing
@@ -221,84 +219,115 @@ The `<fieldset>` element is used in a `<menulist>` to group menu items that serv
 It gives two key pieces of functionality:
 
 * Captioned groups, with its optional `<legend>` for labeling.
-* A common ancestor for checkable `<menuitem>`s. This supports both exclusively checkable and
-  multi-checkable menu items.
+* Grouping `<menuitemradio>` elements into separate radio groups when multiple distinct groups exist
+  within the same `<menulist>` (or `<menubar>`).
 
 **Checkable menu items**
 
-To support checkable menu items, we propose the new `checkable` **content** attribute on
-`<fieldset>`, reflected by a corresponding boolean **IDL** attribute, to group items as either
-radios or checkboxes; its allowed values are `checkable=single` and `checkable=multiple`:
+Checkable menu items are represented directly by `<menuitemcheckbox>` and `<menuitemradio>` elements:
+
+* `<menuitemcheckbox>` elements represent toggleable checkbox menu items.
+* `<menuitemradio>` elements represent radio-like menu items where only one item in a group may be checked at a time. The grouping of `<menuitemradio>` elements is determined by their nearest `<fieldset>`, `<menulist>`, or `<menubar>` ancestor.
 
 ```html
 <menulist id=sort-menu>
-  <fieldset checkable=single>
+  <fieldset>
     <legend>Sort by</legend>
-    <menuitem>Recently added</menuitem>
-    <menuitem>Date created</menuitem>
-    <menuitem>Creator</menuitem>
+    <menuitemradio defaultchecked>Recently added</menuitemradio>
+    <menuitemradio>Date created</menuitemradio>
+    <menuitemradio>Creator</menuitemradio>
   </fieldset>
 
-  <fieldset checkable=multiple>
-    <menuitem>1 bedroom</menuitem>
-    <menuitem>2 bedrooms</menuitem>
-    <menuitem>3 bedrooms</menuitem>
+  <fieldset>
+    <legend>Filter</legend>
+    <menuitemcheckbox>1 bedroom</menuitemcheckbox>
+    <menuitemcheckbox>2 bedrooms</menuitemcheckbox>
+    <menuitemcheckbox>3 bedrooms</menuitemcheckbox>
   </fieldset>
 </menulist>
 ```
 
-Note that `<fieldset>` is totally optional—it is only needed to support captioned or checkable menu
-items. If `<menuitem>`s appear bare in a `<menulist>` or `<menubar>` without a `<fieldset>`, then
-they are just grouped together under their parent list or bar, but are logically separate and not
-checkable.
+Note that `<fieldset>` is optional. It is needed for captioned groups (using `<legend>`) or to divide `<menuitemradio>` elements into multiple mutually exclusive groups within the same menu. Checkbox-like `<menuitemcheckbox>` items do not require a `<fieldset>` to function, and if a menu contains only a single group of radio items, `<menuitemradio>` elements can appear directly inside `<menulist>` without a `<fieldset>`.
 
-## The `<menuitem>` element
+## The `<menuitem>`, `<menuitemcheckbox>`, and `<menuitemradio>` elements
 
-Activating the `<menuitem>` element is how users invoke actions from an application menu. As
-discussed, these can appear in `<menubar>` or `<menulist>` elements, and are used to invoke
-commands, track checkable state, or open submenus with more menu items.
+Activating a menu item element is how users invoke actions or change state in an application menu.
+As discussed, these can appear in `<menubar>` or `<menulist>` elements:
 
-This element:
+* `<menuitem>` represents a command or action, or opens a submenu with more menu items.
+* `<menuitemcheckbox>` represents a checkable menu item that can be toggled on or off (checkbox behavior).
+* `<menuitemradio>` represents a checkable menu item within a group of mutually exclusive options (radio button behavior).
 
-* Provides the implicit [`menuitem`](https://w3c.github.io/aria/#menu) ARIA role.
-    * See "checkability" below for how this can change
-* Provides the correct keyboard and focus behavior across sub-menulists, menubars, and sibling menu
+### Shared characteristics
+
+All three elements share the following behaviors:
+
+* Provide the correct keyboard and focus behavior across sub-menulists, menubars, and sibling menu
   items.
-* Has `command/commandfor` attributes to invoke sub-menus or issue other commands.
-* Has a `disabled` **IDL** attribute and corresponding **content** attribute.
-* Supports the `:enabled` and `:disabled` CSS pseudo-classes.
+* Have a `disabled` **IDL** attribute and corresponding **content** attribute.
+* Support the `:enabled` and `:disabled` CSS pseudo-classes.
+* Soft disabling: disabled menu items are exposed with `aria-disabled="true"` while remaining keyboard-focusable.
+* Activation: A synthetic `click` event is fired upon activation, consistent with the
+  [HTML Standard's prose on activation](https://html.spec.whatwg.org/C#activation), and
+  is also synthetically fired to cover other cases where activation doesn't apply. See
+  [Issue #1312](https://github.com/openui/open-ui/issues/1312).
+* Have `command`/`commandfor` attributes to invoke commands.
+
+### The `<menuitem>` element
+
+The `<menuitem>` element represents an action or command:
+
+* Provides the implicit [`menuitem`](https://w3c.github.io/aria/#menuitem) ARIA role.
+* Can invoke commands using `command` and `commandfor`.
+* Can invoke submenus when part of a `<submenu>` element.
+
+### The `<menuitemcheckbox>` element
+
+The `<menuitemcheckbox>` element represents a checkable item with a toggleable binary state:
+
+* Provides the implicit [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) ARIA role.
+* Has a `checked` boolean **IDL** attribute that does NOT reflect any content attribute, to track live-checked-ness.
+* Has a `defaultchecked` **content** attribute reflected by a `defaultChecked` boolean **IDL**
+  attribute to cover initial checked-ness. See
+  [Issue #1205](https://github.com/openui/open-ui/issues/1205).
+* Supports the `:checked` CSS pseudo-class and `::checkmark` CSS pseudo-element.
 * Events:
-    * A `click` event is fired upon activation. See
-      [Issue #1312](https://github.com/openui/open-ui/issues/1312). Firing a synthetic `click` here
-      is consistent with the
-      [HTML Standard's prose on activation](https://html.spec.whatwg.org/C#activation).
-    * For checkable menu items,
-      if the `click` event is not canceled (also known as `defaultPrevented`),
+    * If the `click` event is not canceled (also known as `defaultPrevented`),
       then the following also happens synchronously after the `click` event
       (See [Issue #1321](https://github.com/openui/open-ui/issues/1321)):
-        * The internal checked state changes as part of the `menuitem`'s activation behavior.
+        * The internal checked state changes as part of the activation behavior.
         * A `checked` event is fired.
         * Note that this happens before closing of any popovers that need to be
           closed as a result of activation.
-* Checkability:
-    * Supports checkability, by being contained in a `<fieldset checkable=single|multiple>`.
-    * Has a `checked` boolean **IDL** attribute that does NOT reflected any content attribute, to
-      track live-checked-ness.
-    * Has a `defaultchecked` **content** attribute reflected by a `defaultChecked` boolean **IDL**
-      attribute to cover checked initial-ness. See
-      [Issue #1205](https://github.com/openui/open-ui/issues/1205).
-    * Supports the `:checked` CSS pseudo-class and `::checkmark` CSS pseudo-element.
-    * Provides the right implicit ARIA role, either
-      [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) for `checkable=multiple` or
-      [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) for `checkable=single`.
+
+### The `<menuitemradio>` element
+
+The `<menuitemradio>` element represents an item in a set of mutually exclusive options:
+
+* Provides the implicit [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) ARIA role.
+* **Radio grouping**: The grouping of `<menuitemradio>` elements is by their nearest `<fieldset>`, `<menulist>`, or `<menubar>` ancestor. When a `<menuitemradio>` is checked, any other `<menuitemradio>` in the same group is unchecked.
+* Has a `checked` boolean **IDL** attribute that does NOT reflect any content attribute, to track live-checked-ness.
+* Has a `defaultchecked` **content** attribute reflected by a `defaultChecked` boolean **IDL**
+  attribute to cover initial checked-ness. See
+  [Issue #1205](https://github.com/openui/open-ui/issues/1205).
+* Supports the `:checked` CSS pseudo-class and `::checkmark` CSS pseudo-element.
+* Events:
+    * If the `click` event is not canceled (also known as `defaultPrevented`),
+      then the following also happens synchronously after the `click` event
+      (See [Issue #1321](https://github.com/openui/open-ui/issues/1321)):
+        * The internal checked state changes as part of the activation behavior, and any other
+          `<menuitemradio>` in the same group is unchecked.
+        * A `checked` event is fired.
+        * Note that this happens before closing of any popovers that need to be
+          closed as a result of activation.
 
 **Content model**:
 
-We expect the content in a menu to be in `<menuitem>` elements.
+We expect the content in a menu to be in `<menuitem>`, `<menuitemcheckbox>`, and `<menuitemradio>` elements.
 This includes non-interactive elements and design items such as logos, images, text.
 
 See [Issue #1323](https://github.com/openui/open-ui/issues/1323) for more discussion on how we might
-support other interactive content in menus alongside the `<menuitem>` element in a later version of this feature, such as `<input type=search>`.
+support other interactive content in menus alongside menu item elements in a later version of this feature, such as `<input type=search>`.
 
 <img src="/images/menubar-search-input.png" alt="menubar examples with search input as a sibling of menuitems" />
 
@@ -367,14 +396,11 @@ describes the concrete implications on our proposal.
  - The `<menulist>` element exposes the implicit ARIA
    [`menu`](https://w3c.github.io/aria/#menu) role.
  - The `<menuitem>` element exposes the implicit ARIA
-   [`menuitem`](https://w3c.github.io/aria/#menuitem) role by default.
-
-While the `<menuitem>` element's native ARIA role defaults to `menuitem`, it is responsive to
-whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
-[`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role is exposed for items in a
-`<fieldset checkable=single>`, and the
-[`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role is exposed for items in a
-`<fieldset checkable=multiple>`.
+   [`menuitem`](https://w3c.github.io/aria/#menuitem) role.
+ - The `<menuitemcheckbox>` element exposes the implicit ARIA
+   [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role.
+ - The `<menuitemradio>` element exposes the implicit ARIA
+   [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role.
 
 ### ARIA attributes
 
@@ -384,14 +410,14 @@ whether the element is embedded in a `<fieldset checkable=single|multiple>`. The
       the `toggle-menu` command), or other popovers unrelated to our
       proposal
  - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
-    - For checkable `<menuitem>` element, the `aria-checked` attribute reflects whether their
+    - For `<menuitemcheckbox>` and `<menuitemradio>` elements, the `aria-checked` attribute reflects whether their
       current [state](https://w3c.github.io/aria/#dfn-state) is checked
  - [`aria-disabled`](https://w3c.github.io/aria/#aria-disabled)
     - See [§ Soft disabling](#soft-disabling)
 
 ### Soft disabling
 
-A `<menuitem disabled>` element will be marked as `aria-disabled=true`, however the element will
+A disabled menu item (`<menuitem disabled>`, `<menuitemcheckbox disabled>`, or `<menuitemradio disabled>`) will be marked as `aria-disabled=true`, however the element will
 still be keyboard reachable and focusable, just not activatable. See [Issue
 #1274](https://github.com/openui/open-ui/issues/1274) for more discussion.
 **Or maybe it won't be; this requires further discussion.**
@@ -556,87 +582,68 @@ contain a variety of controls, for example, buttons and
 [comboboxes](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) (which can also invoke menu lists).
 
 
-### How best to represent checkable `<menuitem>`s?
+### How best to represent checkable menu items?
 
 GitHub: [Issue #1189](https://github.com/openui/open-ui/issues/1189)
 
-We want to be able to represent two types of checkable menuitems:
+Our proposal introduces the dedicated `<menuitemcheckbox>` and `<menuitemradio>` elements to
+represent checkable state-bearing menu items, alongside `<menuitem>` for standard commands.
 
- * exclusive checkable menuitems, where only one item in a group can be checked, typically represented with radio buttons
- * multiply-checkable menuitems, where multiple items in a group can be checked (although there might be just one item), typically represented with checkboxes
+Several alternative approaches were considered:
 
-There are two high-level approaches for doing this:
+* Using an attribute on fieldset, in particular `<fieldset checkable=single>`
+  or `<fieldset checkable=multiple>`, to make the menuitems within them
+  checkable and given them either radio or checkbox semantics.  This has the
+  advantage (relative to all the other options, including the one we chose)
+  that it helps to avoid creating combinations of markup that are invalid.
+  However, it was not chosen because it was considered too unusual to have a
+  parent element change the meaning of its descendant elements, and their ARIA
+  role, in this manner.  It also had the disadvantage of requiring a
+  `<fieldset>` for a lone checkbox-type menu item.
+* Adding a `type` attribute to `<menuitem>`, giving `<menuitem type=checkbox>`
+  and `<menuitem type=radio>`, or a `checkable` attribute with
+  `checkable=single` and `checkable=multiple`.
+* A hybrid of the above two approaches, with a `checkable` boolean attribute
+  on `<menuitem>` and a `checkable=single` on `<fieldset>`.
 
- * with an attribute on each menu item, plus a name to group the exclusive items
- * with a grouping element that contains the items
+All of these alternatives also had the disadvantages that:
+* `checked` and `defaultChecked` would need to be present on menuitems that
+  didn't support them; as for `<input>` they would work only on some
+  menuitems.
+* We would need to handle the checkability of a single menu item changing
+  dynamically when attributes change.
 
-The advantage of a grouping element is that it pushes content authors
-to follow good practice for exclusive checkable menuitems,
-which is that all of the items in a group should be together
-with no other items between them (though separators are allowed).
-It also pushes authors to avoid mixing checkbox and radio items together.
-(Controlling whether an item is a radio or a checkbox with attributes
-on the item, rather than with attributes on the grouping element,
-makes it easier for authors to do mix items in ways that are bad practice.)
+We chose dedicated `<menuitemcheckbox>` and `<menuitemradio>` elements because:
+* as noted above, the approach where the container determined the checkability
+  was considered an unacceptable amount of influence from the outside, and
+  also required a grouping element for a single checkbox
+* using elements rather than attributes to distinguish the types was
+  considered preferable in cases where there are different ARIA roles and also
+  avoided having to consider the possibility of an element's checkability type
+  changing
 
-We would also like that grouping element to be a `<fieldset>`
-because in some cases it makes sense to label a group of menuitems,
-and `<fieldset>` provides an existing mechanism to do that.
-In the typical case we would expect such a label to be visible and also be
-exposed to assistive technology when navigating through the menuitems.
-In some cases it may also be desirable for
-the label to be exposed only to assistive technology but not be visible.
-(This labeling may also apply to menuitems that are not checkable;
-thus `<fieldset>` should be usable around other menuitems as well.)
+We also considered alternative approaches to grouping, particularly using a
+`name` attribute as is used for `<input type=radio>`, `<input type=checkbox>`,
+and `<details>`.  However, we decided against this because it requires quite a
+bit of extra complexity for both developers and implementers, and for menus in
+particular (unlike for the other examples) radio-type menu items should always
+appear together in the tree.  This means that there is no need for a `name` to
+connect distant items or to be associated with the controls in a form
+submission.
 
-Thus the current proposal introduces a single `<menuitem>` element
-to represent all menu items,
-including checkable state-bearing ones.
-
-Instead of representing both checkable & non-checkable menu
-items with a single element, we could:
-
-* Add a `type` attribute to `<menuitem>`, giving: `<menuitem type=checkbox>` and
-  `<menuitem type=radio>`.
-    * When present, the element's `checked` and `defaultChecked` attribute would take effect, much
-      like `HTMLInputElement#checked` does on *checkable* inputs (while doing nothing on
-      non-checkable inputs like `<input type=date>`).
-* Add a `checkable` IDL attribute on `<menuitem>`
-    * This attribute would control whether the element can be checked.
-    * It could be a boolean IDL attribute, or take one of two values `checkable=single|multiple`,
-      for radios and checkboxes respectively.
-* Introduce new `<menuitemcheckbox>` and `<menuitemradio>` elements
-    * These represent ARIA roles, and could be exposed as elements, but it adds complexity to the
-      proposal without giving us any accessibility wins.
-
-These alternatives all have the disadvantages stated above that they make it easier
-for authors to do things that are bad practice.
-They don't appear to have any significant advantages,
-except for the case of an isolated checkbox menuitem
-which in our proposal requires the additional `<fieldset>` container.
-These proposals would also require the additional complexity of a mechanism
-to group all menu items that
-participate in the same exclusive group, which would probably be the `name` attribute. Then, in
-order to create a group of radio exclusive menu items, you either have to set two attributes instead
-of one, or remember to use a new element and a new attribute.
-
-
-### Is `<fieldset>` necessary to group `<menuitem>`s together?
-
-We considered using the [`name`](https://html.spec.whatwg.org/C#attr-fe-name) attribute to group
-exclusively checkable menu items, however it is confusing to use a form control attribute in this
-setting which is distinct from forms altogether.
-
-Further, if we want to support captioned / labeled groups of menu items, the `name` attribute
-wouldn't be sufficient. So if we used the `name` attribute to control checkable exclusivity, then
-we'd still need a grouping element like `<fieldset>`.
+Thus the approach we chose for grouping radio-like menuitems is that the group
+is established by the nearest containing `<fieldset>`, `<menulist>`, or
+`<menubar>`.  This means that there are many cases where a grouping
+`<fieldset>` is not needed.  However, `<fieldset>` can be used when authors
+need multiple distinct radio groups within the same `<menulist>` (or
+`<menubar>`), as well as for providing captioned or labeled groups of menu
+items via `<legend>`.
 
 NOTE: `<fieldset>` is a more general grouping element than `<optgroup>`, which we briefly
 considered, but decided against since it is used for grouping options in select elements, and should
 stay that way.
 
-
-### Are radio and checkbox menu items allowed as direct children of a `<menubar>`?
+### Are `<menuitemradio>` and `<menuitemcheckbox>` elements allowed as direct children of a `<menubar>`?
 
 Currently, we don't see a need for this. All menuitems inside a menubar should perform some action
 like opening a sub `<menulist>`, however we will reconsider this restriction if good use cases
@@ -644,7 +651,7 @@ arise, however these use cases are probably best solved with the
 [`<toolbar>` proposal](https://open-ui.org/components/toolbar.explainer/).
 
 For example, a text editor might use a `<menubar>` to provide basic font style adjustments. While it
-might seem reasonable to use checkable `<menuitem>` elements to style content as "Bold", "Italic" or
+might seem reasonable to use `<menuitemcheckbox>` elements to style content as "Bold", "Italic" or
 "Underlined", the [`<toolbar>` proposal](https://open-ui.org/components/toolbar.explainer/) is more
 apt to satisfy this use case.
 
@@ -681,13 +688,13 @@ with additional grouping semantics and keyboard behaviors beyond what a single '
 would represent - or reasonably be capable of creating parity with the various ARIA roles these new
 proposed elements would be natively introducing to HTML.
 
-### Invoker semantics for `<menuitem>`
+### Invoker semantics for menu items
 
 * We should allow [command invokers](https://open-ui.org/components/invokers.explainer/).
 * Useful for menu items that invoke custom commands.
 * Useful for interest invoker targets.
 * Useful to show modal dialog.
-* To decide: Do command invokers make sense for radio/checkbox menuitems? Do we have use cases of a menuitem that toggles its checked state and invoke a behavior at the same time?
+* To decide: Do command invokers make sense for `<menuitemradio>` and `<menuitemcheckbox>`? Do we have use cases of a menu item that toggles its checked state and invokes a behavior at the same time?
 
 ### Popover semantics for `<menulist>`
 
@@ -732,16 +739,16 @@ When user clicks on a menuitem:
 1. If it has a valid reference to a menulist:
     1. If menulist is open, close the menulist (and all its nested menulist children).
     2. Else, open it and move focus.
-2. Else, if menuitem is contained inside an open menulist, close its parentMenulist.
+2. Else, if the menuitem is contained inside an open menulist, close its parentMenulist.
 
-The algorithm when the user activates a `<menuitem>` in a `<fieldset checkable=multiple>`:
+The algorithm when the user activates a `<menuitemcheckbox>`:
+
+1. Toggle its checked state (if checked, set to unchecked; if unchecked, set to checked).
+
+The algorithm when the user activates a `<menuitemradio>`:
 
 1. Set it to checked.
-
-The algorithm when the user activates a `<menuitem>` in a `<fieldset checkable=single>`:
-
-1. Set it to checked.
-2. Set all other radio menu items in the same group to unchecked.
+2. Set all other `<menuitemradio>` elements in the same radio group (sharing the same nearest `<fieldset>`, `<menulist>`, or `<menubar>` ancestor) to unchecked.
 
 **Questions**
 
@@ -772,10 +779,10 @@ We propose these elements should not support the CSS appearance property and jus
         * Set CSS `writing-mode: horizontal-tb` on the `<menuitem>` inside the `<menubar>`
 * `<menulist>` can support more than top to bottom layout:
     * Set CSS `display: grid` and use rows/columns.
-* For checkable `<menuitem>`, should the check mark be on the left or the right?
+* For `<menuitemcheckbox>` and `<menuitemradio>`, should the check mark be on the left or the right?
     * Default should be on the left.
     * This can depend on the CSS `direction` property.
-* For `<menuitem>`, should there be a default slot for the icon? If so, should it be on the left or the right?
+* For menu items, should there be a default slot for the icon? If so, should it be on the left or the right?
     * Default should be on the left.
     * This can depend on the CSS `direction` property.
 
@@ -889,11 +896,9 @@ this use case.
       <submenu>
         <menuitem>Text</menuitem>
         <menulist>
-          <fieldset checkable="multiple">
-            <menuitem id="bold-menuitem">Bold</menuitem>
-            <menuitem>Italic</menuitem>
-            <menuitem>Underline</menuitem>
-          </fieldset>
+          <menuitemcheckbox id="bold-menuitem">Bold</menuitemcheckbox>
+          <menuitemcheckbox>Italic</menuitemcheckbox>
+          <menuitemcheckbox>Underline</menuitemcheckbox>
         </menulist>
       </submenu>
       <submenu>
@@ -915,7 +920,6 @@ this use case.
     <menulist></menulist>
   </submenu>
 </menubar>
-
 <script>
 document.querySelector('#bold-menuitem').addEventListener("click", () => {
   // Toggle bold-ness.
