@@ -447,7 +447,7 @@ Since rich hints have additional content that might want to be explored directly
 
 - The rich hint popover gets a [minimum role](https://www.w3.org/TR/html-aam-1.0/#dfn-minimum-role) of "tooltip".
 - While the rich hint popover is visible, create an `aria-details` relation from the interest invoker to the rich hint popover. This relation is not created if the popover is already the next element after the interest invoker in DOM order, if the interest invoker is inside the popover, or if the interest invoker has an explicit `aria-details` attribute.
-- The interest invoker gets `aria-expanded=true` when the rich hint popover is open, and `aria-expanded=false` when it is not.
+- The interest invoker gets `aria-expanded=true` when the rich hint popover is open, and `aria-expanded=false` when it is not, unless the interest invoker is inside the popover.
 - The interest invoker exposes a "has interest for" state to platform accessibility APIs, even while the rich hint popover is hidden. (Chromium exposes this as a `has-interest-for` object attribute.) This allows assistive technology to tell the user that more information is available.
 
 As with `popovertarget`, when a popover target is shown, [sequential focus navigation](https://html.spec.whatwg.org/#focus-navigation-scope-owner) will be adjusted so that the target popover is "next" in the tab navigation cycle after the interest invoker. Since by definition "plain hints" do not have anything focusable, sequential focus navigation is not affected.
