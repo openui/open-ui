@@ -11,8 +11,9 @@ const SORT_NEXT = {
   MATCH_COUNT: SORT_OPTIONS.COMPONENT_NAME,
 }
 
-const ComponentNameMatrix = (props) => {
-  const [sort, setSort] = useState(SORT_OPTIONS.COMPONENT_NAME)
+function ComponentNameMatrix() {
+  // const [sort, setSort] = useState(SORT_OPTIONS.COMPONENT_NAME)
+  const [sort, setSort] = [SORT_OPTIONS.COMPONENT_NAME, () => {}]
 
   const getMatchName = (name) =>
     name
