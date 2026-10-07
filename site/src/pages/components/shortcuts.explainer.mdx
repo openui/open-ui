@@ -1,0 +1,214 @@
+---
+menu: Research
+name: Site Shortcuts
+layout: ../../layouts/ComponentLayout.astro
+---
+
+- Authors: [Keith Cirkel](https://github.com/keithamus)
+- Last updated: 20 October 2025
+- Related Issues:
+  - [ARIA Issue #2351: Evaluate whether use-case needs a new ARIA feature — page-wide keyboard shortcuts](https://github.com/w3c/aria/issues/2351)
+  - HTML `accesskey` attribute
+  - `aria-keyshortcuts` attribute
+
+{/* START doctoc generated TOC please keep comment here to allow auto update */}
+{/* DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE */}
+
+---
+
+**NOTE**: This document is currently an open *intent to solve*, but currently
+does not have a concrete proposal in mind. The problem space is very complex
+and we're interested in *gathering requirements* to help provide a set of
+constraints to solve the problem. Your voice matters here, and can help shape
+the solution!
+
+---
+
+## 1. Problem Statement
+
+Modern web applications rely heavily on keyboard shortcuts to provide efficient,
+accessible interaction patterns. However, the current web platform lacks a
+cohesive, interoperable mechanism for defining, managing, and exposing shortcuts
+in a way that is discoverable, accessible, and conflict-free.
+
+Some problems developers encounter while adding shortcuts to their codebases:
+
+### 1.1 Fragmented ad-hoc implementations
+
+Typical conventions for adding shortcut listeners would use `addEventListner` or
+similar. This creates myriad issues due to "too much choice": should it use
+`keyup`, `keydown`, or `keypress`? Should it use `.key` or `.which` (there's not
+always a correct answer here!). In addition it is all too easy to overlook
+keyboard modifiers meaning developers can accidentally create code which
+captures a keypress with any of the modifier keys.
+
+In large applications built by many teams, keyboard shortcuts often cross
+feature boundaries. Different teams may independently define shortcuts, leading
+to conflicts, duplication, or inconsistent user experiences. Centralising these
+efforts can be a large undertaking for development teams. Typically the end
+result being a centralized registry of application wide shortcuts.
+
+Without a platform-level API, teams must decide how to scope and name shortcuts
+themselves (“global”, “modal”, “contextual”), resulting in fragmentation even
+within the same organization.
+
+**Requirement**: A solution should make it easier for developers to spot
+conflicts in their application. This could be via a centralised registry which
+disallows conflicts by design, or by providing APIs which make it easier to
+perform static analysis across a codebase.
+
+### 1.2 Discoverability and User Agent Integration
+
+Even when websites deliver a well suited keyboard shortcut system,
+discoverability remains a core problem. There are no standard conventions for
+exposing shortcut keys to developers in an obvious or accessible manner. Some
+patterns developers often choose:
+
+- Displaying tooltips or flourishes when the user holds down a modifier key,
+  for example underlining an access key letter in a menu.
+- Reserving a shortcut (for example `ctrl+?`) to show in page help - either
+  through surfacing all tooltips at once, or by showing a help dialog. This of
+  course has its own discoverability issues but a *general* defacto standard of
+  `ctrl+?` seems to be established.
+
+These are not perfect solutions, each one comes with trade-offs and they are
+inconsistent. Many users aren't aware when a website offers keyboard shortcuts
+and few think to try pressing keys (e.g. `ctrl+?`) to find out.
+
+Visual flourishes can be useful for users who know what they mean, and most
+importantly can see them, but if a user relies on asstivie tech such as a
+screen-reader then other affordances must be made. Unfortunately this can
+sometimes result in developers using ARIA attributes like `aria-describedby`
+so that a screen-reader announces the shortcut key when a button is focused.
+This can get very repetitive for a screen-reader user.
+
+**Requirement**: A solution should make it easier for users to discover that a
+website offers shortcuts (without being too instrusive) while also making it
+easy for a user to lean which shortcuts are available.
+
+### 1.3 Platform and Interoperability Issues
+
+Different platforms have different shortcut conventions: the Command key (also
+known as the Super or Meta key) on macos is the predominant key for application
+shortcuts, while the Ctrl key is predominant on Windows and Linux. Websites will
+often resort to user-agent sniffing to handle this discrepency.
+
+Different browsers have different shortcut combinations which can conflict with
+the shortcuts desired by a website. Cmd/Ctrl+Shift+P on Firefox will open a
+Private browsing context while other browsers use Cmd/Ctrl+Shift+N. Cmd+Shift+\
+will open "Tab overview" on Safari. Shift+Escape will open the Task Manager in
+Chrome and Firefox. This makes the available keys difficult to decipher for
+developers and the likelyhood of the developer trying to use a conflicting key
+is too high. There is no feature detection for this, so developers often resort
+to user-agent sniffing to hanndle these discrepencies.
+
+**Requirement**: A solution should be robust to cross-platform and cross-browser
+conflicts. Perhaps by allowing the developer to easily list a set of alternative
+or fallback keys, or perhaps the browser can dynamically remap keys which
+conflict.
+
+### 1.4 Semiotic and Layout-Based Shortcut Needs
+
+The choice of shortcut key could be categorised into one of two different
+categories:
+
+- Mnemonic or "semiotic" shortcuts give the user a useful way to remember
+  shortcut keys, usually by using a key of the first letter of the operation -
+  for example Ctrl+F for Find, Ctrl+N for New, Ctrl+P for Print. Some shortcuts
+  still fall into this category even when it's not so apparent, instead relying
+  on other associations such as the pictographic representation of the key, for
+  example Ctrl+? to open Help, Ctrl+X to cut, or Ctrl++ and Ctrl+- to zoom in
+  and out. Visual Studio Code uses Ctrl+/ to toggle line comments (as many
+  languages use `/` to start a comment), Figma uses the `O` key to enable the
+  Ellipse drawing tool, Photoshop uses the `U` key to draw rounded rectangles.
+
+- Ergonomic or positional shortcuts allow the user to minimise hand movement,
+  while performing close together actions. This is most evident in games which
+  will use WASD for character movement, and E to interact despite none of those
+  keys having a matching mnemonic. Ctrl+X/Ctrl+C/Ctrl+V keys being adjacent is
+  also a demonstration of this. VIM uses the H, J, K, L keys for movement.
+
+Both of these categories of shortcuts need special consideration due to the
+variety of keyboard layouts. While QWERTY is a predominant layout, many users
+opt for alternative layouts such as AZERTY, or DVORAK. In these cases semiotic
+shortcuts must retain their value by moving to the equivalent keyboard position,
+for example Ctrl+P should still be Ctrl+P in a DVORAK layout. Conversely
+*ergonomic* shortcuts should *not* be re-mapped, so for example WSAD would stay
+in the same position on a DVORAK keyboard, making the printed keys `<`, `O`,
+`A`, and `E` respectively.
+
+**Requirement**: A solution should be robust to different keyboard layouts,
+while acknowleding that the choice of a keyboard shortcut relies on intent and
+so remapping printable keys may not always be the optimum choice. One way of
+solving this could be to have developers declare their intent (mnemomic or
+ergonomic) through the API surface, but another solution could be to allow users
+to re-map keys ad-hoc, which gives users more freedom at the cost of it being a
+more complex solution for implementers, and more time consuming for users to
+customise each and every site. Remapping shortcuts also solves 1.5:
+
+### 1.5 Accessibility and Input Context Problems
+
+Users who rely on the keyboard for navigation will often have single-character
+keys assigned to behaviours resulting in conflicts between the website and their
+preferred tools. Likewise users of speech input devices may find websites' use
+of single character shortcuts conflict with their input.
+[WCAG Success Criterion 2.1.4][1] recommends developers offer ways to turn off
+or otherwise remap single character shortcuts.
+
+One tempting solution for this problem is to enforce that shortcuts must require
+a modifier key. This signficantly reduces scope of the problem but also reduces
+the utility of the solution; games often rely entirely on single character
+shortcuts and often single character shortcut's are far more useful (when
+contextually relevent), for example navigating lists using the `j`/`k` keys such
+as on Gmail, Fastmail, GitHub, etc. Excluding single character shortcuts from a
+solution may result in developers *still implementing these* while using the
+older conventions, inheriting their problems and reduding the efficacy of any
+proposed solution.
+
+[1]: https://www.w3.org/WAI/WCAG21/Understanding/character-key-shortcuts.html
+
+### 1.6 Accessibility and Input Context Problems
+
+Single character shortcuts also demonstrate problems when interacting with form
+controls; of course printable keys type out that text in an `<input>` or
+textarea, but also typing a printable key in a `<select>` element will typically
+search the list of `<options>` and change the select to one that matches the
+search.
+
+**Requirement**: A solution should provide contextual awareness and not conflict
+with existing form control shortcuts. This *may* mean excluding certain
+shortcuts from firing inside of a form control, but affordances should be made
+such that some shortcuts continue to work in form controls.
+
+### 1.7 Developer Experience and Maintenance
+
+Developers needs may extend beyond the traditional document-and-navigation
+experience (sometimes called "MPA") and more towards a multi-modal application
+experience (or SPA). Often times shortcuts will be multi-modal; they may be
+dependant on the page, or on the part of the page the developer is in. For
+example certain shortcuts in Gmail are only operational when the Compose window
+is open, or when an email is selected.
+
+**Requirement**: A solution should be dynamic to its context. Developers should
+be able to ensure a shortcut is only active when a user is interacting with
+*part* of a page, or when a page is in a certain mode. Any solution must not
+enforce a "register-once" and "never-unregister" pattern.
+
+## 2. Goals
+
+Our goals is to solve a problem that delivers while solving these requirements.
+To summarise:
+
+1. **Statically Analyzable Definition** – Provide a way to define keyboard
+   shortcuts and their semantics that makes it easy for teams to avoid
+   conflicts.
+2. **Discoverability** – Enable user agents and assistive technologies to
+  enumerate and present available shortcuts to the user.
+3. **Conflict Avoidance** – Allow authors to query avoid conflicts with the UA
+   reserved keys, and express a shortcut that maps to platform idioms.
+4. **User Robustness** – Be robust to user needs, such as keyboard layouts and
+   tools.
+5. **Scoping** – Allow shortcuts to be global, contextual (e.g., within a
+   modal), or element-specific.
+6. **Centralized Management** – Provide a way for large applications to manage
+   shortcuts across teams and modules.
