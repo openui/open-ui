@@ -231,6 +231,27 @@ Until that change lands, a `<legend>` inside `<rangegroup>` is invalid markup an
 
 **Individual Handle Labels:** Each `<input type="range">` within the group should have its own accessible name. This can be provided by wrapping the `<input>` within a `<label>` element (implicit labeling), which is the recommended approach. Alternatively, standard methods like an `aria-label` or `aria-labelledby` attribute on the `<input>` can be used.
 
+#### Visual Presentation of Labels
+
+When `<rangegroup>` is supported, the `<legend>` stays visible as the group caption, as in `<fieldset>`. Each handle `<label>` is also visible by default, laid out as a caption centered under its own thumb that moves with it. Authors should not have to add a visually-hidden class to every label and then undo it for browsers without `<rangegroup>`, which is what the prototypes require today. Wrapping the group in a `<fieldset>` remains a way to keep a validating, progressively enhanced group label.
+
+The thumb is the label's implicit anchor element, the same relationship an invoker has with its popover. `position-anchor: auto` therefore resolves to the right thumb, and the UA can place and flip captions with anchor positioning without authors writing `anchor-name`s. A sketch of the UA stylesheet:
+
+```css
+rangegroup > label {
+    position: absolute;
+    position-anchor: auto; /* the label's own thumb */
+    position-area: block-end;
+    position-try-fallbacks: flip-block;
+}
+```
+
+Collisions at the track ends and between neighboring thumbs are handled with `position-try` fallbacks rather than new machinery. That reduces overlap but does not rule it out when thumbs sit close together; merging captions (as in "Minimum – Maximum") is left to authors.
+
+Authors restyle or hide labels with ordinary CSS. If technically feasible, a hidden label, including one with `display: none`, still provides the thumb's accessible name: the UA takes the name from the label's text content whether or not it is rendered, similar to how `<selectedcontent>` reflects content from elsewhere in a customizable `<select>`. Because each label wraps its fallback `<input>`, hiding rules should be scoped so they only apply where `<rangegroup>` is supported; otherwise the fallback slider disappears with its label.
+
+This describes the proposed default, not current prototype behavior. An experimental Chromium prototype currently leaves the legend and labels in normal flow under the track, where the zero-height inputs still take up inline space. Open questions, including whether other associated elements such as `<output for>` also get the thumb as their implicit anchor, and whether a single-thumb group should show a caption that repeats its legend, are tracked in [#1521](https://github.com/openui/open-ui/issues/1521).
+
 #### Example Implementation
 
 ```html
@@ -276,7 +297,7 @@ In range-oriented mode (`interaction="range"`), the proof-of-concept also implem
 
 ### Screen Reader Announcements
 
-When a user navigates into a `<rangegroup>` for the first time (focusing the first thumb), the group's overall `min` and `max` should be announced, plus `stepbetween` when it applies (two or more thumbs). Each individual thumb then announces its own effective `min`, `max`, and current value — that is, the per-thumb clamps from the child input's `min`/`max` attributes, not only the group's. The group's name comes from its legend (or `aria-labelledby`); it should not be re-prefixed onto every thumb label, or every arrow-key stop re-announces the group. This layered announcement model keeps group context and per-handle state distinct.
+When a user navigates into a `<rangegroup>` for the first time (focusing the first thumb), the group's overall `min` and `max` should be announced, plus `stepbetween` when it applies (two or more thumbs). Each individual thumb then announces its own effective `min`, `max`, and current value — defined as the intersection of its child `min`/`max` attributes and the group's bounds (see [effective range](#min-and-max-attribute-interaction)). Neighbor values and `stepbetween` may then narrow currently legal movement further (see [Open Questions](#considerations-and-open-questions)). The group's name comes from its legend (or `aria-labelledby`); it should not be re-prefixed onto every thumb label, or every arrow-key stop re-announces the group. This layered announcement model keeps group context and per-handle state distinct.
 
 ## Disabled State
 
@@ -429,11 +450,11 @@ The [10 September 2026 telecon](https://www.w3.org/2026/09/10-openui-minutes.htm
 ```
 
 The child repeats `min`, `max`, and `list` so a non-supporting browser preserves the domain and the ticks. Without them the fallback would be a default 0–100 slider and `value="10000"` would clamp to 100, which contradicts the progressive-enhancement story. In a supporting browser the duplication is inert: identical child `min`/`max` intersect with the group's to the same range, and the group's `list` already takes precedence. The duplication is therefore a fallback technique, which is exactly why it can eventually be dropped once inheritance (see above) lands or unsupporting browsers no longer matter.
-**The result of building it: this gives you a working keyboard log scale and a broken pointer one.** Keyboard stepping moves one option at a time, so a single arrow press is one notch whether it is worth €900 or €900,000, which is exactly the behavior a logarithmic control should have. The pointer is a different story, and it does not survive contact with a real scale. Because the track coordinate space is linear and snapping picks the nearest option *by value*, the six stops above are not reachable in any practical sense: everything below €100k occupies the leftmost tenth of the track, and more than half the track resolves to €1M. In the [proof-of-concept](https://brechtdr.github.io/enhanced-range-slider-poc/#non-linear-scale) a pointer sweep across the whole track reaches three of the six stops, while the arrow keys reach all six. €10,000 puts the thumb at 1% of the track; on an evenly spaced version of the same scale it sits at 60%.
+**The result of building it: an uneven `<datalist>` provides discrete values and keyboard traversal, but not true non-linear scale support.** With the proposed option-based keyboard behavior, arrow keys move one `<option>` at a time, stepping sequentially across discrete stops regardless of the numeric gap between them. However, because the control remains strictly linear in value-to-position mapping, the pointer experience breaks down for non-linear scales: snapping picks the nearest option *by value*, so the six stops above are not reachable in any practical sense with a pointer. Everything below €100k occupies the leftmost tenth of the track, and more than half the track resolves to €1M. In the [proof-of-concept](https://brechtdr.github.io/enhanced-range-slider-poc/#non-linear-scale), a pointer sweep across the whole track reaches only three of the six stops, while the arrow keys reach all six. €10,000 puts the thumb at 1% of the linear track, whereas on an evenly spaced logarithmic scale it would sit at 60%.
 
-That asymmetry is the useful finding, because it locates the problem precisely. Stepping already works in *stop-index* space, which is the space a non-linear scale needs. Everything that is broken is broken because positioning and hit-testing still happen in *value* space. Whatever the eventual solution is, that is the thing it has to change, and it is not something an author can patch from the outside.
+That asymmetry confirms that `<datalist>` alone is insufficient for non-linear scales. Keyboard navigation operates in *stop-index* space across discrete options, but thumb positioning, track rendering, and pointer hit-testing remain strictly in *linear value* space. True non-linear scale mapping (such as a declarative `scale` attribute or custom position mapping) remains outside v1.
 
-So the datalist route is a floor rather than an answer. It is genuinely useful when the stops are only mildly uneven, and it needs no new platform surface; it stops being useful at exactly the point where authors reach for a log scale in the first place. The gaps below are each worth their own issue rather than being settled here:
+The datalist pattern is therefore a convenience for discrete stops rather than a solution for non-linear scales. It is useful when stops are mildly uneven and needs no new platform surface, but it breaks down when authors need true non-linear distributions. The gaps below are each worth their own issue rather than being settled in v1:
 
 - **Stop spacing.** Options are placed proportionally to their value, so in the example above four of the six stops crowd into the leftmost tenth of the track. A logarithmic control wants the opposite: roughly equal track distance between consecutive stops. Whether spacing should be value-proportional, evenly distributed, or author-selectable is the central unanswered question, and per the finding above it is also the one that would make the pointer usable.
 - **Snapping versus free movement.** A `<datalist>` on `<input type="range">` today is a suggestion rather than a constraint: pointer input snaps, but keyboard input in Firefox ignores the options entirely. Authors asking for a log scale usually want one of two clearly different things: only the listed values, or a continuous scale that merely marks them. That looks like an explicit opt-in, for example a `step` keyword meaning "follow the list" alongside the numeric form, rather than something inferred from the presence of `list`.
@@ -484,55 +505,111 @@ The number of segments is determined by the number of thumbs. With zero thumbs t
 
 A frequent request from authors is the ability to render range inputs along non-linear tracks: gently curved or wavy tracks, arcs, and full circular "knob" controls. Today this forces authors to abandon the native control entirely and rebuild it from scratch, losing accessibility, form integration, and keyboard behavior in the process.
 
-Rather than introducing a dedicated shape attribute or a family of shape-specific pseudo-elements, we propose a smaller, more composable primitive: the user agent exposes each thumb's current fractional position along the track as a CSS custom property on the `::slider-thumb` pseudo-element. Authors can then place thumbs along an arbitrary path using the existing CSS [`offset-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/offset-path) / `offset-distance` mechanism, with no new layout model and no JavaScript.
+This proposal does not add a shape attribute, shape-specific pseudo-elements, or a user-agent-exposed position property. An earlier draft proposed a UA-defined `--slider-thumb-position` custom property so thumbs could ride an `offset-path` with no JavaScript. The prototypes deliberately do not rely on anything like it: custom properties are author space, so a UA-defined `--*` can be overridden and desynchronised from the value, and the painting turned out not to be the hard part.
 
-We propose the property name `--slider-thumb-position`, resolving to a `<percentage>` from `0%` (the start of the track, per writing mode) to `100%` (the end). Because it is a percentage, it can be passed directly to `offset-distance`, which interprets a percentage as a fraction of the total path length.
+Instead, shaped tracks are built from existing platform features plus a small amount of author script:
 
-The custom-property spelling is a placeholder and needs CSSWG input. A user-agent-defined `--*` property is unusual: custom properties are author space, so nothing stops an author from overriding it and desynchronising the thumb from its value. A registered property, or a dedicated non-custom property on the pseudo-element, may be a better shape for the same primitive.
+1. **Geometry is CSS.** Thumbs are placed with [`offset-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/offset-path) / `offset-distance`, and fills are repainted with a `conic-gradient` or an SVG stroke.
+2. **The value is mirrored by script.** On `input`, the author copies `values` into author-owned custom properties on the group. They inherit into the thumb pseudo-elements.
+3. **Pointer mapping is scripted when the shape needs it.** A gently curved track works with the UA's linear hit-testing. A closed path does not, so the author maps the pointer to a value and calls `setRangeValue()`.
+
+Keyboard interaction, value semantics, form submission, and screen reader announcements are unchanged throughout, because the thumbs are still backed by the same `<input type="range">` elements. Whether this should stay an authored pattern or become built-in is tracked in [#1522](https://github.com/openui/open-ui/issues/1522).
 
 ### Wavy track
 
-```css
-input[type="range"] {
-    appearance: base;
-}
+About ten lines of script mirror the values; CSS does the rest. The UA's hit-testing projects the pointer onto the inline axis, which is a good approximation for a shallow wave, so no pointer code is needed. With `min="0"` and `max="100"` on the group, a value maps directly to a percentage of the path.
 
+```js
+const group = document.querySelector("rangegroup.wavy");
+const mirror = () =>
+    group.values.forEach((value, index) => {
+        group.style.setProperty(`--wavy-thumb-${index + 1}-position`, `${value}%`);
+    });
+group.addEventListener("input", mirror);
+mirror();
+```
+
+```css
 /* Paint the track as a wave (e.g. an SVG mask or background) */
-input[type="range"]::slider-track {
+rangegroup.wavy::slider-track {
     background: url("wave.svg") center / 100% 100% no-repeat;
 }
 
 /* Ride each thumb along the same curve */
-input[type="range"]::slider-thumb {
-    offset-path: path("M 0,20 C 40,0 60,40 100,20");
-    offset-distance: var(--slider-thumb-position);
+rangegroup.wavy::slider-thumb(*) {
+    offset-path: path("M0,40 Q40,15 80,40 T160,40 T240,40 T320,40");
+    offset-distance: var(--wavy-position);
+    offset-anchor: center;
 }
+
+rangegroup.wavy::slider-thumb(1) { --wavy-position: var(--wavy-thumb-1-position, 20%); }
+rangegroup.wavy::slider-thumb(2) { --wavy-position: var(--wavy-thumb-2-position, 80%); }
 ```
 
 ### Circular track
 
-A circular control is the same technique with a closed path. A single-thumb circular input behaves as a rotary knob; multi-thumb `<rangegroup>` controls become radial range selectors.
+A circular control uses the same mirroring with a closed path. A single thumb behaves as a rotary knob; multiple thumbs become a radial range selector. The orbit below runs counterclockwise from 12 o'clock.
 
 ```css
-rangegroup {
-    appearance: base;
+rangegroup.circular {
     inline-size: 240px;
     aspect-ratio: 1;
+    touch-action: none;
 }
 
-rangegroup::slider-thumb {
-    offset-path: path("M 120,20 A 100,100 0 1 1 119.99,20");
-    offset-distance: var(--slider-thumb-position);
+rangegroup.circular::slider-thumb(*) {
+    offset-path: path("M120,9 A111,111 0 0 0 120,231 A111,111 0 0 0 120,9");
+    offset-distance: var(--circular-position);
 }
 ```
 
+Painting is the easy part. On a ring, the UA's linear hit-testing is meaningless, so the proof-of-concept adds a pointer adapter of roughly 80 lines:
+
+- capture-phase `pointerdown` / `pointermove` / `pointerup` / `pointercancel` listeners on the group, with pointer capture;
+- converting the pointer to an angle (counterclockwise from 12 o'clock), ignoring presses in the ring's hole, and choosing the nearest enabled thumb;
+- clamping at the 12 o'clock seam instead of wrapping, so a thumb cannot jump from maximum to minimum;
+- writing the value with `setRangeValue(index, value)` and keeping focus on the dragged thumb with `getRangeInput(index).focus()`.
+
 ### Fills and segments
 
-The `::slider-fill` and `::slider-segment` pseudo-elements continue to expose the start and width of each segment so that authors can repaint them to match the chosen shape, for example as a `conic-gradient` ring for circular tracks or an SVG stroke for wavy ones. The same fractional-position primitive could be exposed for segment boundaries to make shaped fills fully declarative.
+The prototypes do not expose segment geometry to CSS. Shaped fills therefore use the same mirrored properties; for example, the circular example paints the arc between two thumbs as a `conic-gradient` on the track. Whether segment boundaries should get a declarative primitive is part of [#1522](https://github.com/openui/open-ui/issues/1522).
 
 ### Accessibility
 
-Custom track shapes are purely presentational. Thumbs still move monotonically from the track's minimum to its maximum as `--slider-thumb-position` advances from `0%` to `100%`, so keyboard interaction, value semantics, and screen reader announcements are identical to a linear slider. Authors take on responsibility for ensuring the rendered shape keeps thumbs and ticks legible and hit-targetable.
+Custom track shapes are presentational. Values still increase monotonically from the start of the track to its end, so keyboard interaction, value semantics, and screen reader announcements are identical to a linear slider. Two things are the author's responsibility: pointer mapping on shapes where the UA's linear hit-testing no longer matches what is painted, and keeping thumbs legible and hit-targetable. Arrow keys still follow the value, not the geometry: on the counterclockwise ring above, Arrow Right moves the thumb counterclockwise.
+
+## Value Tooltips and Anchoring to Thumbs
+
+Many slider designs show the current value in a bubble next to each thumb. An experimental Chromium prototype has a built-in bubble: a pill above each thumb, rendered inside the thumb's UA shadow. It has no styling surface of its own. Only inherited properties set on `::slider-thumb(*)`, such as `color` and `font`, reach it, and it cannot be repositioned, reformatted, or hidden per thumb.
+
+The same result can be built from existing features, because thumb pseudo-elements are valid anchors in that prototype. The author names each thumb, anchors an ordinary element to it, and updates its text on `input`:
+
+```css
+rangegroup::slider-thumb(1) { anchor-name: --price-thumb-1; }
+rangegroup::slider-thumb(2) { anchor-name: --price-thumb-2; }
+
+.price-pill {
+    position: absolute;
+    position-area: block-start;
+}
+#price-pill-1 { position-anchor: --price-thumb-1; }
+#price-pill-2 { position-anchor: --price-thumb-2; }
+```
+
+```js
+const format = new Intl.NumberFormat("en", { style: "currency", currency: "EUR" });
+group.addEventListener("input", () => {
+    pill1.textContent = format.format(group.values[0]);
+    pill2.textContent = format.format(group.values[1]);
+});
+```
+
+That version is fully stylable, can use any number formatting, and can be an `<output>` element. The cost is a few lines of script and hand-written `anchor-name`s. Two things would make it declarative without adding a tooltip pseudo-element:
+
+- **An implicit anchor.** A `<label>` or `<output for>` associated with a thumb's input could have that thumb as its [implicit anchor element](https://drafts.csswg.org/css-anchor-position-1/#implicit-anchor-element), in the same way an invoker is for its popover, so `position-anchor: auto` resolves to the right thumb without any `anchor-name`. See [Visual Presentation of Labels](#visual-presentation-of-labels).
+- **A standardized anchoring contract.** Anchoring to thumb pseudo-elements across the UA shadow boundary is prototype behavior, not specified behavior. It needs to be defined, including when thumbs are added or removed, in vertical writing modes, and with `position-try` fallbacks.
+
+Whether a built-in value bubble should exist, whether it is on by default, and whether it needs a pseudo-element or is covered by the pattern above, is open in [#1523](https://github.com/openui/open-ui/issues/1523).
 
 ## Detailed Design
 
@@ -616,9 +693,13 @@ To address the current fragmentation and provide a unified styling API, we propo
 - `::slider-track`: Represents the main track of the range group.
 - `::slider-fill`: Represents the filled portion of a single-thumb control. With two or more thumbs, use `::slider-segment`.
 - `::slider-segment`: Represents sections of the track between handles.
-- `::slider-thumb`: Represents the draggable handles within the group. On `<rangegroup>`, the group owns the shared visual anatomy, so `rangegroup::slider-thumb` styles all thumbs; the child inputs remain the semantic and form controls.
+- `::slider-thumb`: Represents the draggable handles within the group. On `<rangegroup>`, the group owns the shared visual anatomy, so the thumbs are addressed from the group: `rangegroup::slider-thumb(*)` styles all thumbs and `rangegroup::slider-thumb(n)` styles the `n`th one. The child inputs remain the semantic and form controls. What `n` refers to (DOM order of the child inputs or visual order), how stable it is when thumbs are added or removed, and whether thumbs should match their input's state pseudo-classes are open in [#1524](https://github.com/openui/open-ui/issues/1524).
 - `::slider-tick`: Represents individual tick marks on the range group with attached datalist.
 - `::slider-tick-label`: Represents the label associated with each tick mark of a datalist option.
+
+`appearance: base` is the CSS Forms opt-in for `<input type="range">`. `<rangegroup>` is a new element with no legacy rendering to preserve, so its pseudo-elements apply without it, and the examples below do not set it on the group.
+
+**Prototype status.** An experimental Chromium prototype implements `::slider-track`, `::slider-segment(n)`, and `::slider-thumb(n | *)` on `<rangegroup>`. `::slider-fill`, `::slider-tick`, and `::slider-tick-label` are not implemented there; the Lit proof-of-concept approximates them with `::part()`.
 
 Example usage:
 
@@ -644,10 +725,6 @@ input[type="range"]::slider-thumb {
     border-radius: 50%;
 }
 
-rangegroup {
-    appearance: base;
-}
-
 rangegroup::slider-track {
     height: 6px;
     background-color: #f0f0f0;
@@ -661,7 +738,7 @@ rangegroup::slider-segment(2) {
     background-color: #33ff57;
 }
 
-rangegroup::slider-thumb {
+rangegroup::slider-thumb(*) {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -680,7 +757,7 @@ For groups specifically we'd like to introduce a few new ones:
 - `getRangeInput(index)`: Returns the range input at the specified index.
 - `setRangeValue(index, value)`: Sets the value for a specific handle.
 
-Potential future additions (deferred from v1):
+Potential future additions (deferred from v1, but already prototyped in an experimental Chromium build):
 
 - `addThumb(value, options?)`: Adds a new handle to the group at the given `value` and returns the created `<input type="range">`. Because handles are backed by real `<input type="range">` elements, this is a convenience over manually creating and appending an input. The optional `options` object accepts `min`, `max`, `name`, and `label`. Use cases such as a gradient editor that lets users add and remove color stops on demand are a primary motivation for this method.
 - `removeThumb(index)`: Removes the handle (and its backing `<input>`) at the specified index.
@@ -724,7 +801,6 @@ Because each handle is a real `<input type="range">` in the light DOM, authors c
 
 ```css
 rangegroup {
-    appearance: base;
     width: 300px;
 }
 
@@ -744,7 +820,7 @@ rangegroup::slider-segment(2) {
 rangegroup::slider-segment(3) {
     background-color: #ddd;
 }
-rangegroup::slider-thumb {
+rangegroup::slider-thumb(*) {
     width: 24px;
     height: 24px;
     background-color: #2196f3;
@@ -774,7 +850,6 @@ rangegroup::slider-thumb {
 
 ```css
 rangegroup {
-    appearance: base;
     width: 300px;
     height: 20px;
 }
@@ -784,7 +859,7 @@ rangegroup::slider-track {
     background-color: #ddd;
 }
 
-rangegroup::slider-thumb {
+rangegroup::slider-thumb(*) {
     width: 20px;
     height: 20px;
     background-color: #2196f3;
@@ -816,7 +891,7 @@ The following items have been discussed in Open UI telecons. GitHub issues may r
 - **Empty group** ([#1515](https://github.com/openui/open-ui/issues/1515), [telecon 10 Sep 2026](https://www.w3.org/2026/09/10-openui-minutes.html)): **Resolved:** a `<rangegroup>` with no `<input type="range">` has an empty track. It is not hidden and not disabled, and it does not imply a default thumb, because an implied thumb would have no backing input, IDL, or submitted value. See [Empty `<rangegroup>`](#empty-rangegroup).
 - **Keyboard navigation** ([#1185](https://github.com/openui/open-ui/issues/1185)): Each thumb gets a tab stop. Arrow keys, Page Up/Down, Home, and End behave as they do on a standard `<input type="range">`. See the [Keyboard Interaction](#keyboard-interaction) section.
 - **Disabled attribute propagation** ([#1338](https://github.com/openui/open-ui/issues/1338)): `disabled` on `<rangegroup>` cascades to all thumbs. Individual thumbs can be disabled independently. When all thumbs are disabled, the group behaves as fully disabled. See the [Disabled State](#disabled-state) section.
-- **Screen reader announcements** ([#1339](https://github.com/openui/open-ui/issues/1339)): The group's min and max should be announced when entering the group (first thumb), plus `stepbetween` when it applies. Each thumb then announces its own min, max, and current value. See the [Screen Reader Announcements](#screen-reader-announcements) section.
+- **Screen reader announcements** ([#1339](https://github.com/openui/open-ui/issues/1339)): The group's min and max should be announced when entering the group (first thumb), plus `stepbetween` when it applies. Each thumb then announces its own effective min, max, and current value. See the [Screen Reader Announcements](#screen-reader-announcements) section.
 - **Naming convention** ([#1197](https://github.com/openui/open-ui/issues/1197)): All pseudo-elements use the `slider-` prefix (e.g., `::slider-track`, `::slider-thumb`), following the CSSWG [resolution](https://lists.w3.org/Archives/Public/public-css-archive/2025Apr/0036.html) on [csswg-drafts#9830](https://github.com/w3c/csswg-drafts/issues/9830) to keep the prefixes. The [editor's draft](https://drafts.csswg.org/css-forms-1/) reflects this; the dated TR snapshot does not.
 - **Group naming and form submission**: `<rangegroup>` is a listed, form-associated element but not a submittable one. Group `name` is for the `form.elements` API only; child inputs submit their own name/value pairs. This mirrors `<fieldset>`. See [Form Association and Naming](#form-association-and-naming).
 - **Per-pair `stepbetween`** ([#1463](https://github.com/openui/open-ui/issues/1463), [telecon 27 Aug 2026](https://www.w3.org/2026/08/27-openui-minutes.html)): v1 uses one `stepbetween` on the group. Different minimum gaps between different thumb pairs are deferred until there are concrete use cases.
@@ -832,14 +907,13 @@ The following items have been discussed in Open UI telecons. GitHub issues may r
 - **Segment numbering when thumbs overlap or cross**: Segment numbering is positional (see [Multi-Color Range Segments](#multi-color-range-segments)) while thumb overlap is allowed ([#1184](https://github.com/openui/open-ui/issues/1184)), so dragging one thumb past another renumbers the segments and the colors change under the user's hand. Numbering by child DOM order instead would keep each color tied to an input but let painted colors reorder along the track. Related: when two thumbs coincide, does the zero-width segment still generate a box? And should `::slider-segment()` accept `An+B` / `even` / `odd`, since a script-driven group (the empty-state scenario) cannot enumerate indices up front?
 - **Which pointer model should be the default** ([#1278](https://github.com/openui/open-ui/issues/1278), [#1460](https://github.com/openui/open-ui/issues/1460)): The two behaviors are now settled and both implemented (see [Track Click Behavior](#track-click-behavior)); what is not settled is which one a `<rangegroup>` gets when the author says nothing, or whether a mode keyword ships at all. The explainer currently writes `endpoints` as the default, supported by a survey comment on #1460 showing that libraries default to nearest-thumb and offer interval-drag as opt-in. That is not a formal resolution. The 10 September 2026 telecon asked for the two modes to be built as deliberately different experiences so the question can be answered with user feedback (even something as light as a public poll) rather than room preference. **The name and keywords also still need bikeshed** — keep that on #1460 rather than a new issue; `draggable` is rejected. What stays unresolved separately is reaching an interval **without** a pointer: [#1511](https://github.com/openui/open-ui/issues/1511).
 - **Keyboard and focus for a draggable interval** ([#1511](https://github.com/openui/open-ui/issues/1511), split from [#1460](https://github.com/openui/open-ui/issues/1460)): If range-oriented dragging ships, how does a keyboard or AT user translate an interval without a pointer? The proof-of-concept currently offers **Shift+Arrow** on a focused thumb (see [Keyboard Interaction](#keyboard-interaction)), which keeps the interval out of the tab order. Alternatives still on the table: make the interval itself a tab stop / AT object, or decide that per-thumb arrow keys are enough because every end state is reachable that way. The gesture vs tab-stop choice, and how (or whether) the interaction mode is exposed in the accessible description, need a real resolution before a mode ships. (The issue title still says "segment"; this explainer now reserves that word for the CSS paint region.)
-- **Dynamic `aria-valuemin` / `aria-valuemax` under neighbor constraints**: Per-thumb `min`/`max` clamps are reflected in each thumb's announced bounds (see [Screen Reader Announcements](#screen-reader-announcements)). Should `stepbetween` and neighboring thumbs also rewrite those bounds as the user moves — so a thumb that cannot currently go below 40 because of its neighbor announces `min 40` — or should announced bounds stay at the authored clamps and leave collision feedback to the interaction itself? Dynamic bounds are more accurate; static authored clamps are simpler and match how native range inputs behave today.
-- **Vertical orientation**: How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a [`slider-orientation`](https://drafts.csswg.org/css-forms-1/#slider-orientation) property that could be adopted for this purpose, but that section is marked "Rework this property" in the editor's draft and open questions remain about how `auto` resolves against writing mode ([csswg-drafts#11891](https://github.com/w3c/csswg-drafts/issues/11891)). Browsers also disagree today on whether arrow keys and Home/End invert on a vertical slider, so this cannot be treated as settled.
+- **Dynamic accessibility value bounds under neighbor constraints**: Per-thumb effective bounds (the intersection of child and group bounds) are exposed to accessibility APIs (see [Screen Reader Announcements](#screen-reader-announcements)). Should `stepbetween` and neighboring thumbs dynamically update those exposed bounds as the user moves — so a thumb that cannot currently go below 40 because of its neighbor exposes a computed `min` of 40 through accessibility APIs — or should exposed bounds remain at the thumb's static effective bounds and leave collision feedback to the interaction itself? Because thumbs are native range inputs, the UA can expose computed bounds directly without implying that author-visible ARIA attributes are rewritten. Dynamic bounds are more accurate to current legal movement; static effective bounds are simpler and match how native range inputs behave today.
+- **Vertical orientation**: How should we handle vertical orientation for range inputs? The CSS Forms specification introduces a [`slider-orientation`](https://drafts.csswg.org/css-forms-1/#slider-orientation) property that could be adopted for this purpose, but that section is marked "Rework this property" in the editor's draft and open questions remain about how `auto` resolves against writing mode ([csswg-drafts#11891](https://github.com/w3c/csswg-drafts/issues/11891)). Browsers also disagree today on whether arrow keys and Home/End invert on a vertical slider, so this cannot be treated as settled. `<rangegroup>` adds its own questions on top, tracked on the [#1525](https://github.com/openui/open-ui/issues/1525): whether the group's orientation governs every thumb, where segment and thumb numbering start in vertical and right-to-left writing modes, which way Shift+Arrow segment translation goes, and where labels and value bubbles are placed by default on a vertical track.
 - **Automatic tick mark generation**: Should we provide options for generating tick marks without requiring a `<datalist>` (e.g., evenly spaced ticks based on a `step` attribute on the rangegroup)?
 - **Tick mark legibility**: How can we ensure that tick marks and labels remain legible and usable on small-screen devices or with a large number of ticks? Is this author responsibility?
 - **Programmatic segment styling**: Should we provide a way to set segment colors via a JavaScript API?
 - **Programmatic constraint violations**: What should the behavior be when a handle's value is updated programmatically to a value that would violate `stepbetween` or other range limits? This extends to `addThumb`: when a handle is added at a value that violates `stepbetween` or overlaps an existing handle, should it be clamped to the nearest valid position, rejected, or inserted as-is?
-- **Custom track shapes and assistive technology**: Non-linear tracks (wavy, circular) reorder thumbs visually without changing their value semantics. Is the `--slider-thumb-position` primitive plus `offset-path` sufficient for authors, or should the platform offer higher-level shape affordances? How should hit-testing, focus rings, and tick placement adapt on a curved or closed path?
+- **Custom track shapes** ([#1522](https://github.com/openui/open-ui/issues/1522)): Wavy and circular tracks work today with mirrored values, `offset-path`, and, for closed paths, an authored pointer adapter (see [Custom Track Shapes](#custom-track-shapes)). Is that an acceptable documented pattern, or should the platform expose the thumb position (and in what shape: a registered property, a dedicated property on `::slider-thumb`, or a value-reflecting function), or hit-test along the thumb's `offset-path` itself? For closed paths that also means defining seam handling (clamp or wrap), which direction increases the value, and how arrow keys map to the shape.
 - **Group-level submission format**: v1 submits only child name/value pairs, as described in [Form Association and Naming](#form-association-and-naming). A group-level convenience (for example, a single combined entry) is deliberately out of scope: submitting both the group and its children would change the payload depending on browser support and break the progressive enhancement story. It can be added later without web-compat cost if concrete use cases appear.
 - **Datalist keyboard snapping**: We propose that arrow keys move between datalist values when `list` is present. Native `<input type="range">` does not do this today. Should this behavior be scoped to `<rangegroup>`, or specified for any range input with a `list` attribute?
-- **`--slider-thumb-position` shape**: Should the thumb's fractional position be exposed as a user-agent-defined custom property, a registered property, or a dedicated property on `::slider-thumb`? See [Custom Track Shapes](#custom-track-shapes).
-- **How far non-linear scales should go** ([#1464](https://github.com/openui/open-ui/issues/1464)): The datalist form described in [Non-linear value scales](#non-linear-value-scales) is what v1 offers, and prototyping it showed it only half works: stepping is fine, pointer positioning is not, because the track stays in value space. The open parts are whether option spacing should stay value-proportional or become evenly distributed (or author-selectable), which is the one that would fix the pointer; whether a list should be able to constrain values rather than merely suggest them; what `step` means on a continuous non-linear scale; and whether a declarative `scale` keyword or a scripted position mapping is eventually needed. Each of those is being split into its own issue so this one does not become a second project the size of `<rangegroup>`.
+- **How far non-linear scales should go** ([#1464](https://github.com/openui/open-ui/issues/1464)): The datalist form described in [Non-linear value scales](#non-linear-value-scales) provides discrete stops with keyboard traversal, but the underlying track remains linear in value space. True non-linear mapping remains outside v1. The open questions for future work are whether option spacing should stay value-proportional or become evenly distributed (or author-selectable) to fix pointer hit-testing; whether a list should be able to constrain values rather than merely suggest them; what `step` means on a continuous non-linear scale; and whether a declarative `scale` keyword or a scripted position mapping is needed. Each of those is being split into its own issue so this one does not become a second project the size of `<rangegroup>`.
