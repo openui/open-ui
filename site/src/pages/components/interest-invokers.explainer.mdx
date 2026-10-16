@@ -172,7 +172,7 @@ When generated, the pseudo element's box is placed immediately *after* the origi
 }
 ```
 
-When the user taps or clicks (**not** long-presses) on this icon/button, interest is shown in the originating element, showing the hovercard. Importantly, the [CSS delays](#mouse-and-keyboard-delays) do not apply here - clicking/tapping immediately shows interest. This is "explicit" interest, as described in the previous section, so it is not lost when the pointer moves away from the originating element.
+When the user taps, clicks, or long-presses on this icon/button, interest is shown in the originating element, showing the hovercard. Importantly, the [CSS delays](#mouse-and-keyboard-delays) do not apply here - clicking, tapping, or long-pressing immediately shows interest. This is "explicit" interest, as described in the previous section, so it is not lost when the pointer moves away from the originating element. (Hovering the `::interest-button` with a mouse also shows interest in the originating element, after the [start delay](#mouse-and-keyboard-delays).)
 
 In this mode, long-pressing the originating element still brings up the context menu, which still has the additional "Show details" item that can also be used to show interest. And tapping the originating element (not the `::interest-button` pseudo element) still activates the element normally. So everything else continues to work as before, just with an easier way for the user to show interest, without long pressing.
 
