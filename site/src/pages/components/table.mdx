@@ -62,7 +62,7 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 ## States / Properties
 
-### &lttable&gt
+### &lt;table&gt;
 
 - **scrollable** (\_enum: none | vertical | horizontal | both): Controls whether the table content is scrollable and in what dimensions. Defaults to `none`
 
@@ -70,7 +70,7 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 - **compact** (_bool_): Controls whether the table is displayed in compact mode. Defaults to false
 
-### &lttable-row&gt
+### &lt;table-row&gt;
 
 - **highlight** (_bool_): Controls whether the row should be highlighted (e.g. on hover). Defaults to false
 
@@ -82,11 +82,11 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 - **disabled** (_bool_): Controls whether can interact with a row and it's contents. Defaults to false
 
-### &lttable-header-row&gt
+### &lt;table-header-row&gt;
 
 - **fixed** (_bool_): Controls whether the header row is fixed, meaning that it always stays visible during scrolling. (`scrollable` must be set to `vertical` or `both` for the table). Defaults to false
 
-### &lttable-header-cell&gt
+### &lt;table-header-cell&gt;
 
 - **sorted** (_enum: auto | asc | desc_)): Controls whether the data is sorted by column in the selected order. Defaults to auto
 
@@ -96,11 +96,11 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 
 - **onResize** (_function_): Callback function fired when the column is resized (`resizable` must be enabled).
 
-### &lttable-cell&gt
+### &lt;table-cell&gt;
 
 - **truncated** (_bool_): Controls whether the content of the cell is truncated
 
-- **bordered** (_bool_): Controls whether the the cell is bordered. Defaults to true
+- **bordered** (_bool_): Controls whether the cell is bordered. Defaults to true
 
 - **colspan** (_number_): Specify if the cell should span across number of rows. Defaults to 1
 
@@ -117,7 +117,7 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 | Framework   | Component                                                                                                                                             | Playground                                                                                           | HTML tag                      | Data ingestion                                                   |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------- |
 | Carbon      | [Data table](https://www.carbondesignsystem.com/components/data-table/code/)                                                                          | [Playground](https://codepen.io/team/carbon/full/jRWbZZ/)                                            | `<table>`                     | JSON object                                                      |
-| Bootstrap   | [Tables](https://getbootstrap.com/docs/4.0/content/tables/)                                                                                           | -                                                                                                    | `<table>`                     | -                                                                |
+| Bootstrap   | [Tables](https://getbootstrap.com/docs/5.3/content/tables/)                                                                                           | -                                                                                                    | `<table>`                     | -                                                                |
 | Salesforce  | [Data table](https://www.lightningdesignsystem.com/components/data-tables/), [tree-grid](https://www.lightningdesignsystem.com/components/tree-grid/) | [Playground](https://developer.salesforce.com/docs/component-library/tools/playground)               | `<table>`                     | -                                                                |
 | Material    | [Data table](https://material.io/develop/web/components/data-tables/)                                                                                 | [Demo](https://material-components.github.io/material-components-web-catalog/#/component/data-table) | `<table>`                     | -                                                                |
 | Fabric UI   | [Detail list](https://developer.microsoft.com/en-us/fabric#/controls/web/detailslist)                                                                 | [Playground](https://developer.microsoft.com/en-us/fabric#/controls/web/detailslist)                 | `<div role="grid">`           | -                                                                |
@@ -125,6 +125,6 @@ Data grid implements the [grid role](https://www.w3.org/TR/core-aam-1.1/#role-ma
 | Ant         | [Table](https://ant.design/components/table/)                                                                                                         | [Playground](https://ant.design/components/table/)                                                   | `<table>`                     | JSON object, with custom render function defined at column level |
 | Auth0       | [Table](https://styleguide.auth0.com/components/tables)                                                                                               | -                                                                                                    | `<table>`                     | -                                                                |
 | Evergreen   | [Table](https://evergreen.segment.com/components/table)                                                                                               | [Playground](https://codesandbox.io/s/evergreen-playground-component-fjbly)                          | `<div>`                       | -                                                                |
-| KoliBri     | [Table](https://public-ui.github.io/docs/components/table)                                                                                            | [Playground](https://codesandbox.io/s/kolibri-public-ui-react-samples-w5u37c)                        | `<table>`                     | JSON object, with custom render function defined at column level |
+| KoliBri     | [TableStateful](https://public-ui.github.io/en/docs/components/table-stateful) / [TableStateless](https://public-ui.github.io/en/docs/components/table-stateless) | [Playground](https://codesandbox.io/s/kolibri-public-ui-react-samples-w5u37c)                        | `<table>`                     | JSON object, with custom render function defined at column level |
 | Semantic UI | [Table](https://semantic-ui.com/collections/table.html)                                                                                               | [Playground](https://jsfiddle.net/ca0rovs3/)                                                         | `<table>`                     | -                                                                |
 | Aria        | [Data grid](https://www.w3.org/TR/wai-aria-practices/examples/grid/dataGrids.html), [Table](https://www.w3.org/TR/wai-aria-practices/#table)          | -                                                                                                    | `<div role="grid">`,`<table>` | -                                                                |

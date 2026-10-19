@@ -5,25 +5,20 @@ const SelectAnatomy = () => {
   return (
     <AnatomyWrapper>
       <Host name="select">
-        <Slot name="button-container">
+        <Slot name="button">
           <Part name="button">
-            <Slot name="selected-value">
-              <Part name="selected-value">Currently selected value</Part>
-            </Slot>
-            <Slot name="marker">
-              <Part name="marker">Dropdown indicator (e.g. icon)</Part>
-            </Slot>
+            <Part name="selectedoption">Currently selected option</Part>
+            <Part name="::picker-icon"></Part>
           </Part>
         </Slot>
-        <Slot name="listbox-container">
-          <Part name="listbox">
-            <Slot>
-              <Part name="opt-group">
-                <Part name="option"></Part>
-              </Part>
-            </Slot>
-          </Part>
-        </Slot>
+        <Part name="::picker(select)">
+          <Slot>
+            <Part name="optgroup (optional)">
+              <Part name="legend (optional)">Optgroup label</Part>
+              <Part name="option">Option text</Part>
+            </Part>
+          </Slot>
+        </Part>
       </Host>
     </AnatomyWrapper>
   )

@@ -1,6 +1,7 @@
 dl {
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 1em;
+  margin-bottom: 1.125rem;
 }
 
 dd {
@@ -15,16 +16,35 @@ dd + dt {
   background: #f7f781;
   position: relative;
   display: flex;
+  padding: 0.5em;
+  margin-bottom: 1.125rem;
   counter-increment: questions;
+}
+
+.question p:last-child {
+  margin-bottom: 0;
 }
 
 .question::before {
   background: #ffdf3f;
   content: 'QUESTION ' counter(questions);
   width: max-content;
-  padding: 0 0.5em;
-  margin-right: 0.5em;
+  margin: -0.5em 0.5em -0.5em -0.5em;
+  padding: 0.5em;
   font-weight: bold;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .question {
+    flex-direction: column;
+  }
+
+  .question::before {
+    width: auto;
+    margin-right: -0.5em;
+    margin-bottom: 0.5rem;
+  }
 }
 
 .note {

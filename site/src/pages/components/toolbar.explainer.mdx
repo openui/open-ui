@@ -1,0 +1,186 @@
+---
+menu: Active Proposals
+name: Toolbar Element (Explainer)
+path: /components/toolbar.explainer
+layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: "@lukewarlow"
+    url: https://github.com/lukewarlow
+---
+
+## Introduction
+
+A toolbar is a common user interface pattern used to provide quick access to a group of commands, represented using controls such as [press buttons](/components/press-button.explainer), [menus](/components/menu.explainer) and other such controls.
+
+This proposal introduces a new `<toolbar>` element. The `<toolbar>` will:
+- Represent a grouping of controls (e.g. buttons, select boxes, press buttons).
+- Provide the correct implicit ARIA role and keyboard interaction model out of the box.
+- Allow web developers to create consistent, accessible toolbars without re-implementing ARIA patterns.
+
+Use cases:
+- The formatting toolbar in a document editor (bold, italic, underline, font family).
+- The main command toolbar in a drawing or photo editing app.
+- A simple toolbar with a search field and filter buttons in a catalogue.
+
+## New `<toolbar>` element
+
+`<toolbar>`
+
+- Represents a **group of controls**.
+- Provides implicit `role="toolbar"`.
+- Toolbars are displayed horizontally by default.
+- Provides correct keyboard navigation behaviour.
+
+```webidl
+[Exposed=Window]
+interface HTMLToolbarElement : HTMLElement {
+  [HTMLConstructor] constructor();
+
+  [CEReactions, Reflect] attribute boolean disabled;
+};
+```
+
+Toolbars will support a disabled attribute, when specified it will cause all descendents that support a disabled state to be disabled;
+with the exception of any descendents within its first `<legend>` element (this matches fieldset).
+
+### Naming
+
+Toolbars situationally need an accessible name. Naming can become particularly important when there are multiple
+toolbars on a page, or in situations where authors provide a visible label for a toolbar, with the intent that it would
+serve as the identifier (name) of the toolbar, programmatically.
+
+To facilitate labeling and naming, toolbars will support the `<legend>` element similarly to its use in `fieldset`,
+and more recently its allowance within the `optgroup` element.
+The first child legend, if present, will be used for calculating the accessible name of the toolbar.
+
+### Keyboard behaviour
+
+This element will implicitly provide the same behaviour as a [toolbar focusgroup](/components/scoped-focusgroup.explainer#supported-behaviors):
+- It will contain a single tab-stop.
+- Left/Right arrow-keys can be used to navigate between focusable children.
+
+Additionally, home and end keys can be used to jump to the beginning or end of the toolbar.
+
+There are many types of built-in HTML controls that already have existing keyboard behavior,
+we should ensure that these don't lead to keyboard traps where users can't escape.
+
+By default the same key conflict behaviour as [focusgroup](/components/scoped-focusgroup.explainer/#key-conflicts) applies. It's possible
+there's more that can be done specific to toolbars.
+
+### Styling
+
+We propose this element should not support the CSS appearance property and should just have a "base" appearance by default,
+like the `<dialog>` element.
+
+Proposed UA Styles: [Issue 1402](https://github.com/openui/open-ui/issues/1402)
+
+```css
+toolbar {
+  box-sizing: border-box;
+  background-color: transparent;
+  border: 1px solid currentColor;
+
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  inline-size: max-content;
+  gap: 0.25em;
+  padding: 0.25em;
+}
+
+toolbar > legend:first-of-type {
+  flex-bases: 100%;
+}
+```
+
+## Questions?
+
+### What about vertical toolbars?
+
+This is tracked in [Issue 1401](https://github.com/openui/open-ui/issues/1401). There's multiple ways we could do this.
+
+Perhaps supporting an orientation attribute, that would allow controlling the directionality of the arrow keys,
+as well as setting aria-orientation appropriately, would solve this? [Issue 1201](https://github.com/openui/open-ui/issues/1201)
+
+## Extra questions
+
+* Does `<toolbar>` support separators? [Issue 1400](https://github.com/openui/open-ui/issues/1400)
+
+## Examples
+
+### Google Docs
+
+<img src="/images/toolbar-google-docs.png" alt="A toolbar element as seen in Google Docs." />
+
+Code Example:
+
+```html
+<toolbar aria-label="Main">
+ <button id="undoButton" aria-label="Undo"><img src="..." alt=""></button>
+ <button id="redoButton" aria-label="Redo"><img src="..." alt=""></button>
+ <button id="printButton" aria-label="Print"><img src="..." alt=""></button>
+ <input id="zoomSelect" list="zoom" aria-label="Zoom">
+ ...
+</toolbar>
+<datalist id="zoom">
+  <option>Fit</option>
+  <option>50%</option>
+  ...
+</datalist>
+
+<script>
+undoButton.addEventListener("click", () => {
+  undo();
+});
+</script>
+```
+
+### GitHub
+
+<img src="/images/toolbar-github.png" alt="A toolbar element as seen in GitHub's markdown editor." />
+
+## Future enhancements
+
+We envision more advanced capabilities in the future that could enhance the usability of the toolbar
+designed in this explainer, but that are not necessarily in scope for our initial
+proposal.
+
+One such capability is keyboard shortcuts to invoke controls within the toolbar; see
+[#1225](https://github.com/openui/open-ui/issues/1225). We envision that this could be provided by a more
+advanced version of the
+[`accesskey`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/accesskey)
+primitive, that would provide customisable key commands that apply outside the scope of our
+proposal.
+
+## Reading List
+
+### ARIA guidelines
+- the ARIA [toolbar role](https://w3c.github.io/aria/#toolbar)
+- the [Core AAM mappings](https://www.w3.org/TR/core-aam-1.2/#role-map-toolbar)
+
+### Relevant ARIA issues
+- [ARIA] [Allow posinset/setsize for toolbars](https://github.com/w3c/aria/issues/2158)
+
+### APG pattern recommendations (note these are not guidelines)
+- [toolbar](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/)
+  - [toolbar example](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/examples/toolbar/)
+
+### Blog posts from accessibility community
+- Fill as and when they're discovered
+
+### Blog posts for Design System
+- https://developer.apple.com/design/human-interface-guidelines/toolbars
+
+## Issues / Discussions
+
+This section links to all of the relevant discussions and [issues](https://github.com/openui/open-ui/issues?q=is%3Aissue%20state%3Aopen%20label%3Atoolbar) related to `toolbar`:
+
+### OpenUI
+- [Toolbar element proposal](https://github.com/openui/open-ui/issues/1283)
+- [Explicitly mention whether reading-flow should impact arrow key navigation](https://github.com/openui/open-ui/issues/1187)
+- [Define orientation attribute](https://github.com/openui/open-ui/issues/1201)
+- [Enhanced keyboard shortcuts](https://github.com/openui/open-ui/issues/1225)
+- [Toolbar labels](https://github.com/openui/open-ui/issues/1399)
+- [Toolbar separators](https://github.com/openui/open-ui/issues/1400)
+- [Vertical toolbars](https://github.com/openui/open-ui/issues/1401)
+- [UA stylesheet](https://github.com/openui/open-ui/issues/1402)

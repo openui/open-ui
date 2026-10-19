@@ -18,19 +18,16 @@ export default function Concept({
   }, [initExpand])
 
   return (
-    <div className='concept'>
+    <div className="concept">
       <h3 className={hasOtherNames ? 'with-other-names' : null}>
         <button
-          type='button'
+          type="button"
           onClick={(e) => {
             e.preventDefault()
             toggleOpen((isOpen) => !isOpen)
           }}
         >
-          <span>
-            {open ? <>&#9660;</> : <>&#9650;</>}
-          </span>{' '}
-          {conceptOpenUIName}
+          <span>{open ? <>&#9660;</> : <>&#9650;</>}</span> {conceptOpenUIName}
         </button>
         {!hasOtherNames && (
           <ConceptCoverage
@@ -41,7 +38,7 @@ export default function Concept({
         )}
       </h3>
       {hasOtherNames && (
-        <div className='other-names-wrapper'>
+        <div className="other-names-wrapper">
           {uniqueNames.map((otherName) => (
             <div key={otherName}>
               <ConceptCoverage

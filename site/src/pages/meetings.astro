@@ -1,0 +1,125 @@
+---
+import { readdir, readFile } from 'node:fs/promises'
+import { join, resolve } from 'node:path'
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeStringify from 'rehype-stringify'
+import Layout from '../layouts/Layout.astro'
+
+export const frontmatter = {
+  name: 'Meetings',
+  menu: 'Community',
+}
+
+const teleconDir = resolve('../meetings/telecon')
+const files = await readdir(teleconDir)
+
+// Date-named files only (YYYY-MM-DD.md), sorted descending
+const dated = files
+  .filter((f) => /^\d{4}-\d{2}-\d{2}\.md$/.test(f))
+  .sort()
+  .reverse()
+
+const latestFile = dated[0]
+const latestDate = latestFile?.replace('.md', '')
+
+const raw = latestFile
+  ? await readFile(join(teleconDir, latestFile), 'utf8')
+  : null
+
+const agendaHtml = raw
+  ? String(
+      await unified()
+        .use(remarkParse)
+        .use(remarkRehype)
+        .use(rehypeStringify)
+        .process(raw),
+    )
+  : null
+---
+
+<Layout frontmatter={frontmatter}>
+  <article>
+    <hgroup>
+      <h1>Open UI Telecon</h1>
+      <p>Weekly meeting, Thursdays 11:00&ndash;11:45&thinsp;AM US/Pacific</p>
+    </hgroup>
+
+    <section>
+      <h2>Join</h2>
+      <ul>
+        <li>
+          <strong>Discord</strong> &mdash; agenda posted in
+          <a href="https://discord.com/invite/DEWjhSw">#telecon-agendas</a>
+          by end of day Tuesday (Pacific)
+        </li>
+        <li>
+          <strong>IRC</strong> &mdash; <code>#openui</code> on
+          <a href="https://irc.w3.org/">irc.w3.org</a> during the call
+        </li>
+        <li>
+          <strong>W3C Community Group</strong> &mdash; join at
+          <a href="https://www.w3.org/community/open-ui/">w3.org/community/open-ui</a>
+          for call-in details
+        </li>
+      </ul>
+    </section>
+
+    {agendaHtml && (
+      <section>
+        <h2>
+          Latest agenda
+          <a
+            href={`https://github.com/openui/open-ui/blob/main/meetings/telecon/${latestFile}`}
+            aria-label={`View agenda source for ${latestDate}`}
+          >({latestDate})</a>
+        </h2>
+        <Fragment set:html={agendaHtml} />
+      </section>
+    )}
+
+    <section>
+      <h2>Minutes archive</h2>
+      <p>
+        All past agendas and minutes are in the
+        <a href="https://github.com/openui/open-ui/tree/main/meetings/telecon">
+          <code>meetings/telecon/</code> directory
+        </a>
+        on GitHub.
+      </p>
+    </section>
+  </article>
+</Layout>
+
+<style>
+  article {
+    max-width: 48rem;
+    padding: 1rem 2rem;
+  }
+
+  hgroup {
+    margin-block-end: 2rem;
+  }
+
+  hgroup p {
+    margin-block-start: 0.25rem;
+    opacity: 0.75;
+  }
+
+  section {
+    margin-block-end: 2rem;
+  }
+
+  h2 a {
+    font-size: 0.875em;
+    margin-inline-start: 0.5rem;
+    opacity: 0.65;
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+</style>

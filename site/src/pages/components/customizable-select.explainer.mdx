@@ -1,0 +1,590 @@
+---
+menu: Graduated Proposals
+name: Customizable Select Element (Explainer)
+layout: ../../layouts/ComponentLayout.astro
+created: "2022-02-09"
+lastUpdated: "2026-01-22"
+specification: https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
+mdn: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
+authors:
+  - name: "@josepharhar"
+    url: https://github.com/josepharhar
+  - name: "@gregwhitworth"
+    url: https://github.com/gregwhitworth
+  - name: "@scottaohara"
+    url: https://github.com/scottaohara
+  - name: "@mfreed7"
+    url: https://github.com/mfreed7
+  - name: "@lukewarlow"
+    url: https://github.com/lukewarlow
+---
+
+import SelectAnatomy from '../../components/select-anatomy'
+import Image from '../../components/image.astro'
+
+## Background
+
+The `<select>` element does not provide enough customization for web developers, which leads them to implement their own. These implementations can lead to reduced performance, reliability, and accessibility compared to the native form control elements. More on that is in [Custom Control UI](https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ControlUICustomization/explainer.md#introduction).
+
+The [2020 MDN browser compatibility report had feedback](https://mdn.dev/archives/insights/reports/mdn-browser-compatibility-report-2020.html#findings-forms) that form controls are neither interoperable nor customizable. Customizable `<select>` will be fully interoperable and customizable.
+
+## Opting in to the new behavior
+
+The `<select>` element will continue to behave as it currently does unless it has the `appearance:base-select` CSS property. Based on standardization discussions, `appearance:base-select` must also be applied to the `select::picker(select)` pseudo-element in order to opt in the picker popup element. [Previously proposed opt-ins](https://github.com/openui/open-ui/issues/985) included:
+- A new tag name (`<selectmenu>`, then `<selectlist>`)
+- A new HTML attribute (`<select bikeshed>`)
+- The presence of a child `<button>` or `<datalist>` in a `<select>`.
+
+Here is a basic `<select>` element with the appropriate CSS to opt in to customizable `<select>`:
+```html
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+<select>
+  <option>one</option>
+  <option>two</option>
+</select>
+```
+
+## Testing out the customizable select element
+
+Customizable `<select>` has been [implemented and shipped](https://chromestatus.com/feature/5737365999976448) for all users in Chromium.
+
+If you encounter bugs or limitations with the design of the control, please send your feedback by [creating issues on the open-ui GitHub repository](https://github.com/openui/open-ui/issues/new?title=[select]%20&labels=select). Here is a list of [open select bugs in open-ui](https://github.com/openui/open-ui/issues?q=is%3Aissue+is%3Aopen+label%3Aselect).
+
+
+## HTML parser changes
+
+The old behavior in the HTML parser for `<select>` is to remove all tags which aren't `<option>` or `<optgroup>`. We changed the HTML parser to allow almost all tags as descendants of `<select>`. Adding `<button>` as a child of `<select>` allows authors to replace the in-page button which opens the popup, and all other tags are slotted into the popover element containing the options.
+
+Here is a basic example which uses the parser changes:
+```html
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+<select>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option><img src="..." alt="">one</option>
+  <option><img src="..." alt="">two</option>
+</select>
+```
+
+## Use cases
+
+### Customizing basic styles
+
+This example changes the fonts and colors of various parts of the button and picker parts of the select element.
+
+<div className="code-image-container">
+<div className="code-container">
+```html
+<select>
+  <option>one</option>
+  <option>two</option>
+</select>
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+select {
+  font-family: monospace;
+  font-size: 12px;
+  color: red;
+}
+</style>
+```
+</div>
+<div className="image-container">
+  <Image
+    src="/images/selectlist-usecase-basic.png"
+    alt="The rendering of a customizable select element with monospaced font and red colors"
+  />
+</div>
+</div>
+
+### Rich content in `<option>`s
+
+This example adds "rich content" inside option elements in the form of country flags. This is a common pattern on the web which isn't possible in the existing `<select>` element because `<select>`'s `<option>`s only render text content.
+
+<div className="code-image-container">
+<div>
+```html
+<select>
+  <option>
+    <img src="usa.jpg" alt="">
+    USA
+  </option>
+  <option>
+    <img src="germany.jpg" alt="">
+    Germany
+  </option>
+  <option>
+    <img src="spain.jpg" alt="">
+    Spain
+  </option>
+</select>
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-rich.png"
+    alt="The rendering of a customizable select element with country flags next to the options"
+  />
+</div>
+</div>
+
+### Replacing the button
+
+This example replaces the button which opens the listbox with an author provided `<button>` element.
+
+<div className="code-image-container">
+<div>
+```html
+<select>
+  <button>
+    selected option: <selectedcontent></selectedcontent>
+  </button>
+  <option>one</option>
+  <option>two</option>
+</select>
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-button.png"
+    alt="The rendering of a customizable select element with an author-provided button"
+  />
+</div>
+</div>
+
+
+### Rendering the `<option>` differently in the button
+
+This example uses the customizable `<select>` element with custom CSS to target it which renders the option differently in the picker vs in the button. The "description" text of each `<option>` has an `<span aria-hidden=true>` to both reduce the duplication of announcing the emoji's text alternative, and the visible text.  Hiding the text from the accessibility tree also ensures the selected option will be announced the same whether its copied into the `<selectedcontent>` or being rendered in the dropdown.  E.g., "red heart".
+
+<div className="code-image-container">
+<div>
+```html
+<select>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option>
+    ❤️ <span aria-hidden=true class=description>heart</span>
+  </option>
+  <option>
+    🙂 <span aria-hidden=true class=description>smile</span>
+  </option>
+</select>
+<style>
+selectedcontent .description {
+  display: none;
+}
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-selectedoption.png"
+    alt="The rendering of a customizable select element with a custom selectedcontent element"
+  />
+</div>
+</div>
+
+### Putting custom content in the picker
+
+This example has a complex structure wrapping the `<option>`s which is all slotted into the popover element.
+
+<div className="code-image-container">
+<div>
+```html
+<select>
+  <div class=container>
+    <div>
+      <optgroup label="1-2">
+        <option>one</option>
+        <option>two</option>
+      </optgroup>
+    </div>
+    <div>
+      <optgroup label="3-4">
+        <option>three</option>
+        <option>four</option>
+      </optgroup>
+    </div>
+    <div>
+      <optgroup label="5-6">
+        <option>five</option>
+        <option>six</option>
+      </optgroup>
+    </div>
+    <div>
+      <optgroup label="7-8">
+        <option>seven</option>
+        <option>eight</option>
+      </optgroup>
+    </div>
+  </div>
+</select>
+<style>
+.container {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: 50px 50px;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+}
+.container > div {
+  background-color: lightgray;
+}
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+```
+</div>
+<div>
+  <Image
+    src="/images/selectlist-usecase-listbox.png"
+    alt="The rendering of a customizable select element with a custom listbox element"
+  />
+</div>
+</div>
+
+Here is another example with custom content in the listbox: [codepen](https://codepen.io/una/pen/PoXbgVW)
+
+### Animations
+
+{/* TODO: Replace this with top layer animations. View transitions are not going to be well supported. */}
+<div className="code-image-container">
+<div>
+  This example uses view transitions to animate the opening and closing of the listbox.
+  [Link to codepen](https://codepen.io/argyleink/pen/wvYrZEV/ab71f1b613db0487f64ff8c6919b0173)
+</div>
+<div>
+  <Image
+    src="/images/selectlist-animation.gif"
+    alt="A customizable select element with a listbox that animates open and closed"
+  />
+</div>
+</div>
+
+## Button behavior
+
+The first child `<button>` of a `<select>` will be slotted into the `<select>`'s UA ShadowRoot and will open the popup list of options. If no `<button>` is provided in the markup, then a button containing the text of the currently selected `<option>` will be rendered, just like the old `<select>` does.
+
+The author provided `<button>` is just used as a placeholder or container. The browser disables normal activation behavior and attributes for this `<button>` so that the `<select>` element can handle these as it normally would if there was no `<button>` provided.
+
+To ensure the behavior described above, the child `<button>` is rendered `inert`. It is also set to `display:contents` by the UA stylesheet, so that there aren't two sets of box decorations. The button and its descendants do not participate in the accessibility tree; therefore, any attributes on the button or descendants have no effect on accessibility.
+
+## The `<selectedcontent>` element
+
+The `<selectedcontent>` element enables developers to declaratively clone the content of the selected `<option>` element to the button and to style it distinctly from the `<option>`. This use case is shown in the [rendering the option differently in the button](#rendering-the-option-differently-in-the-button) example.
+
+When the `<selectedcontent>` element is placed inside of a `<select>`'s `<button>`, then the browser will replace its DOM contents with the result of calling `cloneNode()` on the currently selected `<option>` element. Whenever the user selects a different `<option>`, the browser will update the contents of `<selectedcontent>` by internally calling `cloneNode()` again. If the DOM contents of the currently selected `<option>` are modified, then the browser will not re-clone into `<selectedcontent>`.
+
+Since the contents of the `<selectedcontent>` element are maintained by the browser, authors should not put any HTML/DOM content inside of `<selectedcontent>`.
+
+## The split button use case
+
+Split buttons, like [this one from Fluent UI](https://react.fluentui.dev/?path=/docs/components-button-splitbutton--default) and [this one from PrimeNG](https://primeng.org/splitbutton), are a use case that was discussed for customizable select. Customizable select does not match the a11y properties and keyboard functionality of split buttons, so it is not recommended to use customizable select to implement this use case.
+
+## The `selectedcontentelement` attribute
+
+The `selectedcontentelement` attribute is an IDref which points to a single `<selectedcontent>` element to update. This allows the `<selectedcontent>` to exist outside of `<select>` in order to support split buttons and other use cases.
+
+The `selectedcontentelement` attribute was not launched with the rest of customizable select and is still being evaluated as a followup.
+
+## Anatomy of the customizable select element
+
+Because the various parts of the select element can be styled, it's important to understand the anatomy of this UI control.
+
+<SelectAnatomy />
+
+- `<select>` - The root element that contains the button and listbox.
+- button (slot) - The portion of the element which is rendered in the position of the button which opens the listbox. It should contain a button to open the listbox.
+- `<button>` - The button which opens the listbox when clicked.
+- `<selectedcontent>` - The element which contains the text of the currently selected option. Every time that the user selects an option, the browser will replace the children of this element with the result of calling `cloneNode()` on the newly selected `<option>`.
+- `::picker(select)` - The wrapper that contains the `<option>`(s) and `<optgroup>`(s).
+- `<optgroup>` - Optional element which groups `<option>`(s) together with a label.
+- `<legend>` - Used to provide a label to an `<optgroup>` element. It must be the first child of the `<optgroup>`.
+- `<option>` - Can have one or more and represents the potential values that can be chosen by the user.
+
+## Styling
+
+Customizable `<select>` provides a variety of tools to help with styling, including pseudo-selectors for different states and pseudo-elements for different parts.
+
+### `select::picker(select)`
+
+This pseudo-element targets the popover element representing the popup list of options in the UA ShadowRoot of the `<select>` element. Putting `appearance:base-select` on this pseudo-element is necessary in order to opt-in to using the popover. You can put additional styles on it to control popover animations, border styling, and more.
+
+### `select:open`
+
+The select element supports the `:open` pseudo selector as [specified in CSS Selectors, Level 4](https://drafts.csswg.org/selectors/#open-state). 
+
+When the select's listbox is showing, the select element will match `:open`. Here is an example which makes the button red when the listbox is closed and green when it is open:
+```html
+<select>
+  <button id=custombutton>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option>one</option>
+  <option>two</option>
+</select>
+<style>
+select:open #custombutton {
+  background-color: green;
+}
+select:not(:open) #custombutton {
+  background-color: red;
+}
+</style>
+```
+
+## `option::checkmark`
+
+A checkmark pseudo-element is included next to the option elements by default in order to visually indicate which option is currently selected. This improves accessibility/usability because selection doesn't follow focus. You can opt out of rendering the checkmark with the following CSS:
+```css
+option::checkmark {
+  display: none;
+}
+```
+
+## `select::picker-icon`
+
+A dropdown icon for the select element is provided via the `select::picker-icon` pseudo-element. You can opt out of rendering the dropdown icon with the following css:
+```css
+select::picker-icon {
+  display: none;
+}
+```
+
+### UA Stylesheet
+
+The UA stylesheet for customizable select has consensus from the CSSWG [here](https://github.com/w3c/csswg-drafts/issues/10857). It is included in css-forms-1 [here](https://drafts.csswg.org/css-forms-1/#stylesheet-select-button).
+
+## Additional examples
+
+Here is an example which has a custom button with custom CSS:
+
+```html
+<style>
+  .my-custom-select button {
+    display: flex;
+    align-content: center;
+  }
+  .my-custom-select .open {
+    padding: 5px;
+    border: none;
+    background: #f06;
+    border-radius: 5px 0 0 5px;
+    color: white;
+    font-weight: bold;
+  }
+  .my-custom-select .label {
+    padding: 5px;
+    border: 1px solid #f06;
+    border-radius: 0 5px 5px 0;
+  }
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<select class="my-custom-select">
+  <button>
+    <span class="open">Open</span>
+    <span class="label">Choose an option</span>
+  </button>
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</select>
+```
+
+The above code snippet results in the following style:
+
+<Image
+  src="/images/selectlist-replacing-button-part.png"
+  alt="The rendering of a select element with a custom button"
+/>
+
+Here is an example which has a custom picker with custom CSS:
+
+```html
+<style>
+  .my-custom-select::picker(select) {
+    width: 300px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    box-shadow: none;
+    margin: 10px 0;
+    border: 1px solid;
+    background: #f7f7f7;
+  }
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<select class="my-custom-select">
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+  <option>Option 4</option>
+  <option>Option 5</option>
+</select>
+```
+
+The above code snippet results in the following style:
+
+<Image
+  src="/images/selectlist-replacing-listbox-part.png"
+  alt="The rendering of a select element with a custom listbox"
+/>
+
+### Extending the markup
+
+Not only can you replace the default parts with your own, you can also extend the control's markup by adding new elements. This can be useful to augment the listbox or button with extra information, or to add new functionality.
+
+Consider the following example:
+
+```html
+<style>
+  .my-custom-select button {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: none;
+    background-color: transparent;
+  }
+  .my-custom-select .icon {
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: grid;
+    place-content: center;
+    background-color: buttonface;
+  }
+  .my-custom-select .icon::before {
+    content: '\25BC';
+  }
+  .my-custom-select::picker(select) {
+    padding: 0;
+  }
+  .my-custom-select .section {
+    padding: 1rem 0 0;
+    background: radial-gradient(ellipse 60% 50px at center top, #000a 0%, transparent 130%);
+  }
+  .my-custom-select h3 {
+    margin: 0 0 1rem 0;
+    text-align: center;
+    color: white;
+  }
+  .my-custom-select option {
+    text-align: center;
+    padding: 0.5rem;
+  }
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<label for=plant>Choose a plant</label>
+<select id=plant class="my-custom-select">
+  <button>
+    <selectedcontent></selectedcontent>
+    <span class=icon></span>
+  </button>
+  <div class="section">
+    <h3>Flowers</h3>
+    <option>Rose</option>
+    <option>Lily</option>
+    <option>Orchid</option>
+    <option>Tulip</option>
+  </div>
+  <div class="section">
+    <h3>Trees</h3>
+    <option>Weeping willow</option>
+    <option>Dragon tree</option>
+    <option>Giant sequoia</option>
+  </div>
+</select>
+```
+
+Using custom markup to wrap the list of options, the above example creates sections with their own styles and content as seen below:
+
+<Image
+  src="/images/selectlist-using-custom-markup.png"
+  alt="The rendering of a select element with custom HTML content"
+/>
+
+### Demo page
+
+You can find multiple examples of customizable select at these sites:
+* [OpenUI's demos](https://microsoftedge.github.io/Demos/selectmenu/)
+* [Una's Codepens](https://codepen.io/collection/BNZjPe)
+* [Joey's Codepens](https://codepen.io/collection/pjMbkR)
+
+## Keyboard Behavior
+
+When `::picker(select)` is opted into base appearance, the `<select>` element has new keyboard behavior in Chromium. It is not explicitly specified by standards due to requirements from other browsers to have freedom to respect platform conventions: [issue 1087](https://github.com/openui/open-ui/issues/1087). The new behavior in Chromium is inspired by both the existing `<select>` element and the [ARIA Authoring Practices Guide Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/). This behavior was decided in [issue 386](https://github.com/openui/open-ui/issues/386) and [issue 433](https://github.com/openui/open-ui/issues/433).
+
+When the picker is closed and the button is focused:
+* Spacebar opens the picker.
+* Enter submits the form associated with the select if one exists. Otherwise, enter does nothing.
+* The up, down, left, and right arrow keys all open the picker without changing the selected value.
+
+When the picker is open:
+* Escape closes the picker without changing the selected value.
+* Spacebar is used for typeahead.
+* Enter changes the selected value to the currently focused option and closes the picker.
+* The up arrow key moves focus backwards in the list of options.
+* The down arrow key moves focus forwards in the list of options.
+* The left and right arrow keys do nothing.
+
+## `multiple` and `size` attributes
+
+Support for rendering options in-page without a picker via the `size` attribute and choosing multiple options via the `multiple` attribute are being actively prototyped, but are not part of any specification yet.
+
+## Design decisions
+
+- [Why reuse `<select>` instead of creating a new element](https://github.com/openui/open-ui/issues/970)
+- [Why not use the `slot` or `behavior` attributes](https://github.com/openui/open-ui/issues/702)
+- [Why not support the `size` attribute](https://github.com/openui/open-ui/issues/153)
+- [Why support `:checked` instead of `:selected`](https://github.com/openui/open-ui/issues/827)
+- [Why allow interactive content in `<listbox>` but with strong warnings](https://github.com/openui/open-ui/issues/540)
+- [Why not make selection follow focus](https://github.com/openui/open-ui/issues/742)
+- [Why not allow select or datalist in size/multiple select](https://github.com/openui/open-ui/issues/977#issuecomment-1910874971)
+- [Why add the `<selectedoption>` element](https://github.com/openui/open-ui/issues/571)
+- [`<selectedoption>` name bikeshedding](https://github.com/openui/open-ui/issues/808)
+- Why opt-in with CSS
+  - https://github.com/whatwg/html/issues/9799#issuecomment-1789202391
+  - https://github.com/whatwg/html/issues/9799#issuecomment-1926411811
+- [Why include a checkmark next to options by default](https://github.com/openui/open-ui/issues/863)
+- [Why `<button type=popover>` (overturned by `selectedoptionelement`)](https://github.com/openui/open-ui/issues/939#issuecomment-1910837275)
+- [Why `selectedoptionelement`](https://github.com/openui/open-ui/issues/1063#issuecomment-2195407344)
+- [Why require `appearance:base-select` on both `select` and `select::picker(select)`](https://github.com/w3c/csswg-drafts/issues/10440)
+- [Why not observe mutations in selected `<option>`](https://github.com/openui/open-ui/issues/825#issuecomment-2436124668)
+- [Renaming `<selectedoption>` to `<selectedcontent>`](https://github.com/openui/open-ui/issues/1112)

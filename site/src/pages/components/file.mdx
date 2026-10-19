@@ -1,6 +1,6 @@
 ---
-menu: Proposals
-name: File (Editor's Draft)
+menu: Non-active Proposals
+name: File (Explainer)
 pathToResearch: /components/file.research
 layout: ../../layouts/ComponentLayout.astro
 ---
@@ -28,8 +28,8 @@ cloud storage services.
 
 ### Non-goals
 
-The file input does not provide a way to programatically invoke access to a
-user's filesystem, other than invoking `click()`.
+The file input does not provide a way to programmatically invoke access to a
+user's filesystem, other than invoking `showPicker()`.
 
 ### Features
 
@@ -44,10 +44,10 @@ There are no risks or challenges presented as a part of this proposal.
 ### Prior Art/Examples
 
 - [Ant Design](https://ant.design/components/upload/)
-- [Bootstrap](https://getbootstrap.com/docs/4.0/components/forms/#form-controls)
+- [Bootstrap](https://getbootstrap.com/docs/5.3/forms/form-control/#file-input)
 - [Carbon](https://www.carbondesignsystem.com/components/file-uploader/usage/)
 - [Evergreen](https://evergreen.segment.com/components/filepicker)
-- [KoliBri](https://public-ui.github.io/docs/components/input-file)
+- [KoliBri](https://public-ui.github.io/en/docs/components/input-file)
 - [Materialise](https://materializecss.com/text-inputs.html)
 - [MOJ](https://moj-design-system.herokuapp.com/components/multi-file-upload)
 
@@ -73,14 +73,17 @@ button invokes the file selection prompt.
 
 ## Methods
 
-N/A
+| Signature            | Description                                                           |
+| ---------------------| ----------------------------------------------------------------------|
+| `showPicker(): void` | Triggers the system file picker UI to show. Requires user activation. |
 
 ## Events
 
-| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                       |
-| ---------- | ----------- | ------- | -------- | ----------- | ------------------------------------------------------- |
-| `change`   | none        | `true`  | `true`   | `false`     | Fired when the input's `value` is commited by the user. |
-| `input`    | none        | `true`  | `true`   | `false`     | Fired when the input's `value` changes.                 |
+| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                            |
+| ---------- | ----------- | ------- | -------- | ----------- | ------------------------------------------------------------ |
+| `cancel`   | none        | `true`  | `true`   | `false`     | Fired when the when the user does not change their selection.|
+| `change`   | none        | `true`  | `true`   | `false`     | Fired when the input's `value` is commited by the user.      |
+| `input`    | none        | `true`  | `true`   | `false`     | Fired when the input's `value` changes.                      |
 
 ### Anatomy
 
@@ -92,12 +95,12 @@ N/A
 
 ```html
 <host>
-  <div part="file-selector-button">
-    <slot name="file-selector-button"></slot>
-  </div>
-  <div part="label">
-    <slot name="label"></slot>
-  </div>
+  <slot name="file-selector-button">
+    <button part="file-selector-button"></button>
+  </slot>
+  <slot name="label">
+    <span part="label"></span>
+  </slot>
 </host>
 ```
 
@@ -106,7 +109,7 @@ N/A
 | Slot Name              | Description                                                                           | Fallback Content              |
 | ---------------------- | ------------------------------------------------------------------------------------- | ----------------------------- |
 | `file-selector-button` | Invokes the file selection prompt.                                                    | A button element is provided. |
-| `label`                | Indicates if a file input is waiting for file selection, or if it has selected files. | A label element is provided.  |
+| `label`                | Indicates if a file input is waiting for file selection, or if it has selected files. | A span element is provided.  |
 
 #### CSS Parts
 
@@ -166,7 +169,7 @@ RTL (right-to-left).
 
 ### Security
 
-The `<input type="file">` element doesn't allow applictions access to the
+The `<input type="file">` element doesn't allow applications access to the
 filesystem, and the value is prefixed with a [fake path](https://html.spec.whatwg.org/multipage/input.html#fakepath-srsly).
 
 ## Performance
@@ -180,10 +183,10 @@ No third party dependencies are required.
 ### Platform Requirements
 
 To implement a custom file input, a developer must create a hidden
-`<input type="file">` element, and call `click()` on that element to invoke
+`<input type="file">` element, and call `showPicker()` on that element to invoke
 that input's behaviour.
 
-The [Native File System API](https://wicg.github.io/native-file-system/)
+The [File System Access API](https://wicg.github.io/file-system-access/#local-filesystem)
 will allow for implementations of file input controls without the above
 workaround.
 
@@ -195,12 +198,12 @@ No additional tooling is required for the file input.
 
 ## Resources
 
-- [MDN Reference on the current &ltinput type="file"&gt](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file)
+- [MDN Reference on the current &lt;input type="file"&gt;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file)
 - [MDN Reference on the File API](https://developer.mozilla.org/en-US/docs/Web/API/File)
-- [WHATWG Living Standard on &ltinput type="file"&gt](<https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)>)
+- [WHATWG Living Standard on &lt;input type="file"&gt;](<https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)>)
 
 ## Next steps
 
 Some file input implementations list selected files for the user to review,
-deselect/remove, and possibly rename. There is not specification for this
+deselect/remove, and possibly rename. There is no specification for this
 behaviour.

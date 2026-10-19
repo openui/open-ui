@@ -1,11 +1,9 @@
 :root {
-  --font-size-base: 16px;
   --color-text: hsl(12, 5%, 4%);
   --color-border: hsl(17, 24%, 90%);
 }
 
 html {
-  font-size: var(--font-size-base);
   color: var(--color-text);
   font: 'Source Sans Pro', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   box-sizing: border-box;
@@ -47,12 +45,10 @@ h1 {
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 h2 {
-  margin-top: 1.5rem;
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 0.75rem;
   color: inherit;
   font-family: 'Cabin', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   font-weight: 500;
@@ -65,7 +61,6 @@ h3 {
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 1.125rem;
   color: inherit;
   font-family: 'Cabin', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   font-weight: 500;
@@ -78,7 +73,6 @@ h4 {
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 1.125rem;
   color: inherit;
   font-family: 'Cabin', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   font-weight: 500;
@@ -91,7 +85,6 @@ h5 {
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 1.125rem;
   color: inherit;
   font-family: 'Cabin', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   font-weight: 500;
@@ -104,7 +97,6 @@ h6 {
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 1.125rem;
   color: inherit;
   font-family: 'Cabin', 'Helvetica Neue', 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
   font-weight: 500;
@@ -113,18 +105,33 @@ h6 {
   line-height: 1.1;
 }
 
+:is(h1, h2, h3, h4, h5, h6) {
+  text-wrap: balance;
+  margin-block: 1.5em 0.5em;
+
+  /* Prevent excessive space between direct heading siblings. */
+  & + & {
+    margin-block-start: 0;
+  }
+}
+
+/* First heading on the page should neatly align to the top */
+h1:first-of-type {
+  margin-block-start: 0;
+}
+
 ul,
 ol {
   margin-left: 0;
   margin-right: 0;
   margin-top: 0;
   padding-bottom: 0;
-  padding-left: 0;
   padding-right: 0;
   padding-top: 0;
   margin-bottom: 1.125rem;
-  list-style-position: outside;
-  list-style-image: none;
+
+  /* https://piccalil.li/blog/an-in-depth-guide-to-customising-lists-with-css/ */
+  padding-left: 1lh;
 }
 
 p {
@@ -133,6 +140,7 @@ p {
   padding-right: 0;
   padding-top: 0;
   margin-bottom: 1.125rem;
+  text-wrap: pretty;
 }
 figure {
   padding-bottom: 0;
@@ -208,7 +216,6 @@ ul li {
 
 li > ul,
 li > ol {
-  margin-left: 1.5rem;
   margin-bottom: calc(1.125rem / 2);
   margin-top: calc(1.125rem / 2);
 }
@@ -228,6 +235,7 @@ code {
   padding: 0 0.25em;
   border-radius: 3px;
   border: 1px solid rgba(0, 0, 0, 0.1);
+  display: inline-block;
 }
 
 thead {
@@ -285,16 +293,16 @@ nav > ul {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
 }
 
 .anchor-icon {
   color: rgb(82 82 82 / var(--tw-text-opacity));
-  transition-property: color,background-color,border-color,text-decoration-color,fill,stroke;
-  transition-timing-function: cubic-bezier(.4,0,.2,1);
-  transition-duration: .15s;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.15s;
   padding-inline-start: 6px;
   opacity: 0;
 }
@@ -311,4 +319,14 @@ h1:hover .anchor-icon,
 h2:hover .anchor-icon,
 h3:hover .anchor-icon {
   opacity: 1;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.similar-components-table td,
+.similar-components-table th {
+  text-align: left;
 }

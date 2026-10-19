@@ -5,12 +5,12 @@ const FileAnatomy = () => {
   return (
     <AnatomyWrapper>
       <Host name="openui-file">
-        <Part name="file-selector-button">
-          <Slot name="button" />
-        </Part>
-        <Part name="label">
-          <Slot name="label" />
-        </Part>
+        <Slot name="file-selector-button">
+          <Part name="file-selector-button" />
+        </Slot>
+        <Slot name="label">
+          <Part name="label" />
+        </Slot>
       </Host>
     </AnatomyWrapper>
   )

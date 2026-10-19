@@ -1,0 +1,45 @@
+---
+const { headings = [] } = Astro.props
+
+// Build a nested structure from the flat headings list.
+// Only include h2/h3 - deeper nesting rarely adds value in explainers.
+const filtered = headings.filter((h) => h.depth === 2 || h.depth === 3)
+
+function buildTree(items) {
+  const tree = []
+  for (const item of items) {
+    if (item.depth === 2) {
+      tree.push({ ...item, children: [] })
+    } else if (item.depth === 3 && tree.length > 0) {
+      tree[tree.length - 1].children.push(item)
+    }
+  }
+  return tree
+}
+
+const tree = buildTree(filtered)
+---
+
+{tree.length > 0 && (
+  <nav aria-label="Table of contents">
+    <details open>
+      <summary><strong>Table of Contents</strong></summary>
+      <ol>
+        {tree.map((h2) => (
+          <li>
+            <a href={`#${h2.slug}`}>{h2.text}</a>
+            {h2.children.length > 0 && (
+              <ol>
+                {h2.children.map((h3) => (
+                  <li>
+                    <a href={`#${h3.slug}`}>{h3.text}</a>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </li>
+        ))}
+      </ol>
+    </details>
+  </nav>
+)}

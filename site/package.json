@@ -13,10 +13,11 @@
   ],
   "license": "MIT",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview"
+    "dev": "astro dev --port 3000",
+    "start": "astro dev --port 3000",
+    "build": "astro build && node scripts/generate-sitemap.mjs",
+    "preview": "astro preview",
+    "sync-contributors": "node src/data/sync.js"
   },
   "husky": {
     "hooks": {
@@ -25,53 +26,36 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
+    "src/**/*.{jsx,js,md,mjs,json}": [
       "prettier --write",
-      "git add"
-    ],
-    "**/*.mjs": [
-      "prettier --write",
-      "git add"
-    ],
-    "**/*.json": [
-      "prettier --parser json --write",
-      "git add"
-    ],
-    "**/*.md": [
-      "prettier --parser markdown --write",
-      "git add"
-    ],
-    "**/*.mdx": [
-      "prettier --parser mdx --write",
       "git add"
     ]
   },
   "devDependencies": {
-    "@astrojs/mdx": "^0.11.6",
-    "@astrojs/prefetch": "^0.1.1",
-    "@astrojs/react": "^1.2.2",
-    "@astrojs/sitemap": "^0.2.6",
-    "astro": "^1.6.10",
-    "astro-compress": "^1.1.10",
-    "eslint": "^8.18.0",
-    "eslint-plugin-react": "^7.30.0",
-    "hast-util-to-string": "^2.0.0",
-    "hastscript": "^7.2.0",
-    "husky": "^4.2.3",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.0.4",
-    "prettier-plugin-astro": "^0.5.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rehype-autolink-headings": "^6.1.1"
+    "@astrojs/mdx": "^3.1.0",
+    "@astrojs/react": "^3.1.0",
+    "@astrojs/sitemap": "^3.0.0",
+    "astro": "^4.15.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react": "^7.34.0",
+    "hast-util-to-string": "^3.0.0",
+    "hastscript": "^9.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.3.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "sharp": "^0.33.0"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.15",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@nanostores/react": "^0.4.0",
-    "lodash": "^4.17.21",
     "nanostores": "^0.7.1"
   }
 }
+
