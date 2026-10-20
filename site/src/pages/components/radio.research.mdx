@@ -2,8 +2,11 @@
 menu: Research
 name: Radio
 
-pathToProposal: /components/radio
+pathToProposal: /components/radio.proposal
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: Leonardo Baptista Lopes
+    url: https://github.com/leolopes
 ---
 
 import Image from '../../components/image.astro'
@@ -15,14 +18,14 @@ import ComponentCoverage from '../../components/component-coverage'
 
 ## Introduction
 
-_(For a lengthier discussion, on which this page was based, please refer to the [original radio issue](https://github.com/WICG/open-ui/issues/251))_
+This page gathers the research behind the [Radio proposal](/components/radio.proposal), which holds the problem statement, goals and anatomy. The discussion that originated it took place in the [original radio issue](https://github.com/openui/open-ui/issues/251).
 
 The research showed that different design systems treat radios in one of two ways, i.e.:
 
-- as a standalone component, that could be hosted on a “**radio group**” component;
+- as a standalone component, that could be hosted within a “**radio group**” component;
 - as an invariably non-independent part of a “**radio group**” component (just like `<option>` tags are dependent on `<select>` tags).
 
-The two approaches seem very similar at first, but the former seems to indicate that single “radios” could exist, to probably indicate a binary state (on or off). The latter, however, shifts the scope up to the “radio group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
+The two approaches look very similar at first, but the former implies that a single “radio” could exist, to indicate a binary state (on or off). The latter, however, shifts the scope up to the “radio group”, which, although nonexistent as an HTML element, is an important concept for the W3 specification:
 
 > “A document must not contain an input element whose radio group contains only that element.”
 >
@@ -47,13 +50,13 @@ After the research there are still [discussions to be made](#discussion), where 
 
 ## Discussion
 
-At a point during the research, the scope of this study os shifted from the “radio” to the “radio group”, because there is no particular strong use case for a standalone “radio”, and also because this use case is against the W3 Specification, the actual component to be considered is the “radio group”, being composed of two or more radios.
+During the research, the scope of this study shifted from the “radio” to the “radio group”. A standalone “radio” is against the W3 Specification, so the actual component to be considered is the “radio group”, which is composed of two or more radios.
 
-Also based on this fact and on the current state of the design systems, a more final anatomy was proposed.
+Based on this and on how design systems currently build radios, two anatomies are presented below: one organized by tag hierarchy and another by attribute binding.
 
-### Proposed Anatomy - by Tag Hierarchy
+### Anatomy - by Tag Hierarchy
 
-This section shows the proposed visual constituents for the _Radio Group_, which is here considered to be the actual component, while the radios are a part of the group.
+This section shows the visual constituents for the _Radio Group_, which is here considered to be the actual component, while the radios are a part of the group.
 
 - Radio Group (the actual component)
   - Group Label (functions as a label for the whole group)
@@ -65,13 +68,20 @@ This section shows the proposed visual constituents for the _Radio Group_, which
     - and so on...
   - and so on...
 
+The radio and the radio group are two separate elements because each owns a different part of the anatomy:
+
+- The **radio** is a single choice. It owns the checked indicator, its own label and its own value, and its own disabled state.
+- The **radio group** is the set of choices. It owns what applies to the set as a whole: the group label, the required indicator, the group-level required, disabled and readonly states, and the layout of the choices.
+
+A radio on its own is not a valid control: the W3 Specification does not allow a radio group with a single radio, and once checked, a radio cannot be unchecked by the user, so a lone radio would be a choice with nothing to choose from. This is why the anatomy requires at least two radios in a group, and why the group should preferably be an element of its own, instead of being only a side effect of radios sharing the same `name`.
+
 #### The problem
 
-The above anatomy is regular enough to be assembled in a way similar to (but more complex than) a `<select>`. Attributes set on the group would allow the developer to set the whole group as "disabled", "readonly", vertically or horizontally laid out, types of display (like buttons, radios, combobox, etc), and attributes set on the radios would set their specific states, as we do with `<option>` tags. It is important to understand that the function of radios is almost the same as a `<select>` tag, and this is why the comparison makes sense.
+The above anatomy is regular enough to be assembled by attributes: those set on the group would allow the developer to set the whole group as "disabled", "readonly", vertically or horizontally laid out, types of display (like buttons, radios, combobox, etc), and those set on the radios would set their specific states, as we do with `<option>` tags.
 
 However, by being so regular and requiring a specific HTML structure, we would lose structural flexibility. For this, here is another proposal.
 
-### Proposed Anatomy - by Attribute Binding
+### Anatomy - by Attribute Binding
 
 If the above proposal would accept other nodes as valid children, or at least a set of attributes that could replace some of the nodes (eg. an `aria-label` to replace the "Group Label"), the flexibility could be reestablished, by allowing the construction of more complex layouts, eg. semantic differential scales, such as:
 
@@ -116,9 +126,15 @@ In this case the label is the actual input, and it could have an appearance of a
 
 The two main approaches presented above should be analysed in order to decide
 
-- In the first case:
-  - whether the first, more rigid proposal should be developed;
-  - or maybe even create an attribute to the `<select>` tag that would make it behave visually like radios
+- In the first case, whether the first, more rigid proposal should be developed;
 - Or, in the second case, strive for flexibility and:
   - propose modifications to the labeling of the current radios;
   - or change the tags used to create them, like in the last example.
+
+### Other solutions considered
+
+#### Using `<select>` or `<selectmenu>`
+
+The function of a radio group is almost the same as a `<select>`: the user chooses a single option out of a set. One alternative would be to use a `<select>` or a `<selectmenu>` for this, or even to create an attribute for the `<select>` that would make it behave visually like radios.
+
+The options of a `<select>` are, however, condensed into a single box and need to be its children, so this does not solve the layout restrictions and the missing group label described above, which are what the radio group aims to solve.

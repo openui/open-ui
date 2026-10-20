@@ -1,75 +1,106 @@
 ---
-menu: Proposals
-name: Radio (Editor's Draft)
-path: /components/radio
+menu: Non-active Proposals
+name: Radio (Explainer)
+path: /components/radio.proposal
 pathToResearch: /components/radio.research
 layout: ../../layouts/ComponentLayout.astro
+authors:
+  - name: Leonardo Baptista Lopes
+    url: https://github.com/leolopes
 ---
 
+import Image from '../../components/image.astro'
 import RadioButtonAnatomy from '../../components/radio-anatomy'
 import RadioButtonGroupAnatomy from '../../components/radio-group-anatomy'
 
-## Overview
+# Background
 
-The `<oui-radio>` element is a control that allows the user to select a single choice out of a set of choices. It has a binary "checked" state, either checked or unchecked (where "checked" is the selected choice, while all the other remain "unchecked".
+A radio is a control that allows the user to select a single choice out of a set of choices. It has a binary "checked" state, either checked or unchecked, where "checked" is the selected choice while all the others remain "unchecked".
 
-Because the `<oui-radio>` is a choice from a set of choices, the choices are logically grouped by an implicit or explicit `<oui-radio-group>`. This proposal will deal with the existence of both elements, the different ways they can interact and their properties.
+The concept of a radio is inseparable from the concept of a **radio group**. The HTML specification is explicit about it:
 
-### Use Cases
+> "A document must not contain an input element whose radio group contains only that element."
+>
+> -- <cite>[W3 HTML Specification](https://www.w3.org/TR/html52/sec-forms.html#radio-button-state-typeradio)</cite>
 
-The `<oui-radio-group>` is used in cases very similar to a `<select>` element, where the user is presented with a set of options from which they can select a single one.
+Yet, in HTML, the radio group does not exist as an element: it is only an implicit set of `<input type="radio">` elements sharing the same `name`. The research on how design systems treat radios (see the [Radio research](/components/radio.research)) shows that this is precisely where the difficulty lies. Design systems treat radios in one of two ways:
 
-Differently from `<select>`, where all the `<option>` are condensed into a single box, the `<oui-radio-group>` has all the `<oui-radio>` visible, readily available to be read and selected. Choosing between a `<select>` and `<oui-radio-group>` is a matter of layout and information density preference, in most cases.
+- as a standalone component, that can be hosted by a "radio group" component;
+- as an invariably non-independent part of a "radio group" component, just like `<option>` is dependent on `<select>`.
 
-Also differently from a `<select>`, there is currently no `multiple` attribute to allow a multiple choice group, and this document will not propose one for now.
+The two approaches look similar at first, but the former suggests that a single radio could exist, to represent a binary state, while the latter moves the scope up to the group. In the research, most concepts (checked state, label, disabled, value) apply to the radios, while a few apply only to the group:
 
-## Prior Art/Examples
+- group label;
+- required group;
+- disabled / readonly (for the whole group);
+- group orientation.
+
+This is why this proposal presents **two elements**: `<oui-radio>`, which represents a single choice, and `<oui-radio-group>`, which represents the set of choices and everything that belongs to the set as a whole. Together, they can support both a **rigid** structure, where the choices are nested in the group (similar to how `<option>` is nested in `<select>`), and a **flexible** one, where the choices can be placed anywhere in the document and are bound to the group by an attribute.
+
+The `<oui-radio-group>` is used in cases very similar to a `<select>` element, where the user is presented with a set of options from which they can select a single one. Differently from `<select>`, where all the `<option>` are condensed into a single box, the `<oui-radio-group>` has all the `<oui-radio>` visible, readily available to be read and selected.
+
+## Problem Statement
+
+Not having a radio group element presents the following problems to end users and to the authors who build interfaces for them:
+
+1. **A group of radios has no formal label.** Today, the only way to label a group is wrapping the radios in a `<fieldset>` with a `<legend>`. Each radio can have its own `<label>`, but the group itself has none unless this specific structure is used.
+2. **The required structure prevents layouts that are common in practice.** Because the label must live in a `<fieldset>`, a group cannot be laid out as an actual table, where each row is a group and the question is a cell of that row. A _semantic differential scale_ (a question in a row and each of the possible answers in its columns) is an example, shown below.
+3. **Group-level states have no element to live in.** Whether the whole group is required, disabled or readonly, as well as the required indicator and the error message, are properties of the group, but today they must be repeated on, or inferred from, each of the radios.
+4. **The group is only an implicit concept.** The `name` attribute binds the radios together, but there is nothing to style, to label or to validate as a whole, and design systems end up building their own inconsistent "radio group" components.
+
+Today, the structure of a semantic differential scale would be:
+
+| Question     | Answer 1              | Answer 2              | ... |
+| ------------ | --------------------- | --------------------- | --- |
+| (table cell) | (input name=1)(label) | (input name=1)(label) | ... |
+| (table cell) | (input name=2)(label) | (input name=2)(label) | ... |
+
+Each field has its own `label`, but the group itself has no formal label.
+
+For clarity, see the real life example below:
+
+<Image
+  src="/images/semantic-differential-scale.jpg"
+  alt="An horizontal table with a question in a row and the answers in each of its columns"
+  style="width: 100%"
+/>
+
+## Goals
+
+The goals of this proposal are:
+
+- Provide a **radio group** that can be formally **labeled**, solving problems 1 and 4.
+- Allow the label of the group to be placed **independently of a `<fieldset>`**, so that groups can be used in layouts such as tables, solving problem 2.
+- Allow **group-level states** (required, disabled, readonly), the **required indicator** and the **error message** to be defined once, in the group, solving problem 3.
+- Support both a **rigid** structure (choices nested in the group) and a **flexible** one (choices bound to the group by an attribute), as well as a mix of both.
+- Remain consistent with the HTML specification, in which a radio group has more than one radio.
+- Expose a correct structure to assistive technologies, regardless of the chosen layout.
+
+## See Also
 
 - [Radio input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio)
 - [WAI-ARIA Radio](https://www.w3.org/TR/wai-aria-practices/#radiobutton)
 - [WHATWG](<https://html.spec.whatwg.org/multipage/input.html#radio-button-state-(type=radio)>)
+- [Radio research](/components/radio.research)
 
-[Further examples on research](/components/radio.research).
+# Radio Element
 
-## Radio Design
+The `<oui-radio>` element represents a single choice out of a set of choices. It can be either **checked** or **unchecked**.
 
-This section relates to a single `<oui-radio>`.
+A radio is always a choice of a radio group, which can be implicit or explicit:
 
-The radio can have a `disabled` attribute, meaning it's a possible choice, but that is currently unavailable.
+- If used **inside** a `<oui-radio-group>`, it gets implicitly bound to the group, becoming one of its choices.
+- If declared **outside** of a group, it is bound to it by a `group` attribute equal to the group's `name` attribute.
 
-If used inside a `<oui-radio-group>`, it gets implicitly bound to the group, becoming one of the choices. If declared outside of it, it should contain a `group` attribute equal to the group's `name` attribute.
+A radio can have a `disabled` attribute, meaning it is a possible choice that is currently unavailable.
 
-It can also have a `required` or a `readonly` attribute. Because standalone radios with such attributes would not make much sense, by placing these attributes on a single `<oui-radio>`, the whole radio group would be understood as `required` or `readonly`, be it either an explicit or implicit group.
+It can also have a `required` or a `readonly` attribute. Because a standalone radio with such attributes would not make much sense, placing them on a single `<oui-radio>` means that the whole radio group, be it explicit or implicit, is understood as `required` or `readonly`.
 
-### API
-
-#### Properties
-
-| Attribute Name   | Type     | Default Value | Description                                                                                          |
-| ---------------- | -------- | ------------- | ---------------------------------------------------------------------------------------------------- |
-| `checked`        | `bool`   | `false`       | Controls whether the radio is checked or unchecked.                                                  |
-| `defaultChecked` | `bool`   | `false`       | The initial value for `checked`. Defaults to false.                                                  |
-| `value`          | `string` | `null`        | The value of the radio (this is the value of a single possible choice).                              |
-| `autofocus`      | `bool`   | `false`       | Get focus by default.                                                                                |
-| `disabled`       | `bool`   | `false`       | Prevents the user from interacting with the control. Defaults to false.                              |
-| `group`          | `string` | `null`        | Binds the radio to a radio group. While inside a radio group, it is implicitly defined.              |
-| `form`           | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.                         |
-| `readonly`       | `bool`   | `false`       | Makes its group unavailable for user interaction, but the selected choice should still be submitted. |
-| `required`       | `bool`   | `false`       | Makes its group required to have a selected choice.                                                  |
-
-#### Events
-
-| Event Name | Detail Type | Bubbles | Composed | Cancellable | Dispatch Behavior                                              |
-| ---------- | ----------- | ------- | -------- | ----------- | -------------------------------------------------------------- |
-| `change`   | none        | `true`  | `true`   | `false`     | Fired when the radio's `checked` state is changed by the user. |
-| `focus`    | none        | `true`  | `true`   | `false`     | Fired when the radio gets focus.                               |
-| `blur`     | none        | `true`  | `true`   | `false`     | Fired when the radio loses focus.                              |
-
-### Anatomy
+## Anatomy
 
 <RadioButtonAnatomy />
 
-#### DOM Structure
+### DOM Structure
 
 ```html
 <oui-radio>
@@ -82,49 +113,35 @@ It can also have a `required` or a `readonly` attribute. Because standalone radi
 </oui-radio>
 ```
 
-#### Slots
+### Slots
 
-| Slot Name           | Description                                         | Fallback Content                                 |
-| ------------------- | --------------------------------------------------- | ------------------------------------------------ |
-| `label`             | Add custom markup for the control's label           | Empty                                            |
-| `checked-indicator` | Content to indicate the radio is in a checked state | Element with checked and indeterminate indcators |
+| Slot Name           | Description                                         | Fallback Content                         |
+| ------------------- | --------------------------------------------------- | ---------------------------------------- |
+| `label`             | Add custom markup for the control's label           | Empty                                    |
+| `checked-indicator` | Content to indicate the radio is in a checked state | Element with the checked state indicator |
 
-#### CSS Parts
+### CSS Parts
 
-| Slot Name           | Description                                            |
+| Part Name           | Description                                            |
 | ------------------- | ------------------------------------------------------ |
 | `label`             | The control's label (and implicit value)               |
 | `checked-indicator` | Indicates the radio is in a checked or unchecked state |
 
-## Radio Group Design
+# Radio Group
 
-This section relates to a `<oui-radio-group>`. It can host multiple `<oui-radio>` elements.
+The `<oui-radio-group>` element represents the set of choices and everything that belongs to the set as a whole: its label, whether it is required, disabled or readonly, the required indicator and the error message. It can host multiple `<oui-radio>` elements, but it does not have to: the choices can also be placed elsewhere in the document and bound to the group.
 
-### API
+The selected choice of the group is the group's value, which is what gets submitted with a form, under the group's `name`.
 
-#### Properties
+Differently from a `<select>`, there is currently no `multiple` attribute to allow a multiple choice group, and this document does not propose one for now.
 
-| Attribute Name | Type     | Default Value | Description                                                                                      |
-| -------------- | -------- | ------------- | ------------------------------------------------------------------------------------------------ |
-| `name`         | `string` | `null`        | Represents the name of the control, to be used upon form submission .                            |
-| `value`        | `string` | `null`        | The value of the selected choice.                                                                |
-| `autofocus`    | `bool`   | `false`       | Get focus by default. Defaults to the first option, unless explicitly defined among the options. |
-| `disabled`     | `bool`   | `false`       | Prevents the user from interacting with any of the choices. Defaults to false.                   |
-| `form`         | `string` | `null`        | Associates the element with a form in the document whose `id` is this value.                     |
-| `readonly`     | `bool`   | `false`       | Makes it unavailable for user interaction, but the selected choice should still be submitted.    |
-| `required`     | `bool`   | `false`       | Makes it required to have a selected choice.                                                     |
-
-#### Events
-
-...
-
-### Anatomy
+## Anatomy
 
 <RadioButtonGroupAnatomy />
 
-#### DOM Structure (Implicit Grouping)
+### DOM Structure (Implicit Grouping)
 
-The following structure represents a group with the `choices` slot filled with radios (their internal structures are omitted for brevity).
+The following structure represents a group with the `choices` slot filled with radios (their internal structures are omitted for brevity). This is the **rigid** structure: the radios are the children of the group.
 
 ```html
 <oui-radio-group name="group-name">
@@ -145,9 +162,9 @@ The following structure represents a group with the `choices` slot filled with r
 </oui-radio-group>
 ```
 
-#### DOM Structure (Explicit Grouping)
+### DOM Structure (Explicit Grouping)
 
-The following structure, in contrast, represents a group with an empty `choices` slot. The choices are placed outside the group, providing layout flexibility. Each choice has a `group` attribute with value equal to the radio group's name, making them explicitly bound as choices of that group.
+The following structure, in contrast, represents a group with an empty `choices` slot. The choices are placed outside the group, providing **layout flexibility**. Each choice has a `group` attribute with value equal to the radio group's name, making them explicitly bound as choices of that group.
 
 There is also the possibility of having both implicit and explicit choices.
 
@@ -169,7 +186,9 @@ There is also the possibility of having both implicit and explicit choices.
 <oui-radio group="group-name" />
 ```
 
-#### Slots
+This structure is what allows the semantic differential scale shown in the [Problem Statement](#problem-statement) to be built as an actual table, with the group providing the label that a `<fieldset>` could not provide in that layout.
+
+### Slots
 
 | Slot Name            | Description                                                               | Fallback Content |
 | -------------------- | ------------------------------------------------------------------------- | ---------------- |
@@ -178,11 +197,27 @@ There is also the possibility of having both implicit and explicit choices.
 | `choices`            | Slot for placing the radios                                               | Empty            |
 | `error-message`      | Content of any error messages                                             | Empty            |
 
-#### CSS Parts
+### CSS Parts
 
-| Slot Name            | Description                                                     |
+| Part Name            | Description                                                     |
 | -------------------- | --------------------------------------------------------------- |
 | `label`              | The control's label                                             |
 | `required-indicator` | Indicates the radio group is required to have a selected option |
 | `choices`            | Container for the choices                                       |
 | `error-message`      | Container of any error messages                                 |
+
+# Other Solutions Considered
+
+## Why not just use `<select>` or `<selectmenu>`?
+
+A `<oui-radio-group>` serves a purpose very similar to a `<select>` or a `<selectmenu>`: in all of them, the user selects a single option out of a set. The difference is in how the options are presented.
+
+- In a `<select>` or `<selectmenu>`, the options are condensed into a single box and only revealed in a popup, once the user opens it. In a `<oui-radio-group>`, all the choices are visible, readily available to be read and selected.
+- Choosing between them is, in most cases, a matter of layout and information density preference. When there are few options and it is important for the user to compare all of them at once, a radio group is the better fit. When there are many options, or space is limited, a `<select>` is.
+- The options of a `<select>` or `<selectmenu>` cannot be laid out freely in the document, while the choices of a radio group can, which is the case for the semantic differential scale described above.
+
+Making the `<select>` look like a set of radios, for example by adding an attribute that changes its appearance, was also considered. It would solve the presentation, but not the problems of the missing group label and the layout restrictions described in the [Problem Statement](#problem-statement), because the options would still need to be children of the `<select>`.
+
+## Keeping the current `<input type="radio">` and `<fieldset>`
+
+Radios can already be grouped today, by sharing a `name` and wrapping them in a `<fieldset>` with a `<legend>`. As described in the [Problem Statement](#problem-statement), this is the structure that prevents some layouts and leaves group-level states and error messages without an owner, which is what this proposal aims to solve.
