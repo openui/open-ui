@@ -25,10 +25,21 @@ limitations and impossibilities.
 
 Namely, one method called `document.advanceFocus()` and one event called `beforefocus`.
 
-> **Status:** Experimental implementations are being developed for Chromium and Firefox, with
-> a shared Web Platform Test suite. They are prototypes, not shipped browser APIs.
+> **Status:** Contributor-maintained experimental implementations are available for
+> Chromium and Firefox, with a shared tentative Web Platform Test suite.
+> They are prototypes, not shipped browser APIs or browser-vendor commitments.
 > Chromium uses the `FocusNavigation` feature flag; Firefox uses the
 > `dom.focus_navigation.enabled` preference. Both are disabled by default.
+>
+> - **Chromium/Blink:** [WIP prototype CL 8612302](https://chromium-review.googlesource.com/c/chromium/src/+/8612302)
+>   and [tracking issue 575489395](https://issues.chromium.org/issues/575489395).
+> - **Firefox/Gecko:** [WIP prototype D335668](https://phabricator.services.mozilla.com/D335668)
+>   and [tracking bug 2084212](https://bugzilla.mozilla.org/show_bug.cgi?id=2084212).
+>
+> **Discussions:** [Initial Open UI discussion (openui/open-ui#1261)](https://github.com/openui/open-ui/issues/1261),
+> [WHATWG HTML integration (whatwg/html#13104)](https://github.com/whatwg/html/issues/13104),
+> and [Mozilla standards-position request (mozilla/standards-positions#1470)](https://github.com/mozilla/standards-positions/issues/1470).
+> The position request does not imply a Mozilla position.
 
 ## Opting In
 
@@ -597,7 +608,7 @@ list.addEventListener('beforefocus', (event) => {
   const currentLink = list.querySelector('a[aria-current="page"]');
 
   if ((event.reason === 'forward' || event.reason === 'backward') &&
-      !list.contains(document.activeElement) &&
+      (!document.hasFocus() || !list.contains(document.activeElement)) &&
       currentLink &&
       event.target !== currentLink) {
     event.preventDefault();
@@ -609,6 +620,9 @@ list.addEventListener('beforefocus', (event) => {
   }
 });
 ```
+
+`document.hasFocus()` distinguishes actual focus from a remembered link while
+browser UI has focus, so reentry still selects the current-page link.
 
 **Why entry boundaries matter:** The items to skip may be the first tab stops on
 the page, or the first ones after an iframe. A `keydown` listener in the receiving
