@@ -23,7 +23,7 @@ import Image from '../../components/image.astro'
 
 Three architectural syntaxes (Option A, Option B, and Option C below) have been explored and discussed. Options A and B have been prototyped and implemented in Chromium behind the **Experimental Web Platform Features** flag: `chrome://flags/#enable-experimental-web-platform-features`
 
-This proposal introduces a way to declaratively add a filtering text field to a select element, paired with native CSS and DOM primitives (`search` attribute, `beforefilter` event, `:filtered` pseudo-class, and `:active-option` selection states). This enables accessible, high-performance option filtering without requiring heavy JavaScript widget replacements.
+This proposal introduces a way to declaratively add a filtering text field to a select element, paired with native CSS and DOM primitives (`beforefilter` event, `:filtered` pseudo-class, and `:active-option` selection states). This enables accessible, high-performance option filtering without requiring heavy JavaScript widget replacements.
 
 ## User-Facing Problem
 
@@ -39,6 +39,7 @@ On the web today:
 * **Dynamic & server-side option loading**: Support custom script-based filtering and asynchronously fetching or appending options from a server in response to user input (enabling remote option search and DOM virtualization).
 * **Stylability & animation support**: Allow CSS styling of filtered-out options (`option:filtered`) and highlight active keyboard-navigated options (`option:active-option`).
 * **Extensible filtering logic**: Provide sensible browser defaults (`startswith`, `includes`, `pattern`) while exposing a script event (`beforefilter`) for dynamic or custom filtering algorithms.
+* **Multi-select**: Ensure that this new filtering API works well when used on a `<select multiple>`.
 
 ### Non-goals
 
@@ -204,7 +205,7 @@ There is an active discussion in aria about this proposal here: [aria issue 2841
 ### Security & Privacy
 
 * **Privacy**: Filtering operates entirely locally on option text already present in the client DOM (unless script explicitly initiates network requests via `beforefilter`). No sensitive keystroke telemetry is leaked.
-* **Security**: CSS filtering via `:filtered` and text matching via `search` introduce no script-execution or HTML-injection vectors.
+* **Security**: CSS filtering via `:filtered` and text matching introduce no script-execution or HTML-injection vectors.
 
 ### Internationalization (i18n)
 
