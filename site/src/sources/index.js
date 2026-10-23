@@ -17,6 +17,8 @@ import materialComponentsWeb from './materialComponentsWeb.json'
 import materialUI from './materialUI.json'
 import oat from './oat.json'
 import primer from './primer.json'
+import reactAria from './reactAria.json'
+import reactSpectrum from './reactSpectrum.json'
 import semantic from './semantic.json'
 import spectrum from './spectrum.json'
 import stardust from './stardust.json'
@@ -47,6 +49,8 @@ export const sources = [
   materialUI,
   oat,
   primer,
+  reactAria,
+  reactSpectrum,
   semantic,
   spectrum,
   stardust,
