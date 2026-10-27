@@ -406,10 +406,10 @@ The `reason` property indicates why the element is about to receive focus:
 The reason belongs to the individual request. An autofocus operation has `"page"` reason;
 an `element.focus()` call from its focus callback has `"script"` reason instead.
 
-> **Open question:** How assistive-technology-initiated focus is classified still needs
-> accessibility review. Sequential-entry customization must not replace an explicitly
-> chosen assistive-technology destination. Do not use `reason` alone to decide that a
-> focus request is unwanted.
+> **Accessibility:** The [proposed mapping for assistive-technology-initiated focus](#focus-reasons-and-user-privacy)
+> uses these same reasons and still needs validation across browsers and assistive technologies.
+> Sequential-entry customization must not replace an explicitly chosen destination.
+> Do not use `reason` alone to decide that a focus request is unwanted.
 
 ```js
 element.addEventListener('beforefocus', (event) => {
@@ -531,6 +531,97 @@ Each frame must independently opt in via its own meta tag:
 - The promise settles after the final destination processes the request, not when an iframe
   handoff is queued. A newer source-frame focus request supersedes an unfinished exit as well
   as an unfinished entry, so a stale handoff cannot overwrite newer focus.
+
+## Accessibility
+
+These primitives are intended to support consistent focus management without requiring users
+to disclose whether they use assistive technology. The following describes the proposed
+accessibility behavior and the questions to validate through prototyping, not a claim that
+the current implementations have been validated with every browser and assistive technology.
+
+### Focus Reasons and User Privacy
+
+The `reason` property should describe the focus operation, not identify the software or input
+device that initiated it. In keeping with the
+[TAG principle against exposing assistive technology use](https://www.w3.org/TR/design-principles/#do-not-expose-use-of-assistive-tech),
+there should be no assistive-technology-specific reason or flag.
+
+For assistive-technology requests that move DOM focus, the proposed mapping is:
+
+1. **Sequential navigation:** A request to move to the next or previous element in the browser's
+   sequential focus navigation order should report `"forward"` or `"backward"`, just as Tab or
+   Shift+Tab would. This classification depends on the operation, not the shortcut's name:
+   a screen reader command to find the next heading or link is not necessarily Tab-like navigation.
+2. **Targeted navigation:** A request to focus a particular element chosen through a screen
+   reader's virtual cursor, an element list, or another assistive technology interface should
+   report `"ui"`, like a pointer interaction that focuses a particular element. Sequential-entry
+   customization should not replace that choice with the application's preferred entry target.
+
+Virtual-cursor movement is distinct from DOM focus movement. Moving a reading cursor alone
+should not dispatch `beforefocus`; these mappings apply when an actual DOM focus operation
+is requested. An `element.focus()` call made by page script remains a `"script"` request,
+including when it follows a user action.
+
+Browser integrations need to map the operation using the information available from platform
+accessibility APIs. The absence of a keyboard or pointer event is not evidence of assistive
+technology use. Reusing reason values is necessary but not sufficient for privacy: event
+dispatch and cancellation behavior also need review for unintended disclosure.
+
+### Cancellation and Redirection
+
+The proposed model makes assistive-technology-initiated DOM focus changes cancelable in the
+same way as keyboard- and pointer-initiated changes. This avoids requiring separate application
+logic for different users and lets applications redirect focus before an unwanted intermediate
+target receives it.
+
+Today, focus interception can require sentinel inputs or moving focus back after a `focus`
+event. These workarounds add complexity and can produce redundant accessibility notifications
+and interrupted announcements. Avoiding the intermediate focus change is intended to reduce
+those problems; actual effects on assistive technology need testing.
+
+Consistency does not make every cancellation appropriate. Authors are responsible for preserving
+access to controls, predictable focus movement, and a usable way to leave a component. Cancellation
+should implement a specific interaction requirement, not blanket rejection of a reason value or
+of destinations outside a preferred region.
+
+When canceling a request, an application should either retain focus at a meaningful location or
+redirect it to an appropriate target. If the result would otherwise be unclear, provide an
+accessible explanation, using a suitably configured live region where appropriate. A live-region
+announcement is not a substitute for access to the requested functionality and should not be
+added indiscriminately to every focus change.
+
+Author guidance and reference examples should build on the
+[ARIA Authoring Practices guidance on predictable keyboard focus](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_focus_discernible_predictable).
+Author responsibility does not remove the need for browser safeguards and accessibility review.
+In particular, cancellation must not be treated as control over a screen reader's reading cursor;
+how assistive technologies respond when a DOM focus request is canceled needs validation.
+
+### Focus Wrapping
+
+Wrapping is an established option for some composite widgets. For example, the
+[ARIA toolbar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/) allows arrow-key navigation
+to wrap between controls while Tab and Shift+Tab move out of the toolbar. This is not a reason
+to make every list circular or trap ordinary Tab navigation. Components must provide a keyboard
+exit consistent with [No Keyboard Trap](https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html).
+
+`wrap` is opt-in and defaults to `false`. Combined with `stayWithinElement`, it lets the browser
+find and wrap among eligible sequentially focusable elements within a component. This is useful
+when controls are inside closed shadow roots that application script cannot traverse. It does
+not expose those internals or make arbitrary non-sequentially-focusable elements eligible.
+Authors still need to choose the appropriate widget semantics and keyboard interactions.
+
+### Prototyping and Validation
+
+The existing off-by-default prototypes provide a way to evaluate these choices before
+standardization or shipping. Experimental accessibility behavior can be developed behind feature
+flags and revised based on testing with assistive technology users, accessibility specialists,
+and browser and assistive technology implementers.
+
+Testing should cover sequential navigation, explicitly chosen targets, virtual-cursor behavior,
+cancellation and redirection, wrapping and escape paths, and announcements across component and
+frame boundaries. Web Platform Tests and native tests can check DOM behavior and browser
+integration, but they do not replace testing with actual assistive technologies across platforms.
+The reason mappings, cancellation behavior, and privacy properties remain subject to that review.
 
 ## Usage Examples
 
