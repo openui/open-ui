@@ -437,8 +437,8 @@ For a screen reader user, there already exist simple settings and commands to re
 
 For the above reason, the browser will simply expose the contents of a plain hint on the interest invoker element. In particular:
 
-1. If no other accessible name is available (including from the `title` attribute), the text of the plain hint is used for the accessible name of the interest invoker. This is skipped if the text is the same as the interest invoker's own inner text.
-2. If the plain hint's text is not used as the name, then it is used as the accessible description of the interest invoker.
+1. If no other accessible name is available (including from the `title` attribute), the text of the plain hint is used for the accessible name of the interest invoker.
+2. If the plain hint's text is not used as the name (including via `aria-labelledby`), and is not the same as the interest invoker's accessible name, then it is used as the accessible description of the interest invoker.
 3. There is no `aria-details` connection for plain hints.
 
 ### Rich hints (aka hovercards or other)
