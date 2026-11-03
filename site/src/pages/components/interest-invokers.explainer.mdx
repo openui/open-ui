@@ -454,7 +454,13 @@ As with `popovertarget`, when a popover target is shown, [sequential focus navig
 
 The `::interest-button` pseudo element is not exposed in the accessibility tree, since it is redundant with the interest invoker.
 
-See also, https://github.com/w3c/aria/issues/979.
+### Focus changes and modal dialogs
+
+Showing "interest" in an element does not necessarily indicate that a user wants to immediately interact with the exposed content, or that they want to interact with it at all. Therefore, it is not expected for a focus change to occur when an item of interest is displayed, and developers should not move focus (e.g., via `autofocus` or `focus()` in an `"interest"` event listener) when interest is shown.
+
+Similarly, while `interestfor` does not natively support opening modal `<dialog>` elements, developers could theoretically use JavaScript and the `"interest"`/`"loseinterest"` events to invoke a modal dialog on hover or focus. This is **not** a valid use case, and developers should not do this. Moving focus or trapping focus in a modal dialog when an element merely receives focus or hover would be disruptive to users and would commonly fail WCAG [3.2.1 - On Focus](https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html).
+
+See also, https://github.com/w3c/aria/issues/979 and https://github.com/openui/open-ui/issues/1093.
 
 ## FAQ (Frequently Asked Questions)
 
