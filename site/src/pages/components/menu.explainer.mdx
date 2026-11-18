@@ -187,7 +187,7 @@ This element:
   (This means the positioning of the `<menulist>` happens through anchor positioning
   rather than through DOM tree relationships.)
 * Behaves as though it has `popover=auto` when no `popover` attribute is present, which gives it all native popover behaviors.
-* Can be invoked with the new `toggle-menu` command, and is referenced by its ID from its invoker.
+* Can be invoked with the `toggle-popover` command, and is referenced by its ID from its invoker.
 * Provides the correct keyboard and focus behavior across sub-menulists, menubars, and child menu
   items.
 
@@ -362,11 +362,11 @@ list of actions that appear in a menulist:
 <img src="/images/menu-split-button.jpg" alt="the create new button in github's top bar invokes a menulist to add new or import a repository, create a new codepace or gist, or make a new orginization or project." />
 
 Button elements outside the context of a `<menubar>` can invoke `<menulist>` elements to fulfill the
-use cases above by leveraging the `command` and `commandfor` attributes, and the new menu (or
-existing popover) commands.
+use cases above by leveraging the `command` and `commandfor` attributes, and the existing popover
+commands.
 
 ```html
-<button command=toggle-menu commandfor=menu>Actions</button>
+<button command=toggle-popover commandfor=menu>Actions</button>
 
 <menulist id=menu>
   <menuitem>Foo</menuitem>
@@ -405,9 +405,8 @@ describes the concrete implications on our proposal.
 
  - [`aria-expanded`](https://w3c.github.io/aria/#aria-expanded)
     - The `<menuitem>` element's `aria-expanded` attribute reflects whether or not a popover invoked
-      by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements (invokeable via
-      the `toggle-menu` command), or other popovers unrelated to our
-      proposal
+      by the `<menuitem>` is expanded. This includes sub-menu `<menulist>` elements, or other
+      popovers unrelated to our proposal
  - [`aria-checked`](https://w3c.github.io/aria/#aria-checked)
     - For `<menuitemcheckbox>` and `<menuitemradio>` elements, the `aria-checked` attribute reflects whether their
       current [state](https://w3c.github.io/aria/#dfn-state) is checked
@@ -447,7 +446,7 @@ systems.
   * There may be exceptions to this rule when the content model is not followed.
 * A menulist is invoked when its popovertarget (a menuitem or a button). Focus would automatically move to its first focusable child.
 * Tab focus will not trigger the menuitem to get selected/checked, but only when an explicit Enter/choice happens.
-* An explicit Enter/Space does not close the menulist if the menuitem selected has a `toggle-menu` command that opens another menulist (a submenu).
+* An explicit Enter/Space does not close the menulist if the menuitem selected opens another menulist (a submenu).
 * An explicit Enter/Space on any other menuitem inside a menulist will close that menulist.
 * An explicit ESC will close the current popover menulist that has focus and return focus to its invoking element (which may be a menuitem inside a menulist or a menubar; or is a button element).
 * Arrow keyboard events will allow navigating between menuitems, in some cases opening and closing menus as appropriate.
