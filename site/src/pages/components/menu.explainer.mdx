@@ -382,7 +382,7 @@ and best practices curated from accessibility experts as closely as possible; de
 discussed with accessibility experts and documented here to the best of our ability. This section
 describes the concrete implications on our proposal.
 
-### Native ARIA mapping rules
+### Implicit ARIA mapping rules
 
 The elements and attributes are intended to provide native semantics that map to existing ARIA roles and states according to the following rules:
 
@@ -390,14 +390,14 @@ The elements and attributes are intended to provide native semantics that map to
 2. `<menulist>` elements have the [`menu`](https://w3c.github.io/aria/#menu) role.
 3. `<menuitem>` elements have the [`menuitem`](https://w3c.github.io/aria/#menuitem) role.
 4. `<menuitemcheckbox>` elements have the [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox) role, and `<menuitemradio>` elements have the [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio) role.
-   - `menuitemcheckbox` and `menuitemradio` elements expose a boolean `checked` state.
-5. `menuitem`s and `button`s that are `menu` invokers:
+   - `<menuitemcheckbox>` and `<menuitemradio>` elements expose a boolean `checked` state.
+5. `<menuitem>`s and `<button>`s that are `<menulist>` invokers:
    - have `expanded=true` or `expanded=false` state.
    - have `haspopup=menu`.
-   - will NOT have `details` pointing to the `menu` ([past discussion on `haspopup` instead of `details`](https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931)).
-6. `menubar` and `menu` have `setSize`.
-7. `menuitem` descendants of a `menubar` or `menu` have `setSize` and `posInSet`.
-8. An invoked `menulist` implicitly derives its accessible name from its invoker. The browser computes this in the accessibility tree exactly like `aria-labelledby` (*without* adding actual DOM attributes) unless an explicit `aria-labelledby` already exists.
+   - will NOT have `details` pointing to the `<menulist>` ([past discussion on `haspopup` instead of `details`](https://github.com/openui/open-ui/issues/1297#issuecomment-3376865931)).
+6. `<menubar>` and `<menulist>` have `setSize`.
+7. `<menuitem>`, `<menuitemcheckbox>`, and `<menuitemradio>` descendants of a `<menubar>` or `<menulist>` have `setSize` and `posInSet`.
+8. An invoked `<menulist>` implicitly derives its accessible name from its invoker. The browser computes this in the accessibility tree exactly like `aria-labelledby` (*without* adding actual DOM attributes) unless an explicit `aria-labelledby` already exists.
 
 ### Keyboard behavior
 
