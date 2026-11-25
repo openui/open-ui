@@ -480,13 +480,19 @@ and flexibility:
 
 ### beforefocus and Iframes
 
-When focus is about to move into an iframe:
+When focus is about to enter an iframe's subtree from outside it:
 
-1. **Parent frame first**: The `beforefocus` event fires on the `<iframe>` element in the
-   parent document first
+1. **Parent frame first**: If the parent document has opted in, `beforefocus` fires on its
+   `<iframe>` element first
 2. **Cancellation at parent**: If the parent cancels the event, focus does not enter the iframe
 3. **Child frame next**: If not cancelled, `beforefocus` fires on the actual target element
    inside the iframe (if the iframe has opted in)
+
+Once focus is inside that subtree, subsequent moves within it do not dispatch another event
+on the parent's iframe element. The child event does not bubble across the document boundary.
+For nested frames, notifications apply only to the boundaries being entered; a move to an
+element in the parent document instead dispatches on that destination. See
+[Frame Boundaries and Information Exposure](#frame-boundaries-and-information-exposure).
 
 This allows parent applications to control whether child iframes can receive focus (when, for
 example, an embedded third party iframe uncontollably wants to steal focus):
@@ -622,6 +628,136 @@ cancellation and redirection, wrapping and escape paths, and announcements acros
 frame boundaries. Web Platform Tests and native tests can check DOM behavior and browser
 integration, but they do not replace testing with actual assistive technologies across platforms.
 The reason mappings, cancellation behavior, and privacy properties remain subject to that review.
+
+## Security and Privacy Considerations
+
+The design goal is to expose native focus navigation without weakening origin isolation,
+enabling background focus manipulation, or revealing sensitive information about users.
+Following the [Security and Privacy Questionnaire](https://www.w3.org/TR/security-privacy-questionnaire/),
+this section describes the controls, the information exposed, and the risks still requiring
+review. These controls support that goal; they are not a proof that the new observables have
+no security or privacy impact.
+
+### Focus Eligibility and User Activation
+
+Outside the handler exception below, `document.advanceFocus()` requires an opted-in, fully
+active document that directly holds focus in the active browser window, together with
+[transient user activation](https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation).
+If focus belongs to another window, another iframe, or browser UI, the call resolves with
+`"not-allowed"` without initiating navigation. Supplying `startElement`, `stayWithinElement`,
+or `wrap` does not bypass these checks. An ancestor's `document.hasFocus()` may be true while a
+descendant iframe holds focus; that is not sufficient to admit a call on the ancestor document.
+
+The check is made at invocation. A successfully admitted request can complete asynchronously
+across frames, but it does not grant permission for later calls. The API checks transient
+activation without consuming it, so more than one call can be admitted while activation remains
+valid and the document still directly holds focus. Activation is not a one-call quota.
+
+**Scoped navigation-handler exception:** A document synchronously handling a browser-generated,
+trusted `beforefocus` event with reason `"forward"` or `"backward"` may call its own
+`advanceFocus()` before receiving focus and without transient activation. For example, when Tab
+enters content from the address bar, the destination document has neither received that
+keystroke nor acquired focus yet. This exception lets it redirect the incoming navigation
+without first focusing an intermediate element.
+
+The exception is an alternative admission condition for this API, not a grant of general user
+activation. It does not activate unrelated APIs or other documents, and does not bypass opt-in
+or document-liveness checks. It ends when the listener returns; timers, Promise continuations,
+and unrelated DOM callbacks do not inherit it. Author-created events and browser-generated
+`"page"`, `"script"`, or `"ui"` events do not establish it. The detailed callback boundaries are
+specified under [Request Lifetime](#request-lifetime).
+
+### Frame Boundaries and Information Exposure
+
+Suppose a call on document A completes by moving focus into iframe B. While B holds focus,
+further ordinary calls on A resolve with `"not-allowed"`, even if A still has transient
+activation. A cannot use repeated calls on its own document as an iterator over B's controls.
+The same rule applies when A is itself an iframe and navigation leaves it. This is a restriction
+on this API, not a claim that existing same-origin access or other focus APIs cease to work.
+
+An opted-in parent receives `beforefocus` on its own iframe element when navigation is about
+to enter that iframe's subtree. It does not receive the child's internal target, DOM path, or
+window through that notification; the event's `view` is the receiving document's window.
+Once focus is in the subtree, moves within it, including between nested descendants, do not
+generate further notifications on that outer iframe element. A later exit and reentry can
+generate a new entry notification. The destination document still receives its own events if
+it has opted in.
+
+Searching for a destination does not dispatch events on every candidate or temporarily focus
+skipped frames. Only the selected destination and applicable entry boundaries are notified.
+`advanceFocus()` returns a coarse outcome, not an element reference, frame identifier, or list
+of focusable elements. A parent therefore cannot subscribe to all internal focus changes in a
+cross-origin child through `beforefocus`.
+
+### Origin Isolation, Opt-In, and Shadow DOM
+
+The APIs do not grant access to another origin's `Document` or DOM. `startElement` and
+`stayWithinElement` must be connected elements belonging to the document on which the method
+is invoked. Browser-internal traversal into a frame does not make its contents readable to
+the caller. Same-origin scripts retain their existing ability to access each other's documents.
+
+Opt-in is per document. A parent's opt-in does not enable events inside a child, and a child
+cannot enable them in the parent. An opted-in parent can nevertheless receive an entry
+notification and prevent entry into a child that has not opted in. The meta tag expresses
+developer intent, not user consent or permission to cross an origin boundary; untrusted script
+already executing in a document can opt that document in.
+
+Events are composed across shadow boundaries using normal DOM retargeting and event-path
+visibility rules. Closed shadow roots do not become readable through the API. Unlike an iframe
+boundary, however, a shadow boundary does not suppress all internal focus notifications:
+outside listeners can receive retargeted events. Encapsulation must not be mistaken for a
+guarantee that internal behavior or the number of navigation steps is unobservable.
+
+### User Control and Request Integrity
+
+Canceling and redirecting focus can improve an interaction, but can also be abused to make
+controls unreachable or trap users. Opt-in and user activation do not make an application's
+focus policy safe. Authors must preserve meaningful focus and escape paths, as described under
+[Cancellation and Redirection](#cancellation-and-redirection) and
+[Focus Wrapping](#focus-wrapping).
+
+A move into browser UI has no destination element in the page on which to dispatch
+`beforefocus`; the event is not a veto over browser controls. Native window activation remains
+subject to the browser's decision. The API must not prevent access to browser-managed escape
+mechanisms, including access to the address bar or switching tabs.
+
+The [request-lifetime rules](#request-lifetime) address reentrancy and asynchronous races.
+Newer focus requests supersede older unfinished requests. Targets, frame relationships, and
+requested containment are revalidated after handlers and cross-process handoffs, so stale
+approval cannot authorize a different or detached destination. Focus-redirection chains are
+bounded, and wrapping searches at most one cycle. These limits address API-induced loops;
+they are not a general defense against arbitrary script consuming CPU.
+
+### User Privacy and Deployment Questions
+
+`reason` describes an operation, not an authenticated user intention. A browser-generated
+event can result from script, and `"forward"` can result from `advanceFocus()` rather than a
+physical Tab press. Neither the reason nor `isTrusted` alone is evidence that the user chose
+a particular destination. Assistive technology must not receive a distinct identifying reason;
+the mapping and its remaining privacy questions are discussed under
+[Focus Reasons and User Privacy](#focus-reasons-and-user-privacy).
+
+The proposal introduces no persistent user identifier, storage API, device access, or network
+request mechanism. Opt-in belongs to the document's lifetime, not a cross-session permission.
+Focus changes can still trigger existing page handlers and their side effects. API availability,
+navigation behavior, event details, and timing also remain possible fingerprinting inputs;
+private browsing and assistive technology use must not acquire distinctive signals through them.
+
+### Verification and Remaining Review
+
+The shared tentative WPTs include checks for same-origin and cross-site ancestor admission
+(`advanceFocus-ancestor-admission.tentative.html`), scoped handler permission
+(`beforefocus-handler-admission.tentative.html`), nested-frame notification boundaries
+(`beforefocus-nested-iframe.tentative.html`), and remote target invalidation
+(`advanceFocus-remote-invalidation.tentative.html`). Native browser tests additionally cover
+entry from browser UI and process-boundary behavior. The prototype reviews linked in
+[Introduction](#introduction) contain these tests.
+
+These checks establish specific behavior, not a complete security or privacy assessment.
+Before shipping, review must examine cross-origin result and timing disclosure, repeated
+focus-reset attempts, browser escape paths, and behavior across assistive technologies and
+platforms. Any claim of no security or privacy regression depends on that analysis and may
+require changes to the design.
 
 ## Usage Examples
 
