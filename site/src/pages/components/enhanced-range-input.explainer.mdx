@@ -343,7 +343,7 @@ The `disabled` attribute can also be set on individual `<input type="range">` el
 
 ### All Thumbs Disabled
 
-When every `<input type="range">` within a `<rangegroup>` has the `disabled` attribute, the group should behave as if the `<rangegroup>` itself were disabled. The track is painted in its disabled state and there are no tab stops within the group.
+When a nonempty set of participating range inputs is entirely disabled, whether individually or through inherited disabledness, the `<rangegroup>` itself is effectively disabled. It matches `:disabled` and its track uses disabled styling, but its `disabled` attribute is unchanged. This aggregate state does not propagate disabledness to other descendants. An empty group is not automatically disabled.
 
 ### State Persistence
 
